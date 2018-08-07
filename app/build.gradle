@@ -104,7 +104,7 @@ android {
     }
 
     junitJacoco {
-        jacocoVersion='0.7.9'
+        jacocoVersion='0.8.1'
         excludes = ['android/databinding/**/*.class',
                     '**/android/databinding/*Binding.class',
                     '**/BR.*',
