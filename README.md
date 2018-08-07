@@ -10,7 +10,7 @@
 -->
 
 <!-- Put your project's name -->
-# Baby monitor client
+# Baby monitor client android
 
 <!-- METADATA -->
 <!-- Add links to JIRA, Google Drive, mailing list and other relevant resources -->
