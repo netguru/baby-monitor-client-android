@@ -71,21 +71,6 @@ android {
         }
     }
 
-    variantFilter { variant ->
-        def buildName = variant.buildType.name
-        def flavorName = variant.getFlavors().get(0).name
-        // remove unnecessary variants
-        ['release'].each {
-            if (buildName == it) {
-                ['mock'].each {
-                    if (flavorName == it) {
-                        variant.setIgnore(true)
-                    }
-                }
-            }
-        }
-    }
-
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
         testLogging {

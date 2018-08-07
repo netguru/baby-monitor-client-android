@@ -17,7 +17,8 @@
 <!-- Add links to CI configs with build status and deployment environment, e.g.: -->
 | environment | deployment            | status             |
 |-------------|-----------------------|--------------------|
-| mockDebug        | https://rink.hockeyapp.net/manage/apps/821156| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
+| mockRelease        | https://rink.hockeyapp.net/manage/apps/821156| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
+| productionRelease  | https://rink.hockeyapp.net/manage/apps/821318| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
 <!--- If applies, add link to app on Google Play -->
 
 ## Synopsis

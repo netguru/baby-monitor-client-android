@@ -1,7 +1,7 @@
-package co.netguru.android.template.application
+package co.netguru.baby.monitor.client.application
 
 import android.content.Context
-import co.netguru.android.template.application.scope.AppScope
+import co.netguru.baby.monitor.client.application.scope.AppScope
 import javax.inject.Inject
 
 /**
