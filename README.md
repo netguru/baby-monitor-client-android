@@ -10,7 +10,7 @@
 -->
 
 <!-- Put your project's name -->
-# netguru-android-template
+# Baby monitor client
 
 <!-- METADATA -->
 <!-- Add links to JIRA, Google Drive, mailing list and other relevant resources -->
