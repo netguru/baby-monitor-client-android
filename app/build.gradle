@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId "co.netguru.android.template"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.1.0'
