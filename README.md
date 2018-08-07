@@ -66,7 +66,10 @@
 
 | Property         | External property name | Environment variable |
 |------------------|------------------------|----------------------|
-| HockeyApp App ID | HockeyAppId            | HOCKEY_APP_ID        |
+| HockeyApp App ID mock | HockeyAppIdMock            | HOCKEY_APP_ID_MOCK|
+| HockeyApp App Secret mock | HockeyAppSecretMock            | HOCKEY_APP_SECRET_MOCK|
+| HockeyApp App ID production | HockeyAppIdProduction           | HOCKEY_APP_ID_PRODUCTION|
+| HockeyApp App Secret production | HockeyAppSecretProduction           | HOCKEY_APP_Secret_PRODUCTION|
 
 #### Secrets
 Follow [this guide](https://netguru.atlassian.net/wiki/pages/viewpage.action?pageId=33030753) 

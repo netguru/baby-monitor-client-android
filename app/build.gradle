@@ -12,6 +12,8 @@ apply from: '../buildsystem/sonarqube.gradle'
 ext {
 
     secrets = [
+            hockeyAppIdMock    : keyProperty("HOCKEY_APP_ID_MOCK"),
+            hockeyAppSecretMock: keyProperty("HOCKEY_APP_SECRET_MOCK")
             // define your app secrets, for example:
             // hockeyAppId: keyProperty("HOCKEY_APP_ID")
     ]
@@ -62,8 +64,8 @@ android {
             applicationIdSuffix ".mock"
             dimension "api"
 
-            // put your secrets in the BuildConfig.java class, for example:
-            // buildConfigField 'String', 'HOCKEY_APP_ID', "\"${secrets.hockeyAppId}\""
+            buildConfigField 'String', 'HOCKEY_APP_ID_MOCK', "\"${secrets.hockeyAppIdMock}\""
+            buildConfigField 'String', 'HOCKEY_APP_SECRET_MOCK', "\"${secrets.hockeyAppSecretMock}\""
         }
         production {
             dimension "api"
@@ -89,7 +91,7 @@ android {
     }
 
     junitJacoco {
-        jacocoVersion='0.8.1'
+        jacocoVersion = '0.8.1'
         excludes = ['android/databinding/**/*.class',
                     '**/android/databinding/*Binding.class',
                     '**/BR.*',
@@ -161,7 +163,7 @@ dependencies {
 
     //RxJava
     implementation libs.rxJava2
-    implementation (libs.rxKotlin2)  {
+    implementation(libs.rxKotlin2) {
         exclude module: 'rxjava'
         exclude module: 'kotlin-stdlib'
     }
