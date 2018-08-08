@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="co.netguru.baby.monitor.client"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="co.netguru.baby.monitor.client">
 
     <application
         android:name=".application.App"
@@ -18,5 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="net.hockeyapp.android.appIdentifier"
+            android:value="${HOCKEY_APP_ID}" />
     </application>
 </manifest>

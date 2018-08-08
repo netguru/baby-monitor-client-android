@@ -12,10 +12,8 @@ apply from: '../buildsystem/sonarqube.gradle'
 ext {
 
     secrets = [
-            hockeyAppIdMock    : keyProperty("HOCKEY_APP_ID_MOCK"),
-            hockeyAppSecretMock: keyProperty("HOCKEY_APP_SECRET_MOCK"),
-            hockeyAppIdProduction   : keyProperty("HOCKEY_APP_ID_PRODUCTION"),
-            hockeyAppSecretProduction: keyProperty("HOCKEY_APP_SECRET_PRODUCTION")
+            hockeyAppIdMock          : keyProperty("HOCKEY_APP_ID_MOCK"),
+            hockeyAppIdProduction    : keyProperty("HOCKEY_APP_ID_PRODUCTION")
     ]
 }
 
@@ -64,13 +62,12 @@ android {
             applicationIdSuffix ".mock"
             dimension "api"
 
-            buildConfigField 'String', 'HOCKEY_APP_ID', "\"${secrets.hockeyAppIdMock}\""
-            buildConfigField 'String', 'HOCKEY_APP_SECRET', "\"${secrets.hockeyAppSecretMock}\""
+            manifestPlaceholders = [HOCKEY_APP_ID: "${secrets.hockeyAppIdMock}"]
         }
         production {
             dimension "api"
-            buildConfigField 'String', 'HOCKEY_APP_ID', "\"${secrets.hockeyAppIdProduction}\""
-            buildConfigField 'String', 'HOCKEY_APP_SECRET', "\"${secrets.hockeyAppSecretProduction}\""
+
+            manifestPlaceholders = [HOCKEY_APP_ID: "${secrets.hockeyAppIdProduction}"]
         }
     }
 
@@ -164,7 +161,7 @@ dependencies {
 
     //RxJava
     implementation libs.rxJava2
-    implementation(libs.rxKotlin2) {
+    implementation (libs.rxKotlin2) {
         exclude module: 'rxjava'
         exclude module: 'kotlin-stdlib'
     }
@@ -197,6 +194,9 @@ dependencies {
 
     // StrictMode
     debugImplementation libs.strictmodeNotifier
+
+    // HockeyApp
+    implementation libs.hockeyApp
 
     // Unit testing
     testImplementation test.junit
