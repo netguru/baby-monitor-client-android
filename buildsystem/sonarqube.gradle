@@ -65,7 +65,7 @@ sonarqube {
         property "sonar.java.libraries", libraries
         property "sonar.java.test.libraries", libraries
         // path to coverage reports
-        property "sonar.jacoco.reportPath", "build/jacoco/test${sonarCurFlavor.capitalize()}${sonarCurBuildType.capitalize()}UnitTest.exec"
+        property "sonar.jacoco.reportPaths", "build/jacoco/test${sonarCurFlavor.capitalize()}${sonarCurBuildType.capitalize()}UnitTest.exec"
         //coverage plugin
         property "sonar.java.coveragePlugin", "jacoco"
         //path to lint reports
