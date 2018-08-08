@@ -13,9 +13,9 @@ ext {
 
     secrets = [
             hockeyAppIdMock    : keyProperty("HOCKEY_APP_ID_MOCK"),
-            hockeyAppSecretMock: keyProperty("HOCKEY_APP_SECRET_MOCK")
-            // define your app secrets, for example:
-            // hockeyAppId: keyProperty("HOCKEY_APP_ID")
+            hockeyAppSecretMock: keyProperty("HOCKEY_APP_SECRET_MOCK"),
+            hockeyAppIdProduction   : keyProperty("HOCKEY_APP_ID_PRODUCTION"),
+            hockeyAppSecretProduction: keyProperty("HOCKEY_APP_SECRET_PRODUCTION")
     ]
 }
 
@@ -64,12 +64,13 @@ android {
             applicationIdSuffix ".mock"
             dimension "api"
 
-            buildConfigField 'String', 'HOCKEY_APP_ID_MOCK', "\"${secrets.hockeyAppIdMock}\""
-            buildConfigField 'String', 'HOCKEY_APP_SECRET_MOCK', "\"${secrets.hockeyAppSecretMock}\""
+            buildConfigField 'String', 'HOCKEY_APP_ID', "\"${secrets.hockeyAppIdMock}\""
+            buildConfigField 'String', 'HOCKEY_APP_SECRET', "\"${secrets.hockeyAppSecretMock}\""
         }
         production {
             dimension "api"
-            // inherit
+            buildConfigField 'String', 'HOCKEY_APP_ID', "\"${secrets.hockeyAppIdProduction}\""
+            buildConfigField 'String', 'HOCKEY_APP_SECRET', "\"${secrets.hockeyAppSecretProduction}\""
         }
     }
 
