@@ -22,7 +22,7 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        applicationId "co.netguru.android.template"
+        applicationId "co.netguru.baby.monitor.client"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
