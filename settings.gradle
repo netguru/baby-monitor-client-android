@@ -1,1 +1,1 @@
-include ':babymonitorserver', ':babymonitorclient'
+include ':babymonitorserver', ':babymonitorclient', ':libstreaming'
