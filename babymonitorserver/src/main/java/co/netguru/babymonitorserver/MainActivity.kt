@@ -1,13 +1,17 @@
 package co.netguru.babymonitorserver
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,11 +40,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
             commit()
         }
 
-
         session = SessionBuilder.getInstance()
                 .setCallback(this)
                 .setSurfaceView(surfaceView)
-                .setPreviewOrientation(0)
+                .setPreviewOrientation(getCameraOrientation())
                 .setContext(applicationContext)
                 .setAudioEncoder(SessionBuilder.AUDIO_AAC)
                 .setAudioQuality(AudioQuality(8000, 16000))
@@ -56,12 +59,35 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
 
     override fun onResume() {
         super.onResume()
-        if (allPermissionsGranted() && session?.isStreaming == false) {
-            session?.startPreview()
+        if (allPermissionsGranted() && session?.isStreaming != true) {
             session?.start()
         } else {
             requestPermissions()
         }
+    }
+
+    private fun getCameraOrientation(): Int {
+        val degrees = when (windowManager.defaultDisplay.rotation) {
+            Surface.ROTATION_0 -> 0
+            Surface.ROTATION_90 -> 90
+            Surface.ROTATION_180 -> 180
+            Surface.ROTATION_270 -> 270
+            else -> 0
+        }
+
+        var sensorOrientation = 0
+        val manager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+
+        for (id in manager.cameraIdList) {
+            val characteristics = manager.getCameraCharacteristics(id)
+            if (characteristics[CameraCharacteristics.LENS_FACING]
+                    == CameraCharacteristics.LENS_FACING_FRONT) {
+
+                val temp = (characteristics[CameraCharacteristics.SENSOR_ORIENTATION] + degrees) % 360
+                sensorOrientation = (360 - temp) % 360
+            }
+        }
+        return sensorOrientation
     }
 
     public override fun onDestroy() {
@@ -98,7 +124,6 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (allPermissionsGranted()) {
-            session?.startPreview()
             session?.start()
         }
     }
@@ -117,6 +142,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
 
     override fun onSessionError(reason: Int, streamType: Int, e: Exception) {
         Timber.e("onSessionError")
+        session?.stop()
     }
 
     override fun onPreviewStarted() {
@@ -133,8 +159,6 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
 
     override fun onSessionStopped() {
         Timber.e("onSessionStopped")
-        session?.stopPreview()
-        session?.startPreview()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
