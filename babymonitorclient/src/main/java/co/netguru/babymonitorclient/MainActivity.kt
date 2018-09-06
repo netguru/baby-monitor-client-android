@@ -102,6 +102,6 @@ class MainActivity : AppCompatActivity() {
             "rtmp://stream1.livestreamingservices.com:1935/tvmlive/tvmlive"
 
         private const val RTSP_VIDEO_URI =
-            "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+            "rtsp://192.168.0.100:5006"
     }
 }
