@@ -82,10 +82,13 @@ class MainActivity : AppCompatActivity() {
             }
             attachViews()
         }
+
         with(mediaPlayer) {
-            media = Media(libvlc, Uri.parse(RTSP_VIDEO_URI))
-            aspectRatio = "16:9"
-            scale = 5f
+            this.media = Media(libvlc, Uri.parse(RTSP_VIDEO_URI)).apply {
+                addOption(":clock-jitter=0")
+                addOption(":clock-synchro=0")
+                addOption(":fullscreen")
+            }
             play()
         }
     }
@@ -101,7 +104,6 @@ class MainActivity : AppCompatActivity() {
         private const val RTMP_VIDEO_URI =
             "rtmp://stream1.livestreamingservices.com:1935/tvmlive/tvmlive"
 
-        private const val RTSP_VIDEO_URI =
-            "rtsp://192.168.0.100:5006"
+        private const val RTSP_VIDEO_URI = "rtsp://192.168.0.18:5006"
     }
 }
