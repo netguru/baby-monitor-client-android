@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.WindowManager
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_main)
         if (SHOULD_PLAY_RTMP) {
             prepareRtmpPlayer()
@@ -104,6 +106,6 @@ class MainActivity : AppCompatActivity() {
         private const val RTMP_VIDEO_URI =
             "rtmp://stream1.livestreamingservices.com:1935/tvmlive/tvmlive"
 
-        private const val RTSP_VIDEO_URI = "rtsp://192.168.0.18:5006"
+        private const val RTSP_VIDEO_URI = "rtsp://192.168.0.100:5006"
     }
 }

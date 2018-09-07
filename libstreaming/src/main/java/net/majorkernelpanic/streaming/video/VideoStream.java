@@ -423,13 +423,7 @@ public abstract class VideoStream extends MediaStream {
      * Video encoding is done by a MediaCodec.
      */
     protected void encodeWithMediaCodec() throws RuntimeException, IOException {
-        if (mMode == MODE_MEDIACODEC_API_2) {
-            // Uses the method MediaCodec.createInputSurface to feed the encoder
-            encodeWithMediaCodecMethod2();
-        } else {
-            // Uses dequeueInputBuffer to feed the encoder
-            encodeWithMediaCodecMethod1();
-        }
+        encodeWithMediaCodecMethod1();
     }
 
     /**
@@ -476,9 +470,15 @@ public abstract class VideoStream extends MediaStream {
 
             @Override
             public void onPreviewFrame(byte[] data1, Camera camera) {
+                byte[] data = null;
                 Camera.Size size = mCamera.getParameters().getPreviewSize();
-                byte[] data = new byte[data1.length];
-                rotateNV21(data1, data, size.width, size.height, 90);
+
+                if (data1 == null) {
+                    Log.e(TAG, "Symptom of the \"Callback buffer was to small\" problem...");
+                } else {
+                    data = new byte[data1.length];
+                    rotateNV21(data1, data, size.width, size.height, 90);
+                }
 
                 oldnow = now;
                 now = System.nanoTime() / 1000;
@@ -501,7 +501,9 @@ public abstract class VideoStream extends MediaStream {
                         Log.e(TAG, "No buffer available !");
                     }
                 } finally {
-                    mCamera.addCallbackBuffer(data);
+                    if (mCamera != null && data != null) {
+                        mCamera.addCallbackBuffer(data);
+                    }
                 }
             }
         };
@@ -718,11 +720,12 @@ public abstract class VideoStream extends MediaStream {
         }
 
         Parameters parameters = mCamera.getParameters();
-        mQuality = VideoQuality.determineClosestSupportedResolution(parameters, mQuality);
+        //mQuality = VideoQuality.determineClosestSupportedResolution(parameters, mQuality);
         int[] max = VideoQuality.determineMaximumSupportedFramerate(parameters);
 
         double ratio = (double) mQuality.resX / (double) mQuality.resY;
         mSurfaceView.requestAspectRatio(ratio);
+        Log.e("quality", "mQuality= " + mQuality.toString());
 
         parameters.setPreviewFormat(mCameraImageFormat);
         parameters.setPreviewSize(mQuality.resX, mQuality.resY);

@@ -1,23 +1,15 @@
 package co.netguru.babymonitorserver
 
-import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.WindowManager
+import co.netguru.babymonitorserver.Utils.allPermissionsGranted
+import co.netguru.babymonitorserver.Utils.requestPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import net.majorkernelpanic.streaming.Session
-import net.majorkernelpanic.streaming.SessionBuilder
-import net.majorkernelpanic.streaming.audio.AudioQuality
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.rtsp.RtspServer
 import timber.log.Timber
@@ -40,16 +32,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
             commit()
         }
 
-        session = SessionBuilder.getInstance()
-                .setCallback(this)
-                .setSurfaceView(surfaceView)
-                .setPreviewOrientation(getCameraOrientation())
-                .setContext(applicationContext)
-                .setAudioEncoder(SessionBuilder.AUDIO_AAC)
-                .setAudioQuality(AudioQuality(8000, 16000))
-                .setVideoEncoder(SessionBuilder.VIDEO_H264)
-                //.setVideoQuality(new VideoQuality(800,600,20,500000))
-                .build()
+        session = Utils.buildService(surfaceView, this, this)
 
         surfaceView.holder.addCallback(this)
         surfaceView.setAspectRatioMode(SurfaceView.ASPECT_RATIO_PREVIEW)
@@ -62,63 +45,14 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
         if (allPermissionsGranted() && session?.isStreaming != true) {
             session?.start()
         } else {
-            requestPermissions()
+            requestPermissions(PERMISSIONS_REQUEST_CODE)
         }
-    }
-
-    private fun getCameraOrientation(): Int {
-        val degrees = when (windowManager.defaultDisplay.rotation) {
-            Surface.ROTATION_0 -> 0
-            Surface.ROTATION_90 -> 90
-            Surface.ROTATION_180 -> 180
-            Surface.ROTATION_270 -> 270
-            else -> 0
-        }
-
-        var sensorOrientation = 0
-        val manager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-
-        for (id in manager.cameraIdList) {
-            val characteristics = manager.getCameraCharacteristics(id)
-            if (characteristics[CameraCharacteristics.LENS_FACING]
-                    == CameraCharacteristics.LENS_FACING_FRONT) {
-
-                val temp = (characteristics[CameraCharacteristics.SENSOR_ORIENTATION] + degrees) % 360
-                sensorOrientation = (360 - temp) % 360
-            }
-        }
-        return sensorOrientation
     }
 
     public override fun onDestroy() {
         super.onDestroy()
         session?.release()
         surfaceView.holder.removeCallback(this)
-    }
-
-    private fun allPermissionsGranted(): Boolean {
-        var permissionsGranted = true
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted = false
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted = false
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted = false
-        }
-        return permissionsGranted
-    }
-
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
-                PERMISSIONS_REQUEST_CODE
-        )
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

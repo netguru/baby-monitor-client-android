@@ -270,12 +270,7 @@ public abstract class MediaStream implements Stream {
 			throw new IllegalStateException("No destination ports set for the stream !");
 
 		mPacketizer.setTimeToLive(mTTL);
-		
-		if (mMode != MODE_MEDIARECORDER_API) {
-			encodeWithMediaCodec();
-		} else {
-			encodeWithMediaRecorder();
-		}
+		encodeWithMediaCodec();
 
 	}
 
