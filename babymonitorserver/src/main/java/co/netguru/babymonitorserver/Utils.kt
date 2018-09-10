@@ -20,11 +20,11 @@ import timber.log.Timber
 
 object Utils {
 
-    private const val SAMPLING_RATE = 8000
-    private const val AUDIO_BIT_RATE = 16000
+    private const val SAMPLING_RATE = 44100
+    private const val AUDIO_BIT_RATE = 316_000
 
     private const val FRAME_RATE = 20
-    private const val VIDEO_BIT_RATE = 500000
+    private const val VIDEO_BIT_RATE = 300_000
 
     private val p720 = Size(1280, 720)
 
@@ -34,8 +34,6 @@ object Utils {
             sessionCallback: Session.Callback
     ): Session {
         val bestResolution = getBestResolution(activity)
-        Timber.e(bestResolution.toString())
-
         return SessionBuilder.getInstance()
                 .setCallback(sessionCallback)
                 .setSurfaceView(surfaceView)
@@ -94,20 +92,20 @@ object Utils {
     }
 
     fun Context.allPermissionsGranted(): Boolean {
-        var permissionsGranted = true
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted = false
+            return false
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted = false
+            return false
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            permissionsGranted = false
+            return false
         }
-        return permissionsGranted
+
+        return true
     }
 
     fun Activity.requestPermissions(PERMISSIONS_REQUEST_CODE: Int) {

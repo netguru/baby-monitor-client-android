@@ -31,6 +31,7 @@ import android.media.MediaRecorder;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -49,8 +50,11 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import timber.log.Timber;
 
 /**
  * Don't use this class directly.
@@ -384,6 +388,7 @@ public abstract class VideoStream extends MediaStream {
             mMediaRecorder.start();
 
         } catch (Exception e) {
+            Timber.e(e);
             throw new ConfNotSupportedException(e.getMessage());
         }
 
@@ -417,7 +422,6 @@ public abstract class VideoStream extends MediaStream {
         mStreaming = true;
 
     }
-
 
     /**
      * Video encoding is done by a MediaCodec.
@@ -471,6 +475,9 @@ public abstract class VideoStream extends MediaStream {
             @Override
             public void onPreviewFrame(byte[] data1, Camera camera) {
                 byte[] data = null;
+                if (mCamera == null) {
+                    return;
+                }
                 Camera.Size size = mCamera.getParameters().getPreviewSize();
 
                 if (data1 == null) {
@@ -493,13 +500,15 @@ public abstract class VideoStream extends MediaStream {
                         if (data == null) {
                             Log.e(TAG, "Symptom of the \"Callback buffer was to small\" problem...");
                         } else {
-
                             convertor.convert(data, inputBuffers[bufferIndex]);
                         }
                         mMediaCodec.queueInputBuffer(bufferIndex, 0, inputBuffers[bufferIndex].position(), now, 0);
                     } else {
                         Log.e(TAG, "No buffer available !");
                     }
+                } catch (Exception e) {
+                    stop();
+
                 } finally {
                     if (mCamera != null && data != null) {
                         mCamera.addCallbackBuffer(data);
@@ -748,7 +757,7 @@ public abstract class VideoStream extends MediaStream {
         if (mUnlocked) {
             Log.d(TAG, "Locking camera");
             try {
-                mCamera.reconnect();
+                mCamera.lock();
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }

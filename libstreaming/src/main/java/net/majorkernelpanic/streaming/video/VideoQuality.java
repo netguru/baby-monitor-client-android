@@ -18,11 +18,12 @@
 
 package net.majorkernelpanic.streaming.video;
 
-import java.util.Iterator;
-import java.util.List;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.util.Log;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A class that represents the quality of a video stream. 

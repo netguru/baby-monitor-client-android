@@ -273,7 +273,7 @@ public class RtpSocket implements Runnable {
 		Statistics stats = new Statistics(50,3000);
 		try {
 			// Caches mCacheSize milliseconds of the stream in the FIFO.
-			Thread.sleep(mCacheSize);
+			//Thread.sleep(mCacheSize);
 			long delta = 0;
 			while (mBufferCommitted.tryAcquire(4,TimeUnit.SECONDS)) {
 				if (mOldTimestamp != 0) {
@@ -284,7 +284,7 @@ public class RtpSocket implements Runnable {
 						long d = stats.average()/1000000;
 						//Log.d(TAG,"delay: "+d+" d: "+(mTimestamps[mBufferOut]-mOldTimestamp)/1000000);
 						// We ensure that packets are sent at a constant and suitable rate no matter how the RtpSocket is used.
-						if (mCacheSize>0) Thread.sleep(d);
+						//if (mCacheSize>0) Thread.sleep(d);
 					} else if ((mTimestamps[mBufferOut]-mOldTimestamp)<0) {
 						Log.e(TAG, "TS: "+mTimestamps[mBufferOut]+" OLD: "+mOldTimestamp);
 					}
