@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
 
     private val PERMISSIONS_REQUEST_CODE = 125
     private var session: Session? = null
+    private var rtspServer: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,25 +29,20 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
         surfaceView.holder.addCallback(this)
         surfaceView.setAspectRatioMode(SurfaceView.ASPECT_RATIO_PREVIEW)
 
-        startService(Intent(this, RtspServer::class.java))
+        rtspServer = Intent(this, RtspServer::class.java)
+        startService(rtspServer)
     }
 
     override fun onResume() {
         super.onResume()
-        if (allPermissionsGranted() && session?.isStreaming != true) {
-            session = Utils.buildService(surfaceView, this, this)
-            session?.start()
-            session?.switchCamera()
-        } else {
+        if (!allPermissionsGranted()) {
             requestPermissions(PERMISSIONS_REQUEST_CODE)
         }
     }
 
     override fun onPause() {
         super.onPause()
-        session?.stop()
-        session?.release()
-        session = null
+        stopAndClearSession()
     }
 
     public override fun onDestroy() {
@@ -57,7 +53,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (allPermissionsGranted()) {
-            session?.start()
+            createAndStartSession()
         }
     }
 
@@ -74,41 +70,44 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     override fun onSessionError(reason: Int, streamType: Int, e: Exception) {
-        Timber.e("onSessionError")
-        session?.stop()
-        session?.release()
-        session = null
+        Timber.e(e)
+        stopAndClearSession()
+    }
 
+    override fun onPreviewStarted() {
+    }
+
+    override fun onSessionConfigured() {
+    }
+
+    override fun onSessionStarted() {
+    }
+
+    override fun onSessionStopped() {
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        if (allPermissionsGranted()) {
+            createAndStartSession()
+        }
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+    }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+    }
+
+    private fun createAndStartSession() {
         session = Utils.buildService(surfaceView, this, this)
         session?.start()
     }
 
-    override fun onPreviewStarted() {
-        Timber.e("onPreviewStarted")
-    }
-
-    override fun onSessionConfigured() {
-        Timber.e("onSessionConfigured")
-    }
-
-    override fun onSessionStarted() {
-        Timber.e("onSessionStarted")
-    }
-
-    override fun onSessionStopped() {
-        Timber.e("onSessionStopped")
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder) {
-
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-
+    private fun stopAndClearSession() {
+        session?.stop()
+        session?.release()
+        session = null
+        stopService(rtspServer)
     }
 
 }

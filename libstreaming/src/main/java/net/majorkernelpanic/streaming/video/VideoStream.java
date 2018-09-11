@@ -31,7 +31,6 @@ import android.media.MediaRecorder;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
-import android.util.Size;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -50,7 +49,6 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -71,6 +69,7 @@ public abstract class VideoStream extends MediaStream {
     protected int mVideoEncoder, mCameraId = 0;
     protected int mRequestedOrientation = 0, mOrientation = 0;
     protected Camera mCamera;
+    protected Parameters mParameters;
     protected Thread mCameraThread;
     protected Looper mCameraLooper;
 
@@ -198,12 +197,13 @@ public abstract class VideoStream extends MediaStream {
             if (mStreaming && mMode == MODE_MEDIARECORDER_API) {
                 lockCamera();
             }
-
             Parameters parameters = mCamera.getParameters();
 
+
             // We test if the phone has a flash
-            if (parameters.getFlashMode() == null) {
+            if (parameters == null || parameters.getFlashMode() == null) {
                 // The phone has no flash or the choosen camera can not toggle the flash
+                Timber.e("parameters == null || parameters.getFlashMode() == null");
                 throw new RuntimeException("Can't turn the flash on !");
             } else {
                 parameters.setFlashMode(state ? Parameters.FLASH_MODE_TORCH : Parameters.FLASH_MODE_OFF);
@@ -475,17 +475,24 @@ public abstract class VideoStream extends MediaStream {
             @Override
             public void onPreviewFrame(byte[] data1, Camera camera) {
                 byte[] data = null;
-                if (mCamera == null) {
+                if (mCamera == null || mParameters == null) {
+                    Timber.e("mCamera == null || mParameters == null");
                     return;
                 }
-                Camera.Size size = mCamera.getParameters().getPreviewSize();
-
-                if (data1 == null) {
-                    Log.e(TAG, "Symptom of the \"Callback buffer was to small\" problem...");
-                } else {
-                    data = new byte[data1.length];
-                    rotateNV21(data1, data, size.width, size.height, 90);
+                try {
+                    Camera.Size size =mParameters.getPreviewSize();
+                    if (data1 == null) {
+                        Log.e(TAG, "Symptom of the \"Callback buffer was to small\" problem...");
+                    } else {
+                        //data = new byte[data1.length];
+                        //rotateNV21(data1, data, size.width, size.height, 90);
+                        data = data1;
+                    }
+                } catch (RuntimeException e) {
+                    Timber.e(e);
+                    return;
                 }
+
 
                 oldnow = now;
                 now = System.nanoTime() / 1000;
@@ -629,6 +636,7 @@ public abstract class VideoStream extends MediaStream {
                 mCameraLooper = Looper.myLooper();
                 try {
                     mCamera = Camera.open(mCameraId);
+                    mParameters = mCamera.getParameters();
                     Log.e("camera", "camera ID " + mCameraId);
                 } catch (RuntimeException e) {
                     exception[0] = e;
@@ -674,12 +682,12 @@ public abstract class VideoStream extends MediaStream {
 
                 // If the phone has a flash, we turn it on/off according to mFlashEnabled
                 // setRecordingHint(true) is a very nice optimization if you plane to only use the Camera for recording
-                Parameters parameters = mCamera.getParameters();
-                if (parameters.getFlashMode() != null) {
-                    parameters.setFlashMode(mFlashEnabled ? Parameters.FLASH_MODE_TORCH : Parameters.FLASH_MODE_OFF);
+                mParameters = mCamera.getParameters();
+                if (mParameters.getFlashMode() != null) {
+                    mParameters.setFlashMode(mFlashEnabled ? Parameters.FLASH_MODE_TORCH : Parameters.FLASH_MODE_OFF);
                 }
-                parameters.setRecordingHint(true);
-                mCamera.setParameters(parameters);
+                mParameters.setRecordingHint(true);
+                mCamera.setParameters(mParameters);
                 mCamera.setDisplayOrientation(mOrientation);
 
                 try {
@@ -719,35 +727,36 @@ public abstract class VideoStream extends MediaStream {
     }
 
     protected synchronized void updateCamera() throws RuntimeException {
-
-        // The camera is already correctly configured
-        if (mUpdated) return;
-
-        if (mPreviewStarted) {
-            mPreviewStarted = false;
-            mCamera.stopPreview();
-        }
-
-        Parameters parameters = mCamera.getParameters();
-        //mQuality = VideoQuality.determineClosestSupportedResolution(parameters, mQuality);
-        int[] max = VideoQuality.determineMaximumSupportedFramerate(parameters);
-
-        double ratio = (double) mQuality.resX / (double) mQuality.resY;
-        mSurfaceView.requestAspectRatio(ratio);
-        Log.e("quality", "mQuality= " + mQuality.toString());
-
-        parameters.setPreviewFormat(mCameraImageFormat);
-        parameters.setPreviewSize(mQuality.resX, mQuality.resY);
-        parameters.setPreviewFpsRange(max[0], max[1]);
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-
         try {
+            // The camera is already correctly configured
+            if (mUpdated) return;
+
+            if (mPreviewStarted) {
+                mPreviewStarted = false;
+                mCamera.stopPreview();
+            }
+
+            Parameters parameters = mCamera.getParameters();
+            //mQuality = VideoQuality.determineClosestSupportedResolution(parameters, mQuality);
+            int[] max = VideoQuality.determineMaximumSupportedFramerate(parameters);
+
+            double ratio = (double) mQuality.resX / (double) mQuality.resY;
+            mSurfaceView.requestAspectRatio(ratio);
+            Log.e("quality", "mQuality= " + mQuality.toString());
+
+            parameters.setPreviewFormat(mCameraImageFormat);
+            parameters.setPreviewSize(mQuality.resX, mQuality.resY);
+            parameters.setPreviewFpsRange(max[0], max[1]);
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+
+
             mCamera.setParameters(parameters);
             mCamera.setDisplayOrientation(mOrientation);
             mCamera.startPreview();
             mPreviewStarted = true;
             mUpdated = true;
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
+            Timber.e(e);
             destroyCamera();
             throw e;
         }

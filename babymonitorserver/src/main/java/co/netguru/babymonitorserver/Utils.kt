@@ -42,7 +42,7 @@ object Utils {
                 .setAudioEncoder(SessionBuilder.AUDIO_AAC)
                 .setAudioQuality(AudioQuality(SAMPLING_RATE, AUDIO_BIT_RATE))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
-                .setVideoQuality(VideoQuality(bestResolution.width, bestResolution.height, FRAME_RATE, VIDEO_BIT_RATE))
+                //.setVideoQuality(VideoQuality(bestResolution.width, bestResolution.height, FRAME_RATE, VIDEO_BIT_RATE))
                 .build()
     }
 
@@ -82,6 +82,7 @@ object Utils {
                         .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         .getOutputSizes(SurfaceTexture::class.java)
                         .toList()
+                        .also { Timber.e(it.toString()) }
 
                 return sizeList.find { it.width <= p720.width && it.height <= p720.height } ?: continue
 

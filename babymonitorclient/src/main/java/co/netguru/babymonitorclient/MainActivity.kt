@@ -87,6 +87,8 @@ class MainActivity : AppCompatActivity() {
 
         with(mediaPlayer) {
             this.media = Media(libvlc, Uri.parse(RTSP_VIDEO_URI)).apply {
+                setHWDecoderEnabled(true, false)
+                addOption(":network-caching=150")
                 addOption(":clock-jitter=0")
                 addOption(":clock-synchro=0")
                 addOption(":fullscreen")
