@@ -32,11 +32,14 @@ import java.util.List;
 public class VideoQuality {
 
     public final static String TAG = "VideoQuality";
+    public final static android.util.Size P_720 = new android.util.Size(1280, 720);
+    public final static android.util.Size P_480 = new android.util.Size(854, 480);
+    public final static android.util.Size LOWEST = new android.util.Size(176, 144);
 
     /**
      * Default video stream quality.
      */
-    public final static VideoQuality DEFAULT_VIDEO_QUALITY = new VideoQuality(176, 144, 20, 500000);
+    public final static VideoQuality DEFAULT_VIDEO_QUALITY = new VideoQuality(LOWEST.getWidth(), LOWEST.getHeight(), 20, 500000);
 
     /**
      * Represents a quality for a video stream.

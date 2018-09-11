@@ -473,25 +473,11 @@ public abstract class VideoStream extends MediaStream {
             ByteBuffer[] inputBuffers = mMediaCodec.getInputBuffers();
 
             @Override
-            public void onPreviewFrame(byte[] data1, Camera camera) {
-                byte[] data = null;
-                if (mCamera == null || mParameters == null) {
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                if (mCamera == null || mParameters == null || mMediaCodec == null) {
                     Timber.e("mCamera == null || mParameters == null");
                     return;
                 }
-                try {
-                    Camera.Size size = camera.getParameters().getPreviewSize();
-                    if (data1 == null) {
-                        Log.e(TAG, "Symptom of the \"Callback buffer was to small\" problem...");
-                    } else {
-                        data = new byte[data1.length];
-                        rotateNV21(data1, data, size.width, size.height, 90);
-                    }
-                } catch (RuntimeException e) {
-                    Timber.e(e);
-                    return;
-                }
-
 
                 oldnow = now;
                 now = System.nanoTime() / 1000;
@@ -513,8 +499,8 @@ public abstract class VideoStream extends MediaStream {
                         Log.e(TAG, "No buffer available !");
                     }
                 } catch (Exception e) {
+                    Timber.e(e);
                     stop();
-
                 } finally {
                     if (mCamera != null && data != null) {
                         mCamera.addCallbackBuffer(data);

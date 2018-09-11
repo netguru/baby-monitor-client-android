@@ -17,23 +17,23 @@ import net.majorkernelpanic.streaming.audio.AudioQuality
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.video.VideoQuality
 import timber.log.Timber
+import kotlin.math.absoluteValue
 
 object Utils {
 
-    private const val SAMPLING_RATE = 44100
-    private const val AUDIO_BIT_RATE = 316_000
+    private const val SAMPLING_RATE = 8000
+    private const val AUDIO_BIT_RATE = 16000
 
-    private const val FRAME_RATE = 20
-    private const val VIDEO_BIT_RATE = 300_000
-
-    private val p720 = Size(1280, 720)
+    private const val FRAME_RATE = 30
+    private const val VIDEO_BIT_RATE = 1_000
 
     fun buildService(
             surfaceView: SurfaceView,
             activity: Activity,
             sessionCallback: Session.Callback
     ): Session {
-        val bestResolution = getBestResolution(activity)
+        val size = getBestResolution(activity, VideoQuality.P_480)
+        Timber.e(size.toString())
         return SessionBuilder.getInstance()
                 .setCallback(sessionCallback)
                 .setSurfaceView(surfaceView)
@@ -42,7 +42,7 @@ object Utils {
                 .setAudioEncoder(SessionBuilder.AUDIO_AAC)
                 .setAudioQuality(AudioQuality(SAMPLING_RATE, AUDIO_BIT_RATE))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
-                //.setVideoQuality(VideoQuality(bestResolution.width, bestResolution.height, FRAME_RATE, VIDEO_BIT_RATE))
+                .setVideoQuality(VideoQuality(size.width, size.height, FRAME_RATE, VIDEO_BIT_RATE))
                 .build()
     }
 
@@ -70,22 +70,34 @@ object Utils {
         return sensorOrientation
     }
 
-    private fun getBestResolution(context: Context): Size {
+    private fun getBestResolution(context: Context, size: Size): Size {
         val manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
 
         for (id in manager.cameraIdList) {
             val characteristics = manager.getCameraCharacteristics(id)
             if (characteristics[CameraCharacteristics.LENS_FACING]
                     == CameraCharacteristics.LENS_FACING_FRONT) {
-
                 val sizeList = characteristics
                         .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         .getOutputSizes(SurfaceTexture::class.java)
                         .toList()
+                        .sortedBy { it.width }
                         .also { Timber.e(it.toString()) }
 
-                return sizeList.find { it.width <= p720.width && it.height <= p720.height } ?: continue
+                with(sizeList) {
+                    find { it.width == size.width && it.height == size.height }
+                            ?.let { return it }
 
+                    filter { it.width == size.width }
+                            .minBy { (it.height - size.height).absoluteValue }
+                            ?.let { return it }
+
+                    filter { it.height == size.height }
+                            .minBy { (it.width - size.width).absoluteValue }
+                            ?.let { return it }
+                }
+                return sizeList.find { it.width <= size.width && it.height <= size.height }
+                        ?: continue
             }
         }
         val defaultQuality = VideoQuality.DEFAULT_VIDEO_QUALITY

@@ -52,9 +52,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (allPermissionsGranted()) {
-            createAndStartSession()
-        }
+        createAndStartSession()
     }
 
     override fun onError(server: RtspServer, e: Exception, error: Int) {
@@ -70,7 +68,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     override fun onSessionError(reason: Int, streamType: Int, e: Exception) {
-        Timber.e(e)
+        Timber.w(e)
         stopAndClearSession()
     }
 
@@ -78,18 +76,19 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     override fun onSessionConfigured() {
+        Timber.w("onSessionConfigured")
     }
 
     override fun onSessionStarted() {
+        Timber.w("onSessionStarted")
     }
 
     override fun onSessionStopped() {
+        Timber.w("onSessionStopped")
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        if (allPermissionsGranted()) {
-            createAndStartSession()
-        }
+        createAndStartSession()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -99,8 +98,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     private fun createAndStartSession() {
-        session = Utils.buildService(surfaceView, this, this)
-        session?.start()
+        if (allPermissionsGranted()) {
+            session = Utils.buildService(surfaceView, this, this)
+            session?.start()
+        }
     }
 
     private fun stopAndClearSession() {
