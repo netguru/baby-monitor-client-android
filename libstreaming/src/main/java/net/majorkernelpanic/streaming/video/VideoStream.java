@@ -480,13 +480,12 @@ public abstract class VideoStream extends MediaStream {
                     return;
                 }
                 try {
-                    Camera.Size size =mParameters.getPreviewSize();
+                    Camera.Size size = camera.getParameters().getPreviewSize();
                     if (data1 == null) {
                         Log.e(TAG, "Symptom of the \"Callback buffer was to small\" problem...");
                     } else {
-                        //data = new byte[data1.length];
-                        //rotateNV21(data1, data, size.width, size.height, 90);
-                        data = data1;
+                        data = new byte[data1.length];
+                        rotateNV21(data1, data, size.width, size.height, 90);
                     }
                 } catch (RuntimeException e) {
                     Timber.e(e);
