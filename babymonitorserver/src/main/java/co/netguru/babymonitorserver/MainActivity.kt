@@ -1,12 +1,12 @@
 package co.netguru.babymonitorserver
 
+import android.Manifest.permission.*
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.SurfaceHolder
 import android.view.WindowManager
-import co.netguru.babymonitorserver.Utils.allPermissionsGranted
-import co.netguru.babymonitorserver.Utils.requestPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import net.majorkernelpanic.streaming.Session
 import net.majorkernelpanic.streaming.gl.SurfaceView
@@ -17,7 +17,6 @@ import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.CallbackListener, Session.Callback {
 
-    private val PERMISSIONS_REQUEST_CODE = 125
     private var session: Session? = null
     private var rtspServer: Intent? = null
 
@@ -35,8 +34,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
 
     override fun onResume() {
         super.onResume()
-        if (!allPermissionsGranted()) {
-            requestPermissions(PERMISSIONS_REQUEST_CODE)
+        if (!allPermissionsGranted(permissions)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
+            }
         }
     }
 
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     public override fun onDestroy() {
         super.onDestroy()
         surfaceView.holder.removeCallback(this)
+        stopService(rtspServer)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -60,7 +62,6 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     override fun onMessage(server: RtspServer, message: Int) {
-        Timber.e("unkown message $message")
     }
 
     override fun onBitrateUpdate(bitrate: Long) {
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     override fun onSessionError(reason: Int, streamType: Int, e: Exception) {
-        Timber.w(e)
+        Timber.e(e)
         stopAndClearSession()
     }
 
@@ -76,15 +77,12 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     override fun onSessionConfigured() {
-        Timber.w("onSessionConfigured")
     }
 
     override fun onSessionStarted() {
-        Timber.w("onSessionStarted")
     }
 
     override fun onSessionStopped() {
-        Timber.w("onSessionStopped")
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -98,7 +96,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
     }
 
     private fun createAndStartSession() {
-        if (allPermissionsGranted()) {
+        if (allPermissionsGranted(permissions)) {
             session = Utils.buildService(surfaceView, this, this)
             session?.start()
         }
@@ -109,6 +107,14 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback, RtspServer.Cal
         session?.release()
         session = null
         stopService(rtspServer)
+    }
+
+    companion object {
+        private const val PERMISSIONS_REQUEST_CODE = 125
+
+        private val permissions = arrayOf(
+                RECORD_AUDIO, CAMERA, WRITE_EXTERNAL_STORAGE
+        )
     }
 
 }

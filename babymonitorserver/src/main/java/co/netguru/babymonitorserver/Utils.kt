@@ -1,14 +1,10 @@
 package co.netguru.babymonitorserver
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.util.Size
 import android.view.Surface
 import net.majorkernelpanic.streaming.Session
@@ -102,31 +98,6 @@ object Utils {
         }
         val defaultQuality = VideoQuality.DEFAULT_VIDEO_QUALITY
         return Size(defaultQuality.resX, defaultQuality.resY)
-    }
-
-    fun Context.allPermissionsGranted(): Boolean {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            return false
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            return false
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            return false
-        }
-
-        return true
-    }
-
-    fun Activity.requestPermissions(PERMISSIONS_REQUEST_CODE: Int) {
-        ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
-                PERMISSIONS_REQUEST_CODE
-        )
     }
 
 }

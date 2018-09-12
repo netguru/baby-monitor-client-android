@@ -24,23 +24,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var libvlc: LibVLC
     private lateinit var mediaPlayer: MediaPlayer
 
-    private fun provideOptions() = mutableListOf<String>().apply {
-        add("--aout=opensles")
-        add("--audio-time-stretch") // time stretching
-        add("-vvv") //verbosity
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_main)
-        if (SHOULD_PLAY_RTMP) {
-            prepareRtmpPlayer()
-        } else {
-            libvlc = LibVLC(this, provideOptions() as ArrayList<String>)
-            mediaPlayer = MediaPlayer(libvlc)
-            prepareRtspPlayer()
-        }
+
+        libvlc = LibVLC(this, provideOptions() as ArrayList<String>)
+        mediaPlayer = MediaPlayer(libvlc)
+        prepareRtspPlayer()
     }
 
     override fun onDestroy() {
@@ -48,26 +39,12 @@ class MainActivity : AppCompatActivity() {
         releasePlayer()
     }
 
-    private fun prepareRtmpPlayer() {
-        showSurfaceView(false)
-        val player = ExoPlayerFactory.newSimpleInstance(this, provideTrackSelector())
-        simplePlayer.player = player
-
-        with(player) {
-            prepare(provideVideoSource())
-            playWhenReady = true
-        }
-    }
-
-    private fun provideTrackSelector() =
-        DefaultTrackSelector(AdaptiveTrackSelection.Factory(DefaultBandwidthMeter()))
-
-    private fun provideVideoSource() = ExtractorMediaSource.Factory(RtmpDataSourceFactory())
-        .createMediaSource(Uri.parse(RTMP_VIDEO_URI))
-
-    private fun showSurfaceView(isVisible: Boolean) {
-        surfaceView.visibility = if (isVisible) View.VISIBLE else View.GONE
-        simplePlayer.visibility = if (isVisible) View.GONE else View.VISIBLE
+    private fun provideOptions() = mutableListOf<String>().apply {
+        add("--aout=opensles")
+        add("--audio-time-stretch") // time stretching
+        add("-vvv") //verbosity
+        add("--video-filter=transform")
+        add( "--transform-type=90")
     }
 
     private fun prepareRtspPlayer() {
@@ -97,6 +74,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showSurfaceView(isVisible: Boolean) {
+        surfaceView.visibility = if (isVisible) View.VISIBLE else View.GONE
+        simplePlayer.visibility = if (isVisible) View.GONE else View.VISIBLE
+    }
+
     private fun releasePlayer() = with(mediaPlayer) {
         stop()
         vlcVout.detachViews()
@@ -104,10 +86,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val SHOULD_PLAY_RTMP = false
-        private const val RTMP_VIDEO_URI =
-            "rtmp://stream1.livestreamingservices.com:1935/tvmlive/tvmlive"
-
         private const val RTSP_VIDEO_URI = "rtsp://192.168.0.100:5006"
     }
 }
