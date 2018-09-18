@@ -104,3 +104,8 @@
 
 #dagger
 -dontwarn com.google.errorprone.annotations.*
+
+# Do not optimize/shrink LibVLC, because of native code
+-keep class org.videolan.libvlc.** { *; }
+# Same for MediaLibrary
+-keep class org.videolan.medialibrary.** { *; }

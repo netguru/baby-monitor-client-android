@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Baby Monitor</string>
 
+    <string name="start_server_text">Start Baby Monitor Server</string>
+    <string name="start_client_text">Start Baby Monitor Client</string>
+    <string name="action_ok">Ok</string>
+    <string name="server_address">Server Address</string>
 </resources>
