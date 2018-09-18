@@ -1,6 +1,6 @@
 ### Task
 <!-- Add links to JIRA task and other relevant resources -->
- - [JIRA](https://netguru.atlassian.net/browse/NAT-)
+ - [JIRA](https://netguru.atlassian.net/browse/BM-)
  
 ### Description
 <!-- Describe the solution, changes, possible problems etc. -->
