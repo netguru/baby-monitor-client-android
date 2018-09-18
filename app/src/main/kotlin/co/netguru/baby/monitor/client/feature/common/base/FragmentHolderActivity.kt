@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.extensions.replaceFragment
+import co.netguru.baby.monitor.client.common.extensions.inTransaction
 import kotlinx.android.synthetic.main.toolbar.*
 
 abstract class FragmentHolderActivity : AppCompatActivity() {
@@ -24,7 +24,9 @@ abstract class FragmentHolderActivity : AppCompatActivity() {
         if (isWithToolbar) {
             setupActionBar()
         }
-        savedInstanceState ?: replaceFragment(createFragmentInstance(), R.id.fragmentContainer)
+        savedInstanceState ?: supportFragmentManager.inTransaction {
+            replace(R.id.fragmentContainer, createFragmentInstance(), null)
+        }
     }
 
     private fun getLayoutId() = if (isWithToolbar) {

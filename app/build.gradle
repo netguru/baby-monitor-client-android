@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "co.netguru.baby.monitor.client"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.1.0'
