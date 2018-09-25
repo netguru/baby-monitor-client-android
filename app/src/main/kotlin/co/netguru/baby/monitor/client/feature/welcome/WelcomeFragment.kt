@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.client.address.ServerAddressFragment
+import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import kotlinx.android.synthetic.main.fragment_welcome.*
 import org.jetbrains.anko.support.v4.startActivity
@@ -19,15 +19,19 @@ class WelcomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ) = inflater.inflate(R.layout.fragment_welcome, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //TODO Should be refactored
-        serverButton.setOnClickListener { startActivity<ServerActivity>() }
+        serverButton.setOnClickListener {
+            startActivity<ServerActivity>()
+            activity?.finish()
+        }
         clientButton.setOnClickListener {
-            ServerAddressFragment.newInstance().show(fragmentManager, ServerAddressFragment.TAG)
+            startActivity<ClientHomeActivity>()
+            activity?.finish()
         }
     }
 }

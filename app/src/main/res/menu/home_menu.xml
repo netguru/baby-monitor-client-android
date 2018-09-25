@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_dashboard"
+        android:enabled="true"
+        android:icon="@drawable/ic_action_dashboard"
+        android:title="@string/menu_action_dashboard"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_activity_log"
+        android:enabled="true"
+        android:icon="@drawable/ic_action_activity_log"
+        android:title="@string/menu_action_activity_log"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_lullabies"
+        android:enabled="true"
+        android:icon="@drawable/ic_action_lullabies"
+        android:title="@string/menu_action_lullabies"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/menu_action_settings"
+        app:showAsAction="ifRoom" />
+
+</menu>
