@@ -175,6 +175,13 @@ dependencies {
     // HockeyApp
     implementation libs.hockeyApp
 
+    //MaterialEditText
+    implementation libs.materialEditText
+
+    //Glide
+    implementation libs.glide
+    kapt proc.glide
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

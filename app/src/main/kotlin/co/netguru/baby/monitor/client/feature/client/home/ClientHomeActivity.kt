@@ -30,7 +30,7 @@ class ClientHomeActivity : AppCompatActivity() {
         setupView()
     }
 
-    private fun setupView() = bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+    private fun setupView() = clientHomeBnv.setOnNavigationItemSelectedListener { menuItem ->
         when (menuItem.itemId) {
             R.id.action_dashboard -> {
                 supportFragmentManager.inTransaction {
@@ -68,9 +68,9 @@ class ClientHomeActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() =
-        if (bottomNavigationView.selectedItemId == R.id.action_dashboard) {
+        if (clientHomeBnv.selectedItemId == R.id.action_dashboard) {
             super.onBackPressed()
         } else {
-            bottomNavigationView.selectedItemId = R.id.action_dashboard
+            clientHomeBnv.selectedItemId = R.id.action_dashboard
         }
 }

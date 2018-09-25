@@ -55,6 +55,7 @@ ext {
             paperParcel             : "nz.bradcampbell:paperparcel:$paperParcelVersion",
             libVLC                  : "de.mrmaffen:libvlc-android:2.1.12@aar",
             lifecycleExtensions     : "android.arch.lifecycle:extensions:$lifecycle_version",
+            materialEditText        : "com.rengwuxian.materialedittext:library:2.1.4"
     ]
 
     proc = [
