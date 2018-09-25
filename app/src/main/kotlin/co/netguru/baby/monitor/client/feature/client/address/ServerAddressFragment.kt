@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.client.home.activity.ClientHomeActivity
 import kotlinx.android.synthetic.main.fragment_server_address.*
 
 class ServerAddressFragment : DialogFragment() {
