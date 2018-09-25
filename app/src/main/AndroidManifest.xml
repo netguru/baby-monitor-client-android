@@ -42,7 +42,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".feature.client.ClientActivity"
+            android:name=".feature.client.home.activity.ClientHomeActivity"
             android:screenOrientation="portrait" />
 
         <meta-data

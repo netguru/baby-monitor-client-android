@@ -1,6 +1,6 @@
 ext {
     // Versions
-    supportLibraryVersion = '27.1.1'
+    supportLibraryVersion = '28.0.0'
     daggerVersion = '2.16'
     okHttpVersion = '3.11.0'
     retrofitVersion = '2.4.0'
@@ -25,6 +25,7 @@ ext {
             preference              : "com.android.support:preference-v7:$supportLibraryVersion",
             annotations             : "com.android.support:support-annotations:$supportLibraryVersion",
             constraintLayout        : "com.android.support.constraint:constraint-layout:1.1.2",
+            design                  : "com.android.support:design:$supportLibraryVersion",
             mosby                   : "com.hannesdorfmann.mosby3:mvp:$mosbyVersion",
             mosbyMvi                : "com.hannesdorfmann.mosby3:mvi:$mosbyVersion",
             mosbyViewState          : "com.hannesdorfmann.mosby3:viewstate:$mosbyVersion",
@@ -54,6 +55,7 @@ ext {
             paperParcel             : "nz.bradcampbell:paperparcel:$paperParcelVersion",
             libVLC                  : "de.mrmaffen:libvlc-android:2.1.12@aar",
             lifecycleExtensions     : "android.arch.lifecycle:extensions:$lifecycle_version",
+            circleImageView         : "de.hdodenhof:circleimageview:2.2.0"
     ]
 
     proc = [
