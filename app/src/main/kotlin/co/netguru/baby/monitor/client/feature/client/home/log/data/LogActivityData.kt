@@ -1,35 +1,27 @@
 package co.netguru.baby.monitor.client.feature.client.home.log.data
 
-import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 sealed class LogActivityData {
 
+    abstract val timeStamp: LocalDateTime
+
     data class LogData(
             val action: String,
-            val timeStamp: LocalDate
+            override val timeStamp: LocalDateTime
     ) : LogActivityData()
 
     data class LogHeader(
-            val text: String
+            override val timeStamp: LocalDateTime
     ) : LogActivityData()
 
     companion object {
         //TODO remove when real data is provided
-        fun getSampleData(): List<LogActivityData> {
-            return mutableListOf<LogActivityData>().apply {
-                add(LogHeader("Today"))
-                for (i in 0..10) {
-                    add(LogData("first $i", LocalDate.now()))
+        fun getSampleData(): List<LogActivityData.LogData> {
+            return mutableListOf<LogActivityData.LogData>().apply {
+                for (i in 0L..80) {
+                    add(LogData("Sample action $i", LocalDateTime.now().plusHours(i)))
                 }
-                add(LogHeader("Yesterday"))
-                for (i in 0..10) {
-                    add(LogData("second $i", LocalDate.now()))
-                }
-                add(LogHeader("Third"))
-                for (i in 0..10) {
-                    add(LogData("third $i", LocalDate.now()))
-                }
-
             }
         }
     }

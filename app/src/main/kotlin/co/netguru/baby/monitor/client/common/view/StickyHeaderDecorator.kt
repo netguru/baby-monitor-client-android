@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 class StickyHeaderDecorator(
-        private val mListener: StickyHeaderInterface
+        private val listener: StickyHeaderInterface
 ) : RecyclerView.ItemDecoration() {
 
     private var stickyHeaderHeight = 0
@@ -21,13 +21,13 @@ class StickyHeaderDecorator(
             return
         }
 
-        val headerPos = mListener.getHeaderPositionForItem(topChildPosition)
+        val headerPos = listener.getHeaderPositionForItem(topChildPosition)
         val currentHeader = getHeaderViewForItem(headerPos, parent)
         fixLayoutSize(parent, currentHeader)
         val contactPoint = currentHeader.bottom
         val childInContact = getChildInContact(parent, contactPoint, headerPos)
 
-        if (childInContact != null && mListener.isHeader(parent.getChildAdapterPosition(childInContact))) {
+        if (childInContact != null && listener.isHeader(parent.getChildAdapterPosition(childInContact))) {
             moveHeader(canvas, currentHeader, childInContact)
             return
         }
@@ -37,9 +37,9 @@ class StickyHeaderDecorator(
 
 
     private fun getHeaderViewForItem(headerPosition: Int, parent: RecyclerView): View {
-        val layoutResId = mListener.getHeaderLayout(headerPosition)
+        val layoutResId = listener.getHeaderLayout(headerPosition)
         val header = LayoutInflater.from(parent.context).inflate(layoutResId, parent, false)
-        mListener.bindHeaderData(header, headerPosition)
+        listener.bindHeaderData(header, headerPosition)
         return header
     }
 
@@ -63,7 +63,7 @@ class StickyHeaderDecorator(
             val child = parent.getChildAt(i)
 
             if (currentHeaderPos != i) {
-                val isChildHeader = mListener.isHeader(parent.getChildAdapterPosition(child))
+                val isChildHeader = listener.isHeader(parent.getChildAdapterPosition(child))
                 if (isChildHeader) {
                     heightTolerance = stickyHeaderHeight - child.height
                 }

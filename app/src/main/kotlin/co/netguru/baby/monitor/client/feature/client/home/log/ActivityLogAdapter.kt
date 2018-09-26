@@ -12,16 +12,33 @@ import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.Hea
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogData
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogHeader
+import org.threeten.bp.format.DateTimeFormatter
 
 class ActivityLogAdapter(
-        list: List<LogActivityData>
+        list: List<LogActivityData.LogData>
 ) : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderInterface {
 
-    var activityList: List<LogActivityData> = list
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    private var map = hashMapOf<String, Int>()
+    private var activityList = mutableListOf<LogActivityData>()
+
+    init {
+        setupList(list)
+    }
+
+    fun setupList(list: List<LogActivityData.LogData>) {
+        list.asSequence()
+                .sortedByDescending { it.timeStamp }
+                .forEach {
+                    with(it.timeStamp) {
+                        if (!map.containsKey(toLocalDate().toString())) {
+                            activityList.add(LogHeader(this))
+                            map[toLocalDate().toString()] = activityList.lastIndex
+                        }
+                    }
+                    activityList.add(it)
+                }
+        notifyDataSetChanged()
+    }
 
     override fun getItemViewType(position: Int): Int {
         return when (activityList[position]) {
@@ -52,22 +69,23 @@ class ActivityLogAdapter(
     override fun getHeaderLayout(headerPosition: Int) = R.layout.item_log_activity_header
 
     override fun getHeaderPositionForItem(itemPosition: Int): Int {
-        var lastIndex = 0
-        activityList.forEachIndexed { index, logActivityData ->
-            if (logActivityData is LogHeader && index <= itemPosition) {
-                lastIndex = index
-            }
+        return if (activityList[itemPosition] is LogHeader) {
+            itemPosition
+        } else {
+            map[(activityList[itemPosition] as LogData).timeStamp.toLocalDate().toString()] ?: 0
         }
-
-        return lastIndex
     }
 
     override fun bindHeaderData(header: View, headerPosition: Int) {
         val textView = header.findViewById(R.id.itemActivityLogHeaderTv) as TextView
         val data = activityList[headerPosition]
         if (data is LogHeader) {
-            textView.text = data.text
+            textView.text = data.timeStamp.format(headerFormatter)
         }
     }
 
+    companion object {
+        val headerFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
+        val timeStampFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy HH:mm")
+    }
 }

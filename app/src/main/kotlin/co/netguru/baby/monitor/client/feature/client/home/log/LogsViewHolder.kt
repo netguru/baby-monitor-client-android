@@ -10,7 +10,6 @@ import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogData
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogHeader
 import com.bumptech.glide.request.RequestOptions
 
 sealed class LogsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,7 +25,7 @@ sealed class LogsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         override fun bindView(logActivityData: LogActivityData) {
             if (logActivityData is LogData) {
                 actionTv.text = logActivityData.action
-                actionTimestampTv.text = logActivityData.timeStamp.toString()
+                actionTimestampTv.text = logActivityData.timeStamp.format(ActivityLogAdapter.timeStampFormatter)
             }
 
             GlideApp
@@ -42,9 +41,7 @@ sealed class LogsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         private val textView = view.findViewById(R.id.itemActivityLogHeaderTv) as TextView
 
         override fun bindView(logActivityData: LogActivityData) {
-            if (logActivityData is LogHeader) {
-                textView.text = logActivityData.text
-            }
+            textView.text = logActivityData.timeStamp.format(ActivityLogAdapter.headerFormatter)
         }
 
     }
