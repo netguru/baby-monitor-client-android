@@ -4,25 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/clientHomeToolbarLayout"
+        layout="@layout/toolbar" />
+
     <FrameLayout
         android:id="@+id/clientHomeFrameLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintBottom_toTopOf="@+id/clientHomeBnv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/clientHomeToolbarLayout" />
 
     <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+        android:id="@+id/clientHomeBnv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        app:elevation="@dimen/spacing_small"
+        app:elevation="@dimen/spacing_xmedium"
         app:labelVisibilityMode="labeled"
+        app:itemTextColor="@color/bottom_navigation_view_selector"
+        app:itemIconTint="@color/bottom_navigation_view_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clientHomeFrameLayout"
         app:menu="@menu/home_menu" />
+
 </android.support.constraint.ConstraintLayout>
