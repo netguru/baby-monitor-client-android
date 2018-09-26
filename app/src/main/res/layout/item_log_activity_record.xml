@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/itemActivityLogIv"
+        android:layout_width="@dimen/spacing_normal"
+        android:layout_height="@dimen/spacing_normal"
+        android:layout_marginStart="@dimen/spacing_xxxmedium"
+        android:layout_marginTop="@dimen/spacing_xmedium"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/itemActivityLogActionTv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_action_dashboard" />
+
+    <TextView
+        android:id="@+id/itemActivityLogActionTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xmedium"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/itemActivityLogActionTimestampTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/itemActivityLogIv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Marysia was crying" />
+
+    <TextView
+        android:id="@+id/itemActivityLogActionTimestampTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/itemActivityLogActionTv"
+        app:layout_constraintTop_toBottomOf="@+id/itemActivityLogActionTv"
+        tools:text="Sep 9, 2018 3:55" />
+
+</android.support.constraint.ConstraintLayout>

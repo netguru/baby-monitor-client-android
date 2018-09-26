@@ -122,7 +122,7 @@ dependencies {
 
     implementation libs.constraintLayout
 
-    //Live Data
+    //Live LogData
     implementation libs.lifecycleExtensions
     kapt proc.lifecycleExtensions
 
@@ -181,6 +181,9 @@ dependencies {
     //Glide
     implementation libs.glide
     kapt proc.glide
+
+    //ThreeTen
+    implementation libs.threeTen
 
     // Unit testing
     testImplementation test.junit

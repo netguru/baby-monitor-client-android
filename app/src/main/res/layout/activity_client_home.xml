@@ -4,9 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/clientHomeToolbarLayout"
-        layout="@layout/toolbar" />
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary_dark">
+
+    </android.support.constraint.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/clientHomeFrameLayout"
@@ -23,9 +27,9 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         app:elevation="@dimen/spacing_xmedium"
-        app:labelVisibilityMode="labeled"
-        app:itemTextColor="@color/bottom_navigation_view_selector"
         app:itemIconTint="@color/bottom_navigation_view_selector"
+        app:itemTextColor="@color/bottom_navigation_view_selector"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
