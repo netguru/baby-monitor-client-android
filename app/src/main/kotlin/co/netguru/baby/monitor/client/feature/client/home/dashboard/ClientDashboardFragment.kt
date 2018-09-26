@@ -20,13 +20,11 @@ class ClientDashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        context?.let { context ->
-            GlideApp
-                    .with(context)
-                    .load(ColorDrawable(context.getColorCompat(R.color.place_holder_grey)))
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(clientHomeBabyIv)
-        }
 
+        GlideApp
+                .with(requireContext())
+                .load(ColorDrawable(requireContext().getColorCompat(R.color.place_holder_grey)))
+                .apply(RequestOptions.circleCropTransform())
+                .into(clientHomeBabyIv)
     }
 }
