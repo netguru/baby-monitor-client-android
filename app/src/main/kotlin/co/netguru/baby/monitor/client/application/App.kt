@@ -22,6 +22,7 @@ class App : DaggerApplication() {
         debugMetricsHelper.init(this)
         RxJavaPlugins.setErrorHandler(rxJavaErrorHandler)
         AndroidThreeTen.init(this)
+        AppInjector.init(this)
 
         //TODO Should be refactored!!!!
         PreferenceManager.getDefaultSharedPreferences(this).edit {
@@ -30,7 +31,7 @@ class App : DaggerApplication() {
     }
 
     override fun applicationInjector(): AndroidInjector<App> =
-            DaggerApplicationComponent.builder().create(this)
+        DaggerApplicationComponent.builder().create(this)
 
     companion object {
         internal const val PORT = "5006"

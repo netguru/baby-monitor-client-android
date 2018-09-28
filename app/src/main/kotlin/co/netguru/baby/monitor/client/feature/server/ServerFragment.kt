@@ -9,16 +9,19 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.Injectable
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.rtsp.RtspServer
 import timber.log.Timber
+import javax.inject.Inject
 
 //TODO Should be refactored
-class ServerFragment : Fragment(), SurfaceHolder.Callback,
-    RtspServer.CallbackListener, Session.Callback {
+class ServerFragment : Fragment(), Injectable, SurfaceHolder.Callback,
+RtspServer.CallbackListener, Session.Callback {
 
     companion object {
         fun newInstance() = ServerFragment()
@@ -29,6 +32,9 @@ class ServerFragment : Fragment(), SurfaceHolder.Callback,
             RECORD_AUDIO, CAMERA, WRITE_EXTERNAL_STORAGE
         )
     }
+
+    @Inject
+    internal lateinit var nsdServiceManager: NsdServiceManager
 
     private var session: Session? = null
     private var rtspServer: Intent? = null
@@ -48,6 +54,7 @@ class ServerFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onResume() {
         super.onResume()
+        nsdServiceManager.registerService()
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         }
@@ -55,6 +62,7 @@ class ServerFragment : Fragment(), SurfaceHolder.Callback,
 
     override fun onPause() {
         super.onPause()
+        nsdServiceManager.unregisterService()
         stopAndClearSession()
     }
 
