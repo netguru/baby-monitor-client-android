@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.application
 
 import android.preference.PreferenceManager
 import co.netguru.baby.monitor.client.common.extensions.edit
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 import io.reactivex.plugins.RxJavaPlugins
@@ -20,6 +21,7 @@ class App : DaggerApplication() {
         super.onCreate()
         debugMetricsHelper.init(this)
         RxJavaPlugins.setErrorHandler(rxJavaErrorHandler)
+        AndroidThreeTen.init(this)
 
         //TODO Should be refactored!!!!
         PreferenceManager.getDefaultSharedPreferences(this).edit {

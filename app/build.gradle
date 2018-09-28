@@ -99,6 +99,10 @@ android {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 configurations {
     dependencyUpdates.resolutionStrategy = {
         componentSelection { rules ->
@@ -181,6 +185,9 @@ dependencies {
     //Glide
     implementation libs.glide
     kapt proc.glide
+
+    //ThreeTen
+    implementation libs.threeTen
 
     // Unit testing
     testImplementation test.junit

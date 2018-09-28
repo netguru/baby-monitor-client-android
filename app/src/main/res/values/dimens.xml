@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_size_xsmall">8sp</dimen>
+    <dimen name="text_size_xxsmall">8sp</dimen>
+    <dimen name="text_size_xsmall">10sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
     <dimen name="text_size_medium">14sp</dimen>
     <dimen name="text_size_normal">16sp</dimen>
@@ -26,4 +27,6 @@
     <dimen name="spacing_xlarge">80dp</dimen>
     <dimen name="spacing_xxlarge">88dp</dimen>
     <dimen name="spacing_xxxlarge">96dp</dimen>
+
+    <dimen name="toolbar_elevation">12dp</dimen>
 </resources>
