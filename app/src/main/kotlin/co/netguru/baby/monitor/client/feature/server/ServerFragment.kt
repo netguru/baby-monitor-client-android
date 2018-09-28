@@ -3,15 +3,14 @@ package co.netguru.baby.monitor.client.feature.server
 import android.Manifest.permission.*
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.Injectable
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
 import net.majorkernelpanic.streaming.gl.SurfaceView
@@ -20,7 +19,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 //TODO Should be refactored
-class ServerFragment : Fragment(), Injectable, SurfaceHolder.Callback,
+class ServerFragment : DaggerFragment(), SurfaceHolder.Callback,
 RtspServer.CallbackListener, Session.Callback {
 
     companion object {
