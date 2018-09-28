@@ -14,7 +14,8 @@ import dagger.android.support.AndroidSupportInjectionModule
         AndroidSupportInjectionModule::class,
         ApplicationModule::class,
         ViewModelModule::class,
-        FragmentBindingsModule::class
+        FragmentBindingsModule::class,
+        SharedPreferencesModule::class
     ]
 )
 internal interface ApplicationComponent : AndroidInjector<App> {

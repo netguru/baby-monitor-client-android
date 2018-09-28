@@ -19,8 +19,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 //TODO Should be refactored
-class ServerFragment : DaggerFragment(), SurfaceHolder.Callback,
-RtspServer.CallbackListener, Session.Callback {
+class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.CallbackListener,
+    Session.Callback {
 
     companion object {
         fun newInstance() = ServerFragment()

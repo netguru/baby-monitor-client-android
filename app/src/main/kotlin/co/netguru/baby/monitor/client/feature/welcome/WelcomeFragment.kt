@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
+import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationActivity
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import kotlinx.android.synthetic.main.fragment_welcome.*
 import org.jetbrains.anko.support.v4.startActivity
@@ -30,7 +30,7 @@ class WelcomeFragment : Fragment() {
             activity?.finish()
         }
         clientButton.setOnClickListener {
-            startActivity<ClientHomeActivity>()
+            startActivity<ConfigurationActivity>()
             activity?.finish()
         }
     }
