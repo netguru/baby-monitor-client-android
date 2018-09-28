@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white">
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/itemActivityLogIv"
@@ -13,19 +13,19 @@
         android:layout_marginStart="@dimen/spacing_xxxmedium"
         android:layout_marginTop="@dimen/spacing_xmedium"
         android:layout_marginEnd="@dimen/spacing_xmedium"
+        android:src="@drawable/circle_placeholder"
         android:layout_marginBottom="@dimen/spacing_xmedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/itemActivityLogActionTv"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_action_dashboard" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/itemActivityLogActionTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_xmedium"
-        android:textColor="@android:color/black"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/itemActivityLogActionTimestampTv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/itemActivityLogIv"
