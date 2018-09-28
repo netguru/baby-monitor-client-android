@@ -26,6 +26,3 @@ sealed class LogActivityData {
         }
     }
 }
-
-
-

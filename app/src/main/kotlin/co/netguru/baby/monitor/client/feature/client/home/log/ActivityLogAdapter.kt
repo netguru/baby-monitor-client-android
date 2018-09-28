@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home.log
 
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -40,23 +39,19 @@ class ActivityLogAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (activityList[position]) {
-            is LogData -> R.layout.item_log_activity_record
+    override fun getItemViewType(position: Int) = when (activityList[position]) {
+        is LogData -> R.layout.item_log_activity_record
 
-            is LogHeader -> R.layout.item_log_activity_header
-        }
+        is LogHeader -> R.layout.item_log_activity_header
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogsViewHolder {
 
-        val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
-        return if (viewType == R.layout.item_log_activity_header) {
-            HeaderPresenter(view)
-        } else {
-            DataPresenter(view)
-        }
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            if (viewType == R.layout.item_log_activity_header) {
+                HeaderPresenter(parent, viewType)
+            } else {
+                DataPresenter(parent, viewType)
+            }
 
     override fun getItemCount() = activityList.size
 

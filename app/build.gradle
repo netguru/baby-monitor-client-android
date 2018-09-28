@@ -99,6 +99,10 @@ android {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 configurations {
     dependencyUpdates.resolutionStrategy = {
         componentSelection { rules ->

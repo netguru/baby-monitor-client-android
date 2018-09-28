@@ -1,47 +1,54 @@
 package co.netguru.baby.monitor.client.feature.client.home.log
 
 import android.graphics.drawable.ColorDrawable
-import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogData
+import co.netguru.baby.monitor.client.feature.common.base.BaseViewHolder
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_log_activity_header.*
+import kotlinx.android.synthetic.main.item_log_activity_record.*
 
-sealed class LogsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+sealed class LogsViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+) : BaseViewHolder<LogActivityData>(
+        LayoutInflater.from(parent.context).inflate(viewType, parent, false)
+) {
 
-    abstract fun bindView(logActivityData: LogActivityData)
-
-    class DataPresenter(view: View) : LogsViewHolder(view) {
-
-        private val actionIv = view.findViewById(R.id.itemActivityLogIv) as ImageView
-        private val actionTv = view.findViewById(R.id.itemActivityLogActionTv) as TextView
-        private val actionTimestampTv = view.findViewById(R.id.itemActivityLogActionTimestampTv) as TextView
+    class DataPresenter(
+            parent: ViewGroup,
+            viewType: Int
+    ) : LogsViewHolder(parent, viewType), LayoutContainer {
 
         override fun bindView(logActivityData: LogActivityData) {
             if (logActivityData is LogData) {
-                actionTv.text = logActivityData.action
-                actionTimestampTv.text = logActivityData.timeStamp.format(ActivityLogAdapter.timeStampFormatter)
+                itemActivityLogActionTv.text = logActivityData.action
+                itemActivityLogActionTimestampTv.text =
+                        logActivityData.timeStamp.format(ActivityLogAdapter.timeStampFormatter)
             }
 
             GlideApp
                     .with(itemView.context)
                     .load(ColorDrawable(itemView.context.getColorCompat(R.color.place_holder_grey)))
                     .apply(RequestOptions.circleCropTransform())
-                    .into(actionIv)
+                    .into(itemActivityLogIv)
         }
     }
 
-    class HeaderPresenter(view: View) : LogsViewHolder(view) {
-
-        private val textView = view.findViewById(R.id.itemActivityLogHeaderTv) as TextView
+    class HeaderPresenter(
+            parent: ViewGroup,
+            viewType: Int
+    ) : LogsViewHolder(parent, viewType), LayoutContainer {
 
         override fun bindView(logActivityData: LogActivityData) {
-            textView.text = logActivityData.timeStamp.format(ActivityLogAdapter.headerFormatter)
+            itemActivityLogHeaderTv.text =
+                    logActivityData.timeStamp.format(ActivityLogAdapter.headerFormatter)
         }
 
     }

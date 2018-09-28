@@ -32,7 +32,7 @@ class StickyHeaderDecorator(
             return
         }
 
-        drawHeader(canvas, currentHeader)
+        moveHeader(canvas, currentHeader)
     }
 
 
@@ -43,30 +43,21 @@ class StickyHeaderDecorator(
         return header
     }
 
-    private fun drawHeader(canvas: Canvas, header: View) {
+    private fun moveHeader(canvas: Canvas, currentHeader: View, nextHeader: View? = null) {
         canvas.save()
-        canvas.translate(0f, 0f)
-        header.draw(canvas)
-        canvas.restore()
-    }
-
-    private fun moveHeader(canvas: Canvas, currentHeader: View, nextHeader: View) {
-        canvas.save()
-        canvas.translate(0f, nextHeader.top.toFloat() - currentHeader.height)
+        canvas.translate(0f, nextHeader?.let { it.top.toFloat() - currentHeader.height } ?: 0f)
         currentHeader.draw(canvas)
         canvas.restore()
     }
 
     private fun getChildInContact(parent: RecyclerView, contactPoint: Int, currentHeaderPos: Int): View? {
         for (i in 0 until parent.childCount) {
-            var heightTolerance = 0
             val child = parent.getChildAt(i)
 
-            if (currentHeaderPos != i) {
-                val isChildHeader = listener.isHeader(parent.getChildAdapterPosition(child))
-                if (isChildHeader) {
-                    heightTolerance = stickyHeaderHeight - child.height
-                }
+            val heightTolerance = if (currentHeaderPos != i && listener.isHeader(parent.getChildAdapterPosition(child))) {
+                stickyHeaderHeight - child.height
+            } else {
+                0
             }
 
             val childBottomPosition = if (child.top > 0) {
@@ -75,10 +66,8 @@ class StickyHeaderDecorator(
                 child.bottom
             }
 
-            if (childBottomPosition > contactPoint) {
-                if (child.top <= contactPoint) {
-                    return child
-                }
+            if (childBottomPosition > contactPoint && child.top <= contactPoint) {
+                return child
             }
         }
         return null
