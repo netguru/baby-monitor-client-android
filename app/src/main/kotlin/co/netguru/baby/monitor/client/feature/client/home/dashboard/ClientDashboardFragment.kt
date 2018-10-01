@@ -21,7 +21,7 @@ class ClientDashboardFragment : Fragment() {
 
         clientHomeLiveCameraIbtn.setOnClickListener {
             fragmentManager?.inTransaction {
-                replace(R.id.clientHomeFrameLayout,ClientLiveCameraFragment())
+                replace(R.id.clientHomeFrameLayout, ClientLiveCameraFragment.newInstance())
                 addToBackStack(null)
             }
         }
