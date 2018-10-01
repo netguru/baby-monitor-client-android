@@ -24,7 +24,10 @@ class ChildSpinnerAdapter(
     override fun onNothingSelected(parent: AdapterView<*>?) = Unit
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        onChildSelected(getItem(position) ?: throw RuntimeException())
+        onChildSelected(
+                getItem(position)
+                        ?: throw IllegalStateException("There is no data for position $position")
+        )
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -32,7 +35,8 @@ class ChildSpinnerAdapter(
         val view = convertView ?: LayoutInflater.from(context)
                 .inflate(R.layout.item_baby_spinner, parent, false)
 
-        val data = getItem(position) ?: throw RuntimeException()
+        val data = getItem(position)
+                ?: throw IllegalStateException("There is no data for position $position")
 
         val textView = view.findViewById<TextView>(R.id.itemSpinnerBabyNameTv)
         val imageView = view.findViewById<ImageView>(R.id.itemSpinnerBabyIv)
