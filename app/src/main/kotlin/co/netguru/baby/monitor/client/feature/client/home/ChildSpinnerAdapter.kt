@@ -1,22 +1,33 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import com.bumptech.glide.request.RequestOptions
 
 class ChildSpinnerAdapter(
-        context: Context,
+        spinner: Spinner,
         resourceId: Int,
         textViewId: Int,
-        list: List<ChildSpinnerData>
-) : ArrayAdapter<ChildSpinnerData>(context, resourceId, textViewId, list) {
+        list: List<ChildSpinnerData>,
+        val onChildSelected: (child: ChildSpinnerData) -> Unit
+) : ArrayAdapter<ChildSpinnerData>(spinner.context, resourceId, textViewId, list), AdapterView.OnItemSelectedListener {
+
+    init {
+        spinner.adapter = this
+        spinner.onItemSelectedListener = this
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        onChildSelected(getItem(position) ?: return)
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 

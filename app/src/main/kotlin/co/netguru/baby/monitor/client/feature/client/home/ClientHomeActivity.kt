@@ -1,5 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -73,12 +75,15 @@ class ClientHomeActivity : AppCompatActivity() {
             it ?: return@Observer
 
             clientHomeChildSpinner.visibility = View.VISIBLE
-            clientHomeChildSpinner.adapter = ChildSpinnerAdapter(
-                    this,
+            ChildSpinnerAdapter(
+                    clientHomeChildSpinner,
                     R.layout.item_baby_spinner,
                     R.id.itemSpinnerBabyNameTv,
                     it
-            )
+            ) { child ->
+                //TODO handle child changes
+            }
+
         })
     }
 

@@ -9,7 +9,7 @@ class ClientHomeActivityViewModel : ViewModel() {
     fun getChildList(): LiveData<List<ChildSpinnerData>> {
         //TODO add proper data loading
         return MutableLiveData<List<ChildSpinnerData>>().also {
-            it.postValue(listOf(ChildSpinnerData("", "Marysia")))
+            it.postValue(listOf(ChildSpinnerData("", "Marysia"), ChildSpinnerData("", "Jaś")))
         }
     }
 
