@@ -38,7 +38,7 @@ class NsdServiceManager @Inject constructor(
                         }
 
                         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                            configurationRepository.saveServerAddress(serviceInfo.host.hostAddress)
+                            configurationRepository.serverAddress = serviceInfo.host.hostAddress
                             onServiceConnectedListener?.onServiceConnected()
                         }
                     })
