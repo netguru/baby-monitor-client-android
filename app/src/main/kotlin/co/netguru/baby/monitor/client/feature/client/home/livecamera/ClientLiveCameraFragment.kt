@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.fragment_client.*
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -64,11 +63,10 @@ class ClientLiveCameraFragment : DaggerFragment() {
             }
             attachViews()
         }
-        val adrress = configurationRepository.serverAddress
-        Timber.e(adrress)
+
         with(mediaPlayer) {
             this.media = Media(
-                    libvlc, Uri.parse(adrress)
+                    libvlc, Uri.parse(configurationRepository.serverAddress)
             ).apply {
                 setHWDecoderEnabled(true, false)
                 addOption(":network-caching=150")
