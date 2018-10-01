@@ -1,7 +1,5 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View

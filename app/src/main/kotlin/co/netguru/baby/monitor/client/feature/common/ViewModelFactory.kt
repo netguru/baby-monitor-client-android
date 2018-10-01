@@ -3,11 +3,9 @@ package co.netguru.baby.monitor.client.feature.common
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
-import co.netguru.baby.monitor.client.feature.welcome.WelcomeViewModel
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module
-import dagger.multibindings.IntoMap
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.reflect.KClass
@@ -33,9 +31,4 @@ abstract class ViewModelModule {
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(WelcomeViewModel::class)
-    internal abstract fun welcomeViewModel(viewModel: WelcomeViewModel): ViewModel
 }

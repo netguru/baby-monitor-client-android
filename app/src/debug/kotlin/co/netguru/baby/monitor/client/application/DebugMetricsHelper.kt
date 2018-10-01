@@ -51,20 +51,20 @@ class DebugMetricsHelper @Inject constructor() {
 
         // StrictMode
         StrictModeNotifier.install(context)
-        Handler().post({
+        Handler().post {
             val threadPolicy = StrictMode.ThreadPolicy.Builder().detectAll()
-                    .permitDiskReads()
-                    .permitDiskWrites()
-                    .penaltyLog() // Must!
-                    .build()
+                .permitDiskReads()
+                .permitDiskWrites()
+                .penaltyLog() // Must!
+                .build()
             StrictMode.setThreadPolicy(threadPolicy)
 
             val vmPolicy = StrictMode.VmPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog() // Must!
-                    .build()
+                .detectAll()
+                .penaltyLog() // Must!
+                .build()
             StrictMode.setVmPolicy(vmPolicy)
-        })
+        }
 
         //Timber
         Timber.plant(Timber.DebugTree())

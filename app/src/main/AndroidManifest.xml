@@ -45,6 +45,10 @@
             android:name=".feature.client.home.ClientHomeActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".feature.client.configuration.ConfigurationActivity"
+            android:screenOrientation="portrait" />
+
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"
             android:value="${HOCKEY_APP_ID}" />
