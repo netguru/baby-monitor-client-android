@@ -13,7 +13,7 @@ class ChildSpinnerAdapter(
         resourceId: Int,
         textViewId: Int,
         list: List<ChildSpinnerData>,
-        val onChildSelected: (child: ChildSpinnerData) -> Unit
+        private val onChildSelected: (child: ChildSpinnerData) -> Unit
 ) : ArrayAdapter<ChildSpinnerData>(spinner.context, resourceId, textViewId, list), AdapterView.OnItemSelectedListener {
 
     init {
@@ -21,12 +21,10 @@ class ChildSpinnerAdapter(
         spinner.onItemSelectedListener = this
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-
-    }
+    override fun onNothingSelected(parent: AdapterView<*>?) = Unit
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        onChildSelected(getItem(position) ?: return)
+        onChildSelected(getItem(position) ?: throw RuntimeException())
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -34,10 +32,10 @@ class ChildSpinnerAdapter(
         val view = convertView ?: LayoutInflater.from(context)
                 .inflate(R.layout.item_baby_spinner, parent, false)
 
-        val data = getItem(position) ?: return view
+        val data = getItem(position) ?: throw RuntimeException()
 
-        val textView = view.findViewById(R.id.itemSpinnerBabyNameTv) as TextView
-        val imageView = view.findViewById(R.id.itemSpinnerBabyIv) as ImageView
+        val textView = view.findViewById<TextView>(R.id.itemSpinnerBabyNameTv)
+        val imageView = view.findViewById<ImageView>(R.id.itemSpinnerBabyIv)
 
         textView.text = data.name
         GlideApp
