@@ -56,8 +56,7 @@ ext {
             libVLC                  : "de.mrmaffen:libvlc-android:2.1.12@aar",
             lifecycleExtensions     : "android.arch.lifecycle:extensions:$lifecycle_version",
             materialEditText        : "com.rengwuxian.materialedittext:library:2.1.4",
-            threeTen                : "com.jakewharton.threetenabp:threetenabp:1.1.0",
-            fotoapparat             : "io.fotoapparat:fotoapparat:2.4.0"
+            threeTen                : "com.jakewharton.threetenabp:threetenabp:1.1.0"
     ]
 
     proc = [
