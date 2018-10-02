@@ -20,7 +20,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "co.netguru.baby.monitor.client"
+        applicationId "co.netguru.baby.monitor"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1

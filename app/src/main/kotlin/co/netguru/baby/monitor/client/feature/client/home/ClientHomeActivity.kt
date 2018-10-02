@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogF
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
 import co.netguru.baby.monitor.client.feature.client.home.settings.ClientSettingsFragment
 import kotlinx.android.synthetic.main.activity_client_home.*
+import kotlinx.android.synthetic.main.layout_client_toolbar.*
 
 class ClientHomeActivity : AppCompatActivity() {
 

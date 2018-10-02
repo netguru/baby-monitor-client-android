@@ -6,5 +6,7 @@
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="place_holder_grey">#BDBDBD</color>
+
+    <color name="material_grey_400">#BDBDBD</color>
+    <color name="material_gray_800">#424242</color>
 </resources>

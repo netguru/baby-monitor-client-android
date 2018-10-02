@@ -31,6 +31,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+
         </activity>
 
         <activity
@@ -47,6 +52,9 @@
 
         <activity
             android:name=".feature.client.configuration.ConfigurationActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".feature.client.home.livecamera.ClientLiveCameraActivity"
             android:screenOrientation="portrait" />
 
         <meta-data

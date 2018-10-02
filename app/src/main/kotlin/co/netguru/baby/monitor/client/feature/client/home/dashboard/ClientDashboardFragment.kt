@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.extensions.inTransaction
-import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
+import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraActivity
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
+import org.jetbrains.anko.support.v4.startActivity
 
 class ClientDashboardFragment : Fragment() {
 
@@ -20,10 +20,7 @@ class ClientDashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         clientHomeLiveCameraIbtn.setOnClickListener {
-            fragmentManager?.inTransaction {
-                replace(R.id.clientHomeFrameLayout, ClientLiveCameraFragment.newInstance())
-                addToBackStack(null)
-            }
+            startActivity<ClientLiveCameraActivity>()
         }
     }
 }

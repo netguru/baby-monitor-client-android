@@ -9,11 +9,10 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_client.*
+import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
-import java.util.*
 import javax.inject.Inject
 
 class ClientLiveCameraFragment : DaggerFragment() {
@@ -23,16 +22,17 @@ class ClientLiveCameraFragment : DaggerFragment() {
 
     private lateinit var libvlc: LibVLC
     private lateinit var mediaPlayer: MediaPlayer
+    private val liveCameraOptions by lazy { LiveCameraOptions() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libvlc = LibVLC(requireContext(), provideOptions() as ArrayList<String>)
+        libvlc = LibVLC(requireContext(), liveCameraOptions.provideOptions())
         mediaPlayer = MediaPlayer(libvlc)
     }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_client, container, false)
+    ) = inflater.inflate(R.layout.fragment_client_live_camera, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,18 +44,10 @@ class ClientLiveCameraFragment : DaggerFragment() {
         releasePlayer()
     }
 
-    private fun provideOptions() = mutableListOf<String>().apply {
-        add("--aout=opensles")
-        add("--audio-time-stretch") // time stretching
-        add("-vvv") //verbosity
-        add("--video-filter=transform")
-        add("--transform-type=90")
-    }
-
     private fun prepareRtspPlayer() {
         // Seting up video output
         with(mediaPlayer.vlcVout) {
-            setVideoView(surfaceView)
+            setVideoView(clientLiveCameraPreviewSv)
             val displayMetrics = DisplayMetrics()
             requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
             with(displayMetrics) {

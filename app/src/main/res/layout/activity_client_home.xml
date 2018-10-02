@@ -5,40 +5,10 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+
+    <include
         android:id="@+id/clientHomeToolbarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/primary_dark"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeFrameLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintVertical_chainStyle="spread_inside">
-
-        <Spinner
-            android:id="@+id/clientHomeChildSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="@dimen/spacing_xxxsmall"
-            android:background="@color/place_holder_grey"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1" />
-
-    </android.support.constraint.ConstraintLayout>
+        layout="@layout/layout_client_toolbar" />
 
     <FrameLayout
         android:id="@+id/clientHomeFrameLayout"
