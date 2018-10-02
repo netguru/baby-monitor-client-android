@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_client_activity_log.*
 
 class ClientActivityLogFragment : Fragment() {
 
-    lateinit var logAdapter: ActivityLogAdapter
+    private lateinit var logAdapter: ActivityLogAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_client_activity_log, container, false)

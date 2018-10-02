@@ -1,35 +1,26 @@
-package co.netguru.baby.monitor.client.feature.client
+package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.App
+import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client.*
-import org.jetbrains.anko.bundleOf
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import java.util.*
+import javax.inject.Inject
 
-class ClientFragment : Fragment() {
+class ClientLiveCameraFragment : DaggerFragment() {
 
-    companion object {
-        fun newInstance(serverAddress: String) = ClientFragment().apply {
-            arguments = bundleOf(SERVER_ADDRESS_KEY to serverAddress)
-        }
+    @Inject
+    internal lateinit var configurationRepository: ConfigurationRepository
 
-        private const val SERVER_ADDRESS_KEY = "key:server_address"
-        private const val RTSP_ADDRESS_WITH_PORT = "rtsp://%s:${App.PORT}"
-    }
-
-    private val serverAddress by lazy {
-        arguments!!.getString(SERVER_ADDRESS_KEY)
-    }
     private lateinit var libvlc: LibVLC
     private lateinit var mediaPlayer: MediaPlayer
 
@@ -40,7 +31,7 @@ class ClientFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ) = inflater.inflate(R.layout.fragment_client, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,7 +66,8 @@ class ClientFragment : Fragment() {
 
         with(mediaPlayer) {
             this.media = Media(
-                libvlc, Uri.parse(RTSP_ADDRESS_WITH_PORT.format(serverAddress))).apply {
+                    libvlc, Uri.parse(configurationRepository.serverAddress)
+            ).apply {
                 setHWDecoderEnabled(true, false)
                 addOption(":network-caching=150")
                 addOption(":clock-jitter=0")
@@ -90,5 +82,9 @@ class ClientFragment : Fragment() {
         stop()
         vlcVout.detachViews()
         libvlc.release()
+    }
+
+    companion object {
+        fun newInstance() = ClientLiveCameraFragment()
     }
 }
