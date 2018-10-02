@@ -6,10 +6,13 @@ import android.arch.lifecycle.ViewModel
 
 class ClientHomeActivityViewModel : ViewModel() {
 
-    fun getChildList(): LiveData<List<ChildSpinnerData>> {
+    fun getChildList(): LiveData<List<ChildData>> {
         //TODO add proper data loading
-        return MutableLiveData<List<ChildSpinnerData>>().also {
-            it.postValue(listOf(ChildSpinnerData("", "Marysia"), ChildSpinnerData("", "Jaś")))
+        return MutableLiveData<List<ChildData>>().also {
+            it.postValue(listOf(
+                    ChildData("", "Marysia", ""),
+                    ChildData("", "Jaś", "")
+            ))
         }
     }
 

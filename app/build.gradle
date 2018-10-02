@@ -189,6 +189,12 @@ dependencies {
     //ThreeTen
     implementation libs.threeTen
 
+    //Expandable Layout
+    implementation libs.expandableLayout
+
+    //Gson
+    implementation libs.gson
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito
