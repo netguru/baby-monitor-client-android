@@ -48,7 +48,7 @@ class ClientHomeViewModel @Inject constructor(
                 it.onError(FileNotFoundException())
                 return@ObservableSource
             }
-
+            //TODO check photo orientation
             val file = File(context.filesDir, cache.name)
             try {
                 cache.copyTo(file, true)

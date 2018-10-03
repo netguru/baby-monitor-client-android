@@ -42,24 +42,3 @@ fun <T> Flowable<T>.applyIoSchedulers(): Flowable<T> = this.subscribeOn(Schedule
 fun <T> Flowable<T>.applyComputationSchedulers(): Flowable<T> =
         this.subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-
-fun <T> Observable<T>.subscribeWithLiveData(): LiveData<DataBounder<T>> {
-    val liveData = MutableLiveData<DataBounder<T>>()
-    this.subscribe(object : Observer<T> {
-        override fun onComplete() {
-            liveData.postValue(Complete())
-        }
-
-        override fun onSubscribe(d: Disposable) = Unit
-
-        override fun onNext(t: T) {
-            liveData.postValue(Next(t))
-        }
-
-        override fun onError(e: Throwable) {
-            liveData.postValue(Error(e))
-        }
-
-    })
-    return liveData
-}
