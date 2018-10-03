@@ -17,4 +17,9 @@
     <string name="add_photo">Add photo</string>
     <string name="no_name">No name</string>
     <string name="add_another_baby">Add another baby</string>
+    <string name="play_lullaby">play lullaby</string>
+    <string name="talk">talk</string>
+    <string name="live_camera">live camera</string>
+    <string name="dialog_title_choose_source">Choose source</string>
+    <string name="snackbar_permissions_not_granted">Permissions not granted</string>
 </resources>

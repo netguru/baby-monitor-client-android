@@ -3,14 +3,15 @@ package co.netguru.baby.monitor.client.feature.client.home
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Context
-import android.graphics.Bitmap
-import android.os.Handler
-import android.os.HandlerThread
+import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.format.DateTimeFormatter
+import io.reactivex.Observable
+import io.reactivex.ObservableSource
+import io.reactivex.rxkotlin.toCompletable
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.io.File
-import java.io.FileOutputStream
+import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
 
@@ -29,61 +30,39 @@ class ClientHomeViewModel @Inject constructor(
 
     fun getChildrenList(): List<ChildData> = configurationRepository.childrenList
 
-    fun updateChildName(name: String) {
+    fun updateChildName(name: String) = {
         selectedChild.value?.name = name
         configurationRepository.updateChildData(selectedChild.value)
         selectedChild.postValue(selectedChild.value)
-    }
+    }.toCompletable().subscribeOn(Schedulers.io()).subscribe { Timber.d("complete") }
 
-    fun updateChildImageSource(path: String) {
+    private fun updateChildImageSource(path: String) = {
         selectedChild.value?.image = path
         configurationRepository.updateChildData(selectedChild.value)
         selectedChild.postValue(selectedChild.value)
-    }
+    }.toCompletable().subscribeOn(Schedulers.io()).subscribe { Timber.d("complete") }
 
-    fun saveImage(context: Context, imageBitmap: Bitmap) {
-        HandlerThread("save_image").also {
-            it.start()
-            Handler(it.looper).post {
-                val pattern = DateTimeFormatter.ofPattern("MMMMddyyyyHHmmss")
-                val fileName = LocalDateTime.now().format(pattern) + ".jpg"
-                val file = File(context.filesDir, fileName)
+    fun saveImage(context: Context, cache: File?) = Observable.defer {
+        ObservableSource<Boolean> {
+            if (cache == null) {
+                it.onError(FileNotFoundException())
+                return@ObservableSource
+            }
 
-                try {
-                    FileOutputStream(file.absoluteFile).use { out ->
-                        imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                    }
-                    updateChildImageSource(file.absolutePath)
-                    val previousPhoto = File(selectedChild.value?.image)
-                    if (previousPhoto.exists()) {
-                        previousPhoto.delete()
-                    }
-
-                } catch (e: IOException) {
-                    e.printStackTrace()
+            val file = File(context.filesDir, cache.name)
+            try {
+                cache.copyTo(file, true)
+                val previousPhoto = File(selectedChild.value?.image)
+                if (previousPhoto.exists()) {
+                    previousPhoto.delete()
                 }
+                updateChildImageSource(file.absolutePath)
+                it.onComplete()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                it.onError(e)
             }
         }
-    }
+    }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
 
-    fun saveImage(context: Context, cache: File?, onEnd: () -> Unit) {
-        cache ?: return
-        HandlerThread("save_image").also {
-            it.start()
-            Handler(it.looper).post {
-                val file = File(context.filesDir, cache.name)
-                try {
-                    cache.copyTo(file, true)
-                    val previousPhoto = File(selectedChild.value?.image)
-                    if (previousPhoto.exists()) {
-                        previousPhoto.delete()
-                    }
-                    updateChildImageSource(file.absolutePath)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-                onEnd.invoke()
-            }
-        }
-    }
 }

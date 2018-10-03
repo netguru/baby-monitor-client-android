@@ -39,6 +39,7 @@ class NsdServiceManager @Inject constructor(
                         }
 
                         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                            //TODO port should be set automatically
                             configurationRepository.appendChildrenList(
                                     ChildData("rtsp://${serviceInfo.host.hostAddress}:5006")
                             )

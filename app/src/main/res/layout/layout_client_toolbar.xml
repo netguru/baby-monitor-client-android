@@ -51,12 +51,11 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <View
         android:id="@+id/clientHomeToolbarSpacingLl"
         android:layout_width="match_parent"
         android:layout_height="@dimen/spacing_xxxsmall"
         android:background="@color/material_grey_400"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1" />

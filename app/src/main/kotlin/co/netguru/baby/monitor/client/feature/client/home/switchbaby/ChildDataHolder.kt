@@ -10,40 +10,50 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_add_child.*
 import kotlinx.android.synthetic.main.item_child.*
 
-sealed class ChildViewHolder(parent: ViewGroup, layout: Int) : BaseViewHolder<ChildData>(
+abstract sealed class ChildViewHolder(parent: ViewGroup, layout: Int) : BaseViewHolder<ChildData>(
         LayoutInflater.from(parent.context).inflate(layout, parent, false)
-)
+) {
+    companion object {
+        internal const val CHILD_DATA_TYPE = 10
+        internal const val NEW_CHILD_TYPE = 11
+    }
+}
 
 class ChildDataHolder(
         parent: ViewGroup,
         private val onChildSelected: (ChildData) -> Unit
 ) : ChildViewHolder(parent, R.layout.item_child) {
 
-    override fun bindView(item: ChildData) {
+    private lateinit var childData: ChildData
+
+    init {
+        itemChildContainerLl.setOnClickListener {
+            onChildSelected(childData)
+        }
+    }
+
+    override fun bindView(item: ChildData) = with(item) {
         GlideApp.with(itemView.context)
-                .load(item.image)
+                .load(image)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemChildIv)
 
-        itemChildNameTv.text = item.name
-
-        itemChildContainerLl.setOnClickListener {
-            onChildSelected(item)
-        }
-
+        itemChildNameTv.text = name
+        childData = this
     }
-
 }
 
 class NewChildViewHolder(
         parent: ViewGroup,
         private val onNewChildSelected: () -> Unit
-): ChildViewHolder(parent, R.layout.item_add_child) {
+) : ChildViewHolder(parent, R.layout.item_add_child) {
 
-    override fun bindView(item: ChildData) {
+    init {
         itemAddChildContainerLl.setOnClickListener {
             onNewChildSelected.invoke()
         }
     }
 
+    override fun bindView(item: ChildData) = Unit
 }
+

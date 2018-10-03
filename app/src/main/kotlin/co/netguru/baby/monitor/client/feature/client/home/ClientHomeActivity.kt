@@ -28,7 +28,20 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
 
-    private lateinit var childrenAdapter: ChildrenAdapter
+    private val childrenAdapter: ChildrenAdapter by lazy {
+        ChildrenAdapter(
+                onChildSelected = { childData ->
+                    setSelectedChildName(childData.name ?: "")
+                    childrenAdapter.childrenList = viewModel.getChildrenList().filter { it != childData }
+                    viewModel.selectedChild.postValue(childData)
+                },
+                onNewChildSelected = {
+                    //TODO implement adding new child logic here
+                }
+        ).apply {
+            childrenList = viewModel.getChildrenList().drop(1)
+        }
+    }
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
@@ -84,36 +97,26 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             }
         }
         clientHomeChildrenEll.setOnExpansionUpdateListener(this::handleExpandableLayout)
+
+        clientHomeChildrenRv.adapter = childrenAdapter
+        clientHomeChildrenRv.setHasFixedSize(true)
     }
 
     private fun handleExpandableLayout(expansionFraction: Float, state: Int) {
         if (state == State.COLLAPSED &&
                 clientHomeChildrenCoverLl.visibility == View.VISIBLE) {
 
-            clientHomeChildrenCoverLl.visibility = View.GONE
+            clientHomeChildrenCoverLl.setVisible(false)
             clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(180f, 0f))
         } else if (state == State.EXPANDING &&
                 clientHomeChildrenCoverLl.visibility == View.GONE) {
 
-            clientHomeChildrenCoverLl.visibility = View.VISIBLE
+            clientHomeChildrenCoverLl.setVisible(true)
             clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(0f, 180f))
         }
     }
 
     private fun getData() {
-        childrenAdapter = ChildrenAdapter().apply {
-            childrenList = viewModel.getChildrenList().drop(1)
-            onChildSelected = { childData ->
-                setSelectedChildName(childData.name ?: "")
-                childrenList = viewModel.getChildrenList().filter { it != childData }
-                viewModel.selectedChild.postValue(childData)
-            }
-            onNewChildSelected = {
-                //TODO implement adding new child logic here
-            }
-        }
-        clientHomeChildrenRv.adapter = childrenAdapter
-
         viewModel.selectedChild.observe(this, Observer {
             it ?: return@Observer
             setSelectedChildName(it.name ?: "")

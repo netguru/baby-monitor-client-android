@@ -6,18 +6,13 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
+import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.common.extensions.inTransaction
-import co.netguru.baby.monitor.client.common.extensions.setVisible
+import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
 import com.bumptech.glide.request.RequestOptions
@@ -55,33 +50,24 @@ class ClientDashboardFragment : DaggerFragment() {
             }
         }
         clientHomeBabyIv.setOnClickListener {
-            if (requireContext().allPermissionsGranted(PERMISSION_CAMERA)) {
+            if (requireContext().allPermissionsGranted(PERMISSIONS)) {
                 getPictureWithEasyPicker()
             } else {
-                requestPermissions(PERMISSION_CAMERA, PERMISSIONS_CAMERA_REQUEST_CODE)
+                requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
             }
 
         }
-        clientHomeBabyNameMet.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (!s?.toString()?.trim().equals(viewModel.selectedChild.value?.name)) {
-                    viewModel.updateChildName(s.toString().trim())
-                }
+        clientHomeBabyNameMet.afterTextChanged {
+            if (it.trim() != viewModel.selectedChild.value?.name) {
+                viewModel.updateChildName(it.trim())
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-        })
+        }
     }
 
     private fun getData() {
         viewModel.selectedChild.observe(this, Observer {
             it ?: return@Observer
-            clientHomeAddPhotoTv.visibility = if (!it.image.isNullOrEmpty()) {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
+            clientHomeAddPhotoTv.setVisible(it.image.isNullOrEmpty())
 
             GlideApp.with(requireContext())
                     .load(it.image)
@@ -97,11 +83,9 @@ class ClientDashboardFragment : DaggerFragment() {
         EasyImage.handleActivityResult(requestCode, resultCode, data, requireActivity(), object : EasyImage.Callbacks {
             override fun onImagePicked(imageFile: File?, source: EasyImage.ImageSource?, type: Int) {
                 clientHomeDashboardPb.setVisible(true)
-                viewModel.saveImage(requireContext(), imageFile) {
-                    Handler(Looper.getMainLooper()).post {
-                        clientHomeDashboardPb.setVisible(false)
-                    }
-                }
+                viewModel.saveImage(requireContext(), imageFile).observe(this@ClientDashboardFragment, Observer {
+                    clientHomeDashboardPb.setVisible(false)
+                })
             }
 
             override fun onImagePickerError(e: java.lang.Exception?, source: EasyImage.ImageSource?, type: Int) = Unit
@@ -112,18 +96,27 @@ class ClientDashboardFragment : DaggerFragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requireContext().allPermissionsGranted(PERMISSION_CAMERA)) {
+        if (requestCode == PERMISSIONS_REQUEST_CODE &&
+                requireContext().allPermissionsGranted(PERMISSIONS)) {
             getPictureWithEasyPicker()
+        } else {
+            view?.showSnackbar(getString(R.string.snackbar_permissions_not_granted), Snackbar.LENGTH_SHORT)
         }
     }
 
     private fun getPictureWithEasyPicker() {
-        EasyImage.openChooserWithDocuments(this, "Choose source", EasyImage.REQ_SOURCE_CHOOSER)
-
+        EasyImage.openChooserWithDocuments(
+                this,
+                getString(R.string.dialog_title_choose_source),
+                EasyImage.REQ_SOURCE_CHOOSER
+        )
     }
 
     companion object {
-        private val PERMISSION_CAMERA = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        private const val PERMISSIONS_CAMERA_REQUEST_CODE = 123
+        private val PERMISSIONS = arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        private const val PERMISSIONS_REQUEST_CODE = 123
     }
 }

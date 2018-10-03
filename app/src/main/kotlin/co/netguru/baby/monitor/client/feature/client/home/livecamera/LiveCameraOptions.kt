@@ -9,5 +9,4 @@ class LiveCameraOptions {
         "--video-filter=transform",
         "--transform-type=90"
     )
-
 }
