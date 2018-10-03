@@ -10,7 +10,7 @@ import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_add_child.*
 import kotlinx.android.synthetic.main.item_child.*
 
-abstract sealed class ChildViewHolder(parent: ViewGroup, layout: Int) : BaseViewHolder<ChildData>(
+abstract class ChildViewHolder(parent: ViewGroup, layout: Int) : BaseViewHolder<ChildData>(
         LayoutInflater.from(parent.context).inflate(layout, parent, false)
 ) {
     companion object {

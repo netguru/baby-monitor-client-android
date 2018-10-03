@@ -8,7 +8,7 @@ import co.netguru.baby.monitor.client.feature.common.base.BaseViewHolder
 import kotlinx.android.synthetic.main.item_log_activity_header.*
 import kotlinx.android.synthetic.main.item_log_activity_record.*
 
-sealed class LogsViewHolder(
+abstract class LogsViewHolder(
         parent: ViewGroup,
         viewType: Int
 ) : BaseViewHolder<LogActivityData>(
