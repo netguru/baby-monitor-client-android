@@ -13,33 +13,43 @@
     app:layout_constraintVertical_bias="0"
     app:layout_constraintVertical_chainStyle="spread_inside">
 
-    <TextView
-        android:id="@+id/clientHomeChildTv"
+    <LinearLayout
+        android:id="@+id/clientHomeChildLl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Marysia"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/clientHomeArrowIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_small"
-        android:src="@drawable/ic_keyboard_arrow_down_gray_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@+id/clientHomeChildTv"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/clientHomeChildMiniatureIv"
+            android:layout_width="@dimen/spacing_xxmedium"
+            android:layout_height="@dimen/spacing_xxmedium"
+            android:layout_margin="@dimen/spacing_small"
+            android:src="@drawable/ripple" />
+
+        <TextView
+            android:id="@+id/clientHomeChildTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_normal"
+            tools:text="Marysia" />
+
+        <ImageView
+            android:id="@+id/clientHomeArrowIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:src="@drawable/ic_keyboard_arrow_down_gray_24dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/clientHomeToolbarSpacingLl"
@@ -47,9 +57,9 @@
         android:layout_height="@dimen/spacing_xxxsmall"
         android:background="@color/material_grey_400"
         android:orientation="vertical"
-        app:layout_constraintVertical_bias="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1" />
 
 
 </android.support.constraint.ConstraintLayout>

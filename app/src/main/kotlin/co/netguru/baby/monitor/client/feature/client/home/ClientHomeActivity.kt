@@ -65,7 +65,7 @@ class ClientHomeActivity : AppCompatActivity() {
             }
             true
         }
-        clientHomeChildTv.setOnClickListener {
+        clientHomeChildLl.setOnClickListener {
             if (clientHomeChildrenEll.isExpanded) {
                 clientHomeChildrenEll.collapse()
             } else {
@@ -77,12 +77,12 @@ class ClientHomeActivity : AppCompatActivity() {
                     clientHomeChildrenCoverLl.visibility == View.VISIBLE) {
 
                 clientHomeChildrenCoverLl.visibility = View.GONE
-                clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(0f, 180f))
+                clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(180f, 0f))
             } else if (state == State.EXPANDING &&
                     clientHomeChildrenCoverLl.visibility == View.GONE) {
 
                 clientHomeChildrenCoverLl.visibility = View.VISIBLE
-                clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(180f, 0f))
+                clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(0f, 180f))
             }
         }
     }
