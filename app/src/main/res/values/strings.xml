@@ -15,4 +15,6 @@
     <string name="start_discovering_services">Start discovering services</string>
     <string name="discovering_services_error">"Error while connecting to service"</string>
     <string name="add_photo">Add photo</string>
+    <string name="no_name">No name</string>
+    <string name="add_another_baby">Add another baby</string>
 </resources>

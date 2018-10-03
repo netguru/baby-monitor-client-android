@@ -6,6 +6,7 @@ import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.feature.welcome.WelcomeActivity
 import dagger.android.support.DaggerAppCompatActivity
 import org.jetbrains.anko.startActivity
+import timber.log.Timber
 import javax.inject.Inject
 
 class SplashActivity : DaggerAppCompatActivity() {
@@ -15,10 +16,10 @@ class SplashActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (configurationRepository.serverAddress.isEmpty()) {
-            startActivity<WelcomeActivity>()
-        } else {
+        if (configurationRepository.childrenList.isNotEmpty()) {
             startActivity<ClientHomeActivity>()
+        } else {
+            startActivity<WelcomeActivity>()
         }
         finish()
     }

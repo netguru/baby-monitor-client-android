@@ -195,6 +195,9 @@ dependencies {
     //Gson
     implementation libs.gson
 
+    //EasyImage
+    implementation libs.easyImage
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

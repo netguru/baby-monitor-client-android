@@ -57,7 +57,9 @@ ext {
             lifecycleExtensions     : "android.arch.lifecycle:extensions:$lifecycle_version",
             materialEditText        : "com.rengwuxian.materialedittext:library:2.1.4",
             threeTen                : "com.jakewharton.threetenabp:threetenabp:1.1.0",
-            expandableLayout        : 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+            expandableLayout        : 'net.cachapa.expandablelayout:expandablelayout:2.9.2',
+            easyImage               : "com.github.jkwiecien:EasyImage:1.3.1"
+
     ]
 
     proc = [

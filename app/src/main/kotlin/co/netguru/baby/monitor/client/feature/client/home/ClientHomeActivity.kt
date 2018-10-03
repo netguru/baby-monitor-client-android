@@ -1,27 +1,37 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.inTransaction
+import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.PresetedAnimations
 import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
 import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
 import co.netguru.baby.monitor.client.feature.client.home.settings.ClientSettingsFragment
-import co.netguru.baby.monitor.client.feature.client.home.switch_baby.ChildrenAdapter
+import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
+import com.bumptech.glide.request.RequestOptions
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.layout_child_selector.*
 import kotlinx.android.synthetic.main.layout_client_toolbar.*
 import net.cachapa.expandablelayout.ExpandableLayout.State
+import javax.inject.Inject
 
-class ClientHomeActivity : AppCompatActivity() {
+class ClientHomeActivity : DaggerAppCompatActivity() {
+
+    @Inject
+    internal lateinit var factory: ViewModelProvider.Factory
+
+    private lateinit var childrenAdapter: ChildrenAdapter
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this)[ClientHomeActivityViewModel::class.java]
+        ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +48,7 @@ class ClientHomeActivity : AppCompatActivity() {
 
     private fun setupView() {
         clientHomeBnv.setOnNavigationItemSelectedListener { menuItem ->
+            supportFragmentManager?.popBackStack()
             when (menuItem.itemId) {
                 R.id.action_dashboard -> {
                     supportFragmentManager.inTransaction {
@@ -72,34 +83,57 @@ class ClientHomeActivity : AppCompatActivity() {
                 clientHomeChildrenEll.expand()
             }
         }
-        clientHomeChildrenEll.setOnExpansionUpdateListener { expansionFraction, state ->
-            if (state == State.COLLAPSED &&
-                    clientHomeChildrenCoverLl.visibility == View.VISIBLE) {
+        clientHomeChildrenEll.setOnExpansionUpdateListener(this::handleExpandableLayout)
+    }
 
-                clientHomeChildrenCoverLl.visibility = View.GONE
-                clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(180f, 0f))
-            } else if (state == State.EXPANDING &&
-                    clientHomeChildrenCoverLl.visibility == View.GONE) {
+    private fun handleExpandableLayout(expansionFraction: Float, state: Int) {
+        if (state == State.COLLAPSED &&
+                clientHomeChildrenCoverLl.visibility == View.VISIBLE) {
 
-                clientHomeChildrenCoverLl.visibility = View.VISIBLE
-                clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(0f, 180f))
-            }
+            clientHomeChildrenCoverLl.visibility = View.GONE
+            clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(180f, 0f))
+        } else if (state == State.EXPANDING &&
+                clientHomeChildrenCoverLl.visibility == View.GONE) {
+
+            clientHomeChildrenCoverLl.visibility = View.VISIBLE
+            clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(0f, 180f))
         }
     }
 
     private fun getData() {
-        viewModel.getChildList().observe(this, Observer { childList ->
-            childList ?: return@Observer
-            clientHomeChildTv.text = childList[0].name
-
-            ChildrenAdapter(clientHomeChildrenRv).apply {
-                childrenList = childList.drop(1)
-                onChildSelected = { childData ->
-                    clientHomeChildTv.text = childData.name
-                    childrenList = childList.filter { it != childData }
-                }
+        childrenAdapter = ChildrenAdapter().apply {
+            childrenList = viewModel.getChildrenList().drop(1)
+            onChildSelected = { childData ->
+                setSelectedChildName(childData.name ?: "")
+                childrenList = viewModel.getChildrenList().filter { it != childData }
+                viewModel.selectedChild.postValue(childData)
             }
+            onNewChildSelected = {
+                //TODO implement adding new child logic here
+            }
+        }
+        clientHomeChildrenRv.adapter = childrenAdapter
+
+        viewModel.selectedChild.observe(this, Observer {
+            it ?: return@Observer
+            setSelectedChildName(it.name ?: "")
+            GlideApp.with(this)
+                    .load(it.image)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(clientHomeChildMiniatureIv)
         })
+        viewModel.shouldHideNavbar.observe(this, Observer {
+            it ?: return@Observer
+            clientHomeBnv.setVisible(!it)
+        })
+    }
+
+    private fun setSelectedChildName(name: String) {
+        clientHomeChildTv.text = if (!name.isEmpty()) {
+            name
+        } else {
+            getString(R.string.no_name)
+        }
     }
 
     override fun onBackPressed() =

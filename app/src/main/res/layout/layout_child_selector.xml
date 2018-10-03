@@ -18,55 +18,12 @@
         app:layout_constraintVertical_bias="0"
         tools:el_expanded="true">
 
-        <android.support.v4.widget.NestedScrollView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/clientHomeChildrenRv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/clientHomeChildrenRv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:layout_marginTop="@dimen/spacing_small"
-                    android:layout_marginBottom="@dimen/spacing_xmedium"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/spacing_xmedium"
-                        android:layout_marginTop="@dimen/spacing_small"
-                        android:layout_marginEnd="@dimen/spacing_small"
-                        android:layout_marginBottom="@dimen/spacing_small"
-                        android:background="@drawable/ripple"
-                        android:padding="@dimen/spacing_xxsmall"
-                        android:src="@drawable/ic_add_white_24dp" />
-
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Add another baby"
-                        android:textColor="@color/accent" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </android.support.v4.widget.NestedScrollView>
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
     </net.cachapa.expandablelayout.ExpandableLayout>
 

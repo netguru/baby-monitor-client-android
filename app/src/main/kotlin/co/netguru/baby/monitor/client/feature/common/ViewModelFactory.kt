@@ -3,9 +3,11 @@ package co.netguru.baby.monitor.client.feature.common
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
+import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module
+import dagger.multibindings.IntoMap
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.reflect.KClass
@@ -28,6 +30,11 @@ internal annotation class ViewModelKey(val value: KClass<out ViewModel>)
 
 @Module
 abstract class ViewModelModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ClientHomeViewModel::class)
+    abstract fun bindClientHomeActivityViewModel(clientHomeViewModel: ClientHomeViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

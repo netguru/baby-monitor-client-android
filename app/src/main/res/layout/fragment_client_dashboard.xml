@@ -8,9 +8,9 @@
 
     <ImageView
         android:id="@+id/clientHomeBabyIv"
-        android:layout_marginTop="@dimen/spacing_xmedium"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_xmedium"
         android:background="@drawable/all_circle_white_bg"
         android:padding="@dimen/spacing_medium"
         android:src="@drawable/circle_placeholder"
@@ -25,9 +25,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4"/>
+        app:layout_constraintGuide_percent="0.4" />
 
     <TextView
+        android:id="@+id/clientHomeAddPhotoTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/add_photo"
@@ -87,8 +88,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="live camera"
         android:layout_marginTop="@dimen/spacing_small"
+        android:text="live camera"
         android:textAllCaps="true"
         android:textColor="@color/accent"
         android:textSize="@dimen/text_size_small"
@@ -113,9 +114,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
         android:text="talk"
         android:textAllCaps="true"
-        android:layout_marginTop="@dimen/spacing_small"
         android:textColor="@color/accent"
         android:textSize="@dimen/text_size_small"
         android:textStyle="bold"
@@ -139,8 +140,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="play lullaby"
         android:layout_marginTop="@dimen/spacing_small"
+        android:text="play lullaby"
         android:textAllCaps="true"
         android:textColor="@color/accent"
         android:textSize="@dimen/text_size_small"
@@ -148,5 +149,15 @@
         app:layout_constraintEnd_toEndOf="@+id/clientHomePlayLullabyIbtn"
         app:layout_constraintStart_toStartOf="@+id/clientHomePlayLullabyIbtn"
         app:layout_constraintTop_toBottomOf="@+id/clientHomePlayLullabyIbtn" />
+
+    <ProgressBar
+        android:id="@+id/clientHomeDashboardPb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
