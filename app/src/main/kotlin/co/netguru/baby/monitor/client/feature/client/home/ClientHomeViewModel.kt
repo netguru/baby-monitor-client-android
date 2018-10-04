@@ -1,12 +1,14 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
+import co.netguru.baby.monitor.client.feature.common.DataBounder
+import io.reactivex.SingleSource
+import io.reactivex.internal.operators.single.SingleDefer
 import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -22,13 +24,15 @@ class ClientHomeViewModel @Inject constructor(
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
 
-    init {
-        if (configurationRepository.childrenList.isNotEmpty()) {
-            selectedChild.postValue(configurationRepository.childrenList.first())
+    fun getChildrenList(): LiveData<DataBounder<List<ChildData>>> = SingleDefer.defer {
+        SingleSource<List<ChildData>> {
+            val list = configurationRepository.childrenList.toMutableList().apply { add(ChildData("1",name = "name")) }
+            if (list.isNotEmpty()) {
+                selectedChild.postValue(list.first())
+            }
+            it.onSuccess(list)
         }
-    }
-
-    fun getChildrenList(): List<ChildData> = configurationRepository.childrenList
+    }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
 
     fun updateChildName(name: String) = {
         selectedChild.value?.name = name
@@ -42,22 +46,22 @@ class ClientHomeViewModel @Inject constructor(
         selectedChild.postValue(selectedChild.value)
     }.toCompletable().subscribeOn(Schedulers.io()).subscribe { Timber.d("complete") }
 
-    fun saveImage(context: Context, cache: File?) = Observable.defer {
-        ObservableSource<Boolean> {
+    fun saveImage(context: Context, cache: File?) = SingleDefer.defer {
+        SingleSource<Boolean> {
             if (cache == null) {
                 it.onError(FileNotFoundException())
-                return@ObservableSource
+                return@SingleSource
             }
             //TODO check photo orientation
             val file = File(context.filesDir, cache.name)
             try {
                 cache.copyTo(file, true)
-                val previousPhoto = File(selectedChild.value?.image)
+                val previousPhoto = File(selectedChild.value?.image ?: "")
                 if (previousPhoto.exists()) {
                     previousPhoto.delete()
                 }
                 updateChildImageSource(file.absolutePath)
-                it.onComplete()
+                it.onSuccess(true)
             } catch (e: IOException) {
                 e.printStackTrace()
                 it.onError(e)

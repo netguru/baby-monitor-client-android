@@ -15,6 +15,7 @@ import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogF
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
 import co.netguru.baby.monitor.client.feature.client.home.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
+import co.netguru.baby.monitor.client.feature.common.DataBounder
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_client_home.*
@@ -27,21 +28,6 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
-
-    private val childrenAdapter: ChildrenAdapter by lazy {
-        ChildrenAdapter(
-                onChildSelected = { childData ->
-                    setSelectedChildName(childData.name ?: "")
-                    childrenAdapter.childrenList = viewModel.getChildrenList().filter { it != childData }
-                    viewModel.selectedChild.postValue(childData)
-                },
-                onNewChildSelected = {
-                    //TODO implement adding new child logic here
-                }
-        ).apply {
-            childrenList = viewModel.getChildrenList().drop(1)
-        }
-    }
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
@@ -97,9 +83,6 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             }
         }
         clientHomeChildrenEll.setOnExpansionUpdateListener(this::handleExpandableLayout)
-
-        clientHomeChildrenRv.adapter = childrenAdapter
-        clientHomeChildrenRv.setHasFixedSize(true)
     }
 
     private fun handleExpandableLayout(expansionFraction: Float, state: Int) {
@@ -128,6 +111,28 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
         viewModel.shouldHideNavbar.observe(this, Observer {
             it ?: return@Observer
             clientHomeBnv.setVisible(!it)
+        })
+
+        viewModel.getChildrenList().observe(this, Observer {
+            when (it) {
+                is DataBounder.Next -> {
+                    val childrenAdapter: ChildrenAdapter by lazy {
+                        ChildrenAdapter(
+                                onChildSelected = { childData ->
+                                    setSelectedChildName(childData.name ?: "")
+                                    viewModel.selectedChild.postValue(childData)
+                                },
+                                onNewChildSelected = {
+                                    //TODO implement adding new child logic here
+                                }
+                        ).apply {
+                            originalList = it.data
+                        }
+                    }
+                    clientHomeChildrenRv.adapter = childrenAdapter
+                    clientHomeChildrenRv.setHasFixedSize(true)
+                }
+            }
         })
     }
 

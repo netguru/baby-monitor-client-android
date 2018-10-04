@@ -1,15 +1,7 @@
 package co.netguru.baby.monitor.client.common.extensions
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import co.netguru.baby.monitor.client.feature.common.Complete
-import co.netguru.baby.monitor.client.feature.common.DataBounder
-import co.netguru.baby.monitor.client.feature.common.Error
-import co.netguru.baby.monitor.client.feature.common.Next
 import io.reactivex.*
-
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 fun Completable.applyIoSchedulers() = this.subscribeOn(Schedulers.io())

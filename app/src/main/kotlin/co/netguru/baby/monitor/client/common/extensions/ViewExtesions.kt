@@ -21,7 +21,7 @@ fun View.showSnackbar(text: String, duration: Int) {
 fun EditText.afterTextChanged(afterChange: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            afterChange.invoke(s.toString())
+            afterChange(s.toString())
         }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit

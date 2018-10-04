@@ -50,7 +50,7 @@ class NewChildViewHolder(
 
     init {
         itemAddChildContainerLl.setOnClickListener {
-            onNewChildSelected.invoke()
+            onNewChildSelected()
         }
     }
 

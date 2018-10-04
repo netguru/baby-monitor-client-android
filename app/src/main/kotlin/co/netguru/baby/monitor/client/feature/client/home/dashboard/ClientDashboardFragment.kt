@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -100,7 +99,9 @@ class ClientDashboardFragment : DaggerFragment() {
                 requireContext().allPermissionsGranted(PERMISSIONS)) {
             getPictureWithEasyPicker()
         } else {
-            view?.showSnackbar(getString(R.string.snackbar_permissions_not_granted), Snackbar.LENGTH_SHORT)
+            showSnackbarMessage(R.string.snackbar_permissions_not_granted) {
+                setAction(R.string.settings) { startAppSettings() }
+            }
         }
     }
 
