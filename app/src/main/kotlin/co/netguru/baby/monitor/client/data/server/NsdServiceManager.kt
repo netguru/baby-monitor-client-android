@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.data.server
 
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import co.netguru.baby.monitor.client.feature.client.home.ChildData
 import dagger.Reusable
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,7 +39,10 @@ class NsdServiceManager @Inject constructor(
                         }
 
                         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                            configurationRepository.serverAddress = serviceInfo.host.hostAddress
+                            //TODO port should be set automatically
+                            configurationRepository.appendChildrenList(
+                                    ChildData("rtsp://${serviceInfo.host.hostAddress}:5006")
+                            )
                             onServiceConnectedListener?.onServiceConnected()
                         }
                     })

@@ -31,6 +31,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+
         </activity>
 
         <activity
@@ -43,7 +48,8 @@
 
         <activity
             android:name=".feature.client.home.ClientHomeActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|adjustResize" />
 
         <activity
             android:name=".feature.client.configuration.ConfigurationActivity"
