@@ -15,7 +15,7 @@
         android:layout_marginTop="@dimen/spacing_small"
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/lullabyDurationTv"
-        app:layout_constraintEnd_toStartOf="@+id/lullabyPlayMbtn"
+        app:layout_constraintEnd_toStartOf="@+id/lullabyPlayCrl"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
@@ -28,13 +28,13 @@
         android:layout_marginStart="@dimen/spacing_xxxmedium"
         android:layout_marginBottom="@dimen/spacing_small"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/lullabyPlayMbtn"
+        app:layout_constraintEnd_toStartOf="@+id/lullabyPlayCrl"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lullabyTitleTv"
         tools:text="0:48 mins" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/lullabyPlayMbtn"
+        android:id="@+id/lullabyPlayCrl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/spacing_xxxmedium"
