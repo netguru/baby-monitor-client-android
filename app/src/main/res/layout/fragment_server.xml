@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<net.majorkernelpanic.streaming.gl.SurfaceView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/surfaceView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <net.majorkernelpanic.streaming.gl.SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:keepScreenOn="true" />
-
-</android.support.constraint.ConstraintLayout>
+    android:layout_height="match_parent"
+    android:keepScreenOn="true" />

@@ -50,7 +50,6 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
         rtspServer = Intent(requireContext(), RtspServer::class.java)
         requireActivity().startService(rtspServer)
-
     }
 
     override fun onResume() {
@@ -107,7 +106,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
     private fun createAndStartSession() {
         if (requireContext().allPermissionsGranted(permissions)) {
-            session = Utils.buildService(surfaceView, requireActivity(), this )
+            session = Utils.buildService(surfaceView, requireActivity(), this)
             session?.start()
         }
     }
@@ -117,5 +116,4 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         session?.release()
         session = null
     }
-
 }
