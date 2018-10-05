@@ -9,6 +9,7 @@ import android.util.Size
 import android.view.Surface
 import net.majorkernelpanic.streaming.Session
 import net.majorkernelpanic.streaming.SessionBuilder
+import net.majorkernelpanic.streaming.audio.AudioDataListener
 import net.majorkernelpanic.streaming.audio.AudioQuality
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.video.VideoQuality
@@ -18,29 +19,31 @@ import kotlin.math.absoluteValue
 //TODO Should be refactored
 object Utils {
 
-    private const val SAMPLING_RATE = 8000
+    private const val SAMPLING_RATE = 16_000
     private const val AUDIO_BIT_RATE = 16000
 
     private const val FRAME_RATE = 30
     private const val VIDEO_BIT_RATE = 1_000
 
     fun buildService(
-        surfaceView: SurfaceView,
-        activity: Activity,
-        sessionCallback: Session.Callback
+            surfaceView: SurfaceView,
+            activity: Activity,
+            sessionCallback: Session.Callback,
+            audioDataListener: AudioDataListener? = null
     ): Session {
         val size = getBestResolution(activity, VideoQuality.P_480)
         Timber.e(size.toString())
         return SessionBuilder.getInstance()
-            .setCallback(sessionCallback)
-            .setSurfaceView(surfaceView)
-            .setPreviewOrientation(getCameraOrientation(activity))
-            .setContext(activity.applicationContext)
-            .setAudioEncoder(SessionBuilder.AUDIO_AAC)
-            .setAudioQuality(AudioQuality(SAMPLING_RATE, AUDIO_BIT_RATE))
-            .setVideoEncoder(SessionBuilder.VIDEO_H264)
-            .setVideoQuality(VideoQuality(size.width, size.height, FRAME_RATE, VIDEO_BIT_RATE))
-            .build()
+                .setCallback(sessionCallback)
+                .setSurfaceView(surfaceView)
+                .setPreviewOrientation(getCameraOrientation(activity))
+                .setContext(activity.applicationContext)
+                .setAudioEncoder(SessionBuilder.AUDIO_AAC)
+                .setAudioQuality(AudioQuality(SAMPLING_RATE, AUDIO_BIT_RATE))
+                .setVideoEncoder(SessionBuilder.VIDEO_H264)
+                .setVideoQuality(VideoQuality(size.width, size.height, FRAME_RATE, VIDEO_BIT_RATE))
+                .setAudioDataListener(audioDataListener)
+                .build()
     }
 
     private fun getCameraOrientation(activity: Activity): Int {
@@ -58,11 +61,11 @@ object Utils {
         for (id in manager.cameraIdList) {
             val characteristics = manager.getCameraCharacteristics(id)
             if (characteristics[CameraCharacteristics.LENS_FACING]
-                == CameraCharacteristics.LENS_FACING_FRONT
+                    == CameraCharacteristics.LENS_FACING_FRONT
             ) {
 
                 val temp =
-                    (characteristics[CameraCharacteristics.SENSOR_ORIENTATION] + degrees) % 360
+                        (characteristics[CameraCharacteristics.SENSOR_ORIENTATION] + degrees) % 360
                 sensorOrientation = (360 - temp) % 360
             }
         }
@@ -75,29 +78,29 @@ object Utils {
         for (id in manager.cameraIdList) {
             val characteristics = manager.getCameraCharacteristics(id)
             if (characteristics[CameraCharacteristics.LENS_FACING]
-                == CameraCharacteristics.LENS_FACING_FRONT
+                    == CameraCharacteristics.LENS_FACING_FRONT
             ) {
                 val sizeList = characteristics
-                    .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-                    .getOutputSizes(SurfaceTexture::class.java)
-                    .toList()
-                    .sortedBy { it.width }
-                    .also { Timber.e(it.toString()) }
+                        .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+                        .getOutputSizes(SurfaceTexture::class.java)
+                        .toList()
+                        .sortedBy { it.width }
+                        .also { Timber.e(it.toString()) }
 
                 with(sizeList) {
                     find { it.width == size.width && it.height == size.height }
-                        ?.let { return it }
+                            ?.let { return it }
 
                     filter { it.width == size.width }
-                        .minBy { (it.height - size.height).absoluteValue }
-                        ?.let { return it }
+                            .minBy { (it.height - size.height).absoluteValue }
+                            ?.let { return it }
 
                     filter { it.height == size.height }
-                        .minBy { (it.width - size.width).absoluteValue }
-                        ?.let { return it }
+                            .minBy { (it.width - size.width).absoluteValue }
+                            ?.let { return it }
                 }
                 return sizeList.find { it.width <= size.width && it.height <= size.height }
-                    ?: continue
+                        ?: continue
             }
         }
         val defaultQuality = VideoQuality.DEFAULT_VIDEO_QUALITY
