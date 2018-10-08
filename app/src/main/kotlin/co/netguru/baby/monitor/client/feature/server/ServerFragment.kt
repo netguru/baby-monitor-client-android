@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 //TODO Should be refactored
 class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.CallbackListener,
-        Session.Callback, AudioDataListener {
+        Session.Callback {
 
     companion object {
         fun newInstance() = ServerFragment()
@@ -107,7 +107,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
     private fun createAndStartSession() {
         if (requireContext().allPermissionsGranted(permissions)) {
-            session = Utils.buildService(surfaceView, requireActivity(), this, this)
+            session = Utils.buildService(surfaceView, requireActivity(), this )
             session?.start()
         }
     }
@@ -118,10 +118,4 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         session = null
     }
 
-    override fun onDataReady(data: ByteArray?, bufferSize: Int) {
-        data ?: return
-        if (isResumed) {
-            visualizer.receive(data, bufferSize)
-        }
-    }
 }
