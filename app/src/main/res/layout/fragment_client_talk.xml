@@ -27,13 +27,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/spacing_xnormal"
+        android:background="@color/material_grey_400"
         app:layout_constraintBottom_toTopOf="@+id/clientHomeTalkGlHorizontal8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clientHomeTalkGlHorizontal6"
         app:layout_constraintVertical_bias="1"
         app:numColumns="62"
-        android:background="@color/material_grey_400"
         app:renderColor="@color/white"
         app:renderRange="both" />
 
