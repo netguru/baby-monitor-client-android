@@ -109,4 +109,4 @@
 -keep class org.videolan.libvlc.** { *; }
 # Same for MediaLibrary
 -keep class org.videolan.medialibrary.** { *; }
--keep class -keep class com.tyorikan.voicerecordingvisualizer.** { *; }
+-keep class com.tyorikan.voicerecordingvisualizer.** { *; }
