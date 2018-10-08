@@ -26,7 +26,7 @@ class ClientHomeViewModel @Inject constructor(
 
     fun getChildrenList(): LiveData<DataBounder<List<ChildData>>> = SingleDefer.defer {
         SingleSource<List<ChildData>> {
-            val list = configurationRepository.childrenList.toMutableList().apply { add(ChildData("1",name = "name")) }
+            val list = configurationRepository.childrenList.toMutableList()
             if (list.isNotEmpty()) {
                 selectedChild.postValue(list.first())
             }
