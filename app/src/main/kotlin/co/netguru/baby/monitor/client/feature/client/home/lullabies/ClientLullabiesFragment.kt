@@ -41,8 +41,6 @@ class ClientLullabiesFragment : Fragment() {
                         addItemDecoration(StickyHeaderDecorator(lullabiesAdapter))
                         addItemDecoration(dividerItemDecoration)
                     }
-
-
                 }
             }
         })
