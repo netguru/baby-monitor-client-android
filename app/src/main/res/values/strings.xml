@@ -23,4 +23,5 @@
     <string name="dialog_title_choose_source">Choose source</string>
     <string name="snackbar_permissions_not_granted">Permissions not granted</string>
     <string name="settings">settings</string>
+    <string name="setup_address">setup address</string>
 </resources>

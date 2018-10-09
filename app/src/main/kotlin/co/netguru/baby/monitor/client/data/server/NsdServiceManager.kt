@@ -39,10 +39,7 @@ class NsdServiceManager @Inject constructor(
                         }
 
                         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                            //TODO port should be set automatically
-                            configurationRepository.appendChildrenList(
-                                    ChildData("rtsp://${serviceInfo.host.hostAddress}:5006")
-                            )
+                            appendNewAddress(serviceInfo.host.hostAddress)
                             onServiceConnectedListener?.onServiceConnected()
                         }
                     })
@@ -86,6 +83,13 @@ class NsdServiceManager @Inject constructor(
     internal fun stopServiceDiscovery() {
         onServiceConnectedListener = null
         nsdManager.stopServiceDiscovery(nsdDiscoveryListener)
+    }
+
+    internal fun appendNewAddress(address: String) {
+        //TODO port should be set automatically
+        configurationRepository.appendChildrenList(
+                ChildData("rtsp://$address:5006")
+        )
     }
 
     internal interface OnServiceConnectedListener {

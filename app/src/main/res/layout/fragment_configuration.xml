@@ -2,8 +2,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -14,20 +14,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/debugAddressEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        app:layout_constraintBottom_toTopOf="@+id/debugSetAddressButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.6" />
+
     <Button
-        android:id="@+id/startDiscoveringButton"
+        android:id="@+id/debugSetAddressButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
         android:background="@drawable/button_rounded_ripple"
         android:paddingStart="@dimen/spacing_xmedium"
         android:paddingEnd="@dimen/spacing_xmedium"
+        android:text="@string/setup_address"
         android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/startDiscoveringButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.constraint.Group
+        android:id="@+id/debugAddressGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="debugSetAddressButton, debugAddressEt" />
+
+    <Button
+        android:id="@+id/startDiscoveringButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded_ripple"
+        android:paddingStart="@dimen/spacing_xmedium"
+        android:paddingEnd="@dimen/spacing_xmedium"
         android:text="@string/start_discovering_services"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8" />
 
     <ProgressBar
         android:id="@+id/progressBar"

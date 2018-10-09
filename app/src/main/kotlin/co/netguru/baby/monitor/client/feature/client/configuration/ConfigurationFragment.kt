@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.common.extensions.trimmedText
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.support.DaggerFragment
@@ -23,7 +26,7 @@ class ConfigurationFragment : DaggerFragment() {
     internal lateinit var nsdServiceManager: NsdServiceManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_configuration, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -31,7 +34,7 @@ class ConfigurationFragment : DaggerFragment() {
         startDiscoveringButton.setOnClickListener {
             showProgressBar(true)
             nsdServiceManager.discoverService(object :
-                NsdServiceManager.OnServiceConnectedListener {
+                    NsdServiceManager.OnServiceConnectedListener {
                 override fun onServiceConnected() {
                     nsdServiceManager.stopServiceDiscovery()
                     startActivity<ClientHomeActivity>()
@@ -43,6 +46,20 @@ class ConfigurationFragment : DaggerFragment() {
                     showSnackbarMessage(R.string.discovering_services_error)
                 }
             })
+        }
+        setupDebugViews()
+    }
+
+    private fun setupDebugViews() {
+        if (BuildConfig.DEBUG) {
+            debugAddressGroup.setVisible(true)
+            debugSetAddressButton.setOnClickListener {
+                if (!debugAddressEt.text.isNullOrEmpty()) {
+                    nsdServiceManager.appendNewAddress(debugAddressEt.trimmedText)
+                    startActivity<ClientHomeActivity>()
+                    requireActivity().finish()
+                }
+            }
         }
     }
 
