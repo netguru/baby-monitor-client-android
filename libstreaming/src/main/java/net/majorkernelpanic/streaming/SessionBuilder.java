@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 
 import net.majorkernelpanic.streaming.audio.AACStream;
 import net.majorkernelpanic.streaming.audio.AMRNBStream;
+import net.majorkernelpanic.streaming.audio.AudioDataListener;
 import net.majorkernelpanic.streaming.audio.AudioQuality;
 import net.majorkernelpanic.streaming.audio.AudioStream;
 import net.majorkernelpanic.streaming.gl.SurfaceView;
@@ -85,6 +86,7 @@ public class SessionBuilder {
     private String mOrigin = null;
     private String mDestination = null;
     private Session.Callback mCallback = null;
+    private AudioDataListener mAudioDataListener = null;
 
     // Removes the default public constructor
     private SessionBuilder() {
@@ -127,6 +129,9 @@ public class SessionBuilder {
         switch (mAudioEncoder) {
             case AUDIO_AAC:
                 AACStream stream = new AACStream();
+                if (mAudioDataListener != null) {
+                    stream.setAudioDataListener(mAudioDataListener);
+                }
                 session.addAudioTrack(stream);
                 if (mContext != null)
                     stream.setPreferences(PreferenceManager.getDefaultSharedPreferences(mContext));
@@ -259,6 +264,11 @@ public class SessionBuilder {
 
     public SessionBuilder setCallback(Session.Callback callback) {
         mCallback = callback;
+        return this;
+    }
+
+    public SessionBuilder setAudioDataListener(AudioDataListener listener) {
+        mAudioDataListener = listener;
         return this;
     }
 
