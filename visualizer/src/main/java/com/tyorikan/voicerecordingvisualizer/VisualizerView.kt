@@ -102,7 +102,7 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
         canvas.drawBitmap(canvasBitmap!!, Matrix(), null)
     }
 
-    fun receive(data: ByteArray, bufferSize: Int) {
+    fun receive(data: ByteArray) {
         if (volumeQueue.size >= numColumns) {
             volumeQueue.poll()
         }

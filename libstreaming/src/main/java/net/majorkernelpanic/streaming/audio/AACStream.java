@@ -243,7 +243,7 @@ public class AACStream extends AudioStream {
                                 //Log.v(TAG,"Pushing raw audio to the decoder: len="+len+" bs: "+inputBuffers[bufferIndex].capacity());
                                 mMediaCodec.queueInputBuffer(bufferIndex, 0, len, System.nanoTime() / 1000, 0);
                                 if (mAudioDataListener != null) {
-                                    mAudioDataListener.onDataReady(buffer, bufferSize);
+                                    mAudioDataListener.onDataReady(buffer);
                                 }
                             }
                         }
