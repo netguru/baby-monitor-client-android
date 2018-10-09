@@ -24,6 +24,9 @@
 
     <com.tyorikan.voicerecordingvisualizer.VisualizerView
         android:id="@+id/clientHomeTalkVisualizerV"
+        numColumns="62"
+        renderColor="@color/white"
+        renderRange="both"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/spacing_xnormal"
@@ -32,10 +35,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clientHomeTalkGlHorizontal6"
-        app:layout_constraintVertical_bias="1"
-        app:numColumns="62"
-        app:renderColor="@color/white"
-        app:renderRange="both" />
+        app:layout_constraintVertical_bias="1" />
 
     <android.support.constraint.Guideline
         android:id="@+id/clientHomeTalkGlHorizontal6"
