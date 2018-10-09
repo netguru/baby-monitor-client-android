@@ -13,6 +13,7 @@ import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
+import net.majorkernelpanic.streaming.audio.AudioDataListener
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.rtsp.RtspServer
 import timber.log.Timber
@@ -20,7 +21,7 @@ import javax.inject.Inject
 
 //TODO Should be refactored
 class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.CallbackListener,
-    Session.Callback {
+        Session.Callback {
 
     companion object {
         fun newInstance() = ServerFragment()
@@ -28,7 +29,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         private const val PERMISSIONS_REQUEST_CODE = 125
 
         private val permissions = arrayOf(
-            RECORD_AUDIO, CAMERA, WRITE_EXTERNAL_STORAGE
+                RECORD_AUDIO, CAMERA, WRITE_EXTERNAL_STORAGE
         )
     }
 
@@ -39,7 +40,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
     private var rtspServer: Intent? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ) = inflater.inflate(R.layout.fragment_server, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,6 +50,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
         rtspServer = Intent(requireContext(), RtspServer::class.java)
         requireActivity().startService(rtspServer)
+
     }
 
     override fun onResume() {
@@ -72,7 +74,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         createAndStartSession()
@@ -105,7 +107,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
     private fun createAndStartSession() {
         if (requireContext().allPermissionsGranted(permissions)) {
-            session = Utils.buildService(surfaceView, requireActivity(), this)
+            session = Utils.buildService(surfaceView, requireActivity(), this )
             session?.start()
         }
     }
@@ -115,4 +117,5 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         session?.release()
         session = null
     }
+
 }

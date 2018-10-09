@@ -14,6 +14,7 @@ import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
+import co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
@@ -45,6 +46,12 @@ class ClientDashboardFragment : DaggerFragment() {
         clientHomeLiveCameraIbtn.setOnClickListener {
             fragmentManager?.inTransaction {
                 replace(R.id.clientHomeFrameLayout, ClientLiveCameraFragment.newInstance())
+                addToBackStack(null)
+            }
+        }
+        clientHomeTalkIbtn.setOnClickListener {
+            fragmentManager?.inTransaction {
+                replace(R.id.clientHomeFrameLayout, ClientTalkFragment.newInstance())
                 addToBackStack(null)
             }
         }
