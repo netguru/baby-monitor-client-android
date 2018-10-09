@@ -39,7 +39,7 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var renderRange: Int = 0
     private var baseY: Int = 0
     private var volumeQueue: Queue<Int>
-    private var maxVolume: Int = 0
+    private var maxVolume: Int = 5_000
 
     private var canvas: Canvas? = null
     private var canvasBitmap: Bitmap? = null
@@ -103,22 +103,13 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     fun receive(data: ByteArray, bufferSize: Int) {
-        val volume = calculateDecibel(data, bufferSize)
         if (volumeQueue.size >= numColumns) {
             volumeQueue.poll()
         }
-        maxVolume = Math.max(maxVolume, volume)
-        volumeQueue.offer(volume)
-        receive(volume)
-    }
-
-    private fun calculateDecibel(buf: ByteArray, bufferSize: Int): Int {
-        var sum = 0
-        for (i in 0 until bufferSize) {
-            sum += Math.abs(buf[i].toInt())
-        }
-        // avg 10-50
-        return sum / bufferSize
+        val amp = Utils.getAmplitude(data.toTypedArray())
+        maxVolume = Math.max(maxVolume, amp)
+        volumeQueue.offer(amp)
+        receive(amp)
     }
 
     /**
@@ -128,18 +119,20 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
      */
     private fun receive(volume: Int) {
         Handler(Looper.getMainLooper()).post(Runnable {
-            if (canvas == null) {
-                return@Runnable
-            }
+            canvas ?: return@Runnable
 
-            if (volume == 0) {
-                canvas!!.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-            } else if (type and Type.FADE.flag != 0) {
-                // Fade out old contents
-                fadePaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.MULTIPLY)
-                canvas!!.drawPaint(fadePaint)
-            } else {
-                canvas!!.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+            when {
+                volume == 0 -> {
+                    canvas!!.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                }
+                type and Type.FADE.flag != 0 -> {
+                    // Fade out old contents
+                    fadePaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.MULTIPLY)
+                    canvas!!.drawPaint(fadePaint)
+                }
+                else -> {
+                    canvas!!.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                }
             }
 
             if (type and Type.BAR.flag != 0) {
@@ -221,7 +214,7 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     private fun getRandomHeight(volume: Int): Float {
         val height = when (renderRange) {
-            RENDAR_RANGE_TOP ->  baseY.toFloat()
+            RENDAR_RANGE_TOP -> baseY.toFloat()
             RENDAR_RANGE_BOTTOM -> (height - baseY).toFloat()
             RENDAR_RANGE_TOP_BOTTOM -> height.toFloat()
             else -> height.toFloat()
@@ -235,7 +228,6 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
         RENDAR_RANGE_TOP_BOTTOM -> RectF(left, baseY - height, right, baseY + height)
         else -> RectF(left, baseY - height, right, baseY.toFloat())
     }
-
 
     /**
      * visualizer type
