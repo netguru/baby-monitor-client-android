@@ -103,8 +103,8 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
         viewModel.selectedChild.observe(this, Observer {
             it ?: return@Observer
             setSelectedChildName(it.name ?: "")
-            GlideApp.with(this)
-                    .load(it.image)
+            GlideApp.with(this@ClientHomeActivity)
+                    .load(it.image ?: "")
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeChildMiniatureIv)
         })
