@@ -44,6 +44,8 @@ import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import timber.log.Timber;
+
 /**
  * A class for streaming AAC from the camera of an android device using RTP.
  * You should use a {@link Session} instantiated with {@link SessionBuilder} instead of using this class directly.
@@ -93,6 +95,7 @@ public class AACStream extends AudioStream {
     private SharedPreferences mSettings = null;
     private AudioRecord mAudioRecord = null;
     private Thread mThread = null;
+    private AudioDataListener mAudioDataListener = null;
 
     public AACStream() {
         super();
@@ -123,6 +126,10 @@ public class AACStream extends AudioStream {
      */
     public void setPreferences(SharedPreferences prefs) {
         mSettings = prefs;
+    }
+
+    public void setAudioDataListener(AudioDataListener listener) {
+        mAudioDataListener = listener;
     }
 
     @Override
@@ -217,27 +224,32 @@ public class AACStream extends AudioStream {
 
         final MediaCodecInputStream inputStream = new MediaCodecInputStream(mMediaCodec);
         final ByteBuffer[] inputBuffers = mMediaCodec.getInputBuffers();
-
+        final byte[] buffer = new byte[bufferSize];
         mThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 int len = 0, bufferIndex = 0;
                 try {
                     while (!Thread.interrupted()) {
-                        bufferIndex = mMediaCodec.dequeueInputBuffer(10000);
+                        bufferIndex = mMediaCodec.dequeueInputBuffer(-1);
                         if (bufferIndex >= 0) {
-                            inputBuffers[bufferIndex].clear();
-                            len = mAudioRecord.read(inputBuffers[bufferIndex], bufferSize);
+                            len = mAudioRecord.read(buffer, 0, bufferSize);
+                            // mAudioRecord.read(buffer, 0 , bufferSize);
                             if (len == AudioRecord.ERROR_INVALID_OPERATION || len == AudioRecord.ERROR_BAD_VALUE) {
                                 Log.e(TAG, "An error occured with the AudioRecord API !");
                             } else {
+                                inputBuffers[bufferIndex].clear();
+                                inputBuffers[bufferIndex].put(buffer);
                                 //Log.v(TAG,"Pushing raw audio to the decoder: len="+len+" bs: "+inputBuffers[bufferIndex].capacity());
                                 mMediaCodec.queueInputBuffer(bufferIndex, 0, len, System.nanoTime() / 1000, 0);
+                                if (mAudioDataListener != null) {
+                                    mAudioDataListener.onDataReady(buffer);
+                                }
                             }
                         }
                     }
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                 }
             }
         });

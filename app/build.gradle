@@ -120,6 +120,7 @@ configurations {
 
 dependencies {
     implementation project(":libstreaming")
+    implementation project(":visualizer")
 
     //Kotlin
     implementation libs.kotlin
