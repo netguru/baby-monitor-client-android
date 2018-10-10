@@ -199,6 +199,10 @@ dependencies {
     //EasyImage
     implementation libs.easyImage
 
+    //Navigation Components
+    implementation libs.navigationFragment
+    implementation libs.navigationUiKtx
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

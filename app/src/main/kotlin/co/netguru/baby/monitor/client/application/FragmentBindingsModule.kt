@@ -1,11 +1,13 @@
 package co.netguru.baby.monitor.client.application
 
 import co.netguru.baby.monitor.client.application.scope.FragmentScope
+import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationBabyFragment
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment
 import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
 import co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment
 import co.netguru.baby.monitor.client.feature.server.ServerFragment
+import co.netguru.baby.monitor.client.feature.splash.SplashFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -24,9 +26,19 @@ internal abstract class FragmentBindingsModule {
     @ContributesAndroidInjector
     internal abstract fun clientLiveCameraFragmentInjector(): ClientLiveCameraFragment
 
+    @FragmentScope
     @ContributesAndroidInjector
     internal abstract fun clientDashboardFragmentInjector(): ClientDashboardFragment
 
+    @FragmentScope
     @ContributesAndroidInjector
     internal abstract fun clientTalkFragmentInjector(): ClientTalkFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    internal abstract fun splashFragmentInjector(): SplashFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    internal abstract fun configurationBabyFragmentInjector(): ConfigurationBabyFragment
 }
