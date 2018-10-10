@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.*
@@ -44,16 +45,10 @@ class ClientDashboardFragment : DaggerFragment() {
 
     private fun setupView() {
         clientHomeLiveCameraIbtn.setOnClickListener {
-            fragmentManager?.inTransaction {
-                replace(R.id.clientHomeFrameLayout, ClientLiveCameraFragment.newInstance())
-                addToBackStack(null)
-            }
+            findNavController().navigate(R.id.actionDashboardToLiveCam)
         }
         clientHomeTalkIbtn.setOnClickListener {
-            fragmentManager?.inTransaction {
-                replace(R.id.clientHomeFrameLayout, ClientTalkFragment.newInstance())
-                addToBackStack(null)
-            }
+            findNavController().navigate(R.id.actionDashboardToTalk)
         }
         clientHomeBabyIv.setOnClickListener {
             if (requireContext().allPermissionsGranted(PERMISSIONS)) {
