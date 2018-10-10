@@ -1,16 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/white">
 
     <TextView
+        android:id="@+id/settingsLullabyVolumeTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/menu_action_settings"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:text="@string/header_lullaby_volume"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/settingsLullabyVolumeSeekBar"
+        app:layout_constraintEnd_toStartOf="@+id/settingsLullabyVolumeSeekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/settingsLullabyVolumeSeekBar" />
+
+    <SeekBar
+        android:id="@+id/settingsLullabyVolumeSeekBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:layout_marginTop="@dimen/spacing_xxxmedium"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        app:layout_constraintBottom_toTopOf="@+id/settingsSwitchModeBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/settingsLullabyVolumeTv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/settingsSwitchModeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:text="@string/header_switch_to_server_application"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/settingsSwitchModeBtn"
+        app:layout_constraintEnd_toStartOf="@+id/settingsSwitchModeBtn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/settingsSwitchModeBtn" />
+
+    <Button
+        android:id="@+id/settingsSwitchModeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxxmedium"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        android:background="@drawable/button_rounded_ripple"
+        android:paddingStart="@dimen/spacing_xxxmedium"
+        android:paddingEnd="@dimen/spacing_xxxmedium"
+        android:text="@string/switch_mode_btn"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/settingsSwitchModeTv"
+        app:layout_constraintTop_toBottomOf="@+id/settingsLullabyVolumeSeekBar" />
+
 </android.support.constraint.ConstraintLayout>
