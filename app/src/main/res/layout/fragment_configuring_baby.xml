@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/configuringBabyIv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_xmedium"
+        android:background="@drawable/all_circle_white_bg"
+        android:padding="@dimen/spacing_medium"
+        android:src="@drawable/circle_placeholder"
+        app:layout_constraintBottom_toTopOf="@+id/configuringBabyGuideline"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/configuringBabyAddPhotoTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_photo"
+        app:layout_constraintBottom_toBottomOf="@+id/configuringBabyIv"
+        app:layout_constraintEnd_toEndOf="@+id/configuringBabyIv"
+        app:layout_constraintStart_toStartOf="@+id/configuringBabyIv"
+        app:layout_constraintTop_toTopOf="@+id/configuringBabyIv" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/configuringBabyGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/configuringBabyBabyNameMet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxxmedium"
+        android:layout_marginEnd="@dimen/spacing_xxxmedium"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:gravity="center"
+        android:hint="@string/client_baby_name_input_hint"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintBottom_toTopOf="@+id/configuringBabySaveBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/configuringBabyGuideline"
+        app:met_floatingLabel="normal"
+        tools:text="Son" />
+
+    <Button
+        android:id="@+id/configuringBabySaveBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_rounded_ripple"
+        android:text="@string/configuration_baby_save_btn"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/configuringBabyBabyNameMet"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <ProgressBar
+        android:id="@+id/configuringBabyPb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

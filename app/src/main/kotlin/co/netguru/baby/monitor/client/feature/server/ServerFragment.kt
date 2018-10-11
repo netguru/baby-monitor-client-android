@@ -13,7 +13,6 @@ import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
-import net.majorkernelpanic.streaming.audio.AudioDataListener
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.rtsp.RtspServer
 import timber.log.Timber
@@ -24,8 +23,6 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         Session.Callback {
 
     companion object {
-        fun newInstance() = ServerFragment()
-
         private const val PERMISSIONS_REQUEST_CODE = 125
 
         private val permissions = arrayOf(
@@ -117,5 +114,4 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         session?.release()
         session = null
     }
-
 }

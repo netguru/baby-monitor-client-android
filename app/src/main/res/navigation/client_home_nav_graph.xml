@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/client_home_nav_graph"
+    app:startDestination="@+id/clientDashboard">
+
+    <fragment
+        android:id="@+id/clientDashboard"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_client_dashboard">
+
+        <action
+            android:id="@+id/actionDashboardToLiveCam"
+            app:destination="@+id/clientLiveCamera" />
+
+        <action
+            android:id="@+id/actionDashboardToTalk"
+            app:destination="@+id/clientTalk" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/clientLiveCamera"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment"
+        android:label="Live Camera"
+        tools:layout="@layout/fragment_client_live_camera" />
+
+    <fragment
+        android:id="@+id/clientTalk"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment"
+        android:label="Talk"
+        tools:layout="@layout/fragment_client_talk" />
+
+    <fragment
+        android:id="@+id/clientActivityLog"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment"
+        android:label="Activity Log"
+        tools:layout="@layout/fragment_client_dashboard" />
+
+    <fragment
+        android:id="@+id/clientLullabies"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment"
+        android:label="Lullabies"
+        tools:layout="@layout/fragment_client_lullabies" />
+
+    <fragment
+        android:id="@+id/clientSettings"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.settings.ClientSettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_client_settings" />
+
+</navigation>

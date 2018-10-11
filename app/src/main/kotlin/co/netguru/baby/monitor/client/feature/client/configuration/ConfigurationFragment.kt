@@ -4,29 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.common.extensions.trimmedText
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_configuration.*
-import org.jetbrains.anko.support.v4.startActivity
 import javax.inject.Inject
 
 class ConfigurationFragment : DaggerFragment() {
-
-    companion object {
-        internal fun newInstance() = ConfigurationFragment()
-    }
 
     @Inject
     internal lateinit var nsdServiceManager: NsdServiceManager
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_configuration, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,7 +34,7 @@ class ConfigurationFragment : DaggerFragment() {
                     NsdServiceManager.OnServiceConnectedListener {
                 override fun onServiceConnected() {
                     nsdServiceManager.stopServiceDiscovery()
-                    startActivity<ClientHomeActivity>()
+                    findNavController().navigate(R.id.actionConfigurationClientHome)
                     requireActivity().finish()
                 }
 
@@ -56,7 +53,7 @@ class ConfigurationFragment : DaggerFragment() {
             debugSetAddressButton.setOnClickListener {
                 if (!debugAddressEt.text.isNullOrEmpty()) {
                     nsdServiceManager.appendNewAddress(debugAddressEt.trimmedText)
-                    startActivity<ClientHomeActivity>()
+                    findNavController().navigate(R.id.actionConfigurationClientHome)
                     requireActivity().finish()
                 }
             }

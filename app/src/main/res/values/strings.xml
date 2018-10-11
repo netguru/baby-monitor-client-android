@@ -27,4 +27,5 @@
     <string name="header_switch_to_server_application">Switch to server application</string>
     <string name="switch_mode_btn">switch</string>
     <string name="header_lullaby_volume">Lullaby volume</string>
+    <string name="configuration_baby_save_btn">save</string>
 </resources>

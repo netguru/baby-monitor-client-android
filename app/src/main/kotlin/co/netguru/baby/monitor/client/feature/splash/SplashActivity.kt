@@ -1,26 +1,17 @@
 package co.netguru.baby.monitor.client.feature.splash
 
 import android.os.Bundle
-import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
-import co.netguru.baby.monitor.client.feature.welcome.WelcomeActivity
-import dagger.android.support.DaggerAppCompatActivity
-import org.jetbrains.anko.startActivity
-import timber.log.Timber
-import javax.inject.Inject
+import android.support.v7.app.AppCompatActivity
+import androidx.navigation.findNavController
+import co.netguru.baby.monitor.client.R
 
-class SplashActivity : DaggerAppCompatActivity() {
-
-    @Inject
-    lateinit var configurationRepository: ConfigurationRepository
+class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (configurationRepository.childrenList.isNotEmpty()) {
-            startActivity<ClientHomeActivity>()
-        } else {
-            startActivity<WelcomeActivity>()
-        }
-        finish()
+        setContentView(R.layout.activity_splash)
     }
+
+    override fun onSupportNavigateUp() =
+            findNavController(R.id.splashNavigationHostFragment).navigateUp()
 }
