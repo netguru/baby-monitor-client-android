@@ -93,7 +93,6 @@ class ClientDashboardFragment : DaggerFragment() {
         })
     }
 
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE &&
@@ -115,7 +114,7 @@ class ClientDashboardFragment : DaggerFragment() {
     }
 
     companion object {
-        private val PERMISSIONS = arrayOf(
+        internal val PERMISSIONS = arrayOf(
                 Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
