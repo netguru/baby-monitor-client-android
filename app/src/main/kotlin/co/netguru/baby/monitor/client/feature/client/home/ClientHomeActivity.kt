@@ -10,13 +10,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.common.extensions.inTransaction
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.PresetedAnimations
-import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
-import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
-import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
-import co.netguru.baby.monitor.client.feature.client.home.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
 import co.netguru.baby.monitor.client.feature.common.DataBounder
 import com.bumptech.glide.request.RequestOptions
@@ -42,6 +37,9 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
         setupView()
         getData()
     }
+
+    override fun onSupportNavigateUp() =
+            findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
 
     private fun setupView() {
         clientHomeBnv.setupWithNavController(
@@ -115,5 +113,4 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             getString(R.string.no_name)
         }
     }
-
 }

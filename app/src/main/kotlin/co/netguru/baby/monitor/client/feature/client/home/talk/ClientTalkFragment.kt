@@ -50,8 +50,4 @@ class ClientTalkFragment : DaggerFragment(), AudioDataListener {
             clientHomeTalkVisualizerV.receive(data)
         }
     }
-
-    companion object {
-        internal fun newInstance() = ClientTalkFragment()
-    }
 }

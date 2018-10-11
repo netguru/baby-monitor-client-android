@@ -36,5 +36,4 @@ sealed class LullabyData {
             }
         }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
     }
-
 }

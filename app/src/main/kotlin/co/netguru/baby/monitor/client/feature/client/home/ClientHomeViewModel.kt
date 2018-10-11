@@ -68,5 +68,4 @@ class ClientHomeViewModel @Inject constructor(
             }
         }
     }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
-
 }

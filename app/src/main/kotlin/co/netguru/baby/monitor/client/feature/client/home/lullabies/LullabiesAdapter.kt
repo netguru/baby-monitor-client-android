@@ -13,10 +13,12 @@ class LullabiesAdapter(
 
     private var indexOfSecondHeader = 0
     internal var lullabies = emptyList<LullabyData>()
+        /**
+         * There will be only two headers, one at the beginning
+         * for second one we search with indexOfLast
+         */
         set(value) {
             field = value.also {
-                //there will be ony two headers, one at the beginning
-                //for second one we search with indexOfLast
                 indexOfSecondHeader = it.indexOfLast { it is LullabyData.LullabyHeader }
             }
             notifyDataSetChanged()

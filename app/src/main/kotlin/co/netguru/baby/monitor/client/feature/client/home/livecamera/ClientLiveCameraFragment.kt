@@ -83,8 +83,4 @@ class ClientLiveCameraFragment : DaggerFragment() {
         vlcVout.detachViews()
         libvlc.release()
     }
-
-    companion object {
-        fun newInstance() = ClientLiveCameraFragment()
-    }
 }

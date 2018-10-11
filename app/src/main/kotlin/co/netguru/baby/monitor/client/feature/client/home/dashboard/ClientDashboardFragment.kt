@@ -56,7 +56,6 @@ class ClientDashboardFragment : DaggerFragment() {
             } else {
                 requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
             }
-
         }
         clientHomeBabyNameMet.afterTextChanged {
             if (it.trim() != viewModel.selectedChild.value?.name) {

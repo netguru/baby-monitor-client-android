@@ -30,6 +30,7 @@
 
         <action
             android:id="@+id/actionWelcomeToServer"
+            app:clearTask="true"
             app:destination="@+id/serverFragment" />
 
         <action
