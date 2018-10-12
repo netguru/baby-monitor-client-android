@@ -31,9 +31,11 @@ fun <T> Observable<T>.subscribeWithLiveData(): LiveData<DataBounder<T>> {
     return liveData
 }
 
-fun <T> Single<T>.subscribeWithLiveData(): LiveData<DataBounder<T>> {
-    val liveData = MutableLiveData<DataBounder<T>>()
-    this.subscribe(object: SingleObserver<T> {
+fun <T> Single<T>.subscribeWithLiveData(
+        data: MutableLiveData<DataBounder<T>>? = null
+): LiveData<DataBounder<T>> {
+    val liveData = data ?: MutableLiveData()
+    this.subscribe(object : SingleObserver<T> {
         override fun onSuccess(t: T) {
             liveData.postValue(Next(t))
         }

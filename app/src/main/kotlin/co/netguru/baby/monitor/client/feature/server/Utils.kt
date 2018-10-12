@@ -19,7 +19,7 @@ import kotlin.math.absoluteValue
 //TODO Should be refactored
 object Utils {
 
-    private const val SAMPLING_RATE = 16_000
+    internal const val AUDIO_SAMPLING_RATE = 16_000
     private const val AUDIO_BIT_RATE = 16000
 
     private const val FRAME_RATE = 30
@@ -39,7 +39,7 @@ object Utils {
                 .setPreviewOrientation(getCameraOrientation(activity))
                 .setContext(activity.applicationContext)
                 .setAudioEncoder(SessionBuilder.AUDIO_AAC)
-                .setAudioQuality(AudioQuality(SAMPLING_RATE, AUDIO_BIT_RATE))
+                .setAudioQuality(AudioQuality(AUDIO_SAMPLING_RATE, AUDIO_BIT_RATE))
                 .setVideoEncoder(SessionBuilder.VIDEO_H264)
                 .setVideoQuality(VideoQuality(size.width, size.height, FRAME_RATE, VIDEO_BIT_RATE))
                 .setAudioDataListener(audioDataListener)
