@@ -41,8 +41,8 @@ class MachineLearning(
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onSuccess = {
-                            FileInputStream(it).run {
-                                val data = convertStreamToShortData(this)
+                            FileInputStream(it).use {
+                                val data = convertStreamToShortData(it)
                                 feedData(data)
                             }
                         },
