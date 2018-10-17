@@ -204,7 +204,7 @@ dependencies {
     implementation libs.navigationUiKtx
 
     //Tenser Flow
-    implementation libs.tenserFlow
+    implementation libs.tensorFlow
 
     // Unit testing
     testImplementation test.junit

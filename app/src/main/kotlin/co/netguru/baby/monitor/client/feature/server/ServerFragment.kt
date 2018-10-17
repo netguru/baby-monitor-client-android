@@ -41,6 +41,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         super.onViewCreated(view, savedInstanceState)
         surfaceView.holder.addCallback(this)
         surfaceView.setAspectRatioMode(SurfaceView.ASPECT_RATIO_PREVIEW)
+        "${R.id.action_mode_close_button}"
 
         rtspServer = Intent(requireContext(), RtspServer::class.java)
         requireActivity().startService(rtspServer)
@@ -76,6 +77,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         super.onDestroyView()
         surfaceView.holder.removeCallback(this)
         requireActivity().stopService(rtspServer)
+        machineLearning?.dispose()
     }
 
     override fun onDataReady(data: ShortArray?) {

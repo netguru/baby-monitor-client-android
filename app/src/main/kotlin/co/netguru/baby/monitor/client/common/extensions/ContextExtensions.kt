@@ -7,6 +7,7 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
+import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.internal.operators.single.SingleDefer
 import timber.log.Timber
@@ -43,23 +44,14 @@ fun Context.allPermissionsGranted(permissions: Array<String>): Boolean {
     return true
 }
 
-fun Context.saveAssetToCache(name: String) = SingleDefer.defer {
-    SingleSource<File> {
-        val file = File(cacheDir.toString() + name)
-        try {
-            val asset = assets.open(name)
-            val size = asset.available()
-            val buffer = ByteArray(size)
-            asset.read(buffer)
-            asset.close()
-
-            val fos = FileOutputStream(file)
-            fos.write(buffer)
-            fos.close()
-            it.onSuccess(file)
-        } catch (e: Exception) {
-            Timber.e(e)
-            it.onError(e)
+fun Context.saveAssetToCache(name: String) = Single.just(File(cacheDir.toString() + name))
+        .map { file ->
+            assets.open(name).use { inputStream ->
+                val buffer = ByteArray(inputStream.available())
+                inputStream.read(buffer)
+                FileOutputStream(file).use {
+                    it.write(buffer)
+                }
+                return@map file
+            }
         }
-    }
-}
