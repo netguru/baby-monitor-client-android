@@ -19,7 +19,6 @@ import net.majorkernelpanic.streaming.Session
 import net.majorkernelpanic.streaming.audio.AudioDataListener
 import net.majorkernelpanic.streaming.gl.SurfaceView
 import net.majorkernelpanic.streaming.rtsp.RtspServer
-import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -49,7 +48,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         machineLearning?.result!!.observe(this, Observer {
             when (it) {
                 is DataBounder.Next -> {
-                    Timber.e(it.toJson())
+                    Timber.e(it.data.toJson())
                 }
             }
         })
@@ -79,17 +78,8 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         requireActivity().stopService(rtspServer)
     }
 
-    var date = LocalDateTime.now()
-    var newData = emptyArray<Short>()
     override fun onDataReady(data: ShortArray?) {
         data ?: return
-
-        if (LocalDateTime.now().isBefore(date.plusSeconds(5))) {
-            newData = newData.plus(data.toTypedArray())
-            return
-        }
-        date = LocalDateTime.now()
-
         machineLearning?.feedData(data)
     }
 

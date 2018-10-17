@@ -205,7 +205,7 @@ public class AACStream extends AudioStream {
     @SuppressLint({"InlinedApi", "NewApi"})
     protected void encodeWithMediaCodec() throws IOException {
 
-        int size = AudioRecord.getMinBufferSize(mQuality.samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        int size = AudioRecord.getMinBufferSize(mQuality.samplingRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT) * 2;
         if (size == AudioRecord.ERROR || size == AudioRecord.ERROR_BAD_VALUE) {
             size = mQuality.samplingRate * 2;
         }
@@ -213,7 +213,7 @@ public class AACStream extends AudioStream {
 
         ((AACLATMPacketizer) mPacketizer).setSamplingRate(mQuality.samplingRate);
 
-        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, mQuality.samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, mQuality.samplingRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
         mMediaCodec = MediaCodec.createEncoderByType("audio/mp4a-latm");
         MediaFormat format = new MediaFormat();
         format.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
@@ -228,7 +228,7 @@ public class AACStream extends AudioStream {
 
         final MediaCodecInputStream inputStream = new MediaCodecInputStream(mMediaCodec);
         final ByteBuffer[] inputBuffers = mMediaCodec.getInputBuffers();
-        final short[] buffer = new short[bufferSize / 2];
+        final byte[] buffer = new byte[bufferSize];
         mThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -243,11 +243,11 @@ public class AACStream extends AudioStream {
                                 Log.e(TAG, "An error occured with the AudioRecord API !");
                             } else {
                                 inputBuffers[bufferIndex].clear();
-                                inputBuffers[bufferIndex].put(shortToByte(buffer));
+                                inputBuffers[bufferIndex].put(buffer);
                                 //Log.v(TAG,"Pushing raw audio to the decoder: len="+len+" bs: "+inputBuffers[bufferIndex].capacity());
                                 mMediaCodec.queueInputBuffer(bufferIndex, 0, len, System.nanoTime() / 1000, 0);
                                 if (mAudioDataListener != null) {
-                                    mAudioDataListener.onDataReady(buffer);
+                                    mAudioDataListener.onDataReady(byteToShort(buffer));
                                 }
                             }
                         }
@@ -268,13 +268,16 @@ public class AACStream extends AudioStream {
 
     }
 
-    private synchronized byte[] shortToByte(short[] data) {
-        byte[] bytes = new byte[data.length * 2];
-        for (int i = 0; i < data.length; i++) {
-            bytes[i * 2] = (byte) (data[i] & 0xff);
-            bytes[i * 2 + 1] = (byte) ((data[i] >> 8) & 0xff);
+    private synchronized short[] byteToShort(byte[] data) {
+        short[] shorts = new short[data.length / 2];
+        for (int i = 0; i < shorts.length; i++) {
+            shorts[i] = getShort(data[i * 2], data[i * 2 + 1]);
         }
-        return bytes;
+        return shorts;
+    }
+
+    private short getShort(byte argB1, byte argB2) {
+        return (short) (argB1 | (argB2 << 8));
     }
 
     /**

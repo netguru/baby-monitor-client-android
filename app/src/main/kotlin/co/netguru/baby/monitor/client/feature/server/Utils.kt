@@ -19,7 +19,7 @@ import kotlin.math.absoluteValue
 //TODO Should be refactored
 object Utils {
 
-    internal const val AUDIO_SAMPLING_RATE = 16_000
+    internal const val AUDIO_SAMPLING_RATE = 44_100
     private const val AUDIO_BIT_RATE = 16000
 
     private const val FRAME_RATE = 30
