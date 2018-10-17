@@ -40,8 +40,7 @@ fun <T> Single<T>.subscribeWithLiveData(
             liveData.postValue(Next(t))
         }
 
-        override fun onSubscribe(d: Disposable) {
-        }
+        override fun onSubscribe(d: Disposable) = Unit
 
         override fun onError(e: Throwable) {
             liveData.postValue(Error(e))
