@@ -25,7 +25,7 @@ class App : DaggerApplication() {
 
         //TODO Should be refactored!!!!
         PreferenceManager.getDefaultSharedPreferences(this).edit {
-            putString(RtspServer.KEY_PORT, PORT)
+            putString(RtspServer.KEY_PORT, "$PORT")
         }
     }
 
@@ -33,6 +33,6 @@ class App : DaggerApplication() {
         DaggerApplicationComponent.builder().create(this)
 
     companion object {
-        internal const val PORT = "5006"
+        internal const val PORT = 5006
     }
 }
