@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.data.server
 
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import co.netguru.baby.monitor.client.application.App
 import co.netguru.baby.monitor.client.feature.client.home.ChildData
 import dagger.Reusable
 import timber.log.Timber
@@ -39,7 +40,7 @@ class NsdServiceManager @Inject constructor(
                         }
 
                         override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                            appendNewAddress(serviceInfo.host.hostAddress)
+                            appendNewAddress("${serviceInfo.host.hostAddress}:${serviceInfo.port}")
                             onServiceConnectedListener?.onServiceConnected()
                         }
                     })
@@ -67,7 +68,7 @@ class NsdServiceManager @Inject constructor(
         val serviceInfo = NsdServiceInfo().apply {
             serviceName = SERVICE_NAME
             serviceType = SERVICE_TYPE
-            port = SERVICE_PORT
+            port = App.PORT
         }
 
         nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdServiceListener)
@@ -88,7 +89,7 @@ class NsdServiceManager @Inject constructor(
     internal fun appendNewAddress(address: String) {
         //TODO port should be set automatically
         configurationRepository.appendChildrenList(
-                ChildData("rtsp://$address:5006")
+                ChildData("rtsp://$address")
         )
     }
 
@@ -101,6 +102,5 @@ class NsdServiceManager @Inject constructor(
     companion object {
         private const val SERVICE_NAME = "Baby Monitor Service"
         private const val SERVICE_TYPE = "_http._tcp."
-        private const val SERVICE_PORT = 5004
     }
 }

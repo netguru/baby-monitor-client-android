@@ -102,11 +102,11 @@ class VisualizerView(context: Context, attrs: AttributeSet) : FrameLayout(contex
         canvas.drawBitmap(canvasBitmap!!, Matrix(), null)
     }
 
-    fun receive(data: ByteArray) {
+    fun receive(data: ShortArray) {
         if (volumeQueue.size >= numColumns) {
             volumeQueue.poll()
         }
-        val amp = Utils.getAmplitude(data.toTypedArray())
+        val amp = data.map { Math.abs(it.toInt()) }.max() ?: 0
         maxVolume = Math.max(maxVolume, amp)
         volumeQueue.offer(amp)
         receive(amp)

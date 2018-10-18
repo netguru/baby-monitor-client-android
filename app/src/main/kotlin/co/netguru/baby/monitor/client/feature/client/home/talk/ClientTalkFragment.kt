@@ -43,8 +43,8 @@ class ClientTalkFragment : DaggerFragment(), AudioDataListener {
         viewModel.shouldHideNavbar.postValue(false)
     }
 
-    override fun onDataReady(data: ByteArray?) {
-        //todo add data source
+    override fun onDataReady(data: ShortArray?) {
+        //TODO add data source 9.10.2018
         data ?: return
         if (isResumed) {
             clientHomeTalkVisualizerV.receive(data)

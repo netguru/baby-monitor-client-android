@@ -203,6 +203,9 @@ dependencies {
     implementation libs.navigationFragment
     implementation libs.navigationUiKtx
 
+    //Tensor Flow
+    implementation libs.tensorFlow
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito
