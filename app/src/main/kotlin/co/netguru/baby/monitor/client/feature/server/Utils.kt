@@ -20,7 +20,7 @@ import kotlin.math.absoluteValue
 object Utils {
 
     internal const val AUDIO_SAMPLING_RATE = 44_100
-    private const val AUDIO_BIT_RATE = 16000
+    private const val AUDIO_BIT_RATE = 320_000
 
     private const val FRAME_RATE = 30
     private const val VIDEO_BIT_RATE = 1_000

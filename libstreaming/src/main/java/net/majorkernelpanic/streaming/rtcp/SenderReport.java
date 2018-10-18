@@ -32,13 +32,15 @@ import static net.majorkernelpanic.streaming.rtp.RtpSocket.TRANSPORT_UDP;
 /**
  * Implementation of Sender Report RTCP packets.
  */
+
+//TODO refactor this to work with android 8.0+ 18.10.2018
 public class SenderReport {
 
     public static final int MTU = 1500;
 
     private static final int PACKET_LENGTH = 28;
 
-    private MulticastSocket usock;
+    //private MulticastSocket usock;
     private DatagramPacket upack;
 
     private int mTransport;
@@ -80,13 +82,13 @@ public class SenderReport {
         /* Byte 16,17,18,19  ->  RTP timestamp		             */
         /* Byte 20,21,22,23  ->  packet count				 	 */
         /* Byte 24,25,26,27  ->  octet count			         */
-
+/*
         try {
             usock = new MulticastSocket();
         } catch (IOException e) {
             // Very unlikely to happen. Means that all UDP ports are already being used
             throw new RuntimeException(e.getMessage());
-        }
+        }*/
         upack = new DatagramPacket(mBuffer, 1);
 
         // By default we sent one report every 3 secconde
@@ -95,7 +97,7 @@ public class SenderReport {
     }
 
     public void close() {
-        usock.close();
+        //usock.close();
     }
 
     /**
@@ -165,7 +167,7 @@ public class SenderReport {
     }
 
     public int getLocalPort() {
-        return usock.getLocalPort();
+        return 5006;
     }
 
     public int getSSRC() {
@@ -204,7 +206,7 @@ public class SenderReport {
         setLong(rtpts, 16, 20);
         if (mTransport == TRANSPORT_UDP) {
             upack.setLength(PACKET_LENGTH);
-            usock.send(upack);
+           // usock.send(upack);
         } else {
             synchronized (mOutputStream) {
                 try {

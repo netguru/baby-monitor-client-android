@@ -22,5 +22,9 @@ android {
 }
 dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation libs.rxJava2
+    implementation(libs.rxAndroid2) {
+        exclude module: 'rxjava'
+    }
 }
 

@@ -61,6 +61,7 @@ class MachineLearning(
             }
             return@map outputScores
         }.subscribeOn(Schedulers.io()).subscribeWithLiveData(result)
+        newData = emptyArray()
     }
 
     fun dispose() {

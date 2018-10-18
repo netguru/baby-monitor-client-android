@@ -44,6 +44,11 @@ import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -96,6 +101,7 @@ public class AACStream extends AudioStream {
     private AudioRecord mAudioRecord = null;
     private Thread mThread = null;
     private AudioDataListener mAudioDataListener = null;
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     public AACStream() {
         super();
@@ -205,7 +211,7 @@ public class AACStream extends AudioStream {
     @SuppressLint({"InlinedApi", "NewApi"})
     protected void encodeWithMediaCodec() throws IOException {
 
-        int size = AudioRecord.getMinBufferSize(mQuality.samplingRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT) * 2;
+        int size = AudioRecord.getMinBufferSize(mQuality.samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2;
         if (size == AudioRecord.ERROR || size == AudioRecord.ERROR_BAD_VALUE) {
             size = mQuality.samplingRate * 2;
         }
@@ -213,7 +219,7 @@ public class AACStream extends AudioStream {
 
         ((AACLATMPacketizer) mPacketizer).setSamplingRate(mQuality.samplingRate);
 
-        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, mQuality.samplingRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, mQuality.samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
         mMediaCodec = MediaCodec.createEncoderByType("audio/mp4a-latm");
         MediaFormat format = new MediaFormat();
         format.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
@@ -246,9 +252,7 @@ public class AACStream extends AudioStream {
                                 inputBuffers[bufferIndex].put(buffer);
                                 //Log.v(TAG,"Pushing raw audio to the decoder: len="+len+" bs: "+inputBuffers[bufferIndex].capacity());
                                 mMediaCodec.queueInputBuffer(bufferIndex, 0, len, System.nanoTime() / 1000, 0);
-                                if (mAudioDataListener != null) {
-                                    mAudioDataListener.onDataReady(byteToShort(buffer));
-                                }
+                                sendBytes(buffer);
                             }
                         }
                     }
@@ -265,7 +269,24 @@ public class AACStream extends AudioStream {
         mPacketizer.start();
 
         mStreaming = true;
+    }
 
+    private void sendBytes(byte[] data) {
+        mCompositeDisposable.add(
+                Single.just(data).map(new Function<byte[], short[]>() {
+                    @Override
+                    public short[] apply(byte[] bytes) throws Exception {
+                        return byteToShort(bytes);
+                    }
+                }).subscribeOn(Schedulers.io()).subscribe(new Consumer<short[]>() {
+                    @Override
+                    public void accept(short[] shorts) throws Exception {
+                        if (mAudioDataListener != null) {
+                            mAudioDataListener.onDataReady(shorts);
+                        }
+                    }
+                })
+        );
     }
 
     private synchronized short[] byteToShort(byte[] data) {
@@ -291,6 +312,9 @@ public class AACStream extends AudioStream {
                 mAudioRecord.stop();
                 mAudioRecord.release();
                 mAudioRecord = null;
+                if (!mCompositeDisposable.isDisposed()) {
+                    mCompositeDisposable.dispose();
+                }
             }
             super.stop();
         }
