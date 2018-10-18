@@ -44,7 +44,7 @@ class ClientTalkFragment : DaggerFragment(), AudioDataListener {
     }
 
     override fun onDataReady(data: ShortArray?) {
-        //todo add data source
+        //TODO add data source 9.10.2018
         data ?: return
         if (isResumed) {
             clientHomeTalkVisualizerV.receive(data)

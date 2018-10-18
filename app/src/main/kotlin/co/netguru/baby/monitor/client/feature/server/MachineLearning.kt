@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.server
 
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
+import android.support.annotation.WorkerThread
 import co.netguru.baby.monitor.client.common.extensions.saveAssetToCache
 import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.common.DataBounder
@@ -35,6 +36,39 @@ class MachineLearning(
         testFile(context, TEST_FILE)
     }
 
+    fun feedData(array: ShortArray) {
+        newData = newData.plus(array.toTypedArray())
+        if (newData.size <= DATA_SIZE) {
+            return
+        }
+
+        Single.just(newData).map { data ->
+            val outputScores = FloatArray(labels.size)
+            val mappedData = FloatArray(DATA_SIZE) {
+                if (data.size < it) return@FloatArray 0f
+
+                return@FloatArray if (data[it] >= 0) {
+                    data[it].toFloat() / Short.MAX_VALUE
+                } else {
+                    data[it].toFloat() / (Short.MIN_VALUE) * -1
+                }
+            }
+            with(inferenceInterface) {
+                feed(SAMPLE_RATE_NAME, sampleRateList)
+                feed(INPUT_DATA_NAME, mappedData, DATA_SIZE.toLong(), 1)
+                run(outputScoresNames, true)
+                fetch(OUTPUT_SCORES_NAME, outputScores)
+            }
+            return@map outputScores
+        }.subscribeOn(Schedulers.io()).subscribeWithLiveData(result)
+    }
+
+    fun dispose() {
+        if (!compositeDisposable.isDisposed) {
+            compositeDisposable.dispose()
+        }
+    }
+
     //TODO when ML model will be ready remove this function and everything connected to it
     private fun testFile(context: Context, fileName: String) {
         context.saveAssetToCache(fileName)
@@ -54,8 +88,11 @@ class MachineLearning(
                 }
     }
 
+    @WorkerThread
     private fun convertStreamToShortData(inputStream: InputStream): ShortArray {
-        var bytes = getByteArrayOutputStream(inputStream).toByteArray()
+        var bytes = getByteArrayOutputStream(inputStream).use {
+            it.toByteArray()
+        }
         for (j in 0 until bytes.size) {
             if (areNextBytesProper(bytes, j)) {
                 bytes = bytes.drop(j + 4).toByteArray()
@@ -68,13 +105,12 @@ class MachineLearning(
         return shorts
     }
 
+    @WorkerThread
     private fun getByteArrayOutputStream(inputStream: InputStream): ByteArrayOutputStream {
         val baos = ByteArrayOutputStream()
         val buff = ByteArray(10240)
-        var i: Int
         while (inputStream.available() > 1) {
-            i = inputStream.read(buff, 0, buff.size)
-            baos.write(buff, 0, i)
+            baos.write(buff, 0, inputStream.read(buff, 0, buff.size))
         }
         return baos
     }
@@ -82,37 +118,6 @@ class MachineLearning(
     private fun areNextBytesProper(byteArray: ByteArray, index: Int): Boolean =
             (byteArray[index].toInt() == 0x64 && byteArray[index + 1].toInt() == 0x61
                     && byteArray[index + 2].toInt() == 0x74 && byteArray[index + 3].toInt() == 0x61)
-
-    fun feedData(array: ShortArray) {
-        newData = newData.plus(array.toTypedArray())
-        if (newData.size <= DATA_SIZE) {
-            return
-        }
-
-        Single.just(array).map { data ->
-            val outputScores = FloatArray(labels.size)
-            val mappedData = FloatArray(DATA_SIZE) {
-                if (data.size < it) return@FloatArray 0f
-
-                return@FloatArray if (data[it] >= 0) {
-                    data[it].toFloat() / Short.MAX_VALUE
-                } else {
-                    data[it].toFloat() / (Short.MIN_VALUE) * -1
-                }
-            }
-            inferenceInterface.feed(SAMPLE_RATE_NAME, sampleRateList)
-            inferenceInterface.feed(INPUT_DATA_NAME, mappedData, DATA_SIZE.toLong(), 1)
-            inferenceInterface.run(outputScoresNames, true)
-            inferenceInterface.fetch(OUTPUT_SCORES_NAME, outputScores)
-            return@map outputScores
-        }.subscribeOn(Schedulers.io()).subscribeWithLiveData(result)
-    }
-
-    fun dispose() {
-        if (!compositeDisposable.isDisposed) {
-            compositeDisposable.dispose()
-        }
-    }
 
     companion object {
         internal const val DATA_SIZE = 441_000

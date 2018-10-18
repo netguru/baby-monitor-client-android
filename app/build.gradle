@@ -203,7 +203,7 @@ dependencies {
     implementation libs.navigationFragment
     implementation libs.navigationUiKtx
 
-    //Tenser Flow
+    //Tensor Flow
     implementation libs.tensorFlow
 
     // Unit testing

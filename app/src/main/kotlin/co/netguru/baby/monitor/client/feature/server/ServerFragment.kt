@@ -31,7 +31,10 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
     private var session: Session? = null
 
     private var rtspServer: Intent? = null
-    private var machineLearning: MachineLearning? = null
+    private val machineLearning by lazy {
+        MachineLearning(requireContext(), Utils.AUDIO_SAMPLING_RATE)
+    }
+
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -41,18 +44,10 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         super.onViewCreated(view, savedInstanceState)
         surfaceView.holder.addCallback(this)
         surfaceView.setAspectRatioMode(SurfaceView.ASPECT_RATIO_PREVIEW)
-        "${R.id.action_mode_close_button}"
 
         rtspServer = Intent(requireContext(), RtspServer::class.java)
         requireActivity().startService(rtspServer)
-        machineLearning = MachineLearning(requireContext(), Utils.AUDIO_SAMPLING_RATE)
-        machineLearning?.result!!.observe(this, Observer {
-            when (it) {
-                is DataBounder.Next -> {
-                    Timber.e(it.data.toJson())
-                }
-            }
-        })
+        observeData()
     }
 
     override fun onResume() {
@@ -61,7 +56,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         }
-        machineLearning?.inferenceInterface!!
+        machineLearning.inferenceInterface
                 .graph()
                 .operations()
                 .forEach { Timber.e(it.name()) }
@@ -77,12 +72,12 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         super.onDestroyView()
         surfaceView.holder.removeCallback(this)
         requireActivity().stopService(rtspServer)
-        machineLearning?.dispose()
+        machineLearning.dispose()
     }
 
     override fun onDataReady(data: ShortArray?) {
         data ?: return
-        machineLearning?.feedData(data)
+        machineLearning.feedData(data)
     }
 
     override fun onRequestPermissionsResult(
@@ -128,6 +123,17 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         session?.stop()
         session?.release()
         session = null
+    }
+
+    private fun observeData() {
+        machineLearning.result.observe(this, Observer {
+            when (it) {
+                is DataBounder.Next -> {
+                    //TODO handle received data 18.10.2018
+                    Timber.e(it.data.toJson())
+                }
+            }
+        })
     }
 
     companion object {
