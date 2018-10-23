@@ -206,6 +206,9 @@ dependencies {
     //Tensor Flow
     implementation libs.tensorFlow
 
+    //Java Web Socket
+    implementation libs.javaWebSocket
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

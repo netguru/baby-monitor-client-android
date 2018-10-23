@@ -8,6 +8,9 @@
     <color name="black">#000000</color>
     <color name="black_a60">#99000000</color>
 
+    <color name="material_red_a400">#FF1744</color>
+    <color name="material_green_a400">#00E676</color>
+
     <color name="material_grey_400">#BDBDBD</color>
     <color name="material_gray_800">#424242</color>
 </resources>

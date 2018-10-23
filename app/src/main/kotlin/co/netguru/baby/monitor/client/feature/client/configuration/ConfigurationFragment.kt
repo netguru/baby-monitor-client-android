@@ -52,7 +52,7 @@ class ConfigurationFragment : DaggerFragment() {
             debugAddressGroup.setVisible(true)
             debugSetAddressButton.setOnClickListener {
                 if (!debugAddressEt.text.isNullOrEmpty()) {
-                    nsdServiceManager.appendNewAddress(debugAddressEt.trimmedText)
+                    nsdServiceManager.appendNewAddress(debugAddressEt.trimmedText, 5006)
                     findNavController().navigate(R.id.actionConfigurationClientHome)
                     requireActivity().finish()
                 }

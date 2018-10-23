@@ -17,10 +17,10 @@
         android:id="@+id/clientHomeChildLl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,6 +41,14 @@
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_normal"
             tools:text="Marysia" />
+
+        <ImageView
+            android:id="@+id/clientHomeChildAvailabilityIv"
+            android:layout_width="@dimen/spacing_xmedium"
+            android:layout_height="@dimen/spacing_xmedium"
+            android:layout_weight="0"
+            android:layout_marginStart="@dimen/spacing_small"
+            tools:background="@color/material_red_a400" />
 
         <ImageView
             android:id="@+id/clientHomeArrowIv"

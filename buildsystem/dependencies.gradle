@@ -61,8 +61,8 @@ ext {
             easyImage               : "com.github.jkwiecien:EasyImage:1.3.1",
             navigationFragment      : "android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha05",
             navigationUiKtx         : "android.arch.navigation:navigation-ui-ktx:1.0.0-alpha05",
-            tensorFlow              : "org.tensorflow:tensorflow-android:1.11.0"
-
+            tensorFlow              : "org.tensorflow:tensorflow-android:1.11.0",
+            javaWebSocket           : "org.java-websocket:Java-WebSocket:1.3.9"
     ]
 
     proc = [

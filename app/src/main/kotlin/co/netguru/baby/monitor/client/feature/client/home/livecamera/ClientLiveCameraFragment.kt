@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.net.Uri
@@ -9,8 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.videolan.libvlc.LibVLC
@@ -43,7 +44,7 @@ class ClientLiveCameraFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        prepareRtspPlayer()
+        observeServerStatus()
     }
 
     override fun onDestroyView() {
@@ -66,7 +67,7 @@ class ClientLiveCameraFragment : DaggerFragment() {
 
         with(mediaPlayer) {
             this.media = Media(
-                    libvlc, Uri.parse(viewModel.selectedChild.value?.serverUrl ?: "")
+                    libvlc, Uri.parse(viewModel.selectedChild.value?.rtspAddress)
             ).apply {
                 setHWDecoderEnabled(true, false)
                 addOption(":network-caching=150")
@@ -82,5 +83,14 @@ class ClientLiveCameraFragment : DaggerFragment() {
         stop()
         vlcVout.detachViews()
         libvlc.release()
+    }
+
+    private fun observeServerStatus() {
+        viewModel.selectedChildAvailability.observe(this, Observer { connected ->
+            when (connected) {
+                ConnectionStatus.CONNECTED -> prepareRtspPlayer()
+                else -> releasePlayer()
+            }
+        })
     }
 }

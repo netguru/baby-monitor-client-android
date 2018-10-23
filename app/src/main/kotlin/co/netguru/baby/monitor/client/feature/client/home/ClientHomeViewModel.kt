@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
+import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
@@ -7,14 +8,21 @@ import android.content.Context
 import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.common.DataBounder
+import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketClient
+import io.reactivex.Observable
 import io.reactivex.SingleSource
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.internal.operators.single.SingleDefer
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
@@ -23,6 +31,9 @@ class ClientHomeViewModel @Inject constructor(
 
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
+    internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
+    private val compositeDisposable = CompositeDisposable()
+    private var webSocketClient: CustomWebSocketClient? = null
 
     fun getChildrenList(): LiveData<DataBounder<List<ChildData>>> = SingleDefer.defer {
         SingleSource<List<ChildData>> {
@@ -68,4 +79,41 @@ class ClientHomeViewModel @Inject constructor(
             }
         }
     }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
+
+    fun connectToServer(childData: ChildData, lifecycleOwner: LifecycleOwner) {
+        close()
+        webSocketClient = CustomWebSocketClient(childData.webSocketAddress) { availability ->
+            if (availability == ConnectionStatus.CONNECTED) {
+                compositeDisposable.clear()
+            } else if (availability != selectedChildAvailability.value) {
+                tryToReconnect(childData, lifecycleOwner)
+            }
+            selectedChildAvailability.postValue(availability)
+        }.also {
+            lifecycleOwner.lifecycle.addObserver(it)
+        }
+    }
+
+    private fun tryToReconnect(childData: ChildData, lifecycleOwner: LifecycleOwner) {
+        Observable
+                .interval(5000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onNext = { connectToServer(childData, lifecycleOwner) },
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        close()
+        compositeDisposable.dispose()
+    }
+
+    private fun close() {
+        webSocketClient?.onDestroy()
+        if (webSocketClient?.isClosed == false) {
+            webSocketClient?.closeClient()
+        }
+    }
 }

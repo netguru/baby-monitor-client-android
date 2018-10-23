@@ -10,10 +10,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
+import co.netguru.baby.monitor.client.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.PresetedAnimations
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
 import co.netguru.baby.monitor.client.feature.common.DataBounder
+import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_client_home.*
@@ -77,10 +79,18 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
                     .load(it.image ?: "")
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeChildMiniatureIv)
+            viewModel.connectToServer(it, this@ClientHomeActivity)
         })
         viewModel.shouldHideNavbar.observe(this, Observer {
             it ?: return@Observer
             clientHomeBnv.setVisible(!it)
+        })
+        viewModel.selectedChildAvailability.observe(this, Observer { connection ->
+            val color = when (connection) {
+                ConnectionStatus.CONNECTED -> R.color.material_green_a400
+                else -> R.color.material_red_a400
+            }
+            clientHomeChildAvailabilityIv.setBackgroundColor(getColorCompat(color))
         })
 
         viewModel.getChildrenList().observe(this, Observer {
