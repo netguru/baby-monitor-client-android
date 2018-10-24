@@ -209,6 +209,9 @@ dependencies {
     //Java Web Socket
     implementation libs.javaWebSocket
 
+    //Material Dialogs
+    implementation libs.materialDialogs
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

@@ -3,6 +3,9 @@ package co.netguru.baby.monitor.client.application
 import android.content.Context
 import android.net.nsd.NsdManager
 import co.netguru.baby.monitor.client.application.scope.AppScope
+import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
+import co.netguru.baby.monitor.client.data.server.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -17,4 +20,7 @@ class ApplicationModule {
     @Reusable
     @Provides
     fun nsdManager(app: App): NsdManager = app.getSystemService(Context.NSD_SERVICE) as NsdManager
+
+    @Provides
+    fun addChildDialog(manager: NsdServiceManager, repository: ConfigurationRepository) = AddChildDialog(manager, repository)
 }

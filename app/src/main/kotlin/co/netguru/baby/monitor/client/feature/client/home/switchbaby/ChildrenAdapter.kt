@@ -10,12 +10,11 @@ class ChildrenAdapter(
         val onNewChildSelected: () -> Unit
 ) : RecyclerView.Adapter<ChildViewHolder>() {
 
-    private var selectedChild: ChildData? = null
-
+    internal var selectedChild: ChildData? = null
     internal var originalList by Delegates.observable(
             emptyList<ChildData>(),
             onChange = { property, oldValue, newValue ->
-                if (newValue.isNotEmpty()) {
+                if (newValue.isNotEmpty() && selectedChild == null) {
                     selectedChild = newValue.first()
                 }
                 childrenList = newValue

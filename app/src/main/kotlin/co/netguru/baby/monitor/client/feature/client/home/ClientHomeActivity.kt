@@ -13,6 +13,7 @@ import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.PresetedAnimations
+import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
 import co.netguru.baby.monitor.client.feature.common.DataBounder
 import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
@@ -28,8 +29,10 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
+    @Inject
+    internal lateinit var addChildDialog: AddChildDialog
 
-    private val viewModel by lazy {
+    private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
 
@@ -42,6 +45,14 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
 
     override fun onSupportNavigateUp() =
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
+
+    override fun onBackPressed() {
+        if (clientHomeChildrenEll.isExpanded) {
+            clientHomeChildrenEll.collapse()
+        } else {
+            super.onBackPressed()
+        }
+    }
 
     private fun setupView() {
         clientHomeBnv.setupWithNavController(
@@ -72,20 +83,20 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
     }
 
     private fun getData() {
-        viewModel.selectedChild.observe(this, Observer {
+        homeViewModel.selectedChild.observe(this, Observer {
             it ?: return@Observer
             setSelectedChildName(it.name ?: "")
-            GlideApp.with(this@ClientHomeActivity)
-                    .load(it.image ?: "")
+            GlideApp.with(this)
+                    .load(it.image)
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeChildMiniatureIv)
-            viewModel.connectToServer(it, this@ClientHomeActivity)
+            homeViewModel.connectToServer(it, this)
         })
-        viewModel.shouldHideNavbar.observe(this, Observer {
+        homeViewModel.shouldHideNavbar.observe(this, Observer {
             it ?: return@Observer
             clientHomeBnv.setVisible(!it)
         })
-        viewModel.selectedChildAvailability.observe(this, Observer { connection ->
+        homeViewModel.selectedChildAvailability.observe(this, Observer { connection ->
             val color = when (connection) {
                 ConnectionStatus.CONNECTED -> R.color.material_green_a400
                 else -> R.color.material_red_a400
@@ -93,19 +104,28 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             clientHomeChildAvailabilityIv.setBackgroundColor(getColorCompat(color))
         })
 
-        viewModel.getChildrenList().observe(this, Observer {
+        homeViewModel.getChildrenList().observe(this, Observer {
             when (it) {
                 is DataBounder.Next -> {
                     val childrenAdapter: ChildrenAdapter by lazy {
                         ChildrenAdapter(
                                 onChildSelected = { childData ->
                                     setSelectedChildName(childData.name ?: "")
-                                    viewModel.selectedChild.postValue(childData)
+                                    homeViewModel.selectedChild.postValue(childData)
                                 },
                                 onNewChildSelected = {
-                                    //TODO implement adding new child logic here
+                                    clientHomeChildrenEll.collapse()
+                                    addChildDialog.showDialog(this,
+                                            onChildAdded = {
+                                                homeViewModel.setSelectedChildWithAddress(it)
+                                            },
+                                            onServiceConnectionError = {
+
+                                            }
+                                    )
                                 }
                         ).apply {
+                            selectedChild = homeViewModel.selectedChild.value ?: selectedChild
                             originalList = it.data
                         }
                     }

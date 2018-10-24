@@ -32,10 +32,6 @@ class MachineLearning(
     private val sampleRateList = intArrayOf(sampleRate)
     private var newData = emptyArray<Short>()
 
-    init {
-        testFile(context, TEST_FILE)
-    }
-
     fun feedData(array: ShortArray) {
         newData = newData.plus(array.toTypedArray())
         if (newData.size <= DATA_SIZE) {
@@ -65,9 +61,7 @@ class MachineLearning(
     }
 
     fun dispose() {
-        if (!compositeDisposable.isDisposed) {
-            compositeDisposable.dispose()
-        }
+        compositeDisposable.dispose()
     }
 
     //TODO when ML model will be ready remove this function and everything connected to it

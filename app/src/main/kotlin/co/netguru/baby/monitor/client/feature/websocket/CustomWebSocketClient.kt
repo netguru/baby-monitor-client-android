@@ -4,7 +4,7 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus.*
-import io.reactivex.Single
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -23,10 +23,10 @@ class CustomWebSocketClient(
     private var availability: ConnectionStatus = UNKNOWN
 
     init {
-        Single.fromCallable {
+        Completable.fromAction {
             connect()
         }.subscribeOn(Schedulers.io()).subscribeBy(
-                onSuccess = {
+                onComplete = {
                     Timber.i("Success")
                 },
                 onError = {
@@ -36,10 +36,10 @@ class CustomWebSocketClient(
     }
 
     fun closeClient() {
-        Single.fromCallable{
+        Completable.fromAction {
             close(1000)
         }.subscribeOn(Schedulers.io()).subscribeBy(
-                onSuccess = {
+                onComplete = {
                     Timber.i("Closed")
                 },
                 onError = {
