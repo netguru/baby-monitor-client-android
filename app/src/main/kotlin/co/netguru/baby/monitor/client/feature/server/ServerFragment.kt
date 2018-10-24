@@ -13,6 +13,7 @@ import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.common.DataBounder
+import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketServer
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
@@ -29,11 +30,11 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
     internal lateinit var nsdServiceManager: NsdServiceManager
 
     private var session: Session? = null
-
     private var rtspServer: Intent? = null
     private val machineLearning by lazy {
         MachineLearning(requireContext(), Utils.AUDIO_SAMPLING_RATE)
     }
+    private var webSocketServer: CustomWebSocketServer? = null
 
 
     override fun onCreateView(
@@ -56,16 +57,13 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         }
-        machineLearning.inferenceInterface
-                .graph()
-                .operations()
-                .forEach { Timber.e(it.name()) }
     }
 
     override fun onPause() {
         super.onPause()
         nsdServiceManager.unregisterService()
         stopAndClearSession()
+        webSocketServer?.stopServer()
     }
 
     override fun onDestroyView() {
@@ -116,6 +114,10 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         if (requireContext().allPermissionsGranted(permissions)) {
             session = Utils.buildService(surfaceView, requireActivity(), this, this)
             session?.start()
+            webSocketServer = CustomWebSocketServer().also {
+                it.runServer()
+                this.lifecycle.addObserver(it)
+            }
         }
     }
 

@@ -18,7 +18,6 @@
 
         <action
             android:id="@+id/actionSplashToClientHome"
-            app:clearTask="true"
             app:destination="@+id/clientHomeActivity" />
     </fragment>
 
