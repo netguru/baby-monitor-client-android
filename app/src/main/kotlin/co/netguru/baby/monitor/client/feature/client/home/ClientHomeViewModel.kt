@@ -10,6 +10,7 @@ import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.common.DataBounder
 import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketClient
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.SingleSource
 import io.reactivex.disposables.CompositeDisposable
@@ -32,18 +33,26 @@ class ClientHomeViewModel @Inject constructor(
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
+    private val childList = MutableLiveData<DataBounder<List<ChildData>>>()
     private val compositeDisposable = CompositeDisposable()
     private var webSocketClient: CustomWebSocketClient? = null
 
     fun getChildrenList(): LiveData<DataBounder<List<ChildData>>> = SingleDefer.defer {
         SingleSource<List<ChildData>> {
             val list = configurationRepository.childrenList.toMutableList()
-            if (list.isNotEmpty()) {
+            if (selectedChild.value == null && list.isNotEmpty()) {
                 selectedChild.postValue(list.first())
             }
             it.onSuccess(list)
         }
-    }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
+    }.subscribeOn(Schedulers.io()).subscribeWithLiveData(childList)
+
+    fun setSelectedChildWithAddress(address: String) = Completable.fromAction {
+        configurationRepository.childrenList.find { it.serverUrl == address }?.also {
+            selectedChild.postValue(it)
+            getChildrenList()
+        }
+    }.subscribeOn(Schedulers.io()).subscribe { Timber.d("complete") }
 
     fun updateChildName(name: String) = {
         selectedChild.value?.name = name

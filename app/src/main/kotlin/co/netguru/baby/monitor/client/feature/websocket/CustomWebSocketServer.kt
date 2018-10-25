@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.feature.websocket
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
-import io.reactivex.Single
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -22,10 +22,10 @@ class CustomWebSocketServer(
     private val connectionList = mutableListOf<WebSocket>()
 
     internal fun runServer() {
-        Single.fromCallable {
+        Completable.fromAction {
             run()
         }.subscribeOn(Schedulers.io()).subscribeBy(
-                onSuccess = {
+                onComplete = {
                     Timber.i("CustomWebSocketServer started")
                 },
                 onError = {
@@ -35,14 +35,14 @@ class CustomWebSocketServer(
     }
 
     internal fun stopServer() {
-        Single.fromCallable {
+        Completable.fromAction {
             stop()
         }.subscribeOn(Schedulers.io()).subscribeBy(
-                onSuccess = {
+                onComplete= {
                     Timber.i("CustomWebSocketServer closed")
                 },
                 onError = {
-                    Timber.e("launch failed $it")
+                    Timber.e("stop failed $it")
                 }
         ).addTo(compositeDisposable)
     }

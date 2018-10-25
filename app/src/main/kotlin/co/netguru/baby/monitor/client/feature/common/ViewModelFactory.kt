@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.common
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
+import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import dagger.Binds
 import dagger.MapKey
@@ -35,6 +36,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ClientHomeViewModel::class)
     abstract fun bindClientHomeActivityViewModel(clientHomeViewModel: ClientHomeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ConfigurationViewModel::class)
+    abstract fun bindConfigurationViewModel(configurationViewModel :ConfigurationViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

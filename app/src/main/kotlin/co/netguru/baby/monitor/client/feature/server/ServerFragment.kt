@@ -72,7 +72,6 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         requireActivity().stopService(rtspServer)
         machineLearning.dispose()
     }
-
     override fun onDataReady(data: ShortArray?) {
         data ?: return
         machineLearning.feedData(data)

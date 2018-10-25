@@ -28,4 +28,6 @@
     <string name="switch_mode_btn">switch</string>
     <string name="header_lullaby_volume">Lullaby volume</string>
     <string name="configuration_baby_save_btn">save</string>
+    <string name="server_on_list_message">Already added</string>
+    <string name="add_child_dialog_title">Select new child</string>
 </resources>

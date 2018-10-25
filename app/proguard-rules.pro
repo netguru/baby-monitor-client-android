@@ -97,6 +97,10 @@
   **[] $VALUES;
   public *;
 }
+-keepclassmembers enum * {
+public static **[] values();
+public static ** valueOf(java.lang.String);
+}
 
 -dontwarn okhttp3.**
 -dontwarn okio.**

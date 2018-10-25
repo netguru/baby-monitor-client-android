@@ -1,5 +1,8 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +18,24 @@ import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_configuration.*
 import javax.inject.Inject
 
-class ConfigurationFragment : DaggerFragment() {
+class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConnectedListener {
 
     @Inject
-    internal lateinit var nsdServiceManager: NsdServiceManager
+    internal lateinit var factory: ViewModelProvider.Factory
+    private val viewModel by lazy {
+        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
+    }
+
+    private val adapter by lazy {
+        ServiceAdapter { serviceInfo ->
+            viewModel.appendNewAddress(serviceInfo.host.hostAddress, serviceInfo.port) { success ->
+                if (success) {
+                    findNavController().navigate(R.id.actionConfigurationClientHome)
+                    requireActivity().finish()
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -28,23 +45,23 @@ class ConfigurationFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        startDiscoveringButton.setOnClickListener {
-            showProgressBar(true)
-            nsdServiceManager.discoverService(object :
-                    NsdServiceManager.OnServiceConnectedListener {
-                override fun onServiceConnected() {
-                    nsdServiceManager.stopServiceDiscovery()
-                    findNavController().navigate(R.id.actionConfigurationClientHome)
-                    requireActivity().finish()
-                }
-
-                override fun onServiceConnectionError() {
-                    showProgressBar(false)
-                    showSnackbarMessage(R.string.discovering_services_error)
-                }
-            })
-        }
+        setupView()
         setupDebugViews()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.stopNsdServiceDiscovery()
+    }
+
+    override fun onServiceConnectionError() {
+        showSnackbarMessage(R.string.discovering_services_error)
+    }
+
+    private fun setupView() {
+        discoveredDevicesRv.adapter = adapter
+        showProgressBar(true)
+        viewModel.discoverNsdService(this)
     }
 
     private fun setupDebugViews() {
@@ -52,16 +69,19 @@ class ConfigurationFragment : DaggerFragment() {
             debugAddressGroup.setVisible(true)
             debugSetAddressButton.setOnClickListener {
                 if (!debugAddressEt.text.isNullOrEmpty()) {
-                    nsdServiceManager.appendNewAddress(debugAddressEt.trimmedText, 5006)
-                    findNavController().navigate(R.id.actionConfigurationClientHome)
-                    requireActivity().finish()
+                    viewModel.appendNewAddress(debugAddressEt.trimmedText, 5006) {
+                        findNavController().navigate(R.id.actionConfigurationClientHome)
+                        requireActivity().finish()
+                    }
                 }
             }
         }
+        viewModel.serviceInfoData.observe(this, Observer { servicesList ->
+            adapter.list = servicesList ?: return@Observer
+        })
     }
 
     private fun showProgressBar(isVisible: Boolean) {
         progressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
-        startDiscoveringButton.visibility = if (!isVisible) View.VISIBLE else View.GONE
     }
 }
