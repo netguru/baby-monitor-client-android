@@ -65,6 +65,9 @@ abstract public class AbstractPacketizer {
     public void setTimeToLive(int ttl) throws IOException {
         socket.setTimeToLive(ttl);
     }
+    public void closeSocket() {
+        socket.close();
+    }
 
     /**
      * Sets the destination of the stream.

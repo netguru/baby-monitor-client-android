@@ -18,13 +18,13 @@ class ServiceViewHolder(
     private lateinit var data: NsdServiceInfo
 
     init {
-        itemServiceContainerLl.setOnClickListener {
+        itemServiceAddressBtn.setOnClickListener {
             onServiceSelected(data)
         }
     }
 
     override fun bindView(item: NsdServiceInfo) {
         data = item
-        itemServiceAddressTv.text = item.host.hostAddress
+        itemServiceAddressBtn.text = item.host.hostAddress
     }
 }

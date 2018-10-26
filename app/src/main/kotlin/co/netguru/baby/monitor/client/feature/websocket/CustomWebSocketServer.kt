@@ -1,8 +1,6 @@
 package co.netguru.baby.monitor.client.feature.websocket
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
+import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -15,8 +13,10 @@ import timber.log.Timber
 import java.net.InetSocketAddress
 
 class CustomWebSocketServer(
-        port: Int? = null
-) : WebSocketServer(InetSocketAddress(port ?: PORT)), LifecycleObserver {
+        port: Int? = null,
+        private val onLullabyRequestReceived: (String) -> Unit,
+        private val onErrorListener: (Exception) -> Unit
+) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
     private val compositeDisposable = CompositeDisposable()
     private val connectionList = mutableListOf<WebSocket>()
@@ -38,7 +38,7 @@ class CustomWebSocketServer(
         Completable.fromAction {
             stop()
         }.subscribeOn(Schedulers.io()).subscribeBy(
-                onComplete= {
+                onComplete = {
                     Timber.i("CustomWebSocketServer closed")
                 },
                 onError = {
@@ -48,7 +48,7 @@ class CustomWebSocketServer(
     }
 
     override fun onOpen(conn: WebSocket?, handshake: ClientHandshake?) {
-        Timber.e("onOpen: ${conn?.remoteSocketAddress?.address?.hostAddress}")
+        Timber.i("onOpen: ${conn?.remoteSocketAddress?.address?.hostAddress}")
         connectionList.add(conn ?: return)
     }
 
@@ -57,7 +57,10 @@ class CustomWebSocketServer(
     }
 
     override fun onMessage(conn: WebSocket?, message: String?) {
-        Timber.e(message)
+        Timber.i(message)
+        LullabyPlayer.lullabies.find { it.name == message }?.let { lullaby ->
+            onLullabyRequestReceived(lullaby.name)
+        }
     }
 
     override fun onStart() {
@@ -66,14 +69,14 @@ class CustomWebSocketServer(
 
     override fun onError(conn: WebSocket?, ex: Exception?) {
         Timber.e("onError: $ex")
+        ex?.let(onErrorListener)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     internal fun onDestroy() {
         compositeDisposable.dispose()
     }
 
     companion object {
-        private const val PORT = 8887
+        internal const val PORT = 63124
     }
 }

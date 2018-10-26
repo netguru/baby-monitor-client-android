@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.client.home.lullabies
 
-import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -10,14 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
-import co.netguru.baby.monitor.client.feature.common.DataBounder
+import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_lullabies.*
+import javax.inject.Inject
 
-class ClientLullabiesFragment : Fragment() {
+class ClientLullabiesFragment : DaggerFragment() {
 
+    @Inject
+    internal lateinit var factory: ViewModelProvider.Factory
+
+    private val viewModel by lazy {
+        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
+    }
     private val lullabiesAdapter by lazy {
-        LullabiesAdapter {
-            //TODO implement logic of choosing lullaby
+        LullabiesAdapter { lullabyData ->
+            viewModel.requestLullabyPlayback(lullabyData.name)
         }
     }
 
@@ -29,20 +38,11 @@ class ClientLullabiesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        LullabyData.getSampleData().observe(this, Observer { data ->
-            data ?: return@Observer
-            when (data) {
-                is DataBounder.Next -> {
-                    with(clientHomeLullabyRv) {
-                        val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-                        lullabiesAdapter.lullabies = data.data
-
-                        clientHomeLullabyRv.adapter = lullabiesAdapter
-                        addItemDecoration(StickyHeaderDecorator(lullabiesAdapter))
-                        addItemDecoration(dividerItemDecoration)
-                    }
-                }
-            }
-        })
+        with(clientHomeLullabyRv) {
+            adapter = lullabiesAdapter
+            addItemDecoration(StickyHeaderDecorator(lullabiesAdapter))
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        }
+        lullabiesAdapter.lullabies = LullabyPlayer.lullabies
     }
 }
