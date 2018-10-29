@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.websocket
 
+import co.netguru.baby.monitor.client.common.extensions.toData
 import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus.*
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -14,7 +15,8 @@ import java.util.concurrent.TimeUnit
 
 class CustomWebSocketClient(
         serverUrl: String,
-        private val onAvailabilityChange: (ConnectionStatus) -> Unit
+        private val onAvailabilityChange: (ConnectionStatus) -> Unit,
+        private val onCommandResponse: (LullabyCommand) -> Unit
 ) : WebSocketClient(URI(serverUrl)) {
 
     private val compositeDisposable = CompositeDisposable()
@@ -58,6 +60,9 @@ class CustomWebSocketClient(
 
     override fun onMessage(message: String?) {
         Timber.i("onMessage: $message")
+        message?.toData<LullabyCommand>()?.let { command ->
+            onCommandResponse(command)
+        }
     }
 
     override fun onError(ex: Exception?) {

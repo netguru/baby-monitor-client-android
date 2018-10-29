@@ -1,15 +1,17 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
+import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.common.DataBounder
+import co.netguru.baby.monitor.client.feature.websocket.Action
 import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketClient
+import co.netguru.baby.monitor.client.feature.websocket.LullabyCommand
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.SingleSource
@@ -30,6 +32,7 @@ class ClientHomeViewModel @Inject constructor(
         private val configurationRepository: ConfigurationRepository
 ) : ViewModel() {
 
+    internal val lullabyCommands = MutableLiveData<LullabyCommand>()
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
@@ -88,16 +91,20 @@ class ClientHomeViewModel @Inject constructor(
     fun connectToServer(childData: ChildData) {
         webSocketClient?.onDestroy()
         compositeDisposable.clear()
-        webSocketClient = CustomWebSocketClient(childData.webSocketAddress) { availability ->
-            if (availability == ConnectionStatus.DISCONNECTED) {
-                tryToReconnect(childData)
-            }
-            selectedChildAvailability.postValue(availability)
-        }
+        webSocketClient = CustomWebSocketClient(
+                childData.webSocketAddress,
+                onAvailabilityChange = { availability ->
+                    if (availability == ConnectionStatus.DISCONNECTED) {
+                        tryToReconnect(childData)
+                    }
+                    selectedChildAvailability.postValue(availability)
+                },
+                onCommandResponse = { lullabyCommands.postValue(it) }
+        )
     }
 
-    fun requestLullabyPlayback(name: String) {
-        webSocketClient?.sendMessage(name)
+    fun manageLullabyPlayback(name: String, action: Action) {
+        webSocketClient?.sendMessage(LullabyCommand(name, action).toJson())
     }
 
     private fun tryToReconnect(childData: ChildData) {

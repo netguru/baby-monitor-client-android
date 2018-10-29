@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
+import co.netguru.baby.monitor.client.feature.websocket.Action
 
 class LullabiesAdapter(
-        private val onLullabyPlayPressed: (LullabyData) -> Unit
+        private val onLullabyPlayPressed: (name: String, action: Action) -> Unit
 ) : RecyclerView.Adapter<LullabiesViewHolder>(), StickyHeaderInterface {
 
     private var indexOfSecondHeader = 0

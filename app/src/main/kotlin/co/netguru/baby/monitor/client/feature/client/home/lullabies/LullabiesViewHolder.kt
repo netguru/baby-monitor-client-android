@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.base.BaseViewHolder
-import kotlinx.android.synthetic.main.item_lullaby.*
+import co.netguru.baby.monitor.client.feature.websocket.Action
+import kotlinx.android.synthetic.main.item_lullaby_alternative.*
 import kotlinx.android.synthetic.main.item_lullaby_header.*
 
 abstract class LullabiesViewHolder(
@@ -30,14 +31,17 @@ class LullabiesHeaderHolder(
 
 class LullabiesDataHolder(
         parent: ViewGroup,
-        onLullabyPlayPressed: (LullabyData) -> Unit
-) : LullabiesViewHolder(parent, R.layout.item_lullaby) {
+        onLullabyPlayPressed: (name: String, action: Action) -> Unit
+) : LullabiesViewHolder(parent, R.layout.item_lullaby_alternative) {
 
-    private var data: LullabyData? = null
+    private var data: LullabyData.LullabyInfo? = null
 
     init {
-        lullabyPlayCrl.setOnClickListener {
-            data?.let(onLullabyPlayPressed)
+        lullabyPlayIbtn.setOnClickListener {
+            val action = if (data?.action == Action.STOP) Action.PLAY else Action.STOP
+            data?.let{data ->
+                onLullabyPlayPressed(data.name, action)
+            }
         }
     }
 
@@ -45,5 +49,9 @@ class LullabiesDataHolder(
         data = this
         lullabyTitleTv.text = name
         lullabyDurationTv.text = duration
+        when (item.action) {
+            Action.STOP -> lullabyPlayIbtn.setImageResource(R.drawable.ic_play_arrow_white_24dp)
+            else -> lullabyPlayIbtn.setImageResource(R.drawable.ic_stop_white_24dp)
+        }
     }
 }
