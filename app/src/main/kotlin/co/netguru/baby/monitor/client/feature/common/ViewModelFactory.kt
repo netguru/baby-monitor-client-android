@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabiesViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import dagger.Binds
 import dagger.MapKey
@@ -47,6 +48,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ServerViewModel::class)
     abstract fun bindServerViewModel(serverViewModel: ServerViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LullabiesViewModel::class)
+    abstract fun bindLullabiesViewModel(lullabiesViewModel: LullabiesViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

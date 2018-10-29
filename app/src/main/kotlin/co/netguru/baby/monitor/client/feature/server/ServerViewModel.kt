@@ -1,9 +1,11 @@
 package co.netguru.baby.monitor.client.feature.server
 
 import android.arch.lifecycle.ViewModel
+import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketServer
+import co.netguru.baby.monitor.client.feature.websocket.LullabyCommand
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -17,10 +19,18 @@ import javax.inject.Inject
 class ServerViewModel @Inject constructor(
         private val nsdServiceManager: NsdServiceManager,
         private val lullabyPlayer: LullabyPlayer
-) : ViewModel() {
+) : ViewModel(), LullabyPlayer.PlaybackEvents {
 
     private val compositeDisposable = CompositeDisposable()
     private var webSocketServer: CustomWebSocketServer? = null
+
+    init {
+        lullabyPlayer.playbackEvents = this
+    }
+
+    override fun onLullabyEnded(command: LullabyCommand) {
+        webSocketServer?.sendBroadcast(command.toJson())
+    }
 
     internal fun registerNsdService() {
         nsdServiceManager.registerService()
@@ -32,10 +42,13 @@ class ServerViewModel @Inject constructor(
 
     internal fun setupWebSocketServer() {
         webSocketServer = CustomWebSocketServer(
-                onLullabyRequestReceived = { title ->
-                    lullabyPlayer.play(title)
+                onLullabyCommandReceived = { lullabyCommand ->
+                    lullabyPlayer.handleActionRequest(lullabyCommand)
                             ?.subscribeOn(Schedulers.io())!!
                             .subscribeBy(
+                                    onSuccess = { command ->
+                                        webSocketServer?.sendBroadcast(command.toJson())
+                                    },
                                     onError = Timber::e
                             )
                             .addTo(compositeDisposable)

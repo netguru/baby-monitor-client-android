@@ -1,5 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home.lullabies
 
+import co.netguru.baby.monitor.client.feature.websocket.Action
+
 sealed class LullabyData {
 
     abstract val name: String
@@ -7,6 +9,7 @@ sealed class LullabyData {
     data class LullabyInfo(
             override val name: String,
             val duration: String,
+            var action: Action = Action.STOP,
             val source: String = ""
     ) : LullabyData()
 

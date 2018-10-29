@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.websocket
 
-import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import co.netguru.baby.monitor.client.common.extensions.toData
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -14,7 +14,7 @@ import java.net.InetSocketAddress
 
 class CustomWebSocketServer(
         port: Int? = null,
-        private val onLullabyRequestReceived: (String) -> Unit,
+        private val onLullabyCommandReceived: (LullabyCommand) -> Unit,
         private val onErrorListener: (Exception) -> Unit
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
@@ -58,8 +58,8 @@ class CustomWebSocketServer(
 
     override fun onMessage(conn: WebSocket?, message: String?) {
         Timber.i(message)
-        LullabyPlayer.lullabies.find { it.name == message }?.let { lullaby ->
-            onLullabyRequestReceived(lullaby.name)
+        message?.toData<LullabyCommand>()?.let { command ->
+            onLullabyCommandReceived(command)
         }
     }
 
@@ -70,6 +70,11 @@ class CustomWebSocketServer(
     override fun onError(conn: WebSocket?, ex: Exception?) {
         Timber.e("onError: $ex")
         ex?.let(onErrorListener)
+    }
+
+    internal fun sendBroadcast(message: String) {
+        Timber.i(message)
+        broadcast(message)
     }
 
     internal fun onDestroy() {
