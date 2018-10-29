@@ -688,6 +688,7 @@ public class Session {
      * Deletes all existing tracks & release associated resources.
      */
     public void release() {
+        SessionBuilder.clear();
         removeAudioTrack();
         removeVideoTrack();
         mHandler.getLooper().quit();

@@ -111,6 +111,10 @@ public class SessionBuilder {
         return sInstance;
     }
 
+    public static void clear() {
+        sInstance = null;
+    }
+
     /**
      * Creates a new {@link Session}.
      *

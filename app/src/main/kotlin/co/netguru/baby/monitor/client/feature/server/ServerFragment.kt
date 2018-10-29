@@ -2,6 +2,8 @@ package co.netguru.baby.monitor.client.feature.server
 
 import android.Manifest.permission.*
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,9 +13,8 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.toJson
-import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.common.DataBounder
-import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketServer
+import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
@@ -27,15 +28,16 @@ import javax.inject.Inject
 class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.CallbackListener,
         Session.Callback, AudioDataListener {
     @Inject
-    internal lateinit var nsdServiceManager: NsdServiceManager
+    internal lateinit var factory: ViewModelProvider.Factory
 
+    private val viewModel by lazy {
+        ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
+    }
     private var session: Session? = null
     private var rtspServer: Intent? = null
     private val machineLearning by lazy {
         MachineLearning(requireContext(), Utils.AUDIO_SAMPLING_RATE)
     }
-    private var webSocketServer: CustomWebSocketServer? = null
-
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -53,7 +55,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
     override fun onResume() {
         super.onResume()
-        nsdServiceManager.registerService()
+        viewModel.registerNsdService()
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         }
@@ -61,9 +63,9 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
 
     override fun onPause() {
         super.onPause()
-        nsdServiceManager.unregisterService()
+        viewModel.unregisterNsdService()
         stopAndClearSession()
-        webSocketServer?.stopServer()
+        viewModel.stopWebSocketServer()
     }
 
     override fun onDestroyView() {
@@ -72,6 +74,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         requireActivity().stopService(rtspServer)
         machineLearning.dispose()
     }
+
     override fun onDataReady(data: ShortArray?) {
         data ?: return
         machineLearning.feedData(data)
@@ -113,10 +116,7 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
         if (requireContext().allPermissionsGranted(permissions)) {
             session = Utils.buildService(surfaceView, requireActivity(), this, this)
             session?.start()
-            webSocketServer = CustomWebSocketServer().also {
-                it.runServer()
-                this.lifecycle.addObserver(it)
-            }
+            viewModel.setupWebSocketServer()
         }
     }
 

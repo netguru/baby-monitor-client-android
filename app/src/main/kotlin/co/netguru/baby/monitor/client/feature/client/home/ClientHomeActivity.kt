@@ -90,7 +90,7 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
                     .load(it.image)
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeChildMiniatureIv)
-            homeViewModel.connectToServer(it, this)
+            homeViewModel.connectToServer(it)
         })
         homeViewModel.shouldHideNavbar.observe(this, Observer {
             it ?: return@Observer

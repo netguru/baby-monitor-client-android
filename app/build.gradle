@@ -212,6 +212,9 @@ dependencies {
     //Material Dialogs
     implementation libs.materialDialogs
 
+    //ExoPlayer
+    implementation libs.exoPlayer
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

@@ -58,13 +58,9 @@ class ClientHomeViewModel @Inject constructor(
         selectedChild.value?.name = name
         configurationRepository.updateChildData(selectedChild.value)
         selectedChild.postValue(selectedChild.value)
-    }.toCompletable().subscribeOn(Schedulers.io()).subscribe { Timber.d("complete") }
-
-    private fun updateChildImageSource(path: String) = {
-        selectedChild.value?.image = path
-        configurationRepository.updateChildData(selectedChild.value)
-        selectedChild.postValue(selectedChild.value)
-    }.toCompletable().subscribeOn(Schedulers.io()).subscribe { Timber.d("complete") }
+    }.toCompletable()
+            .subscribeOn(Schedulers.io())
+            .subscribe { Timber.d("complete") }
 
     fun saveImage(context: Context, cache: File?) = SingleDefer.defer {
         SingleSource<Boolean> {
@@ -89,40 +85,45 @@ class ClientHomeViewModel @Inject constructor(
         }
     }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
 
-    fun connectToServer(childData: ChildData, lifecycleOwner: LifecycleOwner) {
-        close()
+    fun connectToServer(childData: ChildData) {
+        webSocketClient?.onDestroy()
+        compositeDisposable.clear()
         webSocketClient = CustomWebSocketClient(childData.webSocketAddress) { availability ->
-            if (availability == ConnectionStatus.CONNECTED) {
-                compositeDisposable.clear()
-            } else if (availability != selectedChildAvailability.value) {
-                tryToReconnect(childData, lifecycleOwner)
+            if (availability == ConnectionStatus.DISCONNECTED) {
+                tryToReconnect(childData)
             }
             selectedChildAvailability.postValue(availability)
-        }.also {
-            lifecycleOwner.lifecycle.addObserver(it)
         }
     }
 
-    private fun tryToReconnect(childData: ChildData, lifecycleOwner: LifecycleOwner) {
+    fun requestLullabyPlayback(name: String) {
+        webSocketClient?.sendMessage(name)
+    }
+
+    private fun tryToReconnect(childData: ChildData) {
         Observable
-                .interval(5000, TimeUnit.MILLISECONDS)
+                .timer(5000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
-                        onNext = { connectToServer(childData, lifecycleOwner) },
-                        onError = Timber::e
+                        onNext = { connectToServer(childData) },
+                        onError = { exception ->
+                            Timber.e(exception)
+                            webSocketClient?.onDestroy()
+                        }
                 ).addTo(compositeDisposable)
     }
 
+    private fun updateChildImageSource(path: String) = {
+        selectedChild.value?.image = path
+        configurationRepository.updateChildData(selectedChild.value)
+        selectedChild.postValue(selectedChild.value)
+    }.toCompletable()
+            .subscribeOn(Schedulers.io())
+            .subscribe { Timber.d("complete") }
+
     override fun onCleared() {
         super.onCleared()
-        close()
-        compositeDisposable.dispose()
-    }
-
-    private fun close() {
         webSocketClient?.onDestroy()
-        if (webSocketClient?.isClosed == false) {
-            webSocketClient?.closeClient()
-        }
+        compositeDisposable.dispose()
     }
 }

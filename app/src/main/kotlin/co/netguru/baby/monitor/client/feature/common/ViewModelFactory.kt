@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module
@@ -16,14 +17,14 @@ import kotlin.reflect.KClass
 @Suppress("UNCHECKED_CAST")
 @AppScope
 class ViewModelFactory @Inject constructor(
-    private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>
+        private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-        viewModels[modelClass]?.get() as T
+            viewModels[modelClass]?.get() as T
 }
 
 @Target(
-    AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER
+        AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER
 )
 @Retention(AnnotationRetention.RUNTIME)
 @MapKey
@@ -40,7 +41,12 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(ConfigurationViewModel::class)
-    abstract fun bindConfigurationViewModel(configurationViewModel :ConfigurationViewModel): ViewModel
+    abstract fun bindConfigurationViewModel(configurationViewModel: ConfigurationViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ServerViewModel::class)
+    abstract fun bindServerViewModel(serverViewModel: ServerViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

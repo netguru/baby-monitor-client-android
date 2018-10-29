@@ -6,6 +6,7 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
+import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -23,4 +24,7 @@ class ApplicationModule {
 
     @Provides
     fun addChildDialog(manager: NsdServiceManager, repository: ConfigurationRepository) = AddChildDialog(manager, repository)
+
+    @Provides
+    fun lullabyPlayer(app: App) = LullabyPlayer(app)
 }

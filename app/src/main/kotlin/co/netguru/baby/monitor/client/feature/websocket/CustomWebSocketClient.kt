@@ -1,8 +1,5 @@
 package co.netguru.baby.monitor.client.feature.websocket
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
 import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus.*
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -13,23 +10,25 @@ import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import timber.log.Timber
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
 class CustomWebSocketClient(
         serverUrl: String,
         private val onAvailabilityChange: (ConnectionStatus) -> Unit
-) : WebSocketClient(URI(serverUrl)), LifecycleObserver {
+) : WebSocketClient(URI(serverUrl)) {
 
     private val compositeDisposable = CompositeDisposable()
     private var availability: ConnectionStatus = UNKNOWN
 
     init {
         Completable.fromAction {
-            connect()
-        }.subscribeOn(Schedulers.io()).subscribeBy(
+            connectBlocking(5, TimeUnit.SECONDS)
+        }.timeout(5, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribeBy(
                 onComplete = {
-                    Timber.i("Success")
+                    Timber.i("Complete")
                 },
                 onError = {
+                    Timber.e(it)
                     notifyAvailabilityChange(DISCONNECTED)
                 }
         ).addTo(compositeDisposable)
@@ -66,8 +65,14 @@ class CustomWebSocketClient(
         notifyAvailabilityChange(DISCONNECTED)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    internal fun sendMessage(string: String) {
+        if (availability == CONNECTED) {
+            send(string)
+        }
+    }
+
     internal fun onDestroy() {
+        closeClient()
         compositeDisposable.dispose()
     }
 

@@ -312,8 +312,10 @@ public abstract class MediaStream implements Stream {
                     mMediaRecorder.release();
                     mMediaRecorder = null;
                     closeSockets();
+                    mPacketizer.closeSocket();
                     mPacketizer.stop();
                 } else {
+                    mPacketizer.closeSocket();
                     mPacketizer.stop();
                     mMediaCodec.stop();
                     mMediaCodec.release();
