@@ -19,7 +19,7 @@ class CustomWebSocketServer(
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
     private val compositeDisposable = CompositeDisposable()
-    private val connectionList = mutableListOf<WebSocket>()
+    internal var openMessage = ""
 
     internal fun runServer() {
         Completable.fromAction {
@@ -49,7 +49,7 @@ class CustomWebSocketServer(
 
     override fun onOpen(conn: WebSocket?, handshake: ClientHandshake?) {
         Timber.i("onOpen: ${conn?.remoteSocketAddress?.address?.hostAddress}")
-        connectionList.add(conn ?: return)
+        conn?.send(openMessage)
     }
 
     override fun onClose(conn: WebSocket?, code: Int, reason: String?, remote: Boolean) {

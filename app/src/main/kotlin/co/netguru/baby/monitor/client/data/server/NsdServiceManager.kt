@@ -16,54 +16,50 @@ class NsdServiceManager @Inject constructor(
     private val serviceInfoList = mutableListOf<NsdServiceInfo>()
     private var discoveryStatus = DiscoveryStatus.STOPPED
 
-    private val nsdServiceListener by lazy {
-        object : NsdManager.RegistrationListener {
-            override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
-                    Timber.e("Baby Monitor Service unregistration failed")
+    private val nsdServiceListener = object : NsdManager.RegistrationListener {
+        override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
+                Timber.e("Baby Monitor Service unregistration failed")
 
-            override fun onServiceUnregistered(serviceInfo: NsdServiceInfo?) = Unit
+        override fun onServiceUnregistered(serviceInfo: NsdServiceInfo?) = Unit
 
-            override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
-                    Timber.e("Baby Monitor Service registration failed")
+        override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
+                Timber.e("Baby Monitor Service registration failed")
 
-            override fun onServiceRegistered(serviceInfo: NsdServiceInfo?) =
-                    Timber.d("Baby Monitor Service registered")
-        }
+        override fun onServiceRegistered(serviceInfo: NsdServiceInfo?) =
+                Timber.d("Baby Monitor Service registered")
     }
 
-    private val nsdDiscoveryListener by lazy {
-        object : NsdManager.DiscoveryListener {
-            override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-                if (serviceInfo.serviceName.contains(SERVICE_NAME)) {
-                    nsdManager.resolveService(serviceInfo, object : NsdManager.ResolveListener {
-                        override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
-                            Timber.e("Baby Monitor Service resolve failed")
-                            onServiceConnectedListener?.onServiceConnectionError()
-                        }
+    private val nsdDiscoveryListener = object : NsdManager.DiscoveryListener {
+        override fun onServiceFound(serviceInfo: NsdServiceInfo) {
+            if (serviceInfo.serviceName.contains(SERVICE_NAME)) {
+                nsdManager.resolveService(serviceInfo, object : NsdManager.ResolveListener {
+                    override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
+                        Timber.e("Baby Monitor Service resolve failed")
+                        onServiceConnectedListener?.onServiceConnectionError()
+                    }
 
-                        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                            if (serviceInfoList.find { it.host.hostAddress == serviceInfo.host.hostAddress } == null) {
-                                serviceInfoList.add(serviceInfo)
-                                serviceInfoData.postValue(serviceInfoList)
-                            }
+                    override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                        if (serviceInfoList.find { it.host.hostAddress == serviceInfo.host.hostAddress } == null) {
+                            serviceInfoList.add(serviceInfo)
+                            serviceInfoData.postValue(serviceInfoList)
                         }
-                    })
-                }
+                    }
+                })
             }
-
-            override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) = Unit
-
-            override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) =
-                    Timber.e("Baby Monitor Service discovery failed")
-
-            override fun onDiscoveryStarted(serviceType: String?) =
-                    Timber.d("Baby Monitor Service discovery started")
-
-            override fun onDiscoveryStopped(serviceType: String?) = Unit
-
-            override fun onServiceLost(serviceInfo: NsdServiceInfo?) =
-                    Timber.e("Baby Monitor Service failed lost")
         }
+
+        override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) = Unit
+
+        override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) =
+                Timber.e("Baby Monitor Service discovery failed")
+
+        override fun onDiscoveryStarted(serviceType: String?) =
+                Timber.d("Baby Monitor Service discovery started")
+
+        override fun onDiscoveryStopped(serviceType: String?) = Unit
+
+        override fun onServiceLost(serviceInfo: NsdServiceInfo?) =
+                Timber.e("Baby Monitor Service failed lost")
     }
 
     private var onServiceConnectedListener: OnServiceConnectedListener? = null
