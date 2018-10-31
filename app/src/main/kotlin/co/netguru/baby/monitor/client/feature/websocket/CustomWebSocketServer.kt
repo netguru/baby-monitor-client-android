@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.websocket
 
 import co.netguru.baby.monitor.client.common.extensions.toData
+import co.netguru.baby.monitor.client.common.extensions.toJson
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -73,6 +74,13 @@ class CustomWebSocketServer(
     }
 
     internal fun sendBroadcast(message: String) {
+        Timber.i(message)
+        broadcast(message)
+    }
+
+    internal fun sendBroadcast(name: String, action: Action) {
+        val message = LullabyCommand(name, action).toJson()
+        openMessage = message
         Timber.i(message)
         broadcast(message)
     }

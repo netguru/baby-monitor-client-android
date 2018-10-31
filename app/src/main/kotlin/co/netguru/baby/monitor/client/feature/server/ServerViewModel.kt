@@ -6,7 +6,6 @@ import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import co.netguru.baby.monitor.client.feature.websocket.Action
 import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketServer
-import co.netguru.baby.monitor.client.feature.websocket.LullabyCommand
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -24,22 +23,17 @@ class ServerViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
     private var webSocketServer: CustomWebSocketServer? = null
-    private var openMessage = ""
 
     init {
         lullabyPlayer.playbackEvents = this
     }
 
     override fun onLullabyStarted(name: String, action: Action) {
-        openMessage = LullabyCommand(name, action).toJson()
-        webSocketServer?.openMessage = openMessage
-        webSocketServer?.sendBroadcast(openMessage)
+        webSocketServer?.sendBroadcast(name, action)
     }
 
     override fun onLullabyEnded(name: String, action: Action) {
-        openMessage = LullabyCommand(name, action).toJson()
-        webSocketServer?.openMessage = openMessage
-        webSocketServer?.sendBroadcast(openMessage)
+        webSocketServer?.sendBroadcast(name, action)
     }
 
     internal fun registerNsdService() {
