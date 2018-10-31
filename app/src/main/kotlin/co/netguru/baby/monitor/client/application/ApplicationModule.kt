@@ -23,6 +23,9 @@ class ApplicationModule {
     fun nsdManager(app: App): NsdManager = app.getSystemService(Context.NSD_SERVICE) as NsdManager
 
     @Provides
+    fun nsdServiceManager(nsdManager: NsdManager) = NsdServiceManager(nsdManager)
+
+    @Provides
     fun addChildDialog(manager: NsdServiceManager, repository: ConfigurationRepository) = AddChildDialog(manager, repository)
 
     @Provides

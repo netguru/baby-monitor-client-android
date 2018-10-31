@@ -2,16 +2,85 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/clientHomeLullabyRv"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/clientHomeLullabyGl"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientHomeLullabyGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/material_grey_400"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/clientHomeLullabyGl">
+
+        <TextView
+            android:id="@+id/lullabiesPlayingTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_normal"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/lullabiesPlayIbtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Test song"/>
+
+
+        <ImageButton
+            android:id="@+id/lullabiesRepeatIbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_rounded_ripple"
+            android:padding="@dimen/spacing_small"
+            android:src="@drawable/ic_repeat_white_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/lullabiesPlayIbtn"
+            app:layout_constraintEnd_toStartOf="@+id/lullabiesPlayIbtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/lullabiesPlayIbtn" />
+
+        <ImageButton
+            android:id="@+id/lullabiesPlayIbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_rounded_ripple"
+            android:padding="@dimen/spacing_xmedium"
+            android:src="@drawable/ic_play_arrow_white_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/lullabiesStopIbtn"
+            app:layout_constraintStart_toEndOf="@+id/lullabiesRepeatIbtn"
+            app:layout_constraintTop_toBottomOf="@+id/lullabiesPlayingTv" />
+
+        <ImageButton
+            android:id="@+id/lullabiesStopIbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_rounded_ripple"
+            android:padding="@dimen/spacing_small"
+            android:src="@drawable/ic_stop_white_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/lullabiesPlayIbtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lullabiesPlayIbtn"
+            app:layout_constraintTop_toTopOf="@+id/lullabiesPlayIbtn" />
+
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

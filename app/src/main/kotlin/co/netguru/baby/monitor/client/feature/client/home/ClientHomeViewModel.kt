@@ -32,7 +32,7 @@ class ClientHomeViewModel @Inject constructor(
         private val configurationRepository: ConfigurationRepository
 ) : ViewModel() {
 
-    internal val lullabyCommands = MutableLiveData<LullabyCommand>()
+    internal val lullabyCommand = MutableLiveData<LullabyCommand>()
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
@@ -99,8 +99,30 @@ class ClientHomeViewModel @Inject constructor(
                     }
                     selectedChildAvailability.postValue(availability)
                 },
-                onCommandResponse = { lullabyCommands.postValue(it) }
+                onCommandResponse = { lullabyCommand.postValue(it) }
         )
+    }
+
+    fun repeatLullaby() {
+        lullabyCommand.value?.let { command ->
+            manageLullabyPlayback(command.lullabyName, Action.REPEAT)
+        }
+    }
+
+    fun stopPlayback() {
+        lullabyCommand.value?.let { command ->
+            manageLullabyPlayback(command.lullabyName, Action.STOP)
+        }
+    }
+
+    fun switchPlayback() {
+        lullabyCommand.value?.let { command ->
+            if (command.action == Action.PLAY || command.action == Action.RESUME) {
+                manageLullabyPlayback(command.lullabyName, Action.PAUSE)
+            } else {
+                manageLullabyPlayback(command.lullabyName, Action.RESUME)
+            }
+        }
     }
 
     fun manageLullabyPlayback(name: String, action: Action) {

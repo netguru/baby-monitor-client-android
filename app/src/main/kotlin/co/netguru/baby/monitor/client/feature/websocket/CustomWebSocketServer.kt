@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.websocket
 
 import co.netguru.baby.monitor.client.common.extensions.toData
+import co.netguru.baby.monitor.client.common.extensions.toJson
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -19,7 +20,7 @@ class CustomWebSocketServer(
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
     private val compositeDisposable = CompositeDisposable()
-    private val connectionList = mutableListOf<WebSocket>()
+    internal var openMessage = ""
 
     internal fun runServer() {
         Completable.fromAction {
@@ -49,7 +50,7 @@ class CustomWebSocketServer(
 
     override fun onOpen(conn: WebSocket?, handshake: ClientHandshake?) {
         Timber.i("onOpen: ${conn?.remoteSocketAddress?.address?.hostAddress}")
-        connectionList.add(conn ?: return)
+        conn?.send(openMessage)
     }
 
     override fun onClose(conn: WebSocket?, code: Int, reason: String?, remote: Boolean) {
@@ -73,6 +74,13 @@ class CustomWebSocketServer(
     }
 
     internal fun sendBroadcast(message: String) {
+        Timber.i(message)
+        broadcast(message)
+    }
+
+    internal fun sendBroadcast(name: String, action: Action) {
+        val message = LullabyCommand(name, action).toJson()
+        openMessage = message
         Timber.i(message)
         broadcast(message)
     }

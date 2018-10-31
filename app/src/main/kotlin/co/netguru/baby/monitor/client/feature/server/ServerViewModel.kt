@@ -4,8 +4,8 @@ import android.arch.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import co.netguru.baby.monitor.client.feature.websocket.Action
 import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketServer
-import co.netguru.baby.monitor.client.feature.websocket.LullabyCommand
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -28,8 +28,12 @@ class ServerViewModel @Inject constructor(
         lullabyPlayer.playbackEvents = this
     }
 
-    override fun onLullabyEnded(command: LullabyCommand) {
-        webSocketServer?.sendBroadcast(command.toJson())
+    override fun onLullabyStarted(name: String, action: Action) {
+        webSocketServer?.sendBroadcast(name, action)
+    }
+
+    override fun onLullabyEnded(name: String, action: Action) {
+        webSocketServer?.sendBroadcast(name, action)
     }
 
     internal fun registerNsdService() {

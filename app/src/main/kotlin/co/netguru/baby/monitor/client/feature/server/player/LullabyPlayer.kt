@@ -34,8 +34,16 @@ class LullabyPlayer @Inject constructor(
         exoPlayer.addListener(object : PlayerEventListener() {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
+                    Player.STATE_IDLE -> {
+                        playbackEvents?.onLullabyStarted(lastCommand.lullabyName, Action.STOP)
+                    }
                     Player.STATE_ENDED -> {
-                        playbackEvents?.onLullabyEnded(LullabyCommand(lastCommand.lullabyName, Action.STOP))
+                        playbackEvents?.onLullabyEnded(lastCommand.lullabyName, Action.STOP)
+                    }
+                    Player.STATE_READY -> {
+                        if (exoPlayer.playWhenReady) {
+                            playbackEvents?.onLullabyStarted(lastCommand.lullabyName, Action.PLAY)
+                        }
                     }
                 }
             }
@@ -47,17 +55,27 @@ class LullabyPlayer @Inject constructor(
     ): Single<LullabyCommand>? {
         lastCommand = command
         return when (command.action) {
-            Action.PLAY -> play(command.lullabyName, command)
+            Action.PLAY -> play(command)
             Action.RESUME -> handlePlayback(true, command)
             Action.PAUSE -> handlePlayback(false, command)
-            Action.REPEAT -> TODO("29.10.2018")
+            Action.REPEAT -> repeat(command)
             Action.STOP -> stopPlayback(command)
         }
     }
 
+    private fun handlePlayback(shouldPlay: Boolean, command: LullabyCommand): Single<LullabyCommand>? {
+        return if (exoPlayer.playbackState == Player.STATE_IDLE || exoPlayer.playbackState == Player.STATE_ENDED) {
+            play(command)
+        } else {
+            Single.fromCallable {
+                exoPlayer.playWhenReady = shouldPlay
+                return@fromCallable command
+            }
+        }
+    }
 
-    private fun play(title: String, command: LullabyCommand): Single<LullabyCommand>? {
-        val lullaby = lullabies.find { it.name == title }
+    private fun play(command: LullabyCommand): Single<LullabyCommand>? {
+        val lullaby = lullabies.find { it.name == command.lullabyName }
         return if (lullaby != null) {
             playLullabyFromAssets(lullaby, command)
         } else {
@@ -77,11 +95,14 @@ class LullabyPlayer @Inject constructor(
         return@fromCallable command
     }
 
-    private fun handlePlayback(shouldPlay: Boolean, command: LullabyCommand) =
-            Single.fromCallable {
-                exoPlayer.playWhenReady = shouldPlay
-                return@fromCallable command
-            }
+    private fun repeat(command: LullabyCommand) = Single.fromCallable {
+        exoPlayer.repeatMode = if (exoPlayer.repeatMode == Player.REPEAT_MODE_OFF) {
+            Player.REPEAT_MODE_ONE
+        } else {
+            Player.REPEAT_MODE_OFF
+        }
+        return@fromCallable command
+    }
 
     private fun stopPlayback(command: LullabyCommand) = Single.fromCallable {
         exoPlayer.stop()
@@ -94,7 +115,8 @@ class LullabyPlayer @Inject constructor(
     }
 
     interface PlaybackEvents {
-        fun onLullabyEnded(command: LullabyCommand)
+        fun onLullabyEnded(name: String, action: Action)
+        fun onLullabyStarted(name: String, action: Action)
     }
 
     companion object {

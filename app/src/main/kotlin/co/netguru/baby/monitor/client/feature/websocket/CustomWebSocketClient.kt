@@ -70,9 +70,10 @@ class CustomWebSocketClient(
         notifyAvailabilityChange(DISCONNECTED)
     }
 
-    internal fun sendMessage(string: String) {
+    internal fun sendMessage(message: String) {
+        Timber.i("send: $message")
         if (availability == CONNECTED) {
-            send(string)
+            send(message)
         }
     }
 

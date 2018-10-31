@@ -1,7 +1,7 @@
 ext {
     // Versions
     supportLibraryVersion = '28.0.0'
-    daggerVersion = '2.16'
+    daggerVersion = '2.19'
     okHttpVersion = '3.11.0'
     retrofitVersion = '2.4.0'
     stethoVersion = '1.5.0'

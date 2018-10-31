@@ -49,9 +49,5 @@ class LullabiesDataHolder(
         data = this
         lullabyTitleTv.text = name
         lullabyDurationTv.text = duration
-        when (item.action) {
-            Action.STOP -> lullabyPlayIbtn.setImageResource(R.drawable.ic_play_arrow_white_24dp)
-            else -> lullabyPlayIbtn.setImageResource(R.drawable.ic_stop_white_24dp)
-        }
     }
 }
