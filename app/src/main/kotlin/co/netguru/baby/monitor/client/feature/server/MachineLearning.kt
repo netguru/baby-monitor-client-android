@@ -5,6 +5,7 @@ import android.content.Context
 import android.support.annotation.WorkerThread
 import co.netguru.baby.monitor.client.common.extensions.saveAssetToCache
 import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
+import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.common.DataBounder
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -23,11 +24,11 @@ class MachineLearning(
         sampleRate: Int
 ) {
 
-    val inferenceInterface = TensorFlowInferenceInterface(
+    internal val result = MutableLiveData<DataBounder<FloatArray>>()
+    private val inferenceInterface = TensorFlowInferenceInterface(
             context.assets,
-            "tiny_conv_new_dataset.pb"
+            "tiny_conv_dataset.pb"
     )
-    val result = MutableLiveData<DataBounder<FloatArray>>()
     private val compositeDisposable = CompositeDisposable()
     private val sampleRateList = intArrayOf(sampleRate)
     private var newData = emptyArray<Short>()
@@ -55,6 +56,7 @@ class MachineLearning(
                 run(outputScoresNames, true)
                 fetch(OUTPUT_SCORES_NAME, outputScores)
             }
+            Timber.i("data: ${outputScores.toJson()}")
             return@map outputScores
         }.subscribeOn(Schedulers.io()).subscribeWithLiveData(result)
         newData = emptyArray()
