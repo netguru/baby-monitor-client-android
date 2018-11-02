@@ -12,9 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.common.DataBounder
-import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_server.*
 import net.majorkernelpanic.streaming.Session
@@ -131,7 +129,6 @@ class ServerFragment : DaggerFragment(), SurfaceHolder.Callback, RtspServer.Call
             when (it) {
                 is DataBounder.Next -> {
                     //TODO handle received data 18.10.2018
-                    Timber.e(it.data.toJson())
                 }
             }
         })
