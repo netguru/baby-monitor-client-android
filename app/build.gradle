@@ -136,11 +136,6 @@ dependencies {
     implementation libs.lifecycleExtensions
     kapt proc.lifecycleExtensions
 
-    // Anko Commons
-    implementation libs.ankoCommons
-    implementation libs.ankoCommonsSupportV7
-    implementation libs.ankoCommonsSupportV4
-
     // Support
     implementation libs.appCompat
     implementation libs.design
