@@ -42,7 +42,7 @@ android {
             shrinkResources false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro', 'proguard-rules-test.pro'
+                    'proguard-instant-run.pro', 'proguard-rules-test.pro'
         }
         release {
             debuggable false
