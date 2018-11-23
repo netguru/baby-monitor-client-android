@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.application
 
 import co.netguru.baby.monitor.client.application.scope.AppScope
-import co.netguru.baby.monitor.client.feature.common.ViewModelModule
+import co.netguru.baby.monitor.client.feature.common.base.ViewModelModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector

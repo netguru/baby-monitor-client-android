@@ -10,9 +10,9 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.extensions.setVisible
-import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.common.extensions.trimmedText
+import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
+import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.feature.common.extensions.trimmedText
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_configuration.*
@@ -69,7 +69,8 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
             debugAddressGroup.setVisible(true)
             debugSetAddressButton.setOnClickListener {
                 if (!debugAddressEt.text.isNullOrEmpty()) {
-                    viewModel.appendNewAddress(debugAddressEt.trimmedText, 5006) {
+                    val trimmed = debugAddressEt.trimmedText.split(":")
+                    viewModel.appendNewAddress(trimmed[0], trimmed[1].toInt()) {
                         findNavController().navigate(R.id.actionConfigurationClientHome)
                         requireActivity().finish()
                     }

@@ -1,40 +1,22 @@
 package co.netguru.baby.monitor.client.feature.server
 
 import android.arch.lifecycle.ViewModel
-import co.netguru.baby.monitor.client.common.extensions.toJson
+import android.content.Context
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
-import co.netguru.baby.monitor.client.feature.websocket.Action
-import co.netguru.baby.monitor.client.feature.websocket.CustomWebSocketServer
-import io.reactivex.Observable
+import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.net.BindException
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ServerViewModel @Inject constructor(
-        private val nsdServiceManager: NsdServiceManager,
-        private val lullabyPlayer: LullabyPlayer
-) : ViewModel(), LullabyPlayer.PlaybackEvents {
+        private val nsdServiceManager: NsdServiceManager
+) : ViewModel() {
 
+    internal var currentCall: RtcReceiver? = null
     private val compositeDisposable = CompositeDisposable()
-    private var webSocketServer: CustomWebSocketServer? = null
-
-    init {
-        lullabyPlayer.playbackEvents = this
-    }
-
-    override fun onLullabyStarted(name: String, action: Action) {
-        webSocketServer?.sendBroadcast(name, action)
-    }
-
-    override fun onLullabyEnded(name: String, action: Action) {
-        webSocketServer?.sendBroadcast(name, action)
-    }
 
     internal fun registerNsdService() {
         nsdServiceManager.registerService()
@@ -44,51 +26,21 @@ class ServerViewModel @Inject constructor(
         nsdServiceManager.unregisterService()
     }
 
-    internal fun setupWebSocketServer() {
-        webSocketServer = CustomWebSocketServer(
-                onLullabyCommandReceived = { lullabyCommand ->
-                    lullabyPlayer.handleActionRequest(lullabyCommand)
-                            ?.subscribeOn(Schedulers.io())!!
-                            .subscribeBy(
-                                    onSuccess = { command ->
-                                        webSocketServer?.sendBroadcast(command.toJson())
-                                    },
-                                    onError = Timber::e
-                            )
-                            .addTo(compositeDisposable)
-                },
-                onErrorListener = ::handleError
-        ).also {
-            it.runServer()
-        }
-    }
+    internal fun hangUp() = currentCall?.hangUp()
 
-    internal fun stopWebSocketServer() {
-        webSocketServer?.stopServer()
-        webSocketServer?.onDestroy()
-    }
-
-    private fun handleError(exception: Exception) {
-        //can turn off and on wifi to release ports
-        webSocketServer?.onDestroy()
-        if (exception is BindException) {
-            Observable.timer(RETRY_TIMER, TimeUnit.SECONDS)
-                    .map {
-                        setupWebSocketServer()
-                    }.subscribeOn(Schedulers.io())
-                    .subscribeBy(onError = Timber::e)
-                    .addTo(compositeDisposable)
-        }
+    internal fun accept(context: Context) {
+        currentCall?.accept(context) { state ->
+            Timber.i("onStateChange: $state")
+        }?.subscribeOn(Schedulers.newThread())
+                ?.subscribeBy(
+                        onComplete = { Timber.i("completed") },
+                        onError = Timber::e
+                )?.addTo(compositeDisposable)
     }
 
     override fun onCleared() {
         super.onCleared()
-        webSocketServer?.onDestroy()
+        currentCall?.cleanup()
         compositeDisposable.dispose()
-        lullabyPlayer.clear()
-    }
-
-    companion object {
-        private const val RETRY_TIMER = 30L
     }
 }

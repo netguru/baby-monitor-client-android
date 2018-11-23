@@ -61,7 +61,7 @@ class AddChildDialog @Inject constructor(
             Single.fromCallable {
                 val list = mutableListOf<NsdServiceInfo>()
                 value?.forEach { info ->
-                    if (configurationRepository.childrenList.find { it.serverUrl == info.host.hostAddress } == null) {
+                    if (configurationRepository.childrenList.find { it.address == info.host.hostAddress } == null) {
                         list.add(info)
                     }
                 }
@@ -79,7 +79,7 @@ class AddChildDialog @Inject constructor(
     private fun createAdapter(onChildAdded: (String) -> Unit) =
             ServiceAdapter { service ->
                 configurationRepository.appendChildrenList(
-                        ChildData(service.host.hostAddress, service.port, name = service.host.hostAddress)
+                        ChildData("ws://${service.host.hostAddress}:${service.port}" , name = service.host.hostAddress)
                 )
                         .subscribeOn(Schedulers.io())
                         .subscribeBy { wasAdded ->

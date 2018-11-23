@@ -23,7 +23,7 @@ class ChildrenAdapter(
 
     private var childrenList = listOf<ChildData>()
         set(value) {
-            field = value.filter { it.serverUrl != selectedChild?.serverUrl }
+            field = value.filter { it.address != selectedChild?.address }
             notifyDataSetChanged()
         }
 

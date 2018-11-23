@@ -19,7 +19,6 @@ ext {
 android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
-
     defaultConfig {
         applicationId "co.netguru.baby.monitor"
         minSdkVersion 19
@@ -42,7 +41,7 @@ android {
             shrinkResources false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-instant-run.pro', 'proguard-rules-test.pro'
+                    'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
         }
         release {
             debuggable false
@@ -124,7 +123,6 @@ configurations {
 }
 
 dependencies {
-    implementation project(":libstreaming")
     implementation project(":visualizer")
 
     //Kotlin
@@ -157,10 +155,6 @@ dependencies {
     implementation(libs.rxAndroid2) {
         exclude module: 'rxjava'
     }
-
-    // LibVLC
-    //TODO 13.09.2018 Using old version of VLC library
-    implementation libs.libVLC
 
     // Timber
     implementation libs.timber
@@ -214,6 +208,9 @@ dependencies {
 
     //ExoPlayer
     implementation libs.exoPlayer
+
+    //WebRtc
+    implementation libs.googleWebRtc
 
     // Unit testing
     testImplementation test.junit

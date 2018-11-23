@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
+import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderInterface
 import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.DataLogsViewHolder
 import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.HeaderViewHolder
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData

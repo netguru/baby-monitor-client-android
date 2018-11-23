@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.data.server
 import android.arch.lifecycle.MutableLiveData
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import co.netguru.baby.monitor.client.application.App
+import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import dagger.Reusable
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,6 +31,7 @@ class NsdServiceManager @Inject constructor(
 
     private val nsdDiscoveryListener = object : NsdManager.DiscoveryListener {
         override fun onServiceFound(serviceInfo: NsdServiceInfo) {
+            Timber.i("service found: ${serviceInfo.serviceName}")
             if (serviceInfo.serviceName.contains(SERVICE_NAME)) {
                 nsdManager.resolveService(serviceInfo, object : NsdManager.ResolveListener {
                     override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
@@ -68,7 +69,7 @@ class NsdServiceManager @Inject constructor(
         val serviceInfo = NsdServiceInfo().apply {
             serviceName = SERVICE_NAME
             serviceType = SERVICE_TYPE
-            port = App.PORT
+            port = MainService.SERVER_PORT
         }
 
         nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdServiceListener)

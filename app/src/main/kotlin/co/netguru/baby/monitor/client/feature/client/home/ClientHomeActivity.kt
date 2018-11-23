@@ -10,13 +10,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.common.extensions.getColorCompat
-import co.netguru.baby.monitor.client.common.extensions.setVisible
-import co.netguru.baby.monitor.client.common.view.PresetedAnimations
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
-import co.netguru.baby.monitor.client.feature.common.DataBounder
-import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.common.extensions.getColorCompat
+import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
+import co.netguru.baby.monitor.client.feature.common.view.PresetedAnimations
+import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_client_home.*
@@ -35,6 +34,7 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
+    private val adapter by lazy { setupAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +90,6 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
                     .load(it.image)
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeChildMiniatureIv)
-            homeViewModel.connectToServer(it)
         })
         homeViewModel.shouldHideNavbar.observe(this, Observer {
             it ?: return@Observer
@@ -104,36 +103,35 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             clientHomeChildAvailabilityIv.setBackgroundColor(getColorCompat(color))
         })
 
-        homeViewModel.getChildrenList().observe(this, Observer {
-            when (it) {
-                is DataBounder.Next -> {
-                    val childrenAdapter: ChildrenAdapter by lazy {
-                        ChildrenAdapter(
-                                onChildSelected = { childData ->
-                                    setSelectedChildName(childData.name ?: "")
-                                    homeViewModel.selectedChild.postValue(childData)
-                                },
-                                onNewChildSelected = {
-                                    clientHomeChildrenEll.collapse()
-                                    addChildDialog.showDialog(this,
-                                            onChildAdded = {
-                                                homeViewModel.setSelectedChildWithAddress(it)
-                                            },
-                                            onServiceConnectionError = {
-
-                                            }
-                                    )
-                                }
-                        ).apply {
-                            selectedChild = homeViewModel.selectedChild.value ?: selectedChild
-                            originalList = it.data
-                        }
-                    }
-                    clientHomeChildrenRv.adapter = childrenAdapter
-                    clientHomeChildrenRv.setHasFixedSize(true)
-                }
-            }
+        homeViewModel.childList.observe(this, Observer { list ->
+            list ?: return@Observer
+            adapter.selectedChild = homeViewModel.selectedChild.value ?: adapter.selectedChild
+            adapter.originalList = list
+            clientHomeChildrenRv.adapter = adapter
+            clientHomeChildrenRv.setHasFixedSize(true)
         })
+        homeViewModel.refreshChildrenList()
+    }
+
+    private fun setupAdapter() = ChildrenAdapter(
+            onChildSelected = { childData ->
+                setSelectedChildName(childData.name ?: "")
+                homeViewModel.selectedChild.postValue(childData)
+            },
+            onNewChildSelected = {
+                clientHomeChildrenEll.collapse()
+                showAddChildDialog()
+            }
+    )
+
+    private fun showAddChildDialog() {
+        addChildDialog.showDialog(this,
+                onChildAdded = {
+                    homeViewModel.setSelectedChildWithAddress(it)
+                    homeViewModel.refreshChildrenList()
+                },
+                onServiceConnectionError = {}
+        )
     }
 
     private fun setSelectedChildName(name: String) {

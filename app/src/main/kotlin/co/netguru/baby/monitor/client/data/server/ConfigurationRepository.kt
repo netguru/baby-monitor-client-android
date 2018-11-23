@@ -2,9 +2,9 @@ package co.netguru.baby.monitor.client.data.server
 
 import android.content.SharedPreferences
 import co.netguru.baby.monitor.client.application.ConfigurationPreferencesQualifier
-import co.netguru.baby.monitor.client.common.extensions.edit
-import co.netguru.baby.monitor.client.common.extensions.toData
-import co.netguru.baby.monitor.client.common.extensions.toJson
+import co.netguru.baby.monitor.client.feature.common.extensions.edit
+import co.netguru.baby.monitor.client.feature.common.extensions.toData
+import co.netguru.baby.monitor.client.feature.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.client.home.ChildData
 import dagger.Reusable
 import io.reactivex.Single
@@ -28,7 +28,7 @@ class ConfigurationRepository @Inject constructor(
 
     internal fun appendChildrenList(childData: ChildData) =
             Single.just(childData).map { data ->
-                if (childrenList.find { it.serverUrl == data.serverUrl } == null) {
+                if (childrenList.find { it.address == data.address } == null) {
                     childrenList = childrenList.toMutableList().apply { add(data) }
                     true
                 } else {
@@ -38,7 +38,7 @@ class ConfigurationRepository @Inject constructor(
 
     internal fun updateChildData(newData: ChildData?) {
         newData ?: return
-        val index = childrenList.indexOfFirst { it.serverUrl == newData.serverUrl }
+        val index = childrenList.indexOfFirst { it.address == newData.address }
         if (index != -1) {
             childrenList = childrenList.toMutableList().apply { this[index] = newData }
         }

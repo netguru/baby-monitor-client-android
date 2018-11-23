@@ -3,9 +3,9 @@ package co.netguru.baby.monitor.client.feature.server.player
 import android.content.Context
 import android.net.Uri
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.feature.communication.websocket.Action
+import co.netguru.baby.monitor.client.feature.communication.websocket.LullabyCommand
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabyData
-import co.netguru.baby.monitor.client.feature.websocket.Action
-import co.netguru.baby.monitor.client.feature.websocket.LullabyCommand
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player

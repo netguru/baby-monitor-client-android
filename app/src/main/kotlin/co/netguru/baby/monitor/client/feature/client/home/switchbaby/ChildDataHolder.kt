@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.feature.client.home.ChildData
-import co.netguru.baby.monitor.client.feature.common.base.BaseViewHolder
+import co.netguru.baby.monitor.client.feature.common.view.BaseViewHolder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_add_child.*
 import kotlinx.android.synthetic.main.item_child.*

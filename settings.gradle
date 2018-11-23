@@ -1,1 +1,1 @@
-include ':app', ':libstreaming', ':visualizer'
+include ':app', ':visualizer'

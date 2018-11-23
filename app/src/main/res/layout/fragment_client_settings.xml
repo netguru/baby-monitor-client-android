@@ -24,7 +24,7 @@
         android:layout_marginStart="@dimen/spacing_xmedium"
         android:layout_marginTop="@dimen/spacing_xxxmedium"
         android:layout_marginEnd="@dimen/spacing_xmedium"
-        app:layout_constraintBottom_toTopOf="@+id/settingsSwitchModeBtn"
+        app:layout_constraintBottom_toTopOf="@+id/settingsRemoveDataBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/settingsLullabyVolumeTv"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,20 +32,20 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/settingsSwitchModeTv"
+        android:id="@+id/settingsRemoveDataTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_xmedium"
-        android:text="@string/header_switch_to_server_application"
+        android:text="@string/header_remove_data"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/settingsSwitchModeBtn"
-        app:layout_constraintEnd_toStartOf="@+id/settingsSwitchModeBtn"
+        app:layout_constraintBottom_toBottomOf="@+id/settingsRemoveDataBtn"
+        app:layout_constraintEnd_toStartOf="@+id/settingsRemoveDataBtn"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/settingsSwitchModeBtn" />
+        app:layout_constraintTop_toTopOf="@+id/settingsRemoveDataBtn" />
 
     <Button
-        android:id="@+id/settingsSwitchModeBtn"
+        android:id="@+id/settingsRemoveDataBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_xxxmedium"
@@ -53,11 +53,11 @@
         android:background="@drawable/button_rounded_ripple"
         android:paddingStart="@dimen/spacing_xxxmedium"
         android:paddingEnd="@dimen/spacing_xxxmedium"
-        android:text="@string/switch_mode_btn"
+        android:text="@string/clear_data_btn"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsSwitchModeTv"
+        app:layout_constraintStart_toEndOf="@+id/settingsRemoveDataTv"
         app:layout_constraintTop_toBottomOf="@+id/settingsLullabyVolumeSeekBar" />
 
 </android.support.constraint.ConstraintLayout>

@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.common.DataBounder
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -30,16 +29,13 @@ class SplashFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getChildrenList().observe(this, Observer {
-            when(it) {
-                is DataBounder.Next -> {
-                    if (it.data.isNotEmpty()) {
-                        findNavController().navigate(R.id.actionSplashToClientHome)
-                        requireActivity().finish()
-                    } else {
-                        findNavController().navigate(R.id.actionSplashToWelcome)
-                    }
-                }
+        viewModel.refreshChildrenList()
+        viewModel.childList.observe(this, Observer { list ->
+            if (!list.isNullOrEmpty()) {
+                findNavController().navigate(R.id.actionSplashToClientHome)
+                requireActivity().finish()
+            } else {
+                findNavController().navigate(R.id.actionSplashToWelcome)
             }
         })
     }

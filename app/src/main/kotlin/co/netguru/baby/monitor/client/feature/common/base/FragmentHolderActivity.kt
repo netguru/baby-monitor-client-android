@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.extensions.inTransaction
+import co.netguru.baby.monitor.client.feature.common.extensions.inTransaction
 import kotlinx.android.synthetic.main.toolbar.*
 
 abstract class FragmentHolderActivity : AppCompatActivity() {

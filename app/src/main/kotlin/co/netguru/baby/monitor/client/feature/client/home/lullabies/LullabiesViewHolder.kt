@@ -3,8 +3,8 @@ package co.netguru.baby.monitor.client.feature.client.home.lullabies
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.base.BaseViewHolder
-import co.netguru.baby.monitor.client.feature.websocket.Action
+import co.netguru.baby.monitor.client.feature.communication.websocket.Action
+import co.netguru.baby.monitor.client.feature.common.view.BaseViewHolder
 import kotlinx.android.synthetic.main.item_lullaby_alternative.*
 import kotlinx.android.synthetic.main.item_lullaby_header.*
 
@@ -39,7 +39,7 @@ class LullabiesDataHolder(
     init {
         lullabyPlayIbtn.setOnClickListener {
             val action = if (data?.action == Action.STOP) Action.PLAY else Action.STOP
-            data?.let{data ->
+            data?.let { data ->
                 onLullabyPlayPressed(data.name, action)
             }
         }

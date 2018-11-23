@@ -15,3 +15,23 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-dontpreverify
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+-keepattributes LineNumberTable,SourceFile,Signature,*Annotation*,Exceptions,InnerClasses
+
+# Keep native methods
+-keepclassmembers class * {
+    native <methods>;
+}
+
+# remove log call
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+}
+-assumenosideeffects class timber.log.Timber {
+    public static *** d(...);
+}

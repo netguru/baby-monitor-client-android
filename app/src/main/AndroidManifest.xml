@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="co.netguru.baby.monitor.client">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -43,6 +45,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|adjustResize" />
 
+        <service android:name=".feature.communication.webrtc.MainService" />
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"
             android:value="${HOCKEY_APP_ID}" />

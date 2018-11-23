@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogData
-import co.netguru.baby.monitor.client.feature.common.base.BaseViewHolder
+import co.netguru.baby.monitor.client.feature.common.view.BaseViewHolder
 import kotlinx.android.synthetic.main.item_log_activity_header.*
 import kotlinx.android.synthetic.main.item_log_activity_record.*
 

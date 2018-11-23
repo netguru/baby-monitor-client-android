@@ -21,8 +21,12 @@ class ConfigurationViewModel @Inject constructor(
     ) {
         //TODO change default name from address 25.10.2018
         configurationRepository.appendChildrenList(
-                ChildData(address, port, name = address)
+                ChildData("ws://$address:$port", name = address)
         ).subscribeBy(onSuccess = onSuccess).addTo(compositeDisposable)
+    }
+
+    internal fun clearChildsData() {
+        configurationRepository.childrenList = emptyList()
     }
 
     internal fun discoverNsdService(onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener) {
