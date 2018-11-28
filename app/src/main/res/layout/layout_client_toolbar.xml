@@ -38,14 +38,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
+            android:fontFamily="@font/averta"
+            android:textStyle="bold"
             android:textSize="@dimen/text_size_normal"
-            tools:text="Marysia" />
+            tools:text="Jane" />
 
         <ImageView
             android:id="@+id/clientHomeChildAvailabilityIv"
             android:layout_width="@dimen/spacing_xmedium"
             android:layout_height="@dimen/spacing_xmedium"
+            android:visibility="gone"
             android:layout_weight="0"
             android:layout_marginStart="@dimen/spacing_small"
             tools:background="@color/material_red_a400" />
@@ -55,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_small"
+            android:tint="@color/white"
             android:src="@drawable/ic_keyboard_arrow_down_gray_24dp" />
 
     </LinearLayout>
