@@ -10,9 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
+import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderDecorator
+import co.netguru.baby.monitor.client.feature.communication.websocket.Action
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.websocket.Action
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_lullabies.*
 import javax.inject.Inject

@@ -1,40 +1,43 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
-import android.arch.lifecycle.Observer
+import android.Manifest
+import android.app.Service
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.net.Uri
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
-import android.util.DisplayMetrics
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import dagger.android.support.DaggerFragment
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
-import org.videolan.libvlc.LibVLC
-import org.videolan.libvlc.Media
-import org.videolan.libvlc.MediaPlayer
+import timber.log.Timber
 import javax.inject.Inject
 
-class ClientLiveCameraFragment : DaggerFragment() {
+class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
 
-    private lateinit var libvlc: LibVLC
-    private lateinit var mediaPlayer: MediaPlayer
-    private val liveCameraOptions by lazy { LiveCameraOptions() }
+    private var binder: MainService.MainBinder? = null
     private val viewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
+    private val serviceIntent by lazy { Intent(requireContext(), MainService::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        libvlc = LibVLC(requireContext(), liveCameraOptions.provideOptions())
-        mediaPlayer = MediaPlayer(libvlc)
         viewModel.shouldHideNavbar.postValue(true)
     }
 
@@ -44,53 +47,85 @@ class ClientLiveCameraFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observeServerStatus()
+        clientLiveCameraStopIbtn.setOnClickListener {
+            viewModel.hangUp()?.subscribeOn(Schedulers.io())
+                    ?.observeOn(AndroidSchedulers.mainThread())
+                    ?.subscribeBy(
+                            onComplete = {
+                                requireActivity().onBackPressed()
+                            },
+                            onError = Timber::e
+                    )
+        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onResume() {
+        super.onResume()
+        if (!requireContext().allPermissionsGranted(permissions)) {
+            requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
+        } else {
+            requireContext().bindService(
+                    serviceIntent,
+                    this,
+                    Service.BIND_AUTO_CREATE
+            )
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (binder != null) {
+            requireContext().unbindService(this)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.hangUp()?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribeBy(
+                        onComplete = { Timber.e("disconnected") },
+                        onError = Timber::e
+                )
+        binder?.cleanup()
         viewModel.shouldHideNavbar.postValue(false)
-        releasePlayer()
     }
 
-    private fun prepareRtspPlayer() {
-        // Seting up video output
-        with(mediaPlayer.vlcVout) {
-            setVideoView(clientLiveCameraPreviewSv)
-            val displayMetrics = DisplayMetrics()
-            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-            with(displayMetrics) {
-                setWindowSize(widthPixels, heightPixels)
-            }
-            attachViews()
-        }
-
-        with(mediaPlayer) {
-            this.media = Media(
-                    libvlc, Uri.parse(viewModel.selectedChild.value?.rtspAddress)
-            ).apply {
-                setHWDecoderEnabled(true, false)
-                addOption(":network-caching=150")
-                addOption(":clock-jitter=0")
-                addOption(":clock-synchro=0")
-                addOption(":fullscreen")
-            }
-            play()
+    override fun onRequestPermissionsResult(
+            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requireContext().allPermissionsGranted(Companion.permissions)) {
+            requireContext().bindService(serviceIntent, this, Service.BIND_AUTO_CREATE)
         }
     }
 
-    private fun releasePlayer() = with(mediaPlayer) {
-        stop()
-        vlcVout.detachViews()
-        libvlc.release()
+    override fun onServiceDisconnected(name: ComponentName?) {
+        Timber.i("onServiceDisconnected")
     }
 
-    private fun observeServerStatus() {
-        viewModel.selectedChildAvailability.observe(this, Observer { connected ->
-            when (connected) {
-                ConnectionStatus.CONNECTED -> prepareRtspPlayer()
-                else -> releasePlayer()
-            }
-        })
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        binder = service as MainService.MainBinder
+        viewModel.selectedChild.value?.address?.let { address ->
+            viewModel.startCall(
+                    service,
+                    address,
+                    requireActivity().applicationContext,
+                    this::handleStateChange
+            )
+            viewModel.setRemoteRenderer(liveCameraRemoteRenderer)
+        }
+    }
+
+    private fun handleStateChange(state: CallState) {
+        Timber.i(state.toString())
+    }
+
+    companion object {
+        private const val PERMISSIONS_REQUEST_CODE = 125
+
+        private val permissions = arrayOf(
+                Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA
+        )
     }
 }

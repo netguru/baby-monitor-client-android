@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <SurfaceView
-        android:id="@+id/clientLiveCameraPreviewSv"
+    <org.webrtc.SurfaceViewRenderer
+        android:id="@+id/liveCameraRemoteRenderer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <ImageButton
         android:id="@+id/clientLiveCameraStopIbtn"

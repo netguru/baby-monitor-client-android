@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
-import co.netguru.baby.monitor.client.feature.websocket.Action
+import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderInterface
+import co.netguru.baby.monitor.client.feature.communication.websocket.Action
 
 class LullabiesAdapter(
         private val onLullabyPlayPressed: (name: String, action: Action) -> Unit

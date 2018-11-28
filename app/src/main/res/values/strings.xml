@@ -24,8 +24,8 @@
     <string name="snackbar_permissions_not_granted">Permissions not granted</string>
     <string name="settings">settings</string>
     <string name="setup_address">setup address</string>
-    <string name="header_switch_to_server_application">Switch to server application</string>
-    <string name="switch_mode_btn">switch</string>
+    <string name="header_remove_data">Clear data</string>
+    <string name="clear_data_btn">remove data</string>
     <string name="header_lullaby_volume">Lullaby volume</string>
     <string name="configuration_baby_save_btn">save</string>
     <string name="server_on_list_message">Already added</string>

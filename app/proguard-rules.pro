@@ -113,3 +113,7 @@ public static ** valueOf(java.lang.String);
 -keep class org.videolan.libvlc.** { *; }
 # Same for MediaLibrary
 -keep class org.videolan.medialibrary.** { *; }
+# WebRtc
+-keep class org.webrtc.** { *; }
+-dontwarn org.chromium.build.**
+-dontwarn org.webrtc.Logging**

@@ -12,17 +12,14 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
-import co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment
+import co.netguru.baby.monitor.client.feature.common.extensions.*
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
 import javax.inject.Inject
-
 
 class ClientDashboardFragment : DaggerFragment() {
 

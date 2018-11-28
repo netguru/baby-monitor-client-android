@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home.lullabies
 
-import co.netguru.baby.monitor.client.feature.websocket.Action
+import co.netguru.baby.monitor.client.feature.communication.websocket.Action
 
 sealed class LullabyData {
 

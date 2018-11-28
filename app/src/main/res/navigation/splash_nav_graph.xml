@@ -50,21 +50,7 @@
         tools:layout="@layout/fragment_configuration">
 
         <action
-            android:id="@+id/actionConfigurationToConfiguring"
-            app:destination="@+id/configuringBabyFragment" />
-
-        <action
             android:id="@+id/actionConfigurationClientHome"
-            app:destination="@+id/clientHomeActivity" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/configuringBabyFragment"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationBabyFragment"
-        android:label="Configuring Baby"
-        tools:layout="@layout/fragment_configuring_baby">
-        <action
-            android:id="@+id/actionConfiguringClientHome"
             app:destination="@+id/clientHomeActivity" />
     </fragment>
 

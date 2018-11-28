@@ -1,15 +1,36 @@
 package co.netguru.baby.monitor.client.feature.client.home.settings
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
+import co.netguru.baby.monitor.client.feature.splash.SplashActivity
+import dagger.android.support.DaggerFragment
+import kotlinx.android.synthetic.main.fragment_client_settings.*
+import javax.inject.Inject
 
-class ClientSettingsFragment: Fragment() {
+class ClientSettingsFragment : DaggerFragment() {
+
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+
+    private val viewModel by lazy { ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java] }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_client_settings, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        settingsRemoveDataBtn.setOnClickListener {
+            viewModel.clearChildsData()
+            requireContext().startActivity(Intent(requireContext(), SplashActivity::class.java))
+            requireActivity().finish()
+        }
     }
 }
