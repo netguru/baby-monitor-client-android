@@ -4,6 +4,9 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -13,6 +16,7 @@ import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
 import co.netguru.baby.monitor.client.feature.common.extensions.getColorCompat
+import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompat
 import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
 import co.netguru.baby.monitor.client.feature.common.view.PresetedAnimations
 import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
@@ -66,6 +70,10 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             }
         }
         clientHomeChildrenEll.setOnExpansionUpdateListener(this::handleExpandableLayout)
+
+        clientHomeToolbarAddChildAddBtn.setOnClickListener {
+            showAddChildDialog()
+        }
     }
 
     private fun handleExpandableLayout(expansionFraction: Float, state: Int) {
@@ -108,6 +116,13 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             adapter.selectedChild = homeViewModel.selectedChild.value ?: adapter.selectedChild
             adapter.originalList = list
             clientHomeChildrenRv.adapter = adapter
+
+            val dividerItemDecoration = DividerItemDecoration(this@ClientHomeActivity, LinearLayoutManager.VERTICAL).apply {
+                val drawable = getDrawableCompat(R.drawable.divider) ?: return@apply
+                setDrawable(drawable)
+            }
+
+            clientHomeChildrenRv.addItemDecoration(dividerItemDecoration)
             clientHomeChildrenRv.setHasFixedSize(true)
         })
         homeViewModel.refreshChildrenList()

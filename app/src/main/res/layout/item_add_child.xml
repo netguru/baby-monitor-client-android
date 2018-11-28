@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/spacing_small"
-    android:layout_marginBottom="@dimen/spacing_xmedium"
+    android:layout_marginBottom="@dimen/spacing_small"
+    android:layout_marginStart="@dimen/spacing_xmedium"
+    android:background="@color/primary_dark"
     android:gravity="center"
     android:clickable="true"
     android:focusable="true"
@@ -14,19 +16,18 @@
         android:id="@+id/itemAddChildAddBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xmedium"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:layout_marginEnd="@dimen/spacing_small"
-        android:layout_marginBottom="@dimen/spacing_small"
-        android:background="@drawable/ripple"
+        android:background="@null"
         android:padding="@dimen/spacing_xxsmall"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/add" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:fontFamily="@font/averta"
+        android:layout_marginStart="@dimen/spacing_small"
         android:text="@string/add_another_baby"
-        android:textColor="@color/accent" />
+        android:textSize="@dimen/text_size_big"
+        android:textColor="@color/white" />
 
 </LinearLayout>

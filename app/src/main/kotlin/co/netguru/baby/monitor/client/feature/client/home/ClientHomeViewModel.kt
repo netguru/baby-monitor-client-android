@@ -1,9 +1,12 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
+import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
@@ -40,6 +43,15 @@ class ClientHomeViewModel @Inject constructor(
     internal val childList = MutableLiveData<List<ChildData>>()
     private val compositeDisposable = CompositeDisposable()
     private var webSocketClient: CustomWebSocketClient? = null
+
+    //TODO change it for real data fetch
+    val activities: LiveData<List<LogActivityData.LogData>> = Transformations.switchMap(selectedChild) { child ->
+        child ?: return@switchMap MutableLiveData<List<LogActivityData.LogData>>()
+        return@switchMap Transformations.map(LogActivityData.getSampleData()) { activitiesList ->
+            return@map activitiesList.map { LogActivityData.LogData(it.action, it.timeStamp, child.image) }
+        }
+    }
+
 
     fun refreshChildrenList() = Completable.fromAction {
         val list = configurationRepository.childrenList.toMutableList()

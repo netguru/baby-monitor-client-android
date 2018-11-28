@@ -73,6 +73,6 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
 
     companion object {
         internal val headerFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-        internal val timeStampFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy HH:mm")
+        internal val timeStampFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
     }
 }

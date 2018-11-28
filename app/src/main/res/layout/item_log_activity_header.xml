@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <TextView
@@ -13,14 +13,10 @@
         android:layout_marginStart="@dimen/spacing_xxxmedium"
         android:layout_marginTop="@dimen/spacing_xmedium"
         android:layout_marginBottom="@dimen/spacing_xmedium"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_large"
+        android:textColor="@color/primary_dark"
+        android:fontFamily="@font/averta"
+        android:textSize="@dimen/text_size_big"
         android:textStyle="bold"
         tools:text="Today" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/spacing_xxxsmall"
-        android:background="@color/material_grey_400" />
 
 </LinearLayout>

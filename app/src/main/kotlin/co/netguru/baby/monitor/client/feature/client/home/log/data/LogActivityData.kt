@@ -12,7 +12,8 @@ sealed class LogActivityData {
 
     data class LogData(
             val action: String,
-            override val timeStamp: LocalDateTime
+            override val timeStamp: LocalDateTime,
+            val image: String? = null
     ) : LogActivityData()
 
     data class LogHeader(

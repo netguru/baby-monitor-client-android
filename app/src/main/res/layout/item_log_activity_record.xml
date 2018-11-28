@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@android:color/transparent">
 
     <ImageView
         android:id="@+id/itemActivityLogIv"
         android:layout_width="@dimen/spacing_normal"
         android:layout_height="@dimen/spacing_normal"
-        android:layout_marginStart="@dimen/spacing_xxxmedium"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
         android:layout_marginTop="@dimen/spacing_xmedium"
         android:layout_marginEnd="@dimen/spacing_xmedium"
         android:src="@drawable/circle_placeholder"
@@ -25,7 +25,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_xmedium"
-        android:textColor="@color/black"
+        android:textColor="@color/primary_dark"
+        android:fontFamily="@font/averta"
         app:layout_constraintBottom_toTopOf="@+id/itemActivityLogActionTimestampTv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/itemActivityLogIv"
@@ -39,6 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_xmedium"
         android:textSize="@dimen/text_size_xsmall"
+        android:textColor="@color/primary_dark"
+        android:fontFamily="@font/averta"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/itemActivityLogActionTv"
