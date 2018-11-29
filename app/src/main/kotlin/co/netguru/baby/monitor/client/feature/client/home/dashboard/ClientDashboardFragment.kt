@@ -47,12 +47,11 @@ class ClientDashboardFragment : DaggerFragment() {
         clientHomeTalkIbtn.setOnClickListener {
             findNavController().navigate(R.id.actionDashboardToTalk)
         }
+        clientHomeAddPhotoConstraintLayout.setOnClickListener {
+            takeOrChoosePhoto()
+        }
         clientHomeBabyIv.setOnClickListener {
-            if (requireContext().allPermissionsGranted(PERMISSIONS)) {
-                getPictureWithEasyPicker()
-            } else {
-                requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
-            }
+            takeOrChoosePhoto()
         }
         clientHomeBabyNameMet.afterTextChanged {
             if (it.trim() != viewModel.selectedChild.value?.name) {
@@ -64,16 +63,46 @@ class ClientDashboardFragment : DaggerFragment() {
     private fun getData() {
         viewModel.selectedChild.observe(this, Observer {
             it ?: return@Observer
-            clientHomeAddPhotoTv.setVisible(it.image.isNullOrEmpty())
 
-            GlideApp.with(requireContext())
-                    .load(it.image)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(clientHomeBabyIv)
-            if (clientHomeBabyNameMet.text.toString().trim() != it.name?.trim()) {
-                clientHomeBabyNameMet.setText(it.name)
+            // TODO Parse it to the proper text according to Machine Learning results
+            val name = it.name ?: getString(R.string.default_baby_name)
+            clientHomeInformationTv.text = getString(R.string.client_dashboard_welcome_text, name)
+
+            if (!it.image.isNullOrEmpty()) {
+
+                GlideApp.with(requireContext())
+                        .load(it.image)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(clientHomeBabyIv)
+
+                clientHomeBabyIv.setVisible(true)
+                clientHomeAddPhotoConstraintLayout.setVisible(false)
+                setToolbarVisible(true)
+
+                if (clientHomeBabyNameMet.text.toString().trim() != it.name?.trim()) {
+                    clientHomeBabyNameMet.setText(it.name)
+                }
+            } else {
+                clientHomeBabyIv.setVisible(false)
+                clientHomeAddPhotoConstraintLayout.setVisible(true)
+                setToolbarVisible(false)
             }
         })
+    }
+
+    private fun takeOrChoosePhoto() {
+        if (requireContext().allPermissionsGranted(PERMISSIONS)) {
+            getPictureWithEasyPicker()
+        } else {
+            requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
+        }
+    }
+
+    private fun setToolbarVisible(isVisible: Boolean) {
+        val toolbarView = activity?.findViewById<View>(R.id.clientHomeToolbarLayout)
+        if (toolbarView != null) {
+            toolbarView.setVisible(isVisible)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

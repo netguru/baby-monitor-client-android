@@ -2,40 +2,79 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="false">
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clientHomeImageTopGuideline"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05"/>
 
     <ImageView
-        android:id="@+id/clientHomeBabyIv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/spacing_xmedium"
-        android:background="@drawable/all_circle_white_bg"
-        android:padding="@dimen/spacing_medium"
-        android:src="@drawable/circle_placeholder"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeImageGuideline"
+        android:id="@+id/clientHomeBabyIv"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:visibility="visible"
+        android:background="@drawable/fading_transparency_background"
+        android:src="@drawable/logo"
+        android:padding="@dimen/spacing_xxmedium"
+        app:layout_constraintBottom_toBottomOf="@+id/clientHomeImageGuideline"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/clientHomeImageTopGuideline" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/clientHomeAddPhotoConstraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/fading_transparency_background"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/clientHomeImageGuideline"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/clientHomeImageTopGuideline">
+
+        <ImageView
+            android:id="@+id/clientHomePlaceholderIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xxmedium"
+            android:src="@drawable/logo"
+            android:tint="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/clientHomeAddPhotoTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:text="@string/add_photo"
+            android:fontFamily="@font/averta"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="@+id/clientHomePlaceholderIv"
+            app:layout_constraintStart_toStartOf="@+id/clientHomePlaceholderIv"
+            app:layout_constraintTop_toBottomOf="@+id/clientHomePlaceholderIv" />
+    </android.support.constraint.ConstraintLayout>
+
 
     <android.support.constraint.Guideline
         android:id="@+id/clientHomeImageGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.45" />
 
-    <TextView
-        android:id="@+id/clientHomeAddPhotoTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_photo"
-        app:layout_constraintBottom_toBottomOf="@+id/clientHomeBabyIv"
-        app:layout_constraintEnd_toEndOf="@+id/clientHomeBabyIv"
-        app:layout_constraintStart_toStartOf="@+id/clientHomeBabyIv"
-        app:layout_constraintTop_toTopOf="@+id/clientHomeBabyIv" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/clientHomeBabyNameMet"
@@ -43,27 +82,44 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_xxxmedium"
         android:layout_marginEnd="@dimen/spacing_xxxmedium"
-        android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:fontFamily="@font/averta"
         android:gravity="center"
         android:hint="@string/client_baby_name_input_hint"
         android:textSize="@dimen/text_size_large"
         app:layout_constraintBottom_toTopOf="@+id/clientHomeInformationTv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeImageGuideline"
-        app:met_floatingLabel="normal"
-        tools:text="Son" />
+        app:layout_constraintTop_toBottomOf="@+id/clientHomeDashboardPb"
+        app:met_floatingLabel="none" />
 
     <TextView
         android:id="@+id/clientHomeInformationTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/averta"
         android:gravity="center"
         android:text="@string/client_dashboard_welcome_text"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeGl"
+        android:textColor="@color/black"
+        android:layout_marginBottom="@dimen/spacing_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeBabyNameMet" />
+        app:layout_constraintTop_toBottomOf="@id/clientHomeBabyNameMet"
+        app:layout_constraintBottom_toTopOf="@+id/cientHomeActionText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cientHomeActionText"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginEnd="@dimen/spacing_small"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:fontFamily="@font/averta"
+        android:text="@string/client_dashboard_action_text"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/clientHomeTalkIbtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.constraint.Guideline
         android:id="@+id/clientHomeGl"
@@ -76,79 +132,40 @@
         android:id="@+id/clientHomeLiveCameraIbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ripple"
+        android:background="@null"
         android:elevation="@dimen/spacing_small"
         android:padding="@dimen/spacing_xmedium"
-        android:src="@drawable/ic_videocam_white_24dp"
+        android:src="@drawable/camera"
+        android:layout_marginBottom="@dimen/spacing_medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/clientHomeTalkIbtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeGl" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:text="@string/live_camera"
-        android:textAllCaps="true"
-        android:textColor="@color/accent"
-        android:textSize="@dimen/text_size_small"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/clientHomeLiveCameraIbtn"
-        app:layout_constraintStart_toStartOf="@+id/clientHomeLiveCameraIbtn"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeLiveCameraIbtn" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/clientHomeTalkIbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ripple"
+        android:background="@null"
         android:elevation="@dimen/spacing_small"
         android:padding="@dimen/spacing_xmedium"
-        android:src="@drawable/ic_mic_white_24dp"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:src="@drawable/microphone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/clientHomePlayLullabyIbtn"
-        app:layout_constraintStart_toEndOf="@+id/clientHomeLiveCameraIbtn"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeGl" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:text="@string/talk"
-        android:textAllCaps="true"
-        android:textColor="@color/accent"
-        android:textSize="@dimen/text_size_small"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/clientHomeTalkIbtn"
-        app:layout_constraintStart_toStartOf="@+id/clientHomeTalkIbtn"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeTalkIbtn" />
+        app:layout_constraintStart_toEndOf="@+id/clientHomeLiveCameraIbtn" />
 
     <ImageButton
         android:id="@+id/clientHomePlayLullabyIbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ripple"
+        android:background="@null"
         android:elevation="@dimen/spacing_small"
         android:padding="@dimen/spacing_xmedium"
-        android:src="@drawable/ic_music_note_white_24dp"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:src="@drawable/music"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/clientHomeTalkIbtn"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeGl" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:text="@string/play_lullaby"
-        android:textAllCaps="true"
-        android:textColor="@color/accent"
-        android:textSize="@dimen/text_size_small"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/clientHomePlayLullabyIbtn"
-        app:layout_constraintStart_toStartOf="@+id/clientHomePlayLullabyIbtn"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomePlayLullabyIbtn" />
+        app:layout_constraintStart_toEndOf="@+id/clientHomeTalkIbtn" />
 
     <ProgressBar
         android:id="@+id/clientHomeDashboardPb"
