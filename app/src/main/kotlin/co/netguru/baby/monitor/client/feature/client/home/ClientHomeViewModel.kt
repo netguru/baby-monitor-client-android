@@ -164,4 +164,9 @@ class ClientHomeViewModel @Inject constructor(
         webSocketClient?.onDestroy()
         compositeDisposable.dispose()
     }
+
+    fun isBabyDataFilled(): Boolean {
+        val child = selectedChild.value ?: return false
+        return (child.image != null)
+    }
 }

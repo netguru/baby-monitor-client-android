@@ -65,7 +65,7 @@ class ClientDashboardFragment : DaggerFragment() {
             it ?: return@Observer
 
             // TODO Parse it to the proper text according to Machine Learning results
-            val name = it.name ?: getString(R.string.default_baby_name)
+            val name = if (it.name.isNullOrEmpty()) getString(R.string.default_baby_name) else it.name
             clientHomeInformationTv.text = getString(R.string.client_dashboard_welcome_text, name)
 
             if (!it.image.isNullOrEmpty()) {
@@ -77,7 +77,6 @@ class ClientDashboardFragment : DaggerFragment() {
 
                 clientHomeBabyIv.setVisible(true)
                 clientHomeAddPhotoConstraintLayout.setVisible(false)
-                setToolbarVisible(true)
 
                 if (clientHomeBabyNameMet.text.toString().trim() != it.name?.trim()) {
                     clientHomeBabyNameMet.setText(it.name)
@@ -85,7 +84,6 @@ class ClientDashboardFragment : DaggerFragment() {
             } else {
                 clientHomeBabyIv.setVisible(false)
                 clientHomeAddPhotoConstraintLayout.setVisible(true)
-                setToolbarVisible(false)
             }
         })
     }
@@ -95,13 +93,6 @@ class ClientDashboardFragment : DaggerFragment() {
             getPictureWithEasyPicker()
         } else {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
-        }
-    }
-
-    private fun setToolbarVisible(isVisible: Boolean) {
-        val toolbarView = activity?.findViewById<View>(R.id.clientHomeToolbarLayout)
-        if (toolbarView != null) {
-            toolbarView.setVisible(isVisible)
         }
     }
 

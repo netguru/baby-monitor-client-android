@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clientHomeToolbarLayout"
+    android:id="@+id/clientHomeToolbarRootLayout"
     android:layout_width="match_parent"
     android:layout_height="?android:actionBarSize"
     android:background="@color/primary_dark"
@@ -12,6 +12,24 @@
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintVertical_bias="0"
     app:layout_constraintVertical_chainStyle="spread_inside">
+
+    <Button
+        android:id="@+id/clientToolbarCancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:background="@null"
+        android:fontFamily="@font/averta"
+        android:text="@string/cancel"
+        android:textSize="@dimen/text_size_normal"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/clientHomeChildLl"
@@ -37,20 +55,20 @@
             android:id="@+id/clientHomeChildTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/averta"
             android:gravity="center"
             android:textColor="@color/white"
-            android:fontFamily="@font/averta"
-            android:textStyle="bold"
             android:textSize="@dimen/text_size_normal"
+            android:textStyle="bold"
             tools:text="Jane" />
 
         <ImageView
             android:id="@+id/clientHomeChildAvailabilityIv"
             android:layout_width="@dimen/spacing_xmedium"
             android:layout_height="@dimen/spacing_xmedium"
-            android:visibility="gone"
-            android:layout_weight="0"
             android:layout_marginStart="@dimen/spacing_small"
+            android:layout_weight="0"
+            android:visibility="gone"
             tools:background="@color/material_red_a400" />
 
         <ImageView
@@ -58,8 +76,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_small"
-            android:tint="@color/white"
-            android:src="@drawable/ic_keyboard_arrow_down_gray_24dp" />
+            android:src="@drawable/ic_keyboard_arrow_down_gray_24dp"
+            android:tint="@color/white" />
 
     </LinearLayout>
 

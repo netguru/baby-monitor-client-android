@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -45,6 +44,19 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.activity_client_home)
         setupView()
         getData()
+
+        observeCurrentDestination()
+    }
+
+    private fun observeCurrentDestination() {
+        findNavController(R.id.clientDashboardNavigationHostFragment)
+                .addOnNavigatedListener { controller, destination ->
+                    val shouldToolbarBeVisible = (destination.id == R.id.clientLiveCamera) ||
+                            homeViewModel.isBabyDataFilled()
+
+                    clientHomeToolbarLayout.setVisible(shouldToolbarBeVisible)
+                    clientToolbarCancelButton.setVisible(destination.id == R.id.clientLiveCamera)
+                }
     }
 
     override fun onSupportNavigateUp() =
@@ -73,6 +85,10 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
 
         clientHomeToolbarAddChildAddBtn.setOnClickListener {
             showAddChildDialog()
+        }
+
+        clientToolbarCancelButton.setOnClickListener {
+            findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
     }
 
