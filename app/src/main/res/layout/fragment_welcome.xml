@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/splash_background"
-        app:layout_constraintBottom_toTopOf="@+id/serverButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:background="@drawable/gradient_background">
 
     <Button
         android:id="@+id/serverButton"
-        android:layout_width="wrap_content"
+        style="@style/MainButtonStyle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_rounded_ripple"
-        android:paddingStart="@dimen/spacing_xmedium"
-        android:paddingEnd="@dimen/spacing_xmedium"
+        android:layout_marginTop="@dimen/spacing_xxmedium"
+        android:layout_marginEnd="@dimen/spacing_xxmedium"
         android:text="@string/start_server_text"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/clientButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintStart_toStartOf="@+id/clientButton"
+        app:layout_constraintTop_toBottomOf="@+id/clientButton" />
 
     <Button
         android:id="@+id/clientButton"
-        android:layout_width="wrap_content"
+        style="@style/MainButtonStyle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_small"
         android:layout_marginTop="@dimen/spacing_xmedium"
-        android:background="@drawable/button_rounded_ripple"
-        android:paddingStart="@dimen/spacing_xmedium"
-        android:paddingEnd="@dimen/spacing_xmedium"
+        android:layout_marginEnd="@dimen/spacing_xxmedium"
+        android:layout_marginBottom="@dimen/spacing_normal"
         android:text="@string/start_client_text"
-        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/serverButton" />
+        app:layout_constraintStart_toStartOf="@+id/welcomeDescriptionTv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/welcomeTitleTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
+        android:layout_marginBottom="@dimen/spacing_normal"
+        android:fontFamily="@font/averta"
+        android:text="@string/specify_this_device_title"
+        android:textColor="@color/primary_dark"
+        android:textSize="@dimen/text_size_big"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/welcomeDescriptionTv"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/welcomeDescriptionTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:alpha="0.5"
+        android:fontFamily="@font/averta"
+        android:text="@string/welcome_to_baby_monitor_nlet_s_start_by_defining_this_device_description"
+        android:textColor="@color/primary_dark"
+        android:textSize="@dimen/text_size_normal"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/welcomeTitleTv" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3" />
 </android.support.constraint.ConstraintLayout>

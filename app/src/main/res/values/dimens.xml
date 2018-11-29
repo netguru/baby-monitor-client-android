@@ -30,4 +30,7 @@
     <dimen name="spacing_xxxlarge">96dp</dimen>
 
     <dimen name="toolbar_elevation">12dp</dimen>
+    <dimen name="elevation_big">20dp</dimen>
+
+    <dimen name="padding_normal">20dp</dimen>
 </resources>

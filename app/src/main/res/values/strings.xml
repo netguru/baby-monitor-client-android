@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">Baby Monitor</string>
 
-    <string name="start_server_text">Start Baby Monitor Server</string>
-    <string name="start_client_text">Start Baby Monitor Client</string>
+    <string name="start_server_text">Baby</string>
+    <string name="start_client_text">Parent</string>
     <string name="action_ok">Ok</string>
     <string name="server_address">Server Address</string>
     <string name="menu_action_dashboard">Dashboard</string>
@@ -32,5 +32,7 @@
     <string name="add_child_dialog_title">Select new child</string>
     <string name="default_baby_name">He/She</string>
     <string name="client_dashboard_action_text">Take a peek without disturbing them?</string>
+    <string name="specify_this_device_title">Specify this device</string>
+    <string name="welcome_to_baby_monitor_nlet_s_start_by_defining_this_device_description">Welcome to Baby Monitor\nLet’s start by defining this device</string>
     <string name="cancel">Cancel</string>
 </resources>
