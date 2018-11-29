@@ -10,7 +10,7 @@
         android:id="@+id/configurationLogoIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/splash_background"
+        android:src="@drawable/purple_logo"
         app:layout_constraintBottom_toTopOf="@+id/discoveredDevicesRv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

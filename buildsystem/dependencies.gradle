@@ -45,7 +45,8 @@ ext {
             javaWebSocket           : "org.java-websocket:Java-WebSocket:1.3.9",
             materialDialogs         : 'com.afollestad.material-dialogs:core:0.9.6.0',
             exoPlayer               : 'com.google.android.exoplayer:exoplayer:2.8.4',
-            googleWebRtc            : 'org.webrtc:google-webrtc:1.0.20284'
+            googleWebRtc            : 'org.webrtc:google-webrtc:1.0.20284',
+            bubblePagerIndicator    : 'com.shuhart.bubblepagerindicator:bubblepagerindicator:1.1.2'
     ]
 
     proc = [

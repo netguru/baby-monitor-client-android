@@ -35,4 +35,15 @@
     <string name="specify_this_device_title">Specify this device</string>
     <string name="welcome_to_baby_monitor_nlet_s_start_by_defining_this_device_description">Welcome to Baby Monitor\nLet’s start by defining this device</string>
     <string name="cancel">Cancel</string>
+    <string name="splash_by_netguru">by <u>Netguru</u></string>
+    <string name="splash_crafted_with">Crafted with</string>
+
+    <string name="presentation_a_text_1">Automatically detect if your \n baby is crying</string>
+    <string name="presentation_a_text_2">Your baby is laying in bed, looks like \n s/he is sleeping soundly.</string>
+    <string name="presentation_b_text_1">Comfort your baby by playing\nhis favourite songs</string>
+    <string name="presentation_b_text_2">Your baby is laying in bed, looks like\ns/he is sleeping soundly.</string>
+    <string name="presentation_c_text_1">Monitor your baby</string>
+    <string name="presentation_c_text_2">Your baby is laying in bed, looks like\ns/he is sleeping soundly.</string>
+    <string name="presentation_next_btn">Next</string>
+    <string name="presentation_setup_baby_monitor_btn">Setup Baby Monitor</string>
 </resources>
