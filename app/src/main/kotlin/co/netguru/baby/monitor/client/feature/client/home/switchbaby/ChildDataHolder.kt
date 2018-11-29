@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home.switchbaby
 
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
@@ -33,8 +34,14 @@ class ChildDataHolder(
     }
 
     override fun bindView(item: ChildData) = with(item) {
+        val dataToLoad: Any? = if (image.isNullOrEmpty()) {
+            R.drawable.logo
+        } else {
+            image
+        }
+
         GlideApp.with(itemView.context)
-                .load(image)
+                .load(dataToLoad)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemChildIv)
 
