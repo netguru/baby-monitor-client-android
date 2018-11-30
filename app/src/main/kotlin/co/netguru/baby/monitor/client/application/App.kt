@@ -1,6 +1,5 @@
 package co.netguru.baby.monitor.client.application
 
-import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
@@ -20,7 +19,6 @@ class App : DaggerApplication() {
         debugMetricsHelper.init(this)
         RxJavaPlugins.setErrorHandler(rxJavaErrorHandler)
         AndroidThreeTen.init(this)
-       // RtcCall.initPeerConnectionFactory(this)
     }
 
     override fun applicationInjector(): AndroidInjector<App> =

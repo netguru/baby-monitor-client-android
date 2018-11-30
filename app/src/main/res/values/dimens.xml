@@ -7,6 +7,7 @@
     <dimen name="text_size_normal">16sp</dimen>
     <dimen name="text_size_big">18sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
+    <dimen name="text_size_xxlarge">24sp</dimen>
     <dimen name="text_size_huge">34sp</dimen>
 
     <dimen name="spacing_xxxsmall">1dp</dimen>
@@ -28,6 +29,8 @@
     <dimen name="spacing_xlarge">80dp</dimen>
     <dimen name="spacing_xxlarge">88dp</dimen>
     <dimen name="spacing_xxxlarge">96dp</dimen>
+
+    <dimen name="spacing_tiny">2dp</dimen>
 
     <dimen name="toolbar_elevation">12dp</dimen>
     <dimen name="elevation_big">20dp</dimen>

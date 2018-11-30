@@ -212,6 +212,9 @@ dependencies {
     //WebRtc
     implementation libs.googleWebRtc
 
+    //BubblePagerIndicator
+    implementation libs.bubblePagerIndicator
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito

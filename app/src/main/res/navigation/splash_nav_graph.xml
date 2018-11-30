@@ -3,23 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splash_nav_graph"
-    app:startDestination="@+id/splashFragment">
-
-    <fragment
-        android:id="@+id/splashFragment"
-        android:name="co.netguru.baby.monitor.client.feature.splash.SplashFragment"
-        android:label="Splash"
-        tools:layout="@layout/fragment_splash">
-
-        <action
-            android:id="@+id/actionSplashToWelcome"
-            app:clearTask="true"
-            app:destination="@+id/welcomeFragment" />
-
-        <action
-            android:id="@+id/actionSplashToClientHome"
-            app:destination="@+id/clientHomeActivity" />
-    </fragment>
+    app:startDestination="@+id/welcomeFragment">
 
     <fragment
         android:id="@+id/welcomeFragment"
