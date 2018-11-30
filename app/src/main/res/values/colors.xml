@@ -6,6 +6,7 @@
 
     <color name="primary_dark_a30">#4d211e35</color>
     <color name="primary_dark_a15">#26211e35</color>
+    <color name="primary_dark_a50">#80211e35</color>
 
     <color name="transparent">#00000000</color>
     <color name="white">#FFFFFF</color>

@@ -39,11 +39,19 @@
     <string name="splash_crafted_with">Crafted with</string>
 
     <string name="presentation_a_text_1">Automatically detect if your \n baby is crying</string>
-    <string name="presentation_a_text_2">Your baby is laying in bed, looks like \n s/he is sleeping soundly.</string>
-    <string name="presentation_b_text_1">Comfort your baby by playing\nhis favourite songs</string>
-    <string name="presentation_b_text_2">Your baby is laying in bed, looks like\ns/he is sleeping soundly.</string>
+    <string name="presentation_a_text_2">Your baby is lying in bed, looks like\nit is sleeping soundly.</string>
+    <string name="presentation_b_text_1">Comfort your baby by playing\nits favourite songs</string>
     <string name="presentation_c_text_1">Monitor your baby</string>
-    <string name="presentation_c_text_2">Your baby is laying in bed, looks like\ns/he is sleeping soundly.</string>
     <string name="presentation_next_btn">Next</string>
-    <string name="presentation_setup_baby_monitor_btn">Setup Baby Monitor</string>
+    <string name="presentation_setup_baby_monitor_btn">Set up Baby Monitor</string>
+
+    <string name="back"><u>Back</u></string>
+    <string name="connecting">Connecting</string>
+    <string name="connecting_description">Get started by connecting\nBaby Monitor to Wi-Fi</string>
+    <string name="connect_to_wi_fi">Connect to Wi-Fi</string>
+    <string name="connect_wifi_connected">Next</string>
+    <string name="connecting_permissions">Allow access to microphone and camera</string>
+    <string name="setup_information">Set up information</string>
+    <string name="connecting_setup_information">Place this device next to your baby’s bed\nso that you can see him on your live view</string>
+    <string name="start_monitoring">Start monitoring</string>
 </resources>

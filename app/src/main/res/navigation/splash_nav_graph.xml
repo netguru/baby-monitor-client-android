@@ -12,13 +12,48 @@
         tools:layout="@layout/fragment_welcome">
 
         <action
-            android:id="@+id/actionWelcomeToServer"
-            app:clearTask="true"
-            app:destination="@+id/serverFragment" />
+            android:id="@+id/actionWelcomeToConnecting"
+            app:destination="@+id/onboardingConnectingWiFi" />
+
+        <action
+            android:id="@+id/actionWelcomeToPermissions"
+            app:destination="@+id/onboardingPermissions" />
 
         <action
             android:id="@+id/actionWelcomeToConfiguration"
             app:destination="@+id/configurationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/onboardingConnectingWiFi"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.OnboardingConnectingWiFi"
+        android:label="Connecting WiFi"
+        tools:layout="@layout/fragment_connecting_wifi">
+
+        <action
+            android:id="@+id/actionWifiToPermissions"
+            app:destination="@+id/onboardingPermissions" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/onboardingPermissions"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.OnboardingPermissions"
+        android:label="Connecting Permissions"
+        tools:layout="@layout/fragment_connecting_permissions">
+        <action
+            android:id="@+id/actionPermissionToSetupInfo"
+            app:destination="@+id/onboardingSetupInformation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/onboardingSetupInformation"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.OnboardingSetupInformation"
+        android:label="Setup Information"
+        tools:layout="@layout/fragment_connecting_setup_information">
+        <action
+            android:id="@+id/onboardingSetupToServer"
+            app:clearTask="true"
+            app:destination="@+id/serverFragment" />
     </fragment>
 
     <fragment
