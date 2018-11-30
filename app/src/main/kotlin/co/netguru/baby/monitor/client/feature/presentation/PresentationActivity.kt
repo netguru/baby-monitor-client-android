@@ -20,6 +20,7 @@ class PresentationActivity : FragmentActivity() {
 
     private fun setupView() {
         presentationVp.adapter = adapter
+        presentationVp.setOnTouchListener { v, event -> true }
         presentationBpi.setViewPager(presentationVp)
         presentationNextBtn.setOnClickListener {
             presentationVp.currentItem += 1
@@ -42,9 +43,9 @@ class PresentationActivity : FragmentActivity() {
     }
 
     override fun onBackPressed() {
-        changeButtonVisibility()
         if (presentationVp.currentItem != FIRST_PAGE_NUMBER) {
             presentationVp.currentItem -= 1
+            changeButtonVisibility()
         } else {
             super.onBackPressed()
         }

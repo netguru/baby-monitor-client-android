@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <TextView
+        android:id="@+id/onboardingInformationBackTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
+        android:layout_marginTop="@dimen/spacing_xxxmedium"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/averta"
+        android:text="@string/back"
+        android:textColor="@color/primary_dark"
+        app:layout_constraintBottom_toTopOf="@+id/connectingInformationHeadlineTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/connectingInformationHeadlineTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:fontFamily="@font/averta_bold"
+        android:text="@string/setup_information"
+        android:textColor="@color/primary_dark"
+        app:layout_constraintBottom_toTopOf="@+id/connectingInformationInformationTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/onboardingInformationBackTv" />
+
+    <TextView
+        android:id="@+id/connectingInformationInformationTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
+        android:layout_marginTop="@dimen/spacing_xxxmedium"
+        android:text="@string/connecting_setup_information"
+        android:textColor="@color/primary_dark_a50"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/connectingInformationHeadlineTv" />
+
+    <ImageView
+        android:id="@+id/connectingInformationLogoIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/monitoring"
+        app:layout_constraintBottom_toTopOf="@+id/connectionInformationMbtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/connectingInformationInformationTv" />
+
+    <android.support.design.button.MaterialButton
+        android:id="@+id/connectionInformationMbtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xxmedium"
+        android:paddingTop="@dimen/spacing_medium"
+        android:paddingBottom="@dimen/spacing_medium"
+        android:text="@string/start_monitoring"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/indigo_accent"
+        app:cornerRadius="@dimen/spacing_xxxlarge"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintWidth_percent="0.8" />
+
+</android.support.constraint.ConstraintLayout>

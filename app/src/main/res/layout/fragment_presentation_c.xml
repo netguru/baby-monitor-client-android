@@ -41,7 +41,7 @@
         android:layout_marginTop="@dimen/spacing_xmedium"
         android:fontFamily="@font/averta"
         android:gravity="center"
-        android:text="@string/presentation_c_text_2"
+        android:text="@string/presentation_a_text_2"
         android:textColor="@color/presentation_text_color"
         android:textSize="@dimen/text_size_medium"
         app:layout_constraintBottom_toBottomOf="parent"
