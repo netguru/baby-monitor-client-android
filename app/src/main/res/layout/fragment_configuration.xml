@@ -4,50 +4,75 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@drawable/gradient_background">
 
-    <ImageView
-        android:id="@+id/configurationLogoIv"
+    <android.widget.Button
+        android:id="@+id/configurationBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/purple_logo"
-        app:layout_constraintBottom_toTopOf="@+id/discoveredDevicesRv"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:background="@null"
+        android:fontFamily="@font/averta"
+        android:text="@string/back_underlined"
+        android:textAllCaps="false"
+        android:textColor="@color/primary_dark"
+        android:textSize="@dimen/text_size_normal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/discoveredDevicesRv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/progressBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/configurationLogoIv"
-        app:layout_constraintWidth_percent="0.6" />
+    <TextView
+        android:id="@+id/configurationTitleTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
+        android:layout_marginBottom="@dimen/spacing_normal"
+        android:fontFamily="@font/averta"
+        android:text="@string/connecting"
+        android:textColor="@color/primary_dark"
+        android:textSize="@dimen/text_size_big"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/configurationDescriptionTv"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/configurationDescriptionTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:alpha="0.5"
+        android:fontFamily="@font/averta"
+        android:text="@string/configuration_description"
+        android:textColor="@color/primary_dark"
+        android:textSize="@dimen/text_size_normal"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/configurationTitleTv" />
+
 
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:layout_marginEnd="@dimen/spacing_small"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:background="@drawable/all_circle_white_bg"
         android:indeterminate="true"
+        android:padding="@dimen/spacing_xmedium"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/discoveringGuideline"
-        app:layout_constraintEnd_toEndOf="@+id/discoveredDevicesRv"
-        app:layout_constraintStart_toStartOf="@+id/discoveredDevicesRv"
-        app:layout_constraintTop_toBottomOf="@+id/discoveredDevicesRv"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
     <android.support.constraint.Guideline
         android:id="@+id/discoveringGuideline"
-        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        app:layout_constraintGuide_percent="0.8"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
 
     <EditText
         android:id="@+id/debugAddressEt"
@@ -59,7 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/discoveringGuideline" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/debugSetAddressButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -81,4 +106,12 @@
         android:visibility="gone"
         app:constraint_referenced_ids="debugSetAddressButton, debugAddressEt"
         tools:visibility="visible" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3" />
+
 </android.support.constraint.ConstraintLayout>

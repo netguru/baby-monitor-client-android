@@ -15,26 +15,22 @@ import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMess
 import co.netguru.baby.monitor.client.feature.common.extensions.trimmedText
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import dagger.android.support.DaggerFragment
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_configuration.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConnectedListener {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
+
+    private var timeOutDisposable: Disposable? = null
+
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
-    }
-
-    private val adapter by lazy {
-        ServiceAdapter { serviceInfo ->
-            viewModel.appendNewAddress(serviceInfo.host.hostAddress, serviceInfo.port) { success ->
-                if (success) {
-                    findNavController().navigate(R.id.actionConfigurationClientHome)
-                    requireActivity().finish()
-                }
-            }
-        }
     }
 
     override fun onCreateView(
@@ -47,6 +43,17 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
         super.onViewCreated(view, savedInstanceState)
         setupView()
         setupDebugViews()
+        setTimeOutForConnecting()
+
+        viewModel.serviceInfoData.observe(this, Observer { service ->
+            service ?: return@Observer
+
+            viewModel.appendNewAddress(service.host.hostAddress, service.port) { success ->
+                if (success) {
+                    findNavController().navigate(R.id.actionConfigurationConnectingDone)
+                }
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -54,14 +61,27 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
         viewModel.stopNsdServiceDiscovery()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        timeOutDisposable?.dispose()
+    }
+
     override fun onServiceConnectionError() {
         showSnackbarMessage(R.string.discovering_services_error)
     }
 
     private fun setupView() {
-        discoveredDevicesRv.adapter = adapter
         showProgressBar(true)
         viewModel.discoverNsdService(this)
+
+        configurationBackButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun setTimeOutForConnecting() {
+        timeOutDisposable = Completable.timer(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                .subscribe { findNavController().navigate(R.id.actionConfigurationToFailed) }
     }
 
     private fun setupDebugViews() {
@@ -71,18 +91,18 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
                 if (!debugAddressEt.text.isNullOrEmpty()) {
                     val trimmed = debugAddressEt.trimmedText.split(":")
                     viewModel.appendNewAddress(trimmed[0], trimmed[1].toInt()) {
-                        findNavController().navigate(R.id.actionConfigurationClientHome)
-                        requireActivity().finish()
+                        findNavController().navigate(R.id.actionConfigurationConnectingDone)
                     }
                 }
             }
         }
-        viewModel.serviceInfoData.observe(this, Observer { servicesList ->
-            adapter.list = servicesList ?: return@Observer
-        })
     }
 
     private fun showProgressBar(isVisible: Boolean) {
         progressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
+
+    companion object {
+        const val TIMEOUT_IN_SECONDS = 20L
     }
 }
