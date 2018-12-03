@@ -72,7 +72,14 @@
         android:id="@+id/serverFragment"
         android:name="co.netguru.baby.monitor.client.feature.server.ServerFragment"
         android:label="Server"
-        tools:layout="@layout/fragment_server" />
+        tools:layout="@layout/fragment_server" >
+
+        <action
+            android:id="@+id/onboardingServerToWelcome"
+            app:clearTask="true"
+            app:destination="@+id/welcomeFragment"/>
+    </fragment>
+
 
     <fragment
         android:id="@+id/configurationFragment"
