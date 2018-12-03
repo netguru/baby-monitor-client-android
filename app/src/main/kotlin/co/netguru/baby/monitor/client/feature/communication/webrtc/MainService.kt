@@ -7,6 +7,7 @@ import android.os.Binder
 import co.netguru.baby.monitor.client.feature.common.extensions.let
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.P2P_OFFER
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
+import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
 import org.java_websocket.WebSocket
 import org.json.JSONObject
@@ -60,7 +61,7 @@ class MainService : Service() {
             newValue?.let(callChangeNotifier)
         }
 
-        fun createClient(address: String) = RtcClient(address)
+        fun createClient(client: CustomWebSocketClient) = RtcClient(client)
 
         fun cleanup() {
             currentCall?.cleanup()

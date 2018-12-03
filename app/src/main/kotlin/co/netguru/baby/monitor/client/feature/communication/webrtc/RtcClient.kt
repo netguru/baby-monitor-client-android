@@ -13,9 +13,13 @@ import timber.log.Timber
 import java.nio.charset.Charset
 
 class RtcClient(
-        private val address: String,
+        client: CustomWebSocketClient,
         var enableVoice: Boolean = false
 ) : RtcCall() {
+
+    init {
+        commSocket = client
+    }
 
     internal fun startCall(
             context: Context,
@@ -23,11 +27,11 @@ class RtcClient(
     ) = Completable.fromAction {
         initRtc(context)
         this.listener = listener
-        Timber.i("starting call to $address")
+        Timber.i("starting call to ${(commSocket as CustomWebSocketClient?)?.address}")
         connection = factory?.createPeerConnection(emptyList(), constraints, object : DefaultObserver() {
             override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
                 if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
-                    createWebSocketClient(address)
+                    onIceGatheringComplete()
                     reportStateChange(CallState.CONNECTING)
                 }
             }
@@ -74,22 +78,20 @@ class RtcClient(
         return upStream
     }
 
-    private fun createWebSocketClient(address: String) {
-        commSocket = CustomWebSocketClient(
-                address,
-                onAvailabilityChange = { client, connectionStatus ->
-                    if (connectionStatus == ConnectionStatus.CONNECTED) {
-                        sendOffer(client)
-                    }
-                },
-                onConnectionResponseReceived = { client, message ->
-                    val jsonObject = JSONObject(message)
-                    if (jsonObject.has(P2P_ANSWER)) {
-                        reportStateChange(CallState.CONNECTED)
-                        handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
-                    }
+    private fun onIceGatheringComplete() {
+        with((commSocket as CustomWebSocketClient)) {
+            if (availability == ConnectionStatus.CONNECTED) {
+                sendOffer(this)
+            }
+
+            addMessageListener { client, message ->
+                val jsonObject = JSONObject(message)
+                if (jsonObject.has(P2P_ANSWER)) {
+                    reportStateChange(CallState.CONNECTED)
+                    handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
                 }
-        )
+            }
+        }
     }
 
     private fun sendOffer(client: CustomWebSocketClient) {

@@ -106,15 +106,12 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         binder = service as MainService.MainBinder
-        viewModel.selectedChild.value?.address?.let { address ->
-            viewModel.startCall(
-                    service,
-                    address,
-                    requireActivity().applicationContext,
-                    this::handleStateChange
-            )
-            viewModel.setRemoteRenderer(liveCameraRemoteRenderer)
-        }
+        viewModel.startCall(
+                service,
+                requireActivity().applicationContext,
+                this::handleStateChange
+        )
+        viewModel.setRemoteRenderer(liveCameraRemoteRenderer)
     }
 
     private fun handleStateChange(state: CallState) {
