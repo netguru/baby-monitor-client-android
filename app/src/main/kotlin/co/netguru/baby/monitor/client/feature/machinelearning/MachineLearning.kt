@@ -5,14 +5,13 @@ import android.content.Context
 import android.support.annotation.WorkerThread
 import co.netguru.baby.monitor.client.feature.common.DataBounder
 import co.netguru.baby.monitor.client.feature.common.extensions.saveAssetToCache
-import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
-import co.netguru.baby.monitor.client.feature.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.machinelearning.AacRecorder.Companion.SAMPLING_RATE
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -25,6 +24,7 @@ class MachineLearning(
         context: Context
 ) {
 
+    val data: PublishSubject<Map<String, Float>> = PublishSubject.create()
     val result = MutableLiveData<DataBounder<Array<Float>>>()
     private val inferenceInterface = TensorFlowInferenceInterface(
             context.assets,
@@ -58,7 +58,7 @@ class MachineLearning(
         }
 
         Single.just(newData).map { data ->
-            val outputScores = FloatArray(labels.size)
+            val outputScores = FloatArray(OUTPUTS_NUMBER)
             val mappedData = FloatArray(DATA_SIZE) {
                 if (data.size < it) return@FloatArray 0f
 
@@ -74,10 +74,22 @@ class MachineLearning(
                 run(outputScoresNames, true)
                 fetch(OUTPUT_SCORES_NAME, outputScores)
             }
-            Timber.i("data: ${outputScores.toJson()}")
             return@map outputScores.toTypedArray()
-        }.subscribeOn(Schedulers.io()).subscribeWithLiveData(result)
+        }.subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onSuccess = { floats -> mapAndPostData(floats) }
+                ).addTo(compositeDisposable)
         newData = emptyArray()
+    }
+
+    private fun mapAndPostData(floats: Array<Float>) {
+        val map = mutableMapOf<String, Float>()
+        map[OUTPUT_1_SILENCE] = floats[0]
+        map[OUTPUT_2_BACKGROUND_NOISE] = floats[1]
+        map[OUTPUT_3_CRYING_BABY] = floats[2]
+        map[OUTPUT_4_NOISE] = floats[3]
+        Timber.i("data: $map")
+        data.onNext(map)
     }
 
     fun dispose() {
@@ -140,12 +152,12 @@ class MachineLearning(
         private const val OUTPUT_SCORES_NAME = "labels_softmax"
         private const val TEST_FILE = "noise_407.wav"
 
+        private const val OUTPUTS_NUMBER = 4
+        const val OUTPUT_1_SILENCE = "SILENCE"
+        const val OUTPUT_2_BACKGROUND_NOISE = "BACKGROUND_NOISE"
+        const val OUTPUT_3_CRYING_BABY = "CRYING_BABY"
+        const val OUTPUT_4_NOISE = "NOISE"
+
         private val outputScoresNames = arrayOf(OUTPUT_SCORES_NAME)
-        private val labels = arrayOf(
-                "silence",
-                "unknown",
-                "crying_baby",
-                "noise"
-        )
     }
 }

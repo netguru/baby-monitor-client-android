@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import android.Manifest.permission.*
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.RECORD_AUDIO
 import android.app.Service
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
@@ -15,7 +16,6 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
-import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -32,7 +32,6 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
     }
-    private var machineLearning: MachineLearning? = null
     private val serviceIntent by lazy { Intent(requireContext(), MainService::class.java) }
     private var binder: MainService.MainBinder? = null
 
@@ -46,7 +45,6 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
-            machineLearning = MachineLearning(requireContext()).apply { init() }
             requireContext().bindService(
                     serviceIntent,
                     this,
@@ -58,7 +56,6 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     override fun onPause() {
         super.onPause()
         viewModel.unregisterNsdService()
-        machineLearning?.dispose()
         if (binder != null) {
             requireContext().unbindService(this)
         }
@@ -90,6 +87,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         binder = service as MainService.MainBinder?
+        binder?.initMachineLearning()
         binder?.callChangeNotifier = { call ->
             viewModel.currentCall = call as RtcReceiver?
             viewModel.accept(requireContext())
