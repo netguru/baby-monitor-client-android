@@ -67,4 +67,9 @@
     <string name="all_done_title">All done!</string>
     <string name="all_done_description">You can now start using Baby Monitor!</string>
     <string name="get_started">Get started</string>
+    <string name="notification_baby_is_crying_title">Your baby is crying!</string>
+    <string name="notification_baby_is_crying_content">Check what happened on live camera.</string>
+    <string name="notification_channel_name">Baby Monitor</string>
+    <string name="notification_channel_description">Notifications for Baby Monitor</string>
+    <string name="notification_channel_id">baby-monitor-channel</string>
 </resources>
