@@ -20,4 +20,14 @@
         <item name="android:padding">@dimen/padding_normal</item>
     </style>
 
+    <style name="MainButtonStyle.OutlineOnly" parent="MainButtonStyle">
+        <item name="android:background">@drawable/button_rounded_ripple_outline</item>
+        <item name="android:textColor">@color/primary_dark</item>
+    </style>
+    
+    <style name="DarkButtonStyle" parent="MainButtonStyle">
+        <item name="android:background">@drawable/dark_button_rounded_ripple</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>

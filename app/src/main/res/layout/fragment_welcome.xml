@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <Button
+    <android.widget.Button
         android:id="@+id/serverButton"
         style="@style/MainButtonStyle"
         android:layout_width="0dp"
@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="@+id/clientButton"
         app:layout_constraintTop_toBottomOf="@+id/clientButton" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/clientButton"
         style="@style/MainButtonStyle"
         android:layout_width="0dp"

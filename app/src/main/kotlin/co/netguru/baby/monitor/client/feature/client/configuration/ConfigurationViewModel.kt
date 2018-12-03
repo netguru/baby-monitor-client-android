@@ -1,6 +1,9 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
+import android.arch.core.util.Function
+import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
+import android.net.nsd.NsdServiceInfo
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.home.ChildData
@@ -13,7 +16,12 @@ class ConfigurationViewModel @Inject constructor(
         private val nsdServiceManager: NsdServiceManager,
         private val configurationRepository: ConfigurationRepository
 ) : ViewModel() {
-    internal val serviceInfoData = nsdServiceManager.serviceInfoData
+
+    internal val serviceInfoData = Transformations.map(nsdServiceManager.serviceInfoData) {
+        it ?: return@map null
+        return@map it[0]
+    }
+
     private val compositeDisposable = CompositeDisposable()
 
     internal fun appendNewAddress(
