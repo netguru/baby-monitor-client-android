@@ -8,7 +8,6 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Compa
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageAction
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import io.reactivex.rxkotlin.subscribeBy
 import org.java_websocket.WebSocket
@@ -79,7 +78,7 @@ class MainService : Service() {
             if (entry?.key == MachineLearning.OUTPUT_3_CRYING_BABY) {
                 server?.broadcast(
                         JSONObject().apply {
-                            put("action", MessageAction.BABY_IS_CRYING)
+                            put(RtcCall.WEB_SOCKET_ACTION_KEY, RtcCall.BABY_IS_CRYING)
                             put("value", "")
                         }.toString().toByteArray()
                 )

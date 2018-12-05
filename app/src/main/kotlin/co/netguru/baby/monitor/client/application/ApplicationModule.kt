@@ -7,10 +7,7 @@ import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
-import co.netguru.baby.monitor.client.feature.communication.websocket.EventProcessor
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
-import com.google.gson.Gson
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -40,11 +37,4 @@ class ApplicationModule {
 
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)
-
-    @Provides
-    fun gson() = Gson()
-
-    @Provides
-    fun eventProcessor(gson: Gson) = EventProcessor(gson)
-
 }

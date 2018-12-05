@@ -28,7 +28,6 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         debug {
             versionNameSuffix "-DEBUG"
@@ -40,7 +39,17 @@ android {
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_DEBUG")]
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
+        }
+        releaseWithLogs {
+            debuggable true
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules-release.pro'
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
         }
         release {
             debuggable false
@@ -50,27 +59,23 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PRODUCTION")]
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
         }
     }
-
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
         testLogging {
             events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
         }
     }
-
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
-
     sourceSets.all {
         it.java.srcDir "src/$it.name/kotlin"
     }
-
     junitJacoco {
         jacocoVersion = '0.8.1'
         excludes = ['android/databinding/**/*.class',
@@ -93,7 +98,6 @@ android {
                     '**/*Lambda.class',
                     '**/*Lambda*.class']
     }
-
     lintOptions {
         abortOnError false
     }
@@ -123,11 +127,10 @@ configurations {
 }
 
 dependencies {
-    implementation project(":visualizer")
+    implementation project(':visualizer')
 
     //Kotlin
     implementation libs.kotlin
-
     implementation libs.constraintLayout
 
     //Live Data

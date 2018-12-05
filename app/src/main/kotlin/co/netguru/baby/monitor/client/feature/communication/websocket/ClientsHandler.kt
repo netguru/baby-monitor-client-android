@@ -1,17 +1,18 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.common.RunsInBackground
+import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class ClientsHandler(
         private val listener: ConnectionListener,
-        private val eventProcessor: EventProcessor,
         private val notificationHandler: NotificationHandler
 ) {
 
@@ -32,11 +33,12 @@ class ClientsHandler(
     }
 
     private fun onMessageReceived(client: CustomWebSocketClient, message: String?) {
-        val action = eventProcessor.process(message)
-
-        when (action) {
-            MessageAction.BABY_IS_CRYING -> notificationHandler.showBabyIsCryingNotification()
-            else -> Timber.e("Unrecognized action from message: $message")
+        val json = JSONObject(message)
+        if (json.has(RtcCall.WEB_SOCKET_ACTION_KEY)) {
+            when (json.getString(RtcCall.WEB_SOCKET_ACTION_KEY)) {
+                RtcCall.BABY_IS_CRYING -> notificationHandler.showBabyIsCryingNotification()
+                else -> Timber.e("Unrecognized action from message: $message")
+            }
         }
     }
 
@@ -49,7 +51,6 @@ class ClientsHandler(
                     .subscribeBy(
                             onComplete = { Timber.i("connected to ${client.address}") }
                     )
-
 
     fun onDestroy() {
         for (client in webSocketClients) {

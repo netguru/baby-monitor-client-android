@@ -30,14 +30,6 @@
     native <methods>;
 }
 
-# remove log call
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-}
--assumenosideeffects class timber.log.Timber {
-    public static *** d(...);
-}
-
 # app compat-v7
 -keep class android.support.v7.widget.SearchView { *; }
 
