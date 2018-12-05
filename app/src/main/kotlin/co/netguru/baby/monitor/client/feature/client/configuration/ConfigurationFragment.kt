@@ -42,7 +42,6 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
-        setupDebugViews()
         setTimeOutForConnecting()
 
         viewModel.serviceInfoData.observe(this, Observer { service ->
@@ -82,20 +81,6 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
     private fun setTimeOutForConnecting() {
         timeOutDisposable = Completable.timer(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                 .subscribe { findNavController().navigate(R.id.actionConfigurationToFailed) }
-    }
-
-    private fun setupDebugViews() {
-        if (BuildConfig.DEBUG) {
-            debugAddressGroup.setVisible(true)
-            debugSetAddressButton.setOnClickListener {
-                if (!debugAddressEt.text.isNullOrEmpty()) {
-                    val trimmed = debugAddressEt.trimmedText.split(":")
-                    viewModel.appendNewAddress(trimmed[0], trimmed[1].toInt()) {
-                        findNavController().navigate(R.id.actionConfigurationConnectingDone)
-                    }
-                }
-            }
-        }
     }
 
     private fun showProgressBar(isVisible: Boolean) {

@@ -15,15 +15,17 @@ import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
 class CustomWebSocketClient(
-        serverUrl: String,
+        val address: String,
         private val onAvailabilityChange: (CustomWebSocketClient, ConnectionStatus) -> Unit,
-        private val onConnectionResponseReceived: (CustomWebSocketClient, String?) -> Unit
-) : WebSocketClient(URI(serverUrl)) {
+        onMessageReceived: (CustomWebSocketClient, String?) -> Unit
+) : WebSocketClient(URI(address)) {
 
+    var availability: ConnectionStatus = UNKNOWN
     private val compositeDisposable = CompositeDisposable()
-    private var availability: ConnectionStatus = UNKNOWN
+    private val onMessageReceivedListeners = mutableListOf<(CustomWebSocketClient, String?) -> Unit>()
 
     init {
+        onMessageReceivedListeners.add(onMessageReceived)
         Completable.fromAction {
             connect()
         }.subscribeOn(Schedulers.io()).subscribeBy(
@@ -49,7 +51,9 @@ class CustomWebSocketClient(
     override fun onMessage(message: String?) {
         Timber.i("onMessage: $message")
         if (!message.isNullOrEmpty()) {
-            onConnectionResponseReceived(this, message)
+            for (listener in onMessageReceivedListeners) {
+                listener(this, message)
+            }
         }
     }
 
@@ -76,6 +80,14 @@ class CustomWebSocketClient(
             send(message)
         }
     }
+
+    fun addMessageListener(listener: (CustomWebSocketClient, String?) -> Unit) {
+        onMessageReceivedListeners.add(listener)
+    }
+
+    fun removeListener(listener: (CustomWebSocketClient, String?) -> Unit) =
+            onMessageReceivedListeners.remove(listener)
+
 
     private fun closeClient() {
         Completable.fromAction {
