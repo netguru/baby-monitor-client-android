@@ -7,7 +7,8 @@ import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
-import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.common.DataBounder
+import co.netguru.baby.monitor.client.feature.common.FileManager
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.common.extensions.toJson
@@ -16,9 +17,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.*
 import io.reactivex.Completable
-import io.reactivex.SingleSource
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.internal.operators.single.SingleDefer
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toCompletable
@@ -26,14 +25,13 @@ import io.reactivex.schedulers.Schedulers
 import org.webrtc.SurfaceViewRenderer
 import timber.log.Timber
 import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
 import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
         private val configurationRepository: ConfigurationRepository,
-        private val notificationHandler: NotificationHandler
-) : ViewModel(), ClientsHandler.ConnectionListener {
+        private val webSocketClientsHandler: ClientsHandler,
+        private val fileManager: FileManager
+) : ViewModel() {
 
     internal val lullabyCommand = MutableLiveData<LullabyCommand>()
     internal val selectedChild = MutableLiveData<ChildData>()
@@ -42,7 +40,12 @@ class ClientHomeViewModel @Inject constructor(
     internal var currentCall: RtcClient? = null
     internal val childList = MutableLiveData<List<ChildData>>()
     private val compositeDisposable = CompositeDisposable()
-    private val webSocketClientHandler = ClientsHandler(this, notificationHandler)
+
+    init {
+        webSocketClientsHandler.addConnectionListener { client ->
+            Timber.i("Connected to ${client.address}")
+        }
+    }
 
     //TODO change it for real data fetch
     val activities: LiveData<List<LogActivityData.LogData>> = Transformations.switchMap(selectedChild) { child ->
@@ -81,28 +84,12 @@ class ClientHomeViewModel @Inject constructor(
             .subscribe { Timber.d("complete") }
             .addTo(compositeDisposable)
 
-    fun saveImage(context: Context, cache: File?) = SingleDefer.defer {
-        SingleSource<Boolean> {
-            if (cache == null) {
-                it.onError(FileNotFoundException())
-                return@SingleSource
-            }
-            //TODO check photo orientation
-            val file = File(context.filesDir, cache.name)
-            try {
-                cache.copyTo(file, true)
-                val previousPhoto = File(selectedChild.value?.image ?: "")
-                if (previousPhoto.exists()) {
-                    previousPhoto.delete()
-                }
-                updateChildImageSource(file.absolutePath)
-                it.onSuccess(true)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                it.onError(e)
-            }
-        }
-    }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
+    fun saveImage(cache: File?): LiveData<DataBounder<Boolean>> {
+        fileManager.deleteFileIfExists(selectedChild.value?.image ?: "")
+        return fileManager.saveFile(cache) { filePath ->
+            updateChildImageSource(filePath)
+        }.subscribeWithLiveData()
+    }
 
     fun repeatLullaby() {
         lullabyCommand.value?.let { command ->
@@ -163,22 +150,19 @@ class ClientHomeViewModel @Inject constructor(
         return (child.image != null)
     }
 
-    override fun onClientConnected(client: CustomWebSocketClient) {
-        Timber.i("Connected to ${client.address}")
-    }
-
     override fun onCleared() {
         super.onCleared()
         currentCall?.cleanup()
-        webSocketClientHandler.onDestroy()
+        webSocketClientsHandler.onDestroy()
         compositeDisposable.dispose()
     }
 
     @RunsInBackground
     private fun establishConnections(list: List<ChildData>) {
         for (data in list) {
-            webSocketClientHandler.addClient(data.address)
+            webSocketClientsHandler.addClient(data.address)
                     .subscribeOn(Schedulers.io())
+                    .doOnError { it.toString() }
                     .subscribeBy(
                             onSuccess = { Timber.i(it) }
                     )
@@ -186,5 +170,5 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     private fun getSelectedChildClient() =
-            webSocketClientHandler.getClient(selectedChild.value?.address)
+            webSocketClientsHandler.getClient(selectedChild.value?.address)
 }

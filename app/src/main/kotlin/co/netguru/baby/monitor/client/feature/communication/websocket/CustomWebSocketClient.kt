@@ -16,18 +16,16 @@ import java.nio.charset.Charset
 
 class CustomWebSocketClient(
         val address: String,
-        private val onAvailabilityChange: (CustomWebSocketClient, ConnectionStatus) -> Unit,
-        onMessageReceived: (CustomWebSocketClient, String?) -> Unit
+        private val communicationListener: WebSocketCommunicationListener
 ) : WebSocketClient(URI(address)) {
 
     var availability: ConnectionStatus = UNKNOWN
     private val compositeDisposable = CompositeDisposable()
     private val onMessageReceivedListeners = mutableListOf<(CustomWebSocketClient, String?) -> Unit>()
 
-    init {
-        onMessageReceivedListeners.add(onMessageReceived)
+    override fun connect() {
         Completable.fromAction {
-            connect()
+            super.connect()
         }.subscribeOn(Schedulers.io()).subscribeBy(
                 onComplete = {
                     Timber.i("Complete")
@@ -54,6 +52,8 @@ class CustomWebSocketClient(
             for (listener in onMessageReceivedListeners) {
                 listener(this, message)
             }
+
+            communicationListener.onMessageReceived(this, message)
         }
     }
 
@@ -105,7 +105,7 @@ class CustomWebSocketClient(
     private fun notifyAvailabilityChange(availability: ConnectionStatus) {
         if (availability != this.availability) {
             this.availability = availability
-            onAvailabilityChange(this, availability)
+            communicationListener.onAvailabilityChanged(this, availability)
         }
     }
 }

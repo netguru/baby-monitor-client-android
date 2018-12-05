@@ -104,7 +104,7 @@ class ClientDashboardFragment : DaggerFragment() {
         EasyImage.handleActivityResult(requestCode, resultCode, data, requireActivity(), object : EasyImage.Callbacks {
             override fun onImagePicked(imageFile: File?, source: EasyImage.ImageSource?, type: Int) {
                 clientHomeDashboardPb.setVisible(true)
-                viewModel.saveImage(requireContext(), imageFile).observe(this@ClientDashboardFragment, Observer {
+                viewModel.saveImage(imageFile).observe(this@ClientDashboardFragment, Observer {
                     clientHomeDashboardPb.setVisible(false)
                 })
             }

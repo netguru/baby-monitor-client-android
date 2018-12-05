@@ -6,7 +6,10 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
+import co.netguru.baby.monitor.client.feature.common.FileManager
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.communication.websocket.ClientsHandler
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientFactory
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import dagger.Module
 import dagger.Provides
@@ -37,4 +40,17 @@ class ApplicationModule {
 
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)
+
+    @Provides
+    fun webSocketClientFactory() = WebSocketClientFactory()
+
+    @Provides
+    fun clientsHandler(
+            notificationHandler: NotificationHandler,
+            webSocketClientFactory: WebSocketClientFactory
+    ) = ClientsHandler(notificationHandler, webSocketClientFactory)
+
+    @Provides
+    fun fileManager(context: Context) = FileManager(context)
+
 }
