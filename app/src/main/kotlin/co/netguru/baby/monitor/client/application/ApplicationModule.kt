@@ -6,7 +6,11 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
+import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.communication.websocket.EventProcessor
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import com.google.gson.Gson
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -23,6 +27,9 @@ class ApplicationModule {
     fun nsdManager(app: App): NsdManager = app.getSystemService(Context.NSD_SERVICE) as NsdManager
 
     @Provides
+    fun context(app: App): Context = app.applicationContext
+
+    @Provides
     fun nsdServiceManager(nsdManager: NsdManager) = NsdServiceManager(nsdManager)
 
     @Provides
@@ -30,4 +37,14 @@ class ApplicationModule {
 
     @Provides
     fun lullabyPlayer(app: App) = LullabyPlayer(app)
+
+    @Provides
+    fun notificationHandler(context: Context) = NotificationHandler(context)
+
+    @Provides
+    fun gson() = Gson()
+
+    @Provides
+    fun eventProcessor(gson: Gson) = EventProcessor(gson)
+
 }

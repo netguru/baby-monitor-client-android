@@ -1,16 +1,18 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
+import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.json.JSONObject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class ClientsHandler(
-        private val listener: ConnectionListener
+        private val listener: ConnectionListener,
+        private val eventProcessor: EventProcessor,
+        private val notificationHandler: NotificationHandler
 ) {
 
     var webSocketClients = mutableMapOf<String, CustomWebSocketClient>()
@@ -30,8 +32,12 @@ class ClientsHandler(
     }
 
     private fun onMessageReceived(client: CustomWebSocketClient, message: String?) {
-        val jsonObject = JSONObject(message)
-        //TODO handle received action 4.12.2018
+        val action = eventProcessor.process(message)
+
+        when (action) {
+            MessageAction.BABY_IS_CRYING -> notificationHandler.showBabyIsCryingNotification()
+            else -> Timber.e("Unrecognized action from message: $message")
+        }
     }
 
     private fun retryConnection(client: CustomWebSocketClient) =
