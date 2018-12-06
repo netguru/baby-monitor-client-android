@@ -160,6 +160,8 @@ abstract class RtcCall {
         internal const val WEB_SOCKET_ACTION_RINGING = "ringing"
         internal const val WEB_SOCKET_ACTION_CONNECTED = "connected"
 
+        internal const val BABY_IS_CRYING = "BABY_IS_CRYING"
+
         internal const val P2P_OFFER = "offerSDP"
         internal const val P2P_ANSWER = "answerSDP"
 

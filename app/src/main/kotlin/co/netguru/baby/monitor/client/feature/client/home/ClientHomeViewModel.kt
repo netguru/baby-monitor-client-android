@@ -7,8 +7,8 @@ import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
@@ -32,8 +32,7 @@ import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
         private val configurationRepository: ConfigurationRepository,
-        private val notificationHandler: NotificationHandler,
-        private val eventProcessor: EventProcessor
+        private val notificationHandler: NotificationHandler
 ) : ViewModel(), ClientsHandler.ConnectionListener {
 
     internal val lullabyCommand = MutableLiveData<LullabyCommand>()
@@ -43,7 +42,7 @@ class ClientHomeViewModel @Inject constructor(
     internal var currentCall: RtcClient? = null
     internal val childList = MutableLiveData<List<ChildData>>()
     private val compositeDisposable = CompositeDisposable()
-    private val webSocketClientHandler = ClientsHandler(this, eventProcessor, notificationHandler)
+    private val webSocketClientHandler = ClientsHandler(this, notificationHandler)
 
     //TODO change it for real data fetch
     val activities: LiveData<List<LogActivityData.LogData>> = Transformations.switchMap(selectedChild) { child ->
