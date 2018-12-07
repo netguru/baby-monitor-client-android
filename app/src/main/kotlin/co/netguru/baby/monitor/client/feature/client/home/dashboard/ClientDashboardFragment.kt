@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
@@ -57,6 +58,9 @@ class ClientDashboardFragment : DaggerFragment() {
             if (it.trim() != viewModel.selectedChild.value?.name) {
                 viewModel.updateChildName(it.trim())
             }
+        }
+        if (!BuildConfig.DEBUG) {
+            clientHomePlayLullabyIbtn.setVisible(false)
         }
     }
 
