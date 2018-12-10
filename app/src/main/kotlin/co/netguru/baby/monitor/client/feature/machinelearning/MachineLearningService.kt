@@ -27,13 +27,13 @@ class MachineLearningService : IntentService("Machine Learning Service") {
     override fun onHandleIntent(intent: Intent?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) NotificationHandler.createNotificationChannel(applicationContext)
         startForeground(Random.nextInt(), createNotification())
-        aacRecorder.initRecorder()
-                .observeOn(Schedulers.io())
+        aacRecorder.startRecording()
+                .subscribeOn(Schedulers.newThread())
                 .subscribeBy(
                         onError = Timber::e
                 ).addTo(compositeDisposable)
         aacRecorder.data
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .subscribeBy(
                         onNext = this::handleRecordingData,
                         onComplete = { Timber.i("Complete") },
@@ -56,10 +56,10 @@ class MachineLearningService : IntentService("Machine Learning Service") {
     private fun handleRecordingData(array: ShortArray) {
         Timber.i("onNext data ready")
         machineLearning.processData(array)
-                ?.subscribeOn(Schedulers.io())
-                ?.subscribeBy(
+                .subscribeOn(Schedulers.computation())
+                .subscribeBy(
                         onSuccess = this::handleMachineLearningData
-                )?.addTo(compositeDisposable)
+                ).addTo(compositeDisposable)
     }
 
     private fun handleMachineLearningData(map: Map<String, Float>) {

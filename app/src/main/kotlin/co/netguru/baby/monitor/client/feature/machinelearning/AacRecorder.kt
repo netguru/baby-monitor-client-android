@@ -17,7 +17,7 @@ class AacRecorder {
     private var shouldStopRecording = false
     private var newData = emptyArray<Short>()
 
-    fun initRecorder(): Completable = Completable.fromAction {
+    fun startRecording(): Completable = Completable.fromAction {
         bufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2
         if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
             bufferSize = SAMPLING_RATE * 2
