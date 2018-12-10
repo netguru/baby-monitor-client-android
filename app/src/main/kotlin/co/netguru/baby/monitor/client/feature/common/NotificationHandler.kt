@@ -16,7 +16,7 @@ import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 class NotificationHandler(private val context: Context) {
 
     fun showBabyIsCryingNotification() {
-        createNotificationChannel()
+        createNotificationChannel(context)
 
         val notification = createNotification(
                 context.getString(R.string.notification_baby_is_crying_title),
@@ -25,26 +25,6 @@ class NotificationHandler(private val context: Context) {
 
         with(NotificationManagerCompat.from(context)) {
             notify(NOTIFICAITON_ID, notification)
-        }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = context.getString(R.string.notification_channel_name)
-            val descriptionText = context.getString(R.string.notification_channel_description)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-
-            val channel = NotificationChannel(
-                    context.getString(R.string.notification_channel_id),
-                    name,
-                    importance
-            ).apply {
-                description = descriptionText
-            }
-
-            val notificationManager: NotificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
         }
     }
 
@@ -70,6 +50,26 @@ class NotificationHandler(private val context: Context) {
 
     companion object {
         const val NOTIFICAITON_ID = 1
+
+        fun createNotificationChannel(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val name = context.getString(R.string.notification_channel_name)
+                val descriptionText = context.getString(R.string.notification_channel_description)
+                val importance = NotificationManager.IMPORTANCE_HIGH
+
+                val channel = NotificationChannel(
+                        context.getString(R.string.notification_channel_id),
+                        name,
+                        importance
+                ).apply {
+                    description = descriptionText
+                }
+
+                val notificationManager: NotificationManager =
+                        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.createNotificationChannel(channel)
+            }
+        }
     }
 
 }

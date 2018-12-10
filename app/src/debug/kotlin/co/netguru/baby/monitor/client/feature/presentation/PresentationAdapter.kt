@@ -14,6 +14,8 @@ class PresentationAdapter(fragmentManager: FragmentManager) : FragmentStatePager
     override fun getCount() = PAGE_COUNT
 
     companion object {
-        private const val PAGE_COUNT = 3
+        internal const val PAGE_COUNT = 3
+        internal const val LAST_PAGE_NUMBER = 2
+        internal const val FIRST_PAGE_NUMBER = 0
     }
 }
