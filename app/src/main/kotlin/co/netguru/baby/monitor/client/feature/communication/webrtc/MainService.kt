@@ -72,7 +72,7 @@ class MainService : Service() {
             server?.broadcast(
                     JSONObject().apply {
                         put(RtcCall.WEB_SOCKET_ACTION_KEY, RtcCall.BABY_IS_CRYING)
-                        put("value", "")
+                        put("value", "") // iOS is expecting this empty field
                     }.toString().toByteArray()
             )
         }
