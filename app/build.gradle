@@ -39,9 +39,11 @@ android {
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_DEBUG")]
         }
-        releaseWithLogs {
+        releasePreprod {
+            versionNameSuffix "-PREPROD"
+            applicationIdSuffix ".preprod"
             debuggable true
             minifyEnabled true
             shrinkResources true
@@ -49,7 +51,7 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PREPROD")]
         }
         release {
             debuggable false
@@ -59,7 +61,7 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PRODUCTION")]
         }
     }
     // Always show the result of every unit test, even if it passes.
