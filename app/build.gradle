@@ -41,7 +41,9 @@ android {
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
             manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_MOCK")]
         }
-        releaseWithLogs {
+        releasePreprod {
+            versionNameSuffix "-PREPROD"
+            applicationIdSuffix ".preprod"
             debuggable true
             minifyEnabled true
             shrinkResources true
