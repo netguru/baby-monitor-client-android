@@ -50,7 +50,7 @@ android {
             zipAlignEnabled true
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules-release.pro'
+                    'proguard-rules-release-preprod.pro'
             manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PREPROD")]
         }
         release {

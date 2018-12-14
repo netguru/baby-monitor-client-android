@@ -1,10 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import io.reactivex.Completable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
@@ -19,11 +15,8 @@ class CustomWebSocketServer(
         private val onErrorListener: (Exception) -> Unit
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
-    private val compositeDisposable = CompositeDisposable()
-
     init {
         isReuseAddr = true
-        runServer()
     }
 
     override fun onOpen(conn: WebSocket?, handshake: ClientHandshake?) {
@@ -57,37 +50,12 @@ class CustomWebSocketServer(
         stopServer()
     }
 
-    fun onDestroy() {
-        compositeDisposable.dispose()
-        stopServer()
+    fun runServer() = Completable.fromAction {
+        start()
     }
 
-    private fun runServer() {
-        Completable.fromAction {
-            start()
-        }.subscribeOn(Schedulers.io()).subscribeBy(
-                onComplete = {
-                    Timber.e("CustomWebSocketServer started")
-                },
-                onError = {
-                    Timber.e("launch failed $it")
-                    stopServer()
-                }
-        ).addTo(compositeDisposable)
-    }
-
-    private fun stopServer() {
-        Timber.e("stopServer")
-        Completable.fromAction {
-            stop(TIMEOUT)
-        }.subscribeOn(Schedulers.io()).subscribeBy(
-                onComplete = {
-                    Timber.e("CustomWebSocketServer closed")
-                },
-                onError = {
-                    Timber.e("stop failed $it")
-                }
-        ).addTo(compositeDisposable)
+    fun stopServer() = Completable.fromAction {
+        stop(TIMEOUT)
     }
 
     companion object {
