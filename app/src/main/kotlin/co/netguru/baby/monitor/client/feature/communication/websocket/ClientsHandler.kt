@@ -4,7 +4,8 @@ import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall
 import io.reactivex.Completable
-import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
@@ -17,11 +18,12 @@ class ClientsHandler(
 ) {
 
     var webSocketClients = mutableMapOf<String, CustomWebSocketClient>()
-
+    private val compositeDisposable = CompositeDisposable()
     @RunsInBackground
-    fun addClient(address: String) = Single.fromCallable {
-        connect(address)
-        address
+    fun addClient(address: String) = Completable.fromAction {
+        if (webSocketClients[address] == null) {
+            connect(address)
+        }
     }
 
     private fun onAvailabilityChange(client: CustomWebSocketClient, status: ConnectionStatus) {
@@ -44,18 +46,19 @@ class ClientsHandler(
 
     private fun retryConnection(client: CustomWebSocketClient) =
             Completable.timer(RETRY_SECONDS_DELAY, TimeUnit.SECONDS)
-                    .andThen {
-                        connect(client.address)
-                    }
                     .subscribeOn(Schedulers.io())
                     .subscribeBy(
-                            onComplete = { Timber.i("connected to ${client.address}") }
-                    )
+                            onComplete = {
+                                client.availability = ConnectionStatus.UNKNOWN
+                                client.reconnect()
+                            }
+                    ).addTo(compositeDisposable)
 
     fun onDestroy() {
         for (client in webSocketClients) {
             client.value.onDestroy()
         }
+        compositeDisposable.dispose()
     }
 
     private fun connect(address: String) {
@@ -74,6 +77,6 @@ class ClientsHandler(
     }
 
     companion object {
-        private const val RETRY_SECONDS_DELAY = 3L
+        private const val RETRY_SECONDS_DELAY = 10L
     }
 }

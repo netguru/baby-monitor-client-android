@@ -52,12 +52,14 @@ class ClientHomeViewModel @Inject constructor(
         }
     }
 
-    fun refreshChildrenList() = Completable.fromAction {
+    fun refreshChildrenList(shouldConnect: Boolean = true) = Completable.fromAction {
         val list = configurationRepository.childrenList.toMutableList()
         if (selectedChild.value == null && list.isNotEmpty()) {
             selectedChild.postValue(list.first())
         }
-        establishConnections(list)
+        if (shouldConnect) {
+            establishConnections(list)
+        }
         childList.postValue(list)
     }.subscribeOn(Schedulers.io())
             .subscribe { Timber.d("complete") }
@@ -180,7 +182,7 @@ class ClientHomeViewModel @Inject constructor(
             webSocketClientHandler.addClient(data.address)
                     .subscribeOn(Schedulers.io())
                     .subscribeBy(
-                            onSuccess = { Timber.i(it) }
+                            onComplete = { Timber.i(data.address) }
                     )
         }
     }

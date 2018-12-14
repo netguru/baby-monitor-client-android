@@ -8,6 +8,10 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Compa
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import org.java_websocket.WebSocket
 import org.json.JSONObject
 import timber.log.Timber
@@ -15,6 +19,7 @@ import kotlin.properties.Delegates
 
 class MainService : Service() {
 
+    private val compositeDisposable = CompositeDisposable()
     private var server: CustomWebSocketServer? = null
     private lateinit var mainBinder: MainBinder
 
@@ -34,7 +39,17 @@ class MainService : Service() {
                     (webSocket to message).let(this::handleClient)
                 },
                 onErrorListener = Timber::e
-        )
+        ).apply {
+            runServer().subscribeOn(Schedulers.io()).subscribeBy(
+                    onComplete = {
+                        Timber.e("CustomWebSocketServer started")
+                    },
+                    onError = {
+                        Timber.e("launch failed $it")
+                        stopServer()
+                    }
+            ).addTo(compositeDisposable)
+        }
     }
 
     private fun handleClient(client: WebSocket, message: String) {
@@ -51,7 +66,21 @@ class MainService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         mainBinder.cleanup()
-        server?.onDestroy()
+        server?.let(::stopServer)
+        compositeDisposable.dispose()
+    }
+
+    private fun stopServer(server: CustomWebSocketServer) {
+        server.stopServer()
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = {
+                            Timber.e("CustomWebSocketServer closed")
+                        },
+                        onError = {
+                            Timber.e("stop failed $it")
+                        }
+                ).addTo(compositeDisposable)
     }
 
     inner class MainBinder : Binder() {
@@ -64,7 +93,7 @@ class MainService : Service() {
 
         fun cleanup() {
             currentCall?.cleanup()
-            server?.onDestroy()
+            server?.let(::stopServer)
             callChangeNotifier = {}
         }
 

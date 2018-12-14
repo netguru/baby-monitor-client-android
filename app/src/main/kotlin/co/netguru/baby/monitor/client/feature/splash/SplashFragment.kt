@@ -35,7 +35,7 @@ class SplashFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.refreshChildrenList()
+        viewModel.refreshChildrenList(false)
         viewModel.childList.observe(this, Observer(this::handleSplash))
     }
 
