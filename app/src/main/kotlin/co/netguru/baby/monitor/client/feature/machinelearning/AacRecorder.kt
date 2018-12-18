@@ -6,6 +6,7 @@ import android.media.MediaRecorder
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
+import timber.log.Timber
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -18,11 +19,11 @@ class AacRecorder {
     private var newData = emptyArray<Short>()
 
     fun startRecording(): Completable = Completable.fromAction {
+        Timber.i("starting recording")
         bufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2
         if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
             bufferSize = SAMPLING_RATE * 2
         }
-
         audioRecord = AudioRecord(
                 MediaRecorder.AudioSource.MIC,
                 SAMPLING_RATE,
@@ -31,7 +32,7 @@ class AacRecorder {
                 bufferSize
         )
         audioRecord?.startRecording()
-
+        Timber.i("recording started")
         val buffer = ByteArray(bufferSize)
         while (!shouldStopRecording) {
             audioRecord?.read(buffer, 0, buffer.size)
@@ -41,7 +42,9 @@ class AacRecorder {
 
     fun release() {
         shouldStopRecording = true
+        audioRecord?.stop()
         audioRecord?.release()
+        audioRecord = null
     }
 
     @RunsInBackground

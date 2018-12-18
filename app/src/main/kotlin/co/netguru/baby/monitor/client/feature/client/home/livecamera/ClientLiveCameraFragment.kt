@@ -19,6 +19,8 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
@@ -35,6 +37,7 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
     private val serviceIntent by lazy { Intent(requireContext(), MainService::class.java) }
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +51,9 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         clientLiveCameraStopIbtn.setOnClickListener {
-            viewModel.hangUp()?.subscribeOn(Schedulers.io())
-                    ?.observeOn(AndroidSchedulers.mainThread())
-                    ?.subscribeBy(
-                            onComplete = {
-                                requireActivity().onBackPressed()
-                            },
-                            onError = Timber::e
-                    )
+            viewModel.callCleanUp {
+                requireActivity().onBackPressed()
+            }
         }
     }
 
@@ -81,14 +79,10 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.hangUp()?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribeBy(
-                        onComplete = { Timber.e("disconnected") },
-                        onError = Timber::e
-                )
         binder?.cleanup()
         viewModel.shouldHideNavbar.postValue(false)
+        viewModel.refreshSelectedChildWebSocketConnection()
+        compositeDisposable.dispose()
     }
 
     override fun onRequestPermissionsResult(

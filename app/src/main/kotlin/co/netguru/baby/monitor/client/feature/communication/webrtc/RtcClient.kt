@@ -63,7 +63,6 @@ class RtcClient(
                                     DefaultSdpObserver(),
                                     sessionDescription
                             )
-
                         }
                 ),
                 constraints

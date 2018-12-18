@@ -21,7 +21,8 @@ abstract class RtcCall {
     protected val LOCAL_MEDIA_STREAM_LABEL = "stream1"
     protected val AUDIO_TRACK_ID = "audio1"
     protected val compositeDisposable = CompositeDisposable()
-    protected val sharedContext: EglBase.Context by lazy { EglBase.create().eglBaseContext }
+    protected val eglBase by lazy { EglBase.create() }
+    protected val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
 
     protected lateinit var constraints: MediaConstraints
     protected lateinit var offer: String
@@ -37,6 +38,7 @@ abstract class RtcCall {
     protected var upStream: MediaStream? = null
     protected var dataChannel: DataChannel? = null
     protected var videoTrack: VideoTrack? = null
+    protected var audioSource: AudioSource? = null
     protected var audio: AudioTrack? = null
 
     val dataChannelObserver = object : DataChannel.Observer {
@@ -54,7 +56,7 @@ abstract class RtcCall {
 
     abstract fun createStream(): MediaStream?
 
-    fun hangUp() = Completable.fromAction {
+    fun hangUp(): Completable = Completable.fromAction {
         if (commSocket?.isOpen == true) {
             commSocket?.send(
                     JSONObject().apply {
@@ -62,17 +64,27 @@ abstract class RtcCall {
                     }.toString()
             )
             commSocket?.close()
-            reportStateChange(CallState.ENDED)
             connection?.close()
         }
     }
 
-    fun cleanup() {
-        compositeDisposable.dispose()
-        audio?.dispose()
-        videoTrack?.dispose()
-        commSocket?.close()
+    fun cleanup(
+            clearSocket: Boolean = true,
+            disposeConnection: Boolean = false
+    ): Completable = Completable.fromAction {
+        connection?.close()
+        if (disposeConnection) {
+            connection?.dispose()
+        }
+        eglBase.release()
+        audioSource?.dispose()
+
+        if (clearSocket) {
+            commSocket?.close()
+        }
         remoteRenderer?.release()
+        remoteRenderer = null
+        compositeDisposable.dispose()
     }
 
     protected fun handleAnswer(remoteDesc: String) {

@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.DefaultServiceConnection
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -34,9 +35,9 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
     }
-    private val serviceIntent by lazy { Intent(requireContext(), MainService::class.java) }
+    private val rtcServiceIntent by lazy { Intent(requireContext(), MainService::class.java) }
     private val machineLearningIntent by lazy { Intent(requireContext(), MachineLearningService::class.java) }
-    private val machineLearningServiceConenction by lazy { createDefaultServiceConnection() }
+    private val machineLearningServiceConnection by lazy { createDefaultServiceConnection() }
     private var rtcServiceBinder: MainService.MainBinder? = null
     private var machineLearningServiceBinder: MachineLearningService.MainBinder? = null
 
@@ -51,7 +52,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
             requireContext().bindService(
-                    serviceIntent,
+                    rtcServiceIntent,
                     this,
                     Service.BIND_AUTO_CREATE
             )
@@ -66,7 +67,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
             requireContext().unbindService(this)
         }
         if (machineLearningServiceBinder != null) {
-            requireContext().unbindService(machineLearningServiceConenction)
+            requireContext().unbindService(machineLearningServiceConnection)
         }
     }
 
@@ -87,27 +88,50 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requireContext().allPermissionsGranted(Companion.permissions)) {
-            requireContext().bindService(serviceIntent, this, Service.BIND_AUTO_CREATE)
+            requireContext().bindService(rtcServiceIntent, this, Service.BIND_AUTO_CREATE)
         }
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-        Timber.i("service disconnected")
+        machineLearningServiceBinder?.startRecording()
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         rtcServiceBinder = service as MainService.MainBinder?
         rtcServiceBinder?.callChangeNotifier = { call ->
-            viewModel.currentCall = call as RtcReceiver?
-            viewModel.accept(requireContext())
+            machineLearningServiceBinder?.stopRecording()
+            viewModel.accept(
+                    call as RtcReceiver,
+                    requireContext(),
+                    this@ServerFragment::handleCallStateChange
+            )
         }
+    }
+
+    private fun handleCallStateChange(state: CallState) {
+        when (state) {
+            CallState.ENDED -> {
+                rtcServiceBinder?.let(this::endCall)
+            }
+        }
+    }
+
+    private fun endCall(binder: MainService.MainBinder) {
+        binder.hangUp()
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = {
+                            machineLearningServiceBinder?.startRecording()
+                        },
+                        onError = Timber::e
+                )
     }
 
     private fun bindMachineLearningService() {
         requireContext().startService(machineLearningIntent)
         requireContext().bindService(
                 machineLearningIntent,
-                machineLearningServiceConenction,
+                machineLearningServiceConnection,
                 Service.BIND_AUTO_CREATE
         )
     }

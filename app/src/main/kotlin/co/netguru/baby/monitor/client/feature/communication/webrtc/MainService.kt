@@ -8,6 +8,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Compa
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
+import io.reactivex.Maybe
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -91,8 +92,15 @@ class MainService : Service() {
 
         fun createClient(client: CustomWebSocketClient) = RtcClient(client)
 
+        fun hangUp() = Maybe.just(currentCall)
+                .flatMapCompletable { call ->
+                    call.hangUp().andThen(call.cleanup())
+                }
+
+
         fun cleanup() {
-            currentCall?.cleanup()
+            Timber.i("cleanup")
+            currentCall?.let(this::callCleanup)
             server?.let(::stopServer)
             callChangeNotifier = {}
         }
@@ -104,6 +112,18 @@ class MainService : Service() {
                         put("value", "") // iOS is expecting this empty field
                     }.toString().toByteArray()
             )
+        }
+
+        private fun callCleanup(call: RtcCall) {
+            call.cleanup(false)
+                    .subscribeOn(Schedulers.io())
+                    .subscribeBy(
+                            onComplete = {
+                                server?.let(::stopServer)
+                                callChangeNotifier = {}
+                            },
+                            onError = Timber::e
+                    ).addTo(compositeDisposable)
         }
     }
 

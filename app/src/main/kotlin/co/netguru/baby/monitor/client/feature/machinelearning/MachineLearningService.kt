@@ -18,7 +18,7 @@ import kotlin.random.Random
 class MachineLearningService : IntentService("Machine Learning Service") {
 
     private val compositeDisposable = CompositeDisposable()
-    private val aacRecorder by lazy { AacRecorder() }
+    private var aacRecorder: AacRecorder? = null
     private val machineLearning by lazy { MachineLearning(applicationContext) }
     private var onCryingBabyDetected: () -> Unit = {}
 
@@ -27,18 +27,24 @@ class MachineLearningService : IntentService("Machine Learning Service") {
     override fun onHandleIntent(intent: Intent?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) NotificationHandler.createNotificationChannel(applicationContext)
         startForeground(Random.nextInt(), createNotification())
-        aacRecorder.startRecording()
-                .subscribeOn(Schedulers.newThread())
-                .subscribeBy(
+        startRecording()
+    }
+
+    private fun startRecording() {
+        aacRecorder = AacRecorder()
+        aacRecorder?.startRecording()
+                ?.subscribeOn(Schedulers.computation())
+                ?.subscribeBy(
+                        onComplete = { Timber.i("Recording completed") },
                         onError = Timber::e
-                ).addTo(compositeDisposable)
-        aacRecorder.data
-                .subscribeOn(Schedulers.newThread())
-                .subscribeBy(
+                )?.addTo(compositeDisposable)
+        aacRecorder?.data
+                ?.subscribeOn(Schedulers.newThread())
+                ?.subscribeBy(
                         onNext = this::handleRecordingData,
                         onComplete = { Timber.i("Complete") },
                         onError = Timber::e
-                ).addTo(compositeDisposable)
+                )?.addTo(compositeDisposable)
     }
 
     private fun createNotification(): Notification {
@@ -74,10 +80,20 @@ class MachineLearningService : IntentService("Machine Learning Service") {
             onCryingBabyDetected = listener
         }
 
+        fun startRecording() {
+            this@MachineLearningService.startRecording()
+        }
+
+        fun stopRecording() {
+            aacRecorder?.release()
+            aacRecorder = null
+        }
+
         fun cleanup() {
             compositeDisposable.dispose()
             onCryingBabyDetected = {}
-            aacRecorder.release()
+            aacRecorder?.release()
+            aacRecorder = null
         }
     }
 }

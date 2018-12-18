@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.server
 import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.data.server.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -28,19 +29,18 @@ class ServerViewModel @Inject constructor(
 
     internal fun hangUp() = currentCall?.hangUp()
 
-    internal fun accept(context: Context) {
-        currentCall?.accept(context) { state ->
-            Timber.i("onStateChange: $state")
-        }?.subscribeOn(Schedulers.newThread())
-                ?.subscribeBy(
+    internal fun accept(rtcReceiver: RtcReceiver, context: Context, onCallStateChanged: (state: CallState) -> Unit) {
+        currentCall = rtcReceiver
+        rtcReceiver.accept(context, onCallStateChanged)
+                .subscribeOn(Schedulers.newThread())
+                .subscribeBy(
                         onComplete = { Timber.i("completed") },
                         onError = Timber::e
-                )?.addTo(compositeDisposable)
+                ).addTo(compositeDisposable)
     }
 
     override fun onCleared() {
         super.onCleared()
-        currentCall?.cleanup()
         compositeDisposable.dispose()
     }
 }

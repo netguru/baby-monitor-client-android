@@ -5,6 +5,8 @@ import io.reactivex.Completable
 import org.java_websocket.WebSocket
 import org.json.JSONObject
 import org.webrtc.*
+import org.webrtc.PeerConnection.IceConnectionState
+import org.webrtc.PeerConnection.IceGatheringState
 import timber.log.Timber
 import java.nio.charset.Charset
 
@@ -20,14 +22,15 @@ class RtcReceiver(commSocket: WebSocket, offer: String) : RtcCall() {
         this.listener = listener
         connection = factory?.createPeerConnection(emptyList(), constraints, object : DefaultObserver() {
             override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
-                if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
+                if (iceGatheringState == IceGatheringState.COMPLETE) {
                     transferAnswer()
                 }
             }
 
             override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
-                if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
-                    reportStateChange(CallState.ENDED)
+                when (iceConnectionState) {
+                    IceConnectionState.DISCONNECTED -> reportStateChange(CallState.ENDED)
+                    IceConnectionState.FAILED -> reportStateChange(CallState.ERROR)
                 }
             }
 
@@ -46,7 +49,8 @@ class RtcReceiver(commSocket: WebSocket, offer: String) : RtcCall() {
 
     override fun createStream(): MediaStream? {
         upStream = factory?.createLocalMediaStream(LOCAL_MEDIA_STREAM_LABEL)
-        audio = factory?.createAudioTrack(AUDIO_TRACK_ID, factory?.createAudioSource(MediaConstraints()))
+        audioSource = factory?.createAudioSource(MediaConstraints())
+        audio = factory?.createAudioTrack(AUDIO_TRACK_ID, audioSource)
         upStream?.addTrack(audio)
         videoTrack = createVideoTrack()
         upStream?.addTrack(videoTrack)
