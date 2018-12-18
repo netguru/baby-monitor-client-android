@@ -72,6 +72,11 @@ class ClientsHandler(
 
     fun getClient(address: String?) = webSocketClients[address]
 
+    fun reconnect(address: String) {
+        webSocketClients[address]?.onDestroy()
+        connect(address)
+    }
+
     interface ConnectionListener {
         fun onClientConnected(client: CustomWebSocketClient)
     }

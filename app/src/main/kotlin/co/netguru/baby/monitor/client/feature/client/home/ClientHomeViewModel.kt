@@ -17,6 +17,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.*
 import io.reactivex.Completable
 import io.reactivex.SingleSource
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.internal.operators.single.SingleDefer
 import io.reactivex.rxkotlin.addTo
@@ -39,8 +40,8 @@ class ClientHomeViewModel @Inject constructor(
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
-    internal var currentCall: RtcClient? = null
     internal val childList = MutableLiveData<List<ChildData>>()
+    private var currentCall: RtcClient? = null
     private val compositeDisposable = CompositeDisposable()
     private val webSocketClientHandler = ClientsHandler(this, notificationHandler)
 
@@ -128,7 +129,21 @@ class ClientHomeViewModel @Inject constructor(
         }
     }
 
-    fun hangUp() = currentCall?.hangUp()
+    fun callCleanUp(onCleaned: () -> Unit) {
+        with(currentCall) {
+            if (this == null) {
+                onCleaned()
+            } else {
+                cleanup(disposeConnection = true)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onComplete =  onCleaned,
+                                onError = Timber::e
+                        ).addTo(compositeDisposable)
+            }
+        }
+    }
 
     fun manageLullabyPlayback(name: String, action: Action) {
         getSelectedChildClient()?.sendMessage(LullabyCommand(name, action).toJson())
@@ -153,16 +168,22 @@ class ClientHomeViewModel @Inject constructor(
     ) {
         val client = getSelectedChildClient() ?: return
         currentCall = binder.createClient(client)
-        currentCall?.startCall(context, listener)?.subscribeOn(Schedulers.newThread())
-                ?.subscribeBy(
-                        onComplete = { Timber.i("completed") },
-                        onError = Timber::e
-                )?.addTo(compositeDisposable)
+                .also {
+                    it.startCall(context, listener).subscribeOn(Schedulers.newThread())
+                            .subscribeBy(
+                                    onComplete = { Timber.i("completed") },
+                                    onError = Timber::e
+                            ).addTo(compositeDisposable)
+                }
     }
 
     fun isBabyDataFilled(): Boolean {
         val child = selectedChild.value ?: return false
         return (child.image != null)
+    }
+
+    fun refreshSelectedChildWebSocketConnection() {
+        webSocketClientHandler.reconnect(selectedChild.value?.address ?: return)
     }
 
     override fun onClientConnected(client: CustomWebSocketClient) {
@@ -171,7 +192,6 @@ class ClientHomeViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        currentCall?.cleanup()
         webSocketClientHandler.onDestroy()
         compositeDisposable.dispose()
     }
