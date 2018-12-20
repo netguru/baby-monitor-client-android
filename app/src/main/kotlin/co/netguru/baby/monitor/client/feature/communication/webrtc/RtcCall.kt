@@ -39,6 +39,7 @@ abstract class RtcCall {
     protected var dataChannel: DataChannel? = null
     protected var videoTrack: VideoTrack? = null
     protected var audioSource: AudioSource? = null
+    protected var videoSource: VideoSource? = null
     protected var audio: AudioTrack? = null
 
     val dataChannelObserver = object : DataChannel.Observer {
@@ -72,12 +73,15 @@ abstract class RtcCall {
             clearSocket: Boolean = true,
             disposeConnection: Boolean = false
     ): Completable = Completable.fromAction {
+        listener = {}
         connection?.close()
         if (disposeConnection) {
             connection?.dispose()
         }
         eglBase.release()
         audioSource?.dispose()
+        capturer?.stopCapture()
+        capturer?.dispose()
 
         if (clearSocket) {
             commSocket?.close()
@@ -120,7 +124,8 @@ abstract class RtcCall {
 
     protected fun createVideoTrack(): VideoTrack? {
         capturer = createCapturer()
-        return factory?.createVideoTrack(VIDEO_TRACK_ID, factory?.createVideoSource(capturer))
+        videoSource = factory?.createVideoSource(capturer)
+        return factory?.createVideoTrack(VIDEO_TRACK_ID, videoSource)
     }
 
     protected fun initRtc(context: Context) {

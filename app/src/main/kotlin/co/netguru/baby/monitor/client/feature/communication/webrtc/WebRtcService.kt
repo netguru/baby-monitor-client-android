@@ -3,7 +3,6 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
-import co.netguru.baby.monitor.client.feature.common.extensions.let
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.P2P_OFFER
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
@@ -36,11 +35,13 @@ class WebRtcService : Service() {
     private fun initNetwork() {
         server = CustomWebSocketServer(SERVER_PORT,
                 onConnectionRequestReceived = { webSocket, message ->
-                    (webSocket to message).let(this::handleClient)
+                    if (webSocket != null && message != null) {
+                        handleClient(webSocket, message)
+                    }
                 },
                 onErrorListener = Timber::e
         ).apply {
-            runServer().subscribeOn(Schedulers.io()).subscribeBy(
+            startServer().subscribeOn(Schedulers.io()).subscribeBy(
                     onComplete = {
                         Timber.e("CustomWebSocketServer started")
                     },
@@ -93,6 +94,8 @@ class WebRtcService : Service() {
 
         fun hangUp() = Maybe.just(currentCall)
                 .flatMapCompletable { call ->
+                    server?.let(this@WebRtcService::stopServer)
+                    initNetwork()
                     call.hangUp().andThen(call.cleanup())
                 }
 
@@ -100,7 +103,7 @@ class WebRtcService : Service() {
         fun cleanup() {
             Timber.i("cleanup")
             currentCall?.let(this::callCleanup)
-            server?.let(::stopServer)
+            server?.stopServer()
             callChangeNotifier = {}
         }
 
@@ -118,11 +121,15 @@ class WebRtcService : Service() {
                     .subscribeOn(Schedulers.io())
                     .subscribeBy(
                             onComplete = {
-                                server?.let(::stopServer)
+                                server?.let(this@WebRtcService::stopServer)
                                 callChangeNotifier = {}
                             },
                             onError = Timber::e
                     ).addTo(compositeDisposable)
+        }
+
+        fun stopServer() {
+            server?.let(this@WebRtcService::stopServer)
         }
     }
 

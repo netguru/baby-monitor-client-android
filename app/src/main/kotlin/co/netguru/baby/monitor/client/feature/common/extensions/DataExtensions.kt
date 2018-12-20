@@ -8,12 +8,6 @@ inline fun <reified T> String.toData(): T? =
 inline fun <reified T> T.toJson(): String =
         Gson().toJson(this@toJson)
 
-inline fun <reified A, reified B> Pair<A?, B?>.let(action: (A, B) -> Unit) {
-    if (first != null && second != null) {
-        action(first!!, second!!)
-    }
-}
-
 infix fun <A, B> A?.and(that: B?): Pair<A, B>? =
         if (this == null || that == null) {
             null

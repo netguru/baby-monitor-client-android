@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import android.Manifest.permission.*
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.RECORD_AUDIO
 import android.app.Service
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
@@ -12,12 +13,11 @@ import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.DefaultServiceConnection
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.common.extensions.bindService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -81,11 +81,10 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
 
     override fun onServiceDisconnected(name: ComponentName?) {
         Timber.i("Service Disconnected: $name")
-        machineLearningServiceBinder?.startRecording()
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        when(service) {
+        when (service) {
             is WebRtcService.MainBinder -> {
                 Timber.i("WebRtcService service connected")
                 rtcServiceBinder = service

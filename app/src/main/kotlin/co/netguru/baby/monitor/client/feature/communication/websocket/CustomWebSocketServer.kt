@@ -50,16 +50,15 @@ class CustomWebSocketServer(
         stopServer()
     }
 
-    fun runServer() = Completable.fromAction {
+    fun startServer() = Completable.fromAction {
         start()
     }
 
     fun stopServer() = Completable.fromAction {
-        stop(TIMEOUT)
+        stop()
     }
 
     companion object {
         internal const val PORT = 63124
-        private const val TIMEOUT = -1
     }
 }

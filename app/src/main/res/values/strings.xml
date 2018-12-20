@@ -13,6 +13,7 @@
     <string name="client_dashboard_welcome_text">Nothing unusual. Looks as though\n %1$s is sleeping soundly.</string>
     <string name="client_baby_name_input_hint">What\'s your baby\'s name?</string>
     <string name="client_dashboard_child_disconnected">Disconnected from %1$s</string>
+    <string name="client_dashboard_child_connected">Connected to %1$s</string>
     <string name="start_discovering_services">Start discovering services</string>
     <string name="discovering_services_error">"Error while connecting to service"</string>
     <string name="add_photo">Add a photo</string>
