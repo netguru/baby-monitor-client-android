@@ -17,6 +17,7 @@ import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_lullabies.*
 import javax.inject.Inject
 
+//todo 19.12.2018 removed client handler from view model, commented code need refactor
 class ClientLullabiesFragment : DaggerFragment() {
 
     @Inject
@@ -30,7 +31,7 @@ class ClientLullabiesFragment : DaggerFragment() {
     }
     private val lullabiesAdapter by lazy {
         LullabiesAdapter { name, action ->
-            homeViewModel.manageLullabyPlayback(name, action)
+            //homeViewModel.manageLullabyPlayback(name, action)
         }
     }
 
@@ -52,22 +53,13 @@ class ClientLullabiesFragment : DaggerFragment() {
             addItemDecoration(StickyHeaderDecorator(lullabiesAdapter))
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
-        lullabiesRepeatIbtn.setOnClickListener {
-            homeViewModel.repeatLullaby()
-        }
-        lullabiesStopIbtn.setOnClickListener {
-            homeViewModel.stopPlayback()
-        }
-        lullabiesPlayIbtn.setOnClickListener {
-            homeViewModel.switchPlayback()
-        }
     }
 
     private fun observeData() {
         lullabyViewModel.lullabiesData.observe(this, Observer { list ->
             lullabiesAdapter.lullabies = list ?: return@Observer
         })
-        homeViewModel.lullabyCommand.observe(this, Observer { command ->
+       /* homeViewModel.lullabyCommand.observe(this, Observer { command ->
             command ?: return@Observer
 
             if (command.action == Action.PLAY || command.action == Action.RESUME) {
@@ -76,6 +68,6 @@ class ClientLullabiesFragment : DaggerFragment() {
                 lullabiesPlayIbtn.setImageResource(R.drawable.ic_play_arrow_white_24dp)
             }
             lullabiesPlayingTv.text = command.lullabyName
-        })
+        })*/
     }
 }

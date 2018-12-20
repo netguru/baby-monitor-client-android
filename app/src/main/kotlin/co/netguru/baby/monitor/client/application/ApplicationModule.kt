@@ -3,8 +3,8 @@ package co.netguru.baby.monitor.client.application
 import android.content.Context
 import android.net.nsd.NsdManager
 import co.netguru.baby.monitor.client.application.scope.AppScope
-import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
-import co.netguru.baby.monitor.client.data.server.NsdServiceManager
+import co.netguru.baby.monitor.client.data.ChildRepository
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
@@ -30,7 +30,7 @@ class ApplicationModule {
     fun nsdServiceManager(nsdManager: NsdManager) = NsdServiceManager(nsdManager)
 
     @Provides
-    fun addChildDialog(manager: NsdServiceManager, repository: ConfigurationRepository) = AddChildDialog(manager, repository)
+    fun addChildDialog(manager: NsdServiceManager, repository: ChildRepository) = AddChildDialog(manager, repository)
 
     @Provides
     fun lullabyPlayer(app: App) = LullabyPlayer(app)

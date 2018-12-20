@@ -1,10 +1,15 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
+import android.app.Service
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.os.IBinder
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -20,16 +25,19 @@ import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompa
 import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
 import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbar
 import co.netguru.baby.monitor.client.feature.common.view.PresetedAnimations
+import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.layout_child_selector.*
 import kotlinx.android.synthetic.main.layout_client_toolbar.*
 import net.cachapa.expandablelayout.ExpandableLayout.State
+import timber.log.Timber
 import javax.inject.Inject
 
-class ClientHomeActivity : DaggerAppCompatActivity() {
+class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
@@ -40,6 +48,8 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
     private val adapter by lazy { setupAdapter() }
+    private val compositeDisposable = CompositeDisposable()
+    private var childServiceBinder: ClientHandlerService.ChildServiceBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +58,15 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
         getData()
 
         observeCurrentDestination()
+        bindService()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
+        if (childServiceBinder != null) {
+            unbindService(this)
+        }
     }
 
     private fun observeCurrentDestination() {
@@ -69,6 +88,25 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             clientHomeChildrenEll.collapse()
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        Timber.i("service disconnected $name")
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        if (service is ClientHandlerService.ChildServiceBinder) {
+            childServiceBinder = service
+            service.getDisconnectedChild().observe(this, Observer { disconnectedChildEvent ->
+                var disconnectedChild = disconnectedChildEvent?.data ?: return@Observer
+                if (disconnectedChild.isEmpty()) {
+                    disconnectedChild = getString(R.string.child)
+                }
+                window.decorView.rootView.showSnackbar(
+                        getString(R.string.client_dashboard_child_disconnected, disconnectedChild),
+                        Snackbar.LENGTH_SHORT)
+            })
         }
     }
 
@@ -144,12 +182,14 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             clientHomeChildrenRv.setHasFixedSize(true)
         })
         homeViewModel.refreshChildrenList()
-        homeViewModel.disconnectedChild.observe(this, Observer { disconnectedChildEvent ->
-            val disconnectedChild = disconnectedChildEvent?.data ?: return@Observer
-            window.decorView.rootView.showSnackbar(
-                    getString(R.string.client_dashboard_child_disconnected, disconnectedChild),
-                    Snackbar.LENGTH_SHORT)
-        })
+    }
+
+    private fun bindService() {
+        bindService(
+                Intent(this, ClientHandlerService::class.java),
+                this,
+                Service.BIND_AUTO_CREATE
+        )
     }
 
     private fun setupAdapter() = ChildrenAdapter(
@@ -165,8 +205,8 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
 
     private fun showAddChildDialog() {
         addChildDialog.showDialog(this,
-                onChildAdded = {
-                    homeViewModel.setSelectedChildWithAddress(it)
+                onChildAdded = { address ->
+                    homeViewModel.setSelectedChildWithAddress(address)
                     homeViewModel.refreshChildrenList()
                 },
                 onServiceConnectionError = {}

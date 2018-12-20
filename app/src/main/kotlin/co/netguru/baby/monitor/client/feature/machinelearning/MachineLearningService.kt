@@ -15,20 +15,25 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import kotlin.random.Random
 
-class MachineLearningService : IntentService("Machine Learning Service") {
+class MachineLearningService : IntentService("MachineLearningService") {
 
     private val compositeDisposable = CompositeDisposable()
     private var aacRecorder: AacRecorder? = null
     private val machineLearning by lazy { MachineLearning(applicationContext) }
     private var onCryingBabyDetected: () -> Unit = {}
 
-    override fun onBind(intent: Intent?) = MainBinder()
-
-    override fun onHandleIntent(intent: Intent?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) NotificationHandler.createNotificationChannel(applicationContext)
+    override fun onCreate() {
+        super.onCreate()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationHandler.createNotificationChannel(applicationContext)
+        }
         startForeground(Random.nextInt(), createNotification())
         startRecording()
     }
+
+    override fun onBind(intent: Intent?) = MainBinder()
+
+    override fun onHandleIntent(intent: Intent?) = Unit
 
     private fun startRecording() {
         aacRecorder = AacRecorder()

@@ -71,5 +71,4 @@ class NotificationHandler(private val context: Context) {
             }
         }
     }
-
 }

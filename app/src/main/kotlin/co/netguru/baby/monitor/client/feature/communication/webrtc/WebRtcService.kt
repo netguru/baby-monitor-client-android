@@ -18,7 +18,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import kotlin.properties.Delegates
 
-class MainService : Service() {
+class WebRtcService : Service() {
 
     private val compositeDisposable = CompositeDisposable()
     private var server: CustomWebSocketServer? = null
@@ -30,7 +30,6 @@ class MainService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) = START_STICKY
-
 
     override fun onBind(intent: Intent?) = MainBinder().also { mainBinder = it }
 

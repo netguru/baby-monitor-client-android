@@ -1,12 +1,10 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
-import android.arch.core.util.Function
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
-import android.net.nsd.NsdServiceInfo
-import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
-import co.netguru.baby.monitor.client.data.server.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.client.home.ChildData
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
+import co.netguru.baby.monitor.client.data.ChildData
+import co.netguru.baby.monitor.client.data.ChildRepository
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -14,7 +12,7 @@ import javax.inject.Inject
 
 class ConfigurationViewModel @Inject constructor(
         private val nsdServiceManager: NsdServiceManager,
-        private val configurationRepository: ConfigurationRepository
+        private val childRepository: ChildRepository
 ) : ViewModel() {
 
     internal val serviceInfoData = Transformations.map(nsdServiceManager.serviceInfoData) {
@@ -28,13 +26,13 @@ class ConfigurationViewModel @Inject constructor(
             address: String, port: Int, onSuccess: (Boolean) -> Unit
     ) {
         //TODO change default name from address 25.10.2018
-        configurationRepository.appendChildrenList(
+        childRepository.appendChildrenList(
                 ChildData("ws://$address:$port", name = address)
         ).subscribeBy(onSuccess = onSuccess).addTo(compositeDisposable)
     }
 
-    internal fun clearChildsData() {
-        configurationRepository.childrenList = emptyList()
+    internal fun clearChildrenData() {
+        childRepository.setChildData(emptyList())
     }
 
     internal fun discoverNsdService(onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener) {

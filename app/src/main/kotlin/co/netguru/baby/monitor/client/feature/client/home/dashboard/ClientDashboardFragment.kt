@@ -60,6 +60,7 @@ class ClientDashboardFragment : DaggerFragment() {
             }
         }
         if (!BuildConfig.DEBUG) {
+            clientHomeTalkIbtn.setVisible(false)
             clientHomePlayLullabyIbtn.setVisible(false)
         }
     }

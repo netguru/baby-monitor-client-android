@@ -27,7 +27,7 @@ class ClientSettingsFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         settingsRemoveDataBtn.setOnClickListener {
-            viewModel.clearChildsData()
+            viewModel.clearChildrenData()
             requireActivity().finish()
         }
     }

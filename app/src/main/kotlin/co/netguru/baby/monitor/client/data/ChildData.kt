@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.client.home
+package co.netguru.baby.monitor.client.data
 
 data class ChildData(
         val address: String,
