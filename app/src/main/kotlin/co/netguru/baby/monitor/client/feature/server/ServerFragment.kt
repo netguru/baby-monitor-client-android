@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import android.Manifest.permission.CAMERA
-import android.Manifest.permission.RECORD_AUDIO
+import android.Manifest.permission.*
 import android.app.Service
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
@@ -152,7 +151,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
         private const val PERMISSIONS_REQUEST_CODE = 125
 
         private val permissions = arrayOf(
-                RECORD_AUDIO, CAMERA
+                RECORD_AUDIO, CAMERA, WRITE_EXTERNAL_STORAGE
         )
     }
 }
