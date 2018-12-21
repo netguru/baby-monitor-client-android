@@ -2,7 +2,6 @@ package co.netguru.baby.monitor.client.feature.machinelearning
 
 import android.content.Context
 import android.os.Environment
-import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import io.reactivex.Single
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -12,6 +11,9 @@ import java.io.File
 import java.io.FileOutputStream
 
 object WavFileGenerator {
+
+    internal const val DIRECTORY_NAME = "recordings"
+    internal const val DATE_PATTERN = "yyyy_MM_dd_HH_mm_ss"
 
     private const val BYTES_IN_MEGABYTE = 1_048_576L
     private const val AVAILABLE_MEGABYTES_FOR_APPLICATION = 200
@@ -25,14 +27,11 @@ object WavFileGenerator {
             sampleRate: Int,
             byteRate: Int
     ) = Single.fromCallable {
-        if (!context.allPermissionsGranted(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-            return@fromCallable false
-        }
         checkAvailableSpace(context)
-        val formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")
+        val formatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
         val file = File(
-                context.getExternalFilesDir(null),
-                "${LocalDateTime.now().format(formatter)}.wav"
+                context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE),
+                "crying_${LocalDateTime.now().format(formatter)}.wav"
         )
 
         DataOutputStream(FileOutputStream(file)).use { output ->
@@ -140,7 +139,7 @@ object WavFileGenerator {
     )
 
     private fun checkAvailableSpace(context: Context) {
-        val directory = File(context.getExternalFilesDir(null)?.absolutePath)
+        val directory = context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE)
         var size = 0L
         for (file in directory.listFiles()) {
             size += file.length()

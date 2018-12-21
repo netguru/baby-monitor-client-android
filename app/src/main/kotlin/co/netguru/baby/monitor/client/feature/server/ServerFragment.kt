@@ -151,7 +151,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
         private const val PERMISSIONS_REQUEST_CODE = 125
 
         private val permissions = arrayOf(
-                RECORD_AUDIO, CAMERA, WRITE_EXTERNAL_STORAGE
+                RECORD_AUDIO, CAMERA
         )
     }
 }
