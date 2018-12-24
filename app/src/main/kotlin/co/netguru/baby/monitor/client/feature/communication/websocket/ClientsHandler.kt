@@ -29,8 +29,9 @@ class ClientsHandler(
     private fun onAvailabilityChange(client: CustomWebSocketClient, status: ConnectionStatus) {
         when (status) {
             ConnectionStatus.UNKNOWN -> Unit
-            ConnectionStatus.CONNECTED -> listener.onClientConnected(client)
+            ConnectionStatus.CONNECTED -> listener.onConnectionStatusChange(client)
             ConnectionStatus.DISCONNECTED -> retryConnection(client)
+            ConnectionStatus.RETRYING -> Unit
         }
     }
 
@@ -44,15 +45,16 @@ class ClientsHandler(
         }
     }
 
-    private fun retryConnection(client: CustomWebSocketClient) =
-            Completable.timer(RETRY_SECONDS_DELAY, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeBy(
-                            onComplete = {
-                                client.availability = ConnectionStatus.UNKNOWN
-                                client.reconnect()
-                            }
-                    ).addTo(compositeDisposable)
+    private fun retryConnection(client: CustomWebSocketClient) {
+        listener.onConnectionStatusChange(client)
+        Completable.timer(RETRY_SECONDS_DELAY, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = {
+                            client.reconnect()
+                        }
+                ).addTo(compositeDisposable)
+    }
 
     fun onDestroy() {
         for (client in webSocketClients) {
@@ -78,7 +80,7 @@ class ClientsHandler(
     }
 
     interface ConnectionListener {
-        fun onClientConnected(client: CustomWebSocketClient)
+        fun onConnectionStatusChange(client: CustomWebSocketClient)
     }
 
     companion object {

@@ -21,6 +21,7 @@ class CustomWebSocketClient(
 ) : WebSocketClient(URI(address)) {
 
     var availability: ConnectionStatus = UNKNOWN
+    var wasRetrying = false
     private val compositeDisposable = CompositeDisposable()
     private val onMessageReceivedListeners = mutableListOf<(CustomWebSocketClient, String?) -> Unit>()
 
@@ -46,6 +47,11 @@ class CustomWebSocketClient(
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
         Timber.i("onClose")
         notifyAvailabilityChange(DISCONNECTED)
+    }
+
+    override fun reconnect() {
+        super.reconnect()
+        notifyAvailabilityChange(RETRYING)
     }
 
     override fun onMessage(message: String?) {
@@ -105,6 +111,10 @@ class CustomWebSocketClient(
     private fun notifyAvailabilityChange(availability: ConnectionStatus) {
         if (availability != this.availability) {
             this.availability = availability
+            when(availability) {
+                RETRYING -> wasRetrying = true
+                CONNECTED -> wasRetrying = false
+            }
             onAvailabilityChange(this, availability)
         }
     }
