@@ -59,20 +59,35 @@ class MachineLearningService : IntentService("Machine Learning Service") {
                 .build()
     }
 
-    private fun handleRecordingData(array: ShortArray) {
-        Timber.i("onNext data ready")
-        machineLearning.processData(array)
+    private fun handleRecordingData(dataPair: Pair<ByteArray, ShortArray>) {
+        machineLearning.processData(dataPair.second)
                 .subscribeOn(Schedulers.computation())
                 .subscribeBy(
-                        onSuccess = this::handleMachineLearningData
+                        onSuccess = { map -> handleMachineLearningData(map, dataPair.first) }
                 ).addTo(compositeDisposable)
     }
 
-    private fun handleMachineLearningData(map: Map<String, Float>) {
+    private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val entry = map.maxBy { it.value }
         if (entry?.key == MachineLearning.OUTPUT_3_CRYING_BABY) {
             onCryingBabyDetected()
+            saveDataToFile(rawData)
         }
+    }
+
+    private fun saveDataToFile(rawData: ByteArray) {
+        WavFileGenerator.saveAudio(
+                applicationContext,
+                rawData,
+                AacRecorder.BIT_RATE.toByte(),
+                AacRecorder.CHANELS,
+                AacRecorder.SAMPLING_RATE,
+                AacRecorder.BIT_RATE
+        ).subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onSuccess = { succeed -> Timber.i("File saved $succeed") },
+                        onError = Timber::e
+                )
     }
 
     inner class MainBinder : Binder() {

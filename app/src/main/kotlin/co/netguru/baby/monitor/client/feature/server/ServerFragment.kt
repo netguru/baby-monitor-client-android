@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import android.Manifest.permission.CAMERA
-import android.Manifest.permission.RECORD_AUDIO
+import android.Manifest.permission.*
 import android.app.Service
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders

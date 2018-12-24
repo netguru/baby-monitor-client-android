@@ -12,10 +12,11 @@ import java.nio.ByteOrder
 
 class AacRecorder {
 
-    internal val data: PublishSubject<ShortArray> = PublishSubject.create()
+    internal val data: PublishSubject<Pair<ByteArray, ShortArray>> = PublishSubject.create()
     private var bufferSize = 0
     private var audioRecord: AudioRecord? = null
     private var shouldStopRecording = false
+    private var rawData = emptyArray<Byte>()
     private var newData = emptyArray<Short>()
 
     fun startRecording(): Completable = Completable.fromAction {
@@ -49,7 +50,14 @@ class AacRecorder {
 
     @RunsInBackground
     fun addData(array: ByteArray) {
-        addData(bytesToShorts(array))
+        newData = newData.plus(bytesToShorts(array).toTypedArray())
+        rawData = rawData.plus(array.toTypedArray())
+
+        if (newData.size >= MachineLearning.DATA_SIZE) {
+            data.onNext(rawData.toByteArray() to newData.toShortArray())
+            newData = emptyArray()
+            rawData = emptyArray()
+        }
     }
 
     @RunsInBackground
@@ -59,16 +67,9 @@ class AacRecorder {
         return shorts
     }
 
-    @RunsInBackground
-    fun addData(array: ShortArray) {
-        newData = newData.plus(array.toTypedArray())
-        if (newData.size >= MachineLearning.DATA_SIZE) {
-            data.onNext(newData.toShortArray())
-            newData = emptyArray()
-        }
-    }
-
     companion object {
         internal const val SAMPLING_RATE = 44_100
+        internal const val CHANELS = 1
+        internal const val BIT_RATE = 16
     }
 }

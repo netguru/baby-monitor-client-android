@@ -1,21 +1,39 @@
 package co.netguru.baby.monitor.client.feature.machinelearning
 
+import android.content.Context
+import android.os.Environment
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import timber.log.Timber
 import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
 object WavFileGenerator {
 
+    internal const val DIRECTORY_NAME = "recordings"
+    internal const val DATE_PATTERN = "yyyy_MM_dd_HH_mm_ss"
+
+    private const val BYTES_IN_MEGABYTE = 1_048_576L
+    private const val AVAILABLE_MEGABYTES_FOR_APPLICATION = 200
+    private const val AVAILABLE_SPACE = AVAILABLE_MEGABYTES_FOR_APPLICATION * BYTES_IN_MEGABYTE
+
     fun saveAudio(
-            file: File,
+            context: Context,
             rawData: ByteArray,
             bitsPerSample: Byte,
             channels: Int,
             sampleRate: Int,
             byteRate: Int
-    ) = Single.just(file).map { file ->
+    ) = Single.fromCallable {
+        checkAvailableSpace(context)
+        val formatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
+        val file = File(
+                context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE),
+                "crying_${LocalDateTime.now().format(formatter)}.wav"
+        )
+
         DataOutputStream(FileOutputStream(file)).use { output ->
             writeString(output, "RIFF") // chunk id
             writeInt(output, 36 + rawData.size) // chunk size
@@ -40,8 +58,9 @@ object WavFileGenerator {
             )
             steam.write(rawData)
         }
-        return@map file
-    }.subscribeOn(Schedulers.io())
+        Timber.i("File saved ${file.absolutePath}")
+        true
+    }
 
     private fun writeInt(output: DataOutputStream, value: Int) {
         output.write(value)
@@ -118,4 +137,24 @@ object WavFileGenerator {
             (rawData.size shr 16 and 0xff).toByte(),
             (rawData.size shr 24 and 0xff).toByte()
     )
+
+    private fun checkAvailableSpace(context: Context) {
+        val directory = context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE)
+        var size = 0L
+        for (file in directory.listFiles()) {
+            size += file.length()
+        }
+
+        if (size > AVAILABLE_SPACE) {
+            directory
+                    .listFiles()
+                    .sortedBy { file -> file.lastModified() }
+                    .firstOrNull()?.delete()
+            checkAvailableSpace(context)
+        }
+    }
+
+    fun isExternalStorageWritable(): Boolean {
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
+    }
 }
