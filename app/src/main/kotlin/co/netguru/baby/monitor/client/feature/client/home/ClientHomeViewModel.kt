@@ -9,6 +9,7 @@ import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
+import co.netguru.baby.monitor.client.feature.common.data.SingleEvent
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
@@ -38,6 +39,7 @@ class ClientHomeViewModel @Inject constructor(
 
     internal val lullabyCommand = MutableLiveData<LullabyCommand>()
     internal val selectedChild = MutableLiveData<ChildData>()
+    internal val disconnectedChild = MutableLiveData<SingleEvent<String>>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
     internal val childList = MutableLiveData<List<ChildData>>()
@@ -186,8 +188,15 @@ class ClientHomeViewModel @Inject constructor(
         webSocketClientHandler.reconnect(selectedChild.value?.address ?: return)
     }
 
-    override fun onClientConnected(client: CustomWebSocketClient) {
-        Timber.i("Connected to ${client.address}")
+    override fun onConnectionStatusChange(client: CustomWebSocketClient) {
+        val foundChild = childList.value
+                ?.find { childData ->
+                    childData.address == client.address
+                }?.name ?: return
+        if (!client.wasRetrying && client.availability == ConnectionStatus.DISCONNECTED) {
+            disconnectedChild.postValue(SingleEvent(foundChild))
+        }
+        Timber.i("${client.address} ${client.availability}")
     }
 
     override fun onCleared() {

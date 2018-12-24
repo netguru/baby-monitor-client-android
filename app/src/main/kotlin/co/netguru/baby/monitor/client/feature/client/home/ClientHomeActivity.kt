@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -17,6 +18,7 @@ import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAda
 import co.netguru.baby.monitor.client.feature.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompat
 import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
+import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbar
 import co.netguru.baby.monitor.client.feature.common.view.PresetedAnimations
 import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
@@ -142,6 +144,12 @@ class ClientHomeActivity : DaggerAppCompatActivity() {
             clientHomeChildrenRv.setHasFixedSize(true)
         })
         homeViewModel.refreshChildrenList()
+        homeViewModel.disconnectedChild.observe(this, Observer { disconnectedChildEvent ->
+            val disconnectedChild = disconnectedChildEvent?.data ?: return@Observer
+            window.decorView.rootView.showSnackbar(
+                    getString(R.string.client_dashboard_child_disconnected, disconnectedChild),
+                    Snackbar.LENGTH_SHORT)
+        })
     }
 
     private fun setupAdapter() = ChildrenAdapter(
