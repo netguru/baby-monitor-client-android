@@ -14,8 +14,9 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.DefaultServiceConnection
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.common.extensions.bindService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import dagger.android.support.DaggerFragment
@@ -34,10 +35,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
     }
-    private val rtcServiceIntent by lazy { Intent(requireContext(), MainService::class.java) }
-    private val machineLearningIntent by lazy { Intent(requireContext(), MachineLearningService::class.java) }
-    private val machineLearningServiceConnection by lazy { createDefaultServiceConnection() }
-    private var rtcServiceBinder: MainService.MainBinder? = null
+    private var rtcServiceBinder: WebRtcService.MainBinder? = null
     private var machineLearningServiceBinder: MachineLearningService.MainBinder? = null
 
     override fun onCreateView(
@@ -50,24 +48,14 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
-            requireContext().bindService(
-                    rtcServiceIntent,
-                    this,
-                    Service.BIND_AUTO_CREATE
-            )
-            bindMachineLearningService()
+            bindServices()
         }
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.unregisterNsdService()
-        if (rtcServiceBinder != null) {
-            requireContext().unbindService(this)
-        }
-        if (machineLearningServiceBinder != null) {
-            requireContext().unbindService(machineLearningServiceConnection)
-        }
+        requireContext().unbindService(this)
     }
 
     override fun onDestroy() {
@@ -87,23 +75,36 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requireContext().allPermissionsGranted(Companion.permissions)) {
-            requireContext().bindService(rtcServiceIntent, this, Service.BIND_AUTO_CREATE)
+            bindServices()
         }
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
+        Timber.i("Service Disconnected: $name")
         machineLearningServiceBinder?.startRecording()
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        rtcServiceBinder = service as MainService.MainBinder?
-        rtcServiceBinder?.callChangeNotifier = { call ->
-            machineLearningServiceBinder?.stopRecording()
-            viewModel.accept(
-                    call as RtcReceiver,
-                    requireContext(),
-                    this@ServerFragment::handleCallStateChange
-            )
+        when(service) {
+            is WebRtcService.MainBinder -> {
+                Timber.i("WebRtcService service connected")
+                rtcServiceBinder = service
+                rtcServiceBinder?.callChangeNotifier = { call ->
+                    machineLearningServiceBinder?.stopRecording()
+                    viewModel.accept(
+                            call as RtcReceiver,
+                            requireContext(),
+                            this@ServerFragment::handleCallStateChange
+                    )
+                }
+            }
+            is MachineLearningService.MainBinder -> {
+                Timber.i("MachineLearningService service connected")
+                machineLearningServiceBinder = service
+                service.setOnCryingBabyDetectedListener {
+                    rtcServiceBinder?.handleBabyCrying()
+                }
+            }
         }
     }
 
@@ -115,7 +116,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
         }
     }
 
-    private fun endCall(binder: MainService.MainBinder) {
+    private fun endCall(binder: WebRtcService.MainBinder) {
         binder.hangUp()
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
@@ -126,26 +127,18 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
                 )
     }
 
-    private fun bindMachineLearningService() {
-        requireContext().startService(machineLearningIntent)
-        requireContext().bindService(
-                machineLearningIntent,
-                machineLearningServiceConnection,
+    private fun bindServices() {
+        bindService(
+                WebRtcService::class.java,
+                this,
+                Service.BIND_AUTO_CREATE
+        )
+        bindService(
+                MachineLearningService::class.java,
+                this,
                 Service.BIND_AUTO_CREATE
         )
     }
-
-    private fun createDefaultServiceConnection() = DefaultServiceConnection(
-            onServiceConnected = { name, service ->
-                machineLearningServiceBinder = service as MachineLearningService.MainBinder?
-                machineLearningServiceBinder?.setOnCryingBabyDetectedListener {
-                    rtcServiceBinder?.handleBabyCrying()
-                }
-            },
-            onServiceDisconnected = {
-                Timber.i("machineLearningServiceBinder disconnected")
-            }
-    )
 
     companion object {
         private const val PERMISSIONS_REQUEST_CODE = 125

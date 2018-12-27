@@ -9,9 +9,9 @@ import android.net.nsd.NsdServiceInfo
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
-import co.netguru.baby.monitor.client.data.server.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.client.home.ChildData
+import co.netguru.baby.monitor.client.data.ChildData
+import co.netguru.baby.monitor.client.data.ChildRepository
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import com.afollestad.materialdialogs.MaterialDialog
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,7 +26,7 @@ import javax.inject.Inject
 //TODO if designer will decide that dialog is our final solution convert it to DialogFragment
 class AddChildDialog @Inject constructor(
         private val nsdServiceManager: NsdServiceManager,
-        private val configurationRepository: ConfigurationRepository
+        private val childRepository: ChildRepository
 ) : LifecycleObserver {
 
     private val compositeDisposable = CompositeDisposable()
@@ -61,7 +61,7 @@ class AddChildDialog @Inject constructor(
             Single.fromCallable {
                 val list = mutableListOf<NsdServiceInfo>()
                 value?.forEach { info ->
-                    if (configurationRepository.childrenList.find { it.address == info.host.hostAddress } == null) {
+                    if (childRepository.childList.value?.find { it.address == info.host.hostAddress } == null) {
                         list.add(info)
                     }
                 }
@@ -78,8 +78,8 @@ class AddChildDialog @Inject constructor(
 
     private fun createAdapter(onChildAdded: (String) -> Unit) =
             ServiceAdapter { service ->
-                configurationRepository.appendChildrenList(
-                        ChildData("ws://${service.host.hostAddress}:${service.port}" , name = service.host.hostAddress)
+                childRepository.appendChildrenList(
+                        ChildData("ws://${service.host.hostAddress}:${service.port}", name = service.host.hostAddress)
                 )
                         .subscribeOn(Schedulers.io())
                         .subscribeBy { wasAdded ->

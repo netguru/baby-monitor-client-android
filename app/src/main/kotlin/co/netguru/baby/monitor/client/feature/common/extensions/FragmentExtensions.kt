@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.common.extensions
 
 import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
 import android.provider.Settings
 import android.support.annotation.StringRes
@@ -24,4 +25,12 @@ fun Fragment.startAppSettings() {
         data = Uri.parse("package:" + requireContext().packageName)
         startActivity(this)
     }
+}
+
+fun Fragment.bindService(intentClass: Class<*>, conn: ServiceConnection, flags: Int) {
+    requireContext().bindService(
+            Intent(requireContext(), intentClass),
+            conn,
+            flags
+    )
 }

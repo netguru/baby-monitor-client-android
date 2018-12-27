@@ -2,7 +2,7 @@ package co.netguru.baby.monitor.client.feature.server
 
 import android.arch.lifecycle.ViewModel
 import android.content.Context
-import co.netguru.baby.monitor.client.data.server.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
 import io.reactivex.disposables.CompositeDisposable

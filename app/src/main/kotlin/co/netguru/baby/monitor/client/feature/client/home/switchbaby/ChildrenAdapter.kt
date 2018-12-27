@@ -2,7 +2,7 @@ package co.netguru.baby.monitor.client.feature.client.home.switchbaby
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import co.netguru.baby.monitor.client.feature.client.home.ChildData
+import co.netguru.baby.monitor.client.data.ChildData
 import kotlin.properties.Delegates
 
 class ChildrenAdapter(

@@ -13,3 +13,10 @@ inline fun <reified A, reified B> Pair<A?, B?>.let(action: (A, B) -> Unit) {
         action(first!!, second!!)
     }
 }
+
+infix fun <A, B> A?.and(that: B?): Pair<A, B>? =
+        if (this == null || that == null) {
+            null
+        } else {
+            Pair(this, that)
+        }

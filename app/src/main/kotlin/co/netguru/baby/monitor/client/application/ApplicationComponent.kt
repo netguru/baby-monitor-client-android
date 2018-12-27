@@ -16,6 +16,7 @@ import dagger.android.support.AndroidSupportInjectionModule
         ViewModelModule::class,
         FragmentBindingsModule::class,
         ActivityBindingsModule::class,
+        ServiceBindingsModule::class,
         SharedPreferencesModule::class
     ]
 )

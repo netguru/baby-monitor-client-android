@@ -117,7 +117,7 @@
         android:text="@string/client_dashboard_action_text"
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeTalkIbtn"
+        app:layout_constraintBottom_toTopOf="@+id/clientHomeLiveCameraIbtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

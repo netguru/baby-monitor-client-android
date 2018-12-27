@@ -8,12 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
 import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.feature.common.extensions.trimmedText
-import co.netguru.baby.monitor.client.data.server.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import dagger.android.support.DaggerFragment
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers

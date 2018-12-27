@@ -15,14 +15,13 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.common.extensions.and
+import co.netguru.baby.monitor.client.feature.common.extensions.bindService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import dagger.android.support.DaggerFragment
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -32,12 +31,12 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
 
-    private var binder: MainService.MainBinder? = null
     private val viewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
-    private val serviceIntent by lazy { Intent(requireContext(), MainService::class.java) }
     private val compositeDisposable = CompositeDisposable()
+    private var childServiceBinder: ClientHandlerService.ChildServiceBinder? = null
+    private var webRtcBinder: WebRtcService.MainBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,26 +61,22 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
-            requireContext().bindService(
-                    serviceIntent,
-                    this,
-                    Service.BIND_AUTO_CREATE
-            )
+            bindServices()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (binder != null) {
+        if (webRtcBinder != null) {
             requireContext().unbindService(this)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        binder?.cleanup()
+        webRtcBinder?.cleanup()
         viewModel.shouldHideNavbar.postValue(false)
-        viewModel.refreshSelectedChildWebSocketConnection()
+        childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         compositeDisposable.dispose()
     }
 
@@ -90,7 +85,7 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requireContext().allPermissionsGranted(Companion.permissions)) {
-            requireContext().bindService(serviceIntent, this, Service.BIND_AUTO_CREATE)
+            bindServices()
         }
     }
 
@@ -99,13 +94,43 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        binder = service as MainService.MainBinder
-        viewModel.startCall(
-                service,
-                requireActivity().applicationContext,
-                this::handleStateChange
+        when (service) {
+            is WebRtcService.MainBinder -> {
+                Timber.i("WebRtcService service connected")
+                webRtcBinder = service
+            }
+            is ClientHandlerService.ChildServiceBinder -> {
+                Timber.i("ClientHandlerService service connected")
+                childServiceBinder = service
+            }
+        }
+        with((webRtcBinder and childServiceBinder)) {
+            this ?: return@with
+            val address = viewModel.selectedChild.value?.address ?: return@with
+            val client = first.createClient(
+                    second.getChildClient(address) ?: return@with
+            )
+
+            viewModel.startCall(
+                    client,
+                    requireActivity().applicationContext,
+                    this@ClientLiveCameraFragment::handleStateChange
+            )
+            viewModel.setRemoteRenderer(liveCameraRemoteRenderer)
+        }
+    }
+
+    private fun bindServices() {
+        bindService(
+                WebRtcService::class.java,
+                this,
+                Service.BIND_AUTO_CREATE
         )
-        viewModel.setRemoteRenderer(liveCameraRemoteRenderer)
+        bindService(
+                ClientHandlerService::class.java,
+                this,
+                Service.BIND_AUTO_CREATE
+        )
     }
 
     private fun handleStateChange(state: CallState) {

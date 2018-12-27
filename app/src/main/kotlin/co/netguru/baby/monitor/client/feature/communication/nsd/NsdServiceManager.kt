@@ -1,9 +1,9 @@
-package co.netguru.baby.monitor.client.data.server
+package co.netguru.baby.monitor.client.feature.communication.nsd
 
 import android.arch.lifecycle.MutableLiveData
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import dagger.Reusable
 import timber.log.Timber
 import javax.inject.Inject
@@ -69,7 +69,7 @@ class NsdServiceManager @Inject constructor(
         val serviceInfo = NsdServiceInfo().apply {
             serviceName = SERVICE_NAME
             serviceType = SERVICE_TYPE
-            port = MainService.SERVER_PORT
+            port = WebRtcService.SERVER_PORT
         }
 
         nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdServiceListener)
@@ -101,8 +101,4 @@ class NsdServiceManager @Inject constructor(
         private const val SERVICE_NAME = "Baby Monitor Service"
         private const val SERVICE_TYPE = "_http._tcp."
     }
-}
-
-enum class DiscoveryStatus {
-    STARTED, STOPPED
 }

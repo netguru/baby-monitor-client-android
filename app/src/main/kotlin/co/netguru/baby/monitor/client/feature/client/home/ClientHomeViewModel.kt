@@ -5,25 +5,20 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.content.Context
-import co.netguru.baby.monitor.client.data.server.ConfigurationRepository
+import co.netguru.baby.monitor.client.data.ChildData
+import co.netguru.baby.monitor.client.data.ChildRepository
 import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
-import co.netguru.baby.monitor.client.feature.common.NotificationHandler
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
-import co.netguru.baby.monitor.client.feature.common.data.SingleEvent
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
-import co.netguru.baby.monitor.client.feature.common.extensions.toJson
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.MainService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcClient
-import co.netguru.baby.monitor.client.feature.communication.websocket.*
-import io.reactivex.Completable
+import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
+import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.internal.operators.single.SingleDefer
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.schedulers.Schedulers
 import org.webrtc.SurfaceViewRenderer
 import timber.log.Timber
@@ -33,19 +28,17 @@ import java.io.IOException
 import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
-        private val configurationRepository: ConfigurationRepository,
-        private val notificationHandler: NotificationHandler
-) : ViewModel(), ClientsHandler.ConnectionListener {
+        private val childRepository: ChildRepository
+) : ViewModel() {
 
-    internal val lullabyCommand = MutableLiveData<LullabyCommand>()
     internal val selectedChild = MutableLiveData<ChildData>()
-    internal val disconnectedChild = MutableLiveData<SingleEvent<String>>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
-    internal val childList = MutableLiveData<List<ChildData>>()
-    private var currentCall: RtcClient? = null
+    internal val childList: MutableLiveData<List<ChildData>>
+        get() = childRepository.childList
+
     private val compositeDisposable = CompositeDisposable()
-    private val webSocketClientHandler = ClientsHandler(this, notificationHandler)
+    private var currentCall: RtcClient? = null
 
     //TODO change it for real data fetch
     val activities: LiveData<List<LogActivityData.LogData>> = Transformations.switchMap(selectedChild) { child ->
@@ -55,36 +48,39 @@ class ClientHomeViewModel @Inject constructor(
         }
     }
 
-    fun refreshChildrenList(shouldConnect: Boolean = true) = Completable.fromAction {
-        val list = configurationRepository.childrenList.toMutableList()
-        if (selectedChild.value == null && list.isNotEmpty()) {
-            selectedChild.postValue(list.first())
-        }
-        if (shouldConnect) {
-            establishConnections(list)
-        }
-        childList.postValue(list)
-    }.subscribeOn(Schedulers.io())
-            .subscribe { Timber.d("complete") }
-            .addTo(compositeDisposable)
+    fun refreshChildrenList(listener: (state: List<ChildData>) -> Unit = {}) {
+        childRepository.refreshChildData()
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onSuccess = { list ->
+                            if (selectedChild.value == null && list.isNotEmpty()) {
+                                selectedChild.postValue(list.first())
+                            }
+                            listener(list)
+                        },
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
+    }
 
-    fun setSelectedChildWithAddress(address: String) = Completable.fromAction {
-        configurationRepository.childrenList.find { it.address == address }?.also {
-            selectedChild.postValue(it)
+    fun setSelectedChildWithAddress(address: String) {
+        childRepository.childList.value?.find { it.address == address }?.let { data ->
+            selectedChild.postValue(data)
             refreshChildrenList()
         }
-    }.subscribeOn(Schedulers.io())
-            .subscribe { Timber.d("complete") }
-            .addTo(compositeDisposable)
+    }
 
-    fun updateChildName(name: String) = {
-        selectedChild.value?.name = name
-        configurationRepository.updateChildData(selectedChild.value)
-        selectedChild.postValue(selectedChild.value)
-    }.toCompletable()
-            .subscribeOn(Schedulers.io())
-            .subscribe { Timber.d("complete") }
-            .addTo(compositeDisposable)
+    fun updateChildName(name: String) {
+        Single.just(selectedChild.value).flatMap { data ->
+            childRepository.updateChildData(data.apply { this.name = name })
+        }
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onSuccess = { data ->
+                            selectedChild.postValue(data)
+                        }
+                )
+                .addTo(compositeDisposable)
+    }
 
     fun saveImage(context: Context, cache: File?) = SingleDefer.defer {
         SingleSource<Boolean> {
@@ -109,28 +105,6 @@ class ClientHomeViewModel @Inject constructor(
         }
     }.subscribeOn(Schedulers.io()).subscribeWithLiveData()
 
-    fun repeatLullaby() {
-        lullabyCommand.value?.let { command ->
-            manageLullabyPlayback(command.lullabyName, Action.REPEAT)
-        }
-    }
-
-    fun stopPlayback() {
-        lullabyCommand.value?.let { command ->
-            manageLullabyPlayback(command.lullabyName, Action.STOP)
-        }
-    }
-
-    fun switchPlayback() {
-        lullabyCommand.value?.let { command ->
-            if (command.action == Action.PLAY || command.action == Action.RESUME) {
-                manageLullabyPlayback(command.lullabyName, Action.PAUSE)
-            } else {
-                manageLullabyPlayback(command.lullabyName, Action.RESUME)
-            }
-        }
-    }
-
     fun callCleanUp(onCleaned: () -> Unit) {
         with(currentCall) {
             if (this == null) {
@@ -140,38 +114,34 @@ class ClientHomeViewModel @Inject constructor(
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
-                                onComplete =  onCleaned,
+                                onComplete = onCleaned,
                                 onError = Timber::e
                         ).addTo(compositeDisposable)
             }
         }
     }
 
-    fun manageLullabyPlayback(name: String, action: Action) {
-        getSelectedChildClient()?.sendMessage(LullabyCommand(name, action).toJson())
+    private fun updateChildImageSource(path: String) {
+        Single.just(selectedChild.value).flatMap { data ->
+            childRepository.updateChildData(data.apply { image = path })
+        }.subscribeOn(Schedulers.io())
+                .subscribeBy(onSuccess = { data ->
+                    selectedChild.postValue(data)
+                }).addTo(compositeDisposable)
     }
-
-    private fun updateChildImageSource(path: String) = {
-        selectedChild.value?.image = path
-        configurationRepository.updateChildData(selectedChild.value)
-        selectedChild.postValue(selectedChild.value)
-    }.toCompletable()
-            .subscribeOn(Schedulers.io())
-            .subscribe { Timber.d("complete") }
 
     fun setRemoteRenderer(remoteRenderer: SurfaceViewRenderer) {
         currentCall?.remoteRenderer = remoteRenderer
     }
 
     fun startCall(
-            binder: MainService.MainBinder,
+            rtcClient: RtcClient,
             context: Context,
             listener: (state: CallState) -> Unit
     ) {
-        val client = getSelectedChildClient() ?: return
-        currentCall = binder.createClient(client)
-                .also {
-                    it.startCall(context, listener).subscribeOn(Schedulers.newThread())
+        currentCall = rtcClient
+                .also { client ->
+                    client.startCall(context, listener).subscribeOn(Schedulers.newThread())
                             .subscribeBy(
                                     onComplete = { Timber.i("completed") },
                                     onError = Timber::e
@@ -184,38 +154,8 @@ class ClientHomeViewModel @Inject constructor(
         return (child.image != null)
     }
 
-    fun refreshSelectedChildWebSocketConnection() {
-        webSocketClientHandler.reconnect(selectedChild.value?.address ?: return)
-    }
-
-    override fun onConnectionStatusChange(client: CustomWebSocketClient) {
-        val foundChild = childList.value
-                ?.find { childData ->
-                    childData.address == client.address
-                }?.name ?: return
-        if (!client.wasRetrying && client.availability == ConnectionStatus.DISCONNECTED) {
-            disconnectedChild.postValue(SingleEvent(foundChild))
-        }
-        Timber.i("${client.address} ${client.availability}")
-    }
-
     override fun onCleared() {
         super.onCleared()
-        webSocketClientHandler.onDestroy()
         compositeDisposable.dispose()
     }
-
-    @RunsInBackground
-    private fun establishConnections(list: List<ChildData>) {
-        for (data in list) {
-            webSocketClientHandler.addClient(data.address)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeBy(
-                            onComplete = { Timber.i(data.address) }
-                    )
-        }
-    }
-
-    private fun getSelectedChildClient() =
-            webSocketClientHandler.getClient(selectedChild.value?.address)
 }
