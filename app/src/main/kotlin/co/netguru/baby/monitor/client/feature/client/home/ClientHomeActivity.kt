@@ -8,8 +8,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.os.IBinder
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -20,7 +20,6 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
-import co.netguru.baby.monitor.client.feature.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompat
 import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
 import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbar
@@ -98,14 +97,23 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         if (service is ClientHandlerService.ChildServiceBinder) {
             childServiceBinder = service
-            service.getDisconnectedChild().observe(this, Observer { disconnectedChildEvent ->
-                var disconnectedChild = disconnectedChildEvent?.data ?: return@Observer
-                if (disconnectedChild.isEmpty()) {
-                    disconnectedChild = getString(R.string.child)
+            service.getChildConnectionStatus().observe(this, Observer { childEvent ->
+                val data = childEvent?.data ?: return@Observer
+
+                val childName = if (data.first.name.isNullOrEmpty()) {
+                    getString(R.string.child)
+                } else {
+                    data.first.name
+                }
+                val snackbarText = if (data.second == ConnectionStatus.DISCONNECTED) {
+                    getString(R.string.client_dashboard_child_disconnected, childName)
+                } else {
+                    getString(R.string.client_dashboard_child_connected, childName)
                 }
                 window.decorView.rootView.showSnackbar(
-                        getString(R.string.client_dashboard_child_disconnected, disconnectedChild),
-                        Snackbar.LENGTH_SHORT)
+                        snackbarText,
+                        Snackbar.LENGTH_LONG)
+                homeViewModel.selectedChildAvailabilityPostValue(data)
             })
         }
     }
@@ -159,14 +167,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             it ?: return@Observer
             clientHomeBnv.setVisible(!it)
         })
-        homeViewModel.selectedChildAvailability.observe(this, Observer { connection ->
-            val color = when (connection) {
-                ConnectionStatus.CONNECTED -> R.color.material_green_a400
-                else -> R.color.material_red_a400
-            }
-            clientHomeChildAvailabilityIv.setBackgroundColor(getColorCompat(color))
-        })
-
         homeViewModel.childList.observe(this, Observer { list ->
             list ?: return@Observer
             adapter.selectedChild = homeViewModel.selectedChild.value ?: adapter.selectedChild

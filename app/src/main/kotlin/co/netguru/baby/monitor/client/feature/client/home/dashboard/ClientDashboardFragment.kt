@@ -9,12 +9,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.common.extensions.*
+import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
@@ -42,9 +44,6 @@ class ClientDashboardFragment : DaggerFragment() {
     }
 
     private fun setupView() {
-        clientHomeLiveCameraIbtn.setOnClickListener {
-            findNavController().navigate(R.id.actionDashboardToLiveCam)
-        }
         clientHomeTalkIbtn.setOnClickListener {
             findNavController().navigate(R.id.actionDashboardToTalk)
         }
@@ -66,29 +65,42 @@ class ClientDashboardFragment : DaggerFragment() {
     }
 
     private fun getData() {
-        viewModel.selectedChild.observe(this, Observer {
-            it ?: return@Observer
+        viewModel.selectedChild.observe(this, Observer { child ->
+            child ?: return@Observer
 
             // TODO Parse it to the proper text according to Machine Learning results
-            val name = if (it.name.isNullOrEmpty()) getString(R.string.default_baby_name) else it.name
+            val name = if (child.name.isNullOrEmpty()) getString(R.string.default_baby_name) else child.name
             clientHomeInformationTv.text = getString(R.string.client_dashboard_welcome_text, name)
 
-            if (!it.image.isNullOrEmpty()) {
+            if (clientHomeBabyNameMet.text.toString().trim() != child.name?.trim()) {
+                clientHomeBabyNameMet.setText(child.name)
+            }
 
+            if (!child.image.isNullOrEmpty()) {
                 GlideApp.with(requireContext())
-                        .load(it.image)
+                        .load(child.image)
                         .apply(RequestOptions.circleCropTransform())
                         .into(clientHomeBabyIv)
 
                 clientHomeBabyIv.setVisible(true)
                 clientHomeAddPhotoConstraintLayout.setVisible(false)
-
-                if (clientHomeBabyNameMet.text.toString().trim() != it.name?.trim()) {
-                    clientHomeBabyNameMet.setText(it.name)
-                }
             } else {
                 clientHomeBabyIv.setVisible(false)
                 clientHomeAddPhotoConstraintLayout.setVisible(true)
+            }
+        })
+        viewModel.selectedChildAvailability.observe(this, Observer { connectionStatus ->
+            when (connectionStatus) {
+                ConnectionStatus.CONNECTED -> {
+                    clientHomeLiveCameraIbtn.setOnClickListener {
+                        findNavController().navigate(R.id.actionDashboardToLiveCam)
+                    }
+                }
+                else -> {
+                    clientHomeLiveCameraIbtn.setOnClickListener {
+                        Toast.makeText(requireContext(), getString(R.string.child_not_available), Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         })
     }

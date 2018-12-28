@@ -8,8 +8,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.java_websocket.framing.CloseFrame
 import org.json.JSONObject
 import timber.log.Timber
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class ClientsHandler(
@@ -17,8 +19,9 @@ class ClientsHandler(
         private val notificationHandler: NotificationHandler
 ) {
 
-    var webSocketClients = mutableMapOf<String, CustomWebSocketClient>()
+    private val webSocketClients = mutableMapOf<String, CustomWebSocketClient>()
     private val compositeDisposable = CompositeDisposable()
+
     @RunsInBackground
     fun addClient(address: String) = Completable.fromAction {
         if (webSocketClients[address] == null) {
@@ -26,11 +29,40 @@ class ClientsHandler(
         }
     }
 
+    fun getClient(address: String?) = webSocketClients[address]
+
+    fun reconnectClient(address: String) {
+        webSocketClients[address]?.let { client ->
+            client.closeClient()
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribeBy(
+                            onComplete = {
+                                client.onDestroy()
+                                connect(address)
+                            },
+                            onError = Timber::e
+                    ).addTo(compositeDisposable)
+        }
+    }
+
+    fun onDestroy() {
+        compositeDisposable.dispose()
+        try {
+            webSocketClients.map { it.value }
+                    .forEach { client ->
+                        client.close(CloseFrame.FLASHPOLICY, "")
+                        client.onDestroy()
+                    }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
     private fun onAvailabilityChange(client: CustomWebSocketClient, status: ConnectionStatus) {
         when (status) {
             ConnectionStatus.UNKNOWN -> Unit
             ConnectionStatus.CONNECTED -> listener.onConnectionStatusChange(client)
-            ConnectionStatus.DISCONNECTED -> retryConnection(client)
+            ConnectionStatus.DISCONNECTED -> retryConnection(client.address)
             ConnectionStatus.RETRYING -> Unit
         }
     }
@@ -45,38 +77,54 @@ class ClientsHandler(
         }
     }
 
-    private fun retryConnection(client: CustomWebSocketClient) {
-        listener.onConnectionStatusChange(client)
+    private fun retryConnection(address: String) {
         Completable.timer(RETRY_SECONDS_DELAY, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .subscribeBy(
                         onComplete = {
-                            client.reconnect()
+                            webSocketClients[address]?.let(this::reconnect)
                         }
                 ).addTo(compositeDisposable)
+        listener.onConnectionStatusChange(webSocketClients[address] ?: return)
     }
 
-    fun onDestroy() {
-        for (client in webSocketClients) {
-            client.value.onDestroy()
+    private fun reconnect(client: CustomWebSocketClient) {
+        if (client.connectionStatus != ConnectionStatus.CONNECTED) {
+            client.asyncReconnect()
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribeBy(
+                            onComplete = { Timber.i("reconnect") },
+                            onError = Timber::e
+                    ).addTo(compositeDisposable)
         }
-        compositeDisposable.dispose()
     }
 
-    private fun connect(address: String) {
+    private fun connect(address: String): CustomWebSocketClient? {
         Timber.i("connecting $address...")
+        val status = webSocketClients[address]?.connectionStatus ?: ConnectionStatus.UNKNOWN
+        val retrying = webSocketClients[address]?.wasRetrying ?: false
+
         webSocketClients[address] = CustomWebSocketClient(
                 address,
                 onAvailabilityChange = this::onAvailabilityChange,
                 onMessageReceived = this::onMessageReceived
-        )
-    }
-
-    fun getClient(address: String?) = webSocketClients[address]
-
-    fun reconnect(address: String) {
-        webSocketClients[address]?.onDestroy()
-        connect(address)
+        ).apply {
+            connectionStatus = status
+            wasRetrying = retrying
+        }.also { client ->
+            client.connectClient()
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribeBy(
+                            onComplete = {
+                                Timber.i("Complete")
+                            },
+                            onError = {
+                                Timber.e("connection error: $it")
+                                client.notifyAvailabilityChange(ConnectionStatus.DISCONNECTED)
+                            }
+                    ).addTo(compositeDisposable)
+        }
+        return webSocketClients[address]
     }
 
     interface ConnectionListener {

@@ -25,7 +25,7 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
 
     private val webSocketClientHandler by lazy { ClientsHandler(this, notificationHandler) }
     private val compositeDisposable = CompositeDisposable()
-    private val disconnectedChild = MutableLiveData<SingleEvent<String>>()
+    private val childConnectionStatus = MutableLiveData<SingleEvent<Pair<ChildData, ConnectionStatus>>>()
 
     @Inject
     lateinit var notificationHandler: NotificationHandler
@@ -48,14 +48,21 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
     override fun onHandleIntent(intent: Intent?) = Unit
 
     override fun onConnectionStatusChange(client: CustomWebSocketClient) {
+        Timber.i("${client.address} ${client.connectionStatus}")
         val foundChild = childRepository.childList.value
                 ?.find { childData ->
                     childData.address == client.address
-                }?.name ?: return
-        if (!client.wasRetrying && client.availability == ConnectionStatus.DISCONNECTED) {
-            disconnectedChild.postValue(SingleEvent(foundChild))
+                } ?: return
+        if (!client.wasRetrying && client.connectionStatus == ConnectionStatus.DISCONNECTED) {
+            childConnectionStatus.postValue(
+                    SingleEvent(foundChild to ConnectionStatus.DISCONNECTED)
+            )
         }
-        Timber.i("${client.address} ${client.availability}")
+        if (client.connectionStatus == ConnectionStatus.CONNECTED) {
+            childConnectionStatus.postValue(
+                    SingleEvent(foundChild to ConnectionStatus.CONNECTED)
+            )
+        }
     }
 
     private fun createNotification(): Notification {
@@ -82,17 +89,17 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         webSocketClientHandler.onDestroy()
         compositeDisposable.dispose()
+        super.onDestroy()
     }
 
     inner class ChildServiceBinder : Binder() {
 
-        fun getDisconnectedChild() = disconnectedChild
+        fun getChildConnectionStatus() = childConnectionStatus
 
         fun refreshChildWebSocketConnection(address: String?) {
-            webSocketClientHandler.reconnect(address ?: return)
+            webSocketClientHandler.reconnectClient(address ?: return)
         }
 
         fun getChildClient(address: String) =

@@ -154,6 +154,13 @@ class ClientHomeViewModel @Inject constructor(
         return (child.image != null)
     }
 
+    fun selectedChildAvailabilityPostValue(data: Pair<ChildData, ConnectionStatus>) {
+        if (data.first.address == selectedChild.value?.address &&
+                data.second != selectedChildAvailability.value) {
+            selectedChildAvailability.postValue(data.second)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()

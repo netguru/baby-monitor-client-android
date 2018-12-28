@@ -71,15 +71,19 @@ class RtcClient(
 
     override fun createStream(): MediaStream? {
         upStream = factory?.createLocalMediaStream(LOCAL_MEDIA_STREAM_LABEL)
-        audio = factory?.createAudioTrack(AUDIO_TRACK_ID, factory?.createAudioSource(MediaConstraints()))
+        audioSource = factory?.createAudioSource(MediaConstraints())
+        audio = factory?.createAudioTrack(AUDIO_TRACK_ID, audioSource)
         upStream?.addTrack(audio)
+        videoTrack = createVideoTrack()
+        upStream?.addTrack(videoTrack)
+        capturer?.startCapture(500, 500, 30)
         audio?.setEnabled(enableVoice)
         return upStream
     }
 
     private fun onIceGatheringComplete() {
         with((commSocket as CustomWebSocketClient)) {
-            if (availability == ConnectionStatus.CONNECTED) {
+            if (connectionStatus == ConnectionStatus.CONNECTED) {
                 sendOffer(this)
             }
 

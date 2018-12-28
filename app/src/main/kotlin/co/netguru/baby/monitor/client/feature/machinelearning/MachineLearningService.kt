@@ -35,6 +35,11 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
     override fun onHandleIntent(intent: Intent?) = Unit
 
+    override fun onDestroy() {
+        compositeDisposable.dispose()
+        super.onDestroy()
+    }
+
     private fun startRecording() {
         aacRecorder = AacRecorder()
         aacRecorder?.startRecording()
@@ -92,7 +97,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
                 .subscribeBy(
                         onSuccess = { succeed -> Timber.i("File saved $succeed") },
                         onError = Timber::e
-                )
+                ).addTo(compositeDisposable)
     }
 
     inner class MainBinder : Binder() {

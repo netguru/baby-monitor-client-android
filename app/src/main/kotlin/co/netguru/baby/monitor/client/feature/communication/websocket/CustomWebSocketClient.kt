@@ -2,10 +2,6 @@ package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus.*
 import io.reactivex.Completable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.framing.CloseFrame
 import org.java_websocket.handshake.ServerHandshake
@@ -16,28 +12,16 @@ import java.nio.charset.Charset
 
 class CustomWebSocketClient(
         val address: String,
-        private val onAvailabilityChange: (CustomWebSocketClient, ConnectionStatus) -> Unit,
+        private var onAvailabilityChange: (CustomWebSocketClient, ConnectionStatus) -> Unit,
         onMessageReceived: (CustomWebSocketClient, String?) -> Unit
 ) : WebSocketClient(URI(address)) {
 
-    var availability: ConnectionStatus = UNKNOWN
+    var connectionStatus: ConnectionStatus = UNKNOWN
     var wasRetrying = false
-    private val compositeDisposable = CompositeDisposable()
-    private val onMessageReceivedListeners = mutableListOf<(CustomWebSocketClient, String?) -> Unit>()
+    private var onMessageReceivedListeners = mutableListOf<(CustomWebSocketClient, String?) -> Unit>()
 
     init {
         onMessageReceivedListeners.add(onMessageReceived)
-        Completable.fromAction {
-            connect()
-        }.subscribeOn(Schedulers.io()).subscribeBy(
-                onComplete = {
-                    Timber.i("Complete")
-                },
-                onError = {
-                    Timber.e("connection error: $it")
-                    notifyAvailabilityChange(DISCONNECTED)
-                }
-        ).addTo(compositeDisposable)
     }
 
     override fun onOpen(handshakedata: ServerHandshake?) {
@@ -47,11 +31,6 @@ class CustomWebSocketClient(
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
         Timber.i("onClose")
         notifyAvailabilityChange(DISCONNECTED)
-    }
-
-    override fun reconnect() {
-        super.reconnect()
-        notifyAvailabilityChange(RETRYING)
     }
 
     override fun onMessage(message: String?) {
@@ -75,14 +54,23 @@ class CustomWebSocketClient(
         notifyAvailabilityChange(DISCONNECTED)
     }
 
+    fun asyncReconnect() = Completable.fromAction {
+        reconnect()
+        notifyAvailabilityChange(RETRYING)
+    }
+
+    fun connectClient() = Completable.fromAction {
+        connect()
+    }
+
     fun onDestroy() {
-        closeClient()
-        compositeDisposable.dispose()
+        onAvailabilityChange = { _, _ -> }
+        onMessageReceivedListeners = mutableListOf()
     }
 
     fun sendMessage(message: String) {
         Timber.i("send: $message")
-        if (availability == CONNECTED) {
+        if (connectionStatus == CONNECTED) {
             send(message)
         }
     }
@@ -91,30 +79,21 @@ class CustomWebSocketClient(
         onMessageReceivedListeners.add(listener)
     }
 
-    fun removeListener(listener: (CustomWebSocketClient, String?) -> Unit) =
+    fun removeMessageListener(listener: (CustomWebSocketClient, String?) -> Unit) =
             onMessageReceivedListeners.remove(listener)
 
-
-    private fun closeClient() {
-        Completable.fromAction {
-            close(CloseFrame.FLASHPOLICY, "")
-        }.subscribeOn(Schedulers.io()).subscribeBy(
-                onComplete = {
-                    Timber.i("Closed")
-                },
-                onError = {
-                    notifyAvailabilityChange(DISCONNECTED)
-                }
-        ).addTo(compositeDisposable)
+    fun closeClient() = Completable.fromAction {
+        close(CloseFrame.FLASHPOLICY, "")
     }
 
-    private fun notifyAvailabilityChange(availability: ConnectionStatus) {
-        if (availability != this.availability) {
-            this.availability = availability
-            when(availability) {
+    fun notifyAvailabilityChange(availability: ConnectionStatus) {
+        if (availability != this.connectionStatus) {
+            this.connectionStatus = availability
+            when (availability) {
                 RETRYING -> wasRetrying = true
                 CONNECTED -> wasRetrying = false
             }
+            Timber.e("$this connection change: $availability")
             onAvailabilityChange(this, availability)
         }
     }
