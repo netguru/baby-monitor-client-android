@@ -65,10 +65,10 @@ class WebRtcService : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         mainBinder.cleanup()
         server?.let(::stopServer)
         compositeDisposable.dispose()
+        super.onDestroy()
     }
 
     private fun stopServer(server: CustomWebSocketServer) {
@@ -103,7 +103,7 @@ class WebRtcService : Service() {
         fun cleanup() {
             Timber.i("cleanup")
             currentCall?.let(this::callCleanup)
-            server?.stopServer()
+            server?.stop()
             callChangeNotifier = {}
         }
 

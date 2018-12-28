@@ -100,10 +100,10 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             service.getChildConnectionStatus().observe(this, Observer { childEvent ->
                 val data = childEvent?.data ?: return@Observer
 
-                val childName = if (data.first.name?.isNotEmpty() == true) {
-                    data.first.name
-                } else {
+                val childName = if (data.first.name.isNullOrEmpty()) {
                     getString(R.string.child)
+                } else {
+                    data.first.name
                 }
                 val snackbarText = if (data.second == ConnectionStatus.DISCONNECTED) {
                     getString(R.string.client_dashboard_child_disconnected, childName)

@@ -4,7 +4,6 @@ import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall
 import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -12,6 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import org.java_websocket.framing.CloseFrame
 import org.json.JSONObject
 import timber.log.Timber
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class ClientsHandler(
@@ -46,19 +46,16 @@ class ClientsHandler(
     }
 
     fun onDestroy() {
-        Single.just(webSocketClients.map { it.value })
-                .map { list ->
-                    for (client in list) {
+        compositeDisposable.dispose()
+        try {
+            webSocketClients.map { it.value }
+                    .forEach { client ->
                         client.close(CloseFrame.FLASHPOLICY, "")
                         client.onDestroy()
                     }
-                    true
-                }.subscribeOn(Schedulers.newThread())
-                .subscribeBy(
-                        onSuccess = { Timber.i("clients destroyed") },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
-        compositeDisposable.dispose()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     private fun onAvailabilityChange(client: CustomWebSocketClient, status: ConnectionStatus) {
@@ -98,7 +95,7 @@ class ClientsHandler(
                     .subscribeBy(
                             onComplete = { Timber.i("reconnect") },
                             onError = Timber::e
-                    )
+                    ).addTo(compositeDisposable)
         }
     }
 

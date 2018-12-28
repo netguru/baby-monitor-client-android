@@ -89,9 +89,9 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         webSocketClientHandler.onDestroy()
         compositeDisposable.dispose()
+        super.onDestroy()
     }
 
     inner class ChildServiceBinder : Binder() {

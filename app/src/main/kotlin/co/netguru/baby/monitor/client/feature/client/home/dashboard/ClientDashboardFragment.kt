@@ -98,7 +98,7 @@ class ClientDashboardFragment : DaggerFragment() {
                 }
                 else -> {
                     clientHomeLiveCameraIbtn.setOnClickListener {
-                        Toast.makeText(requireContext(), "Child not available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.child_not_available), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
