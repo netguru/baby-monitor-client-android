@@ -14,8 +14,8 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.java_websocket.WebSocket
 import org.json.JSONObject
+import org.webrtc.SurfaceViewRenderer
 import timber.log.Timber
-import kotlin.properties.Delegates
 
 class WebRtcService : Service() {
 
@@ -57,10 +57,18 @@ class WebRtcService : Service() {
         val jsonObject = JSONObject(message)
         if (jsonObject.has(P2P_OFFER)) {
             Timber.i("$WEB_SOCKET_ACTION_RINGING...")
-            mainBinder.currentCall = RtcReceiver(
-                    client,
-                    jsonObject.getJSONObject(P2P_OFFER).getString("sdp")
-            )
+            mainBinder.currentCall?.let { call ->
+                if (call is RtcReceiver) {
+                    call.accept(
+                            client,
+                            jsonObject.getJSONObject(P2P_OFFER).getString("sdp")
+                    ).subscribeOn(Schedulers.newThread())
+                            .subscribeBy(
+                                    onComplete = { Timber.i("completed") },
+                                    onError = Timber::e
+                            ).addTo(compositeDisposable)
+                }
+            }
         }
     }
 
@@ -85,18 +93,22 @@ class WebRtcService : Service() {
     }
 
     inner class MainBinder : Binder() {
-        var callChangeNotifier: (RtcCall?) -> Unit = {}
-        var currentCall by Delegates.observable<RtcCall?>(null) { _, _, newValue ->
-            newValue?.let(callChangeNotifier)
-        }
+        var currentCall: RtcCall? = null
 
         fun createClient(client: CustomWebSocketClient) = RtcClient(client)
 
-        fun hangUp() = Maybe.just(currentCall)
+        fun createReceiver(
+                view: SurfaceViewRenderer,
+                listener: (state: CallState) -> Unit
+        ) {
+            currentCall = RtcReceiver(applicationContext, view, listener)
+        }
+
+        fun hangUpReceiver() = Maybe.just(currentCall)
                 .flatMapCompletable { call ->
                     server?.let(this@WebRtcService::stopServer)
                     initNetwork()
-                    call.hangUp().andThen(call.cleanup())
+                    (call as RtcReceiver).stopCall()
                 }
 
 
@@ -104,7 +116,6 @@ class WebRtcService : Service() {
             Timber.i("cleanup")
             currentCall?.let(this::callCleanup)
             server?.stop()
-            callChangeNotifier = {}
         }
 
         fun handleBabyCrying() {
@@ -122,7 +133,6 @@ class WebRtcService : Service() {
                     .subscribeBy(
                             onComplete = {
                                 server?.let(this@WebRtcService::stopServer)
-                                callChangeNotifier = {}
                             },
                             onError = Timber::e
                     ).addTo(compositeDisposable)

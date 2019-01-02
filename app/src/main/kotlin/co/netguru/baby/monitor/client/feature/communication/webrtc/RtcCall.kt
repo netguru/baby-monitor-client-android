@@ -16,16 +16,16 @@ import timber.log.Timber
 
 abstract class RtcCall {
 
-    var remoteRenderer: SurfaceViewRenderer? = null
+    var remoteView: SurfaceViewRenderer? = null
+    lateinit var offer: String
 
     protected val LOCAL_MEDIA_STREAM_LABEL = "stream1"
     protected val AUDIO_TRACK_ID = "audio1"
     protected val compositeDisposable = CompositeDisposable()
     protected val eglBase by lazy { EglBase.create() }
-    protected val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
 
+    protected val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
     protected lateinit var constraints: MediaConstraints
-    protected lateinit var offer: String
 
     protected var listener: (state: CallState) -> Unit = {}
     protected var state: CallState? = null
@@ -86,8 +86,8 @@ abstract class RtcCall {
         if (clearSocket) {
             commSocket?.close()
         }
-        remoteRenderer?.release()
-        remoteRenderer = null
+        remoteView?.release()
+        remoteView = null
         compositeDisposable.dispose()
     }
 
@@ -108,12 +108,12 @@ abstract class RtcCall {
 
     protected fun handleMediaStream(mediaStream: MediaStream) {
         Handler(Looper.getMainLooper()).post {
-            remoteRenderer?.let { renderer ->
+            remoteView?.let { view ->
                 try {
-                    renderer.setBackgroundColor(Color.TRANSPARENT)
-                    renderer.init(sharedContext, null)
+                    view.setBackgroundColor(Color.TRANSPARENT)
+                    view.init(sharedContext, null)
                     if (mediaStream.videoTracks.size > 0) {
-                        mediaStream.videoTracks[0].addSink(renderer)
+                        mediaStream.videoTracks[0].addSink(view)
                     }
                 } catch (e: Exception) {
                     Timber.e(e)
@@ -161,7 +161,7 @@ abstract class RtcCall {
         if (jsonObject.has(STATE_CHANGE_MESSAGE)) {
             Single.fromCallable {
                 val state = jsonObject.getString(STATE_CHANGE_MESSAGE)
-                this@RtcCall.remoteRenderer?.setBackgroundColor(Color.TRANSPARENT)
+                this@RtcCall.remoteView?.setBackgroundColor(Color.TRANSPARENT)
                 state
             }.subscribeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
@@ -180,13 +180,15 @@ abstract class RtcCall {
         internal const val BABY_IS_CRYING = "BABY_IS_CRYING"
 
         internal const val P2P_OFFER = "offerSDP"
+
+        internal const val VIDEO_TRACK_ID = "video1"
+
         internal const val P2P_ANSWER = "answerSDP"
 
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"
-        private const val HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT = "DtlsSrtpKeyAgreement"
 
+        private const val HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT = "DtlsSrtpKeyAgreement"
         private const val STATE_CHANGE_MESSAGE = "StateChange"
-        private const val VIDEO_TRACK_ID = "video1"
     }
 }

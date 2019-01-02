@@ -6,7 +6,6 @@ import android.app.Service
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
-import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -16,13 +15,12 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.common.extensions.bindService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcReceiver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import dagger.android.support.DaggerFragment
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_server.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -59,15 +57,9 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        viewModel.hangUp()?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribeBy(
-                        onComplete = { Timber.e("disconnected") },
-                        onError = Timber::e
-                )
         rtcServiceBinder?.cleanup()
         machineLearningServiceBinder?.cleanup()
+        super.onDestroy()
     }
 
     override fun onRequestPermissionsResult(
@@ -88,14 +80,10 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
             is WebRtcService.MainBinder -> {
                 Timber.i("WebRtcService service connected")
                 rtcServiceBinder = service
-                rtcServiceBinder?.callChangeNotifier = { call ->
-                    machineLearningServiceBinder?.stopRecording()
-                    viewModel.accept(
-                            call as RtcReceiver,
-                            requireContext(),
-                            this@ServerFragment::handleCallStateChange
-                    )
-                }
+                service.createReceiver(
+                        surfaceView,
+                        this@ServerFragment::handleCallStateChange
+                )
             }
             is MachineLearningService.MainBinder -> {
                 Timber.i("MachineLearningService service connected")
@@ -109,6 +97,9 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
 
     private fun handleCallStateChange(state: CallState) {
         when (state) {
+            CallState.CONNECTING -> {
+                machineLearningServiceBinder?.stopRecording()
+            }
             CallState.ENDED -> {
                 rtcServiceBinder?.let(this::endCall)
             }
@@ -116,7 +107,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
     }
 
     private fun endCall(binder: WebRtcService.MainBinder) {
-        binder.hangUp()
+        binder.hangUpReceiver()
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {

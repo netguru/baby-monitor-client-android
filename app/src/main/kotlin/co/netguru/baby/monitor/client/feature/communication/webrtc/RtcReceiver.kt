@@ -1,6 +1,8 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import io.reactivex.Completable
 import org.java_websocket.WebSocket
 import org.json.JSONObject
@@ -10,16 +12,32 @@ import org.webrtc.PeerConnection.IceGatheringState
 import timber.log.Timber
 import java.nio.charset.Charset
 
-class RtcReceiver(commSocket: WebSocket, offer: String) : RtcCall() {
+class RtcReceiver(
+        context: Context,
+        private val localView: SurfaceViewRenderer,
+        listener: (state: CallState) -> Unit
+) : RtcCall() {
 
     init {
-        this.commSocket = commSocket
-        this.offer = offer
-    }
-
-    fun accept(context: Context, listener: (state: CallState) -> Unit) = Completable.fromAction {
         initRtc(context)
         this.listener = listener
+        localView.init(sharedContext, null)
+        videoTrack = createVideoTrack()
+        capturer?.startCapture(500, 500, 30)
+        Handler(Looper.getMainLooper()).post {
+            val localVideoRenderer = VideoRenderer(localView)
+            videoTrack?.addRenderer(localVideoRenderer)
+        }
+    }
+
+    fun accept(
+            commSocket: WebSocket,
+            offer: String
+    ) = Completable.fromAction {
+        listener(CallState.CONNECTING)
+        this.commSocket = commSocket
+        this.offer = offer
+
         connection = factory?.createPeerConnection(emptyList(), constraints, object : DefaultObserver() {
             override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
                 if (iceGatheringState == IceGatheringState.COMPLETE) {
@@ -47,25 +65,35 @@ class RtcReceiver(commSocket: WebSocket, offer: String) : RtcCall() {
         setRemoteDescription()
     }
 
+    fun stopCall() = Completable.fromAction {
+        if (commSocket?.isOpen == true) {
+            commSocket?.send(
+                    JSONObject().apply {
+                        put(WEB_SOCKET_ACTION_KEY, "dismissed")
+                    }.toString()
+            )
+        }
+        connection?.close()
+        audioSource?.dispose()
+    }
+
     override fun createStream(): MediaStream? {
         upStream = factory?.createLocalMediaStream(LOCAL_MEDIA_STREAM_LABEL)
         audioSource = factory?.createAudioSource(MediaConstraints())
         audio = factory?.createAudioTrack(AUDIO_TRACK_ID, audioSource)
         upStream?.addTrack(audio)
-        videoTrack = createVideoTrack()
         upStream?.addTrack(videoTrack)
-        capturer?.startCapture(500, 500, 30)
         return upStream
     }
 
     private fun setRemoteDescription() {
         connection?.setRemoteDescription(
-                DefaultSdpObserver(onSetSuccess = { createAnsewer() }),
+                DefaultSdpObserver(onSetSuccess = { createAnswer() }),
                 SessionDescription(SessionDescription.Type.OFFER, offer)
         )
     }
 
-    private fun createAnsewer() {
+    private fun createAnswer() {
         connection?.createAnswer(DefaultSdpObserver(
                 onCreateSuccess = { sessionDescription ->
                     connection?.setLocalDescription(
