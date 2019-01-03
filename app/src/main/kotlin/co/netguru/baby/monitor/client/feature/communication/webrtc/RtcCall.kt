@@ -19,12 +19,10 @@ abstract class RtcCall {
     var remoteView: SurfaceViewRenderer? = null
     lateinit var offer: String
 
-    protected val LOCAL_MEDIA_STREAM_LABEL = "stream1"
-    protected val AUDIO_TRACK_ID = "audio1"
     protected val compositeDisposable = CompositeDisposable()
     protected val eglBase by lazy { EglBase.create() }
-
     protected val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
+
     protected lateinit var constraints: MediaConstraints
 
     protected var listener: (state: CallState) -> Unit = {}
@@ -56,18 +54,6 @@ abstract class RtcCall {
     }
 
     abstract fun createStream(): MediaStream?
-
-    fun hangUp(): Completable = Completable.fromAction {
-        if (commSocket?.isOpen == true) {
-            commSocket?.send(
-                    JSONObject().apply {
-                        put(WEB_SOCKET_ACTION_KEY, "dismissed")
-                    }.toString()
-            )
-            commSocket?.close()
-            connection?.close()
-        }
-    }
 
     fun cleanup(
             clearSocket: Boolean = true,
@@ -180,10 +166,11 @@ abstract class RtcCall {
         internal const val BABY_IS_CRYING = "BABY_IS_CRYING"
 
         internal const val P2P_OFFER = "offerSDP"
-
-        internal const val VIDEO_TRACK_ID = "video1"
-
         internal const val P2P_ANSWER = "answerSDP"
+
+        protected const val LOCAL_MEDIA_STREAM_LABEL = "stream1"
+        protected const val AUDIO_TRACK_ID = "audio1"
+        protected const val VIDEO_TRACK_ID = "video1"
 
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"
