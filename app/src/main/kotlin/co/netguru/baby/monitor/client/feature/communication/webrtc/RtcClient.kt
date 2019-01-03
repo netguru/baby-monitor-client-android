@@ -108,5 +108,6 @@ class RtcClient(
             )
         }
         client.send(jsonObject.toString().toByteArray(Charset.defaultCharset()))
+        Timber.i("offer send: $jsonObject")
     }
 }

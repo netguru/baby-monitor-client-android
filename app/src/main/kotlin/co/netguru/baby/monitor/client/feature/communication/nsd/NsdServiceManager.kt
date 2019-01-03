@@ -36,7 +36,7 @@ class NsdServiceManager @Inject constructor(
                 nsdManager.resolveService(serviceInfo, object : NsdManager.ResolveListener {
                     override fun onResolveFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
                         Timber.e("Baby Monitor Service resolve failed")
-                        onServiceConnectedListener?.onServiceConnectionError()
+                        onServiceConnectedListener?.onServiceConnectionError(errorCode)
                     }
 
                     override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
@@ -94,7 +94,7 @@ class NsdServiceManager @Inject constructor(
     }
 
     internal interface OnServiceConnectedListener {
-        fun onServiceConnectionError()
+        fun onServiceConnectionError(code: Int)
     }
 
     companion object {

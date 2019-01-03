@@ -4,8 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogData
+import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
 import co.netguru.baby.monitor.client.feature.common.view.BaseViewHolder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_log_activity_header.*
@@ -14,7 +13,7 @@ import kotlinx.android.synthetic.main.item_log_activity_record.*
 abstract class LogsViewHolder(
         val parent: ViewGroup,
         viewType: Int
-) : BaseViewHolder<LogActivityData>(
+) : BaseViewHolder<LogData>(
         LayoutInflater.from(parent.context).inflate(viewType, parent, false)
 ) {
 
@@ -23,12 +22,12 @@ abstract class LogsViewHolder(
             viewType: Int
     ) : LogsViewHolder(parent, viewType) {
 
-        override fun bindView(logActivityData: LogActivityData) {
-            if (logActivityData is LogData) {
-                val dataToLoad: Any? = if (logActivityData.image.isNullOrEmpty()) {
+        override fun bindView(logData: LogData) {
+            if (logData is LogData.Data) {
+                val dataToLoad: Any? = if (logData.image.isNullOrEmpty()) {
                     R.drawable.logo
                 } else {
-                    logActivityData.image
+                    logData.image
                 }
 
                 GlideApp.with(parent.context)
@@ -37,9 +36,9 @@ abstract class LogsViewHolder(
                         .into(itemActivityLogIv)
 
 
-                itemActivityLogActionTv.text = logActivityData.action
+                itemActivityLogActionTv.text = logData.action
                 itemActivityLogActionTimestampTv.text =
-                        logActivityData.timeStamp.format(ActivityLogAdapter.timeStampFormatter)
+                        logData.timeStamp.format(ActivityLogAdapter.timeStampFormatter)
             }
         }
     }
@@ -49,9 +48,9 @@ abstract class LogsViewHolder(
             viewType: Int
     ) : LogsViewHolder(parent, viewType) {
 
-        override fun bindView(logActivityData: LogActivityData) {
+        override fun bindView(logData: LogData) {
             itemActivityLogHeaderTv.text =
-                    logActivityData.timeStamp.format(ActivityLogAdapter.headerFormatter)
+                    logData.timeStamp.format(ActivityLogAdapter.headerFormatter)
         }
     }
 }

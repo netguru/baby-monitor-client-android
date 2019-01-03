@@ -15,7 +15,9 @@
     <string name="client_dashboard_child_disconnected">Disconnected from %1$s</string>
     <string name="client_dashboard_child_connected">Connected to %1$s</string>
     <string name="start_discovering_services">Start discovering services</string>
-    <string name="discovering_services_error">"Error while connecting to service"</string>
+    <string name="discovering_services_error">Error while connecting to service</string>
+    <string name="system_is_busy_error">The system is to busy to process the request</string>
+    <string name="p2p_unsupported_on_device_error">Wi-Fi P2P isn\'t supported on the device running the app</string>
     <string name="add_photo">Add a photo</string>
     <string name="no_name">No name</string>
     <string name="add_another_baby">Add another baby</string>

@@ -46,6 +46,7 @@ class CustomWebSocketClient(
         bytes ?: return
         val buffer = ByteArray(bytes.remaining())
         bytes.get(buffer)
+        Timber.i("onMessage received bytes: ${buffer.size}")
         onMessage(String(buffer, Charset.defaultCharset()))
     }
 
