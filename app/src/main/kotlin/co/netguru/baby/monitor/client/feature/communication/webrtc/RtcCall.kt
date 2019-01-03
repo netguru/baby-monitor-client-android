@@ -19,6 +19,14 @@ abstract class RtcCall {
     var remoteView: SurfaceViewRenderer? = null
     lateinit var offer: String
 
+    protected val LOCAL_MEDIA_STREAM_LABEL = "stream1"
+    protected val AUDIO_TRACK_ID = "audio1"
+    protected val VIDEO_TRACK_ID = "video1"
+
+    protected val VIDEO_WIDTH = 500
+    protected val VIDEO_HEIGHT = 500
+    protected val VIDEO_FPS = 30
+
     protected val compositeDisposable = CompositeDisposable()
     protected val eglBase by lazy { EglBase.create() }
     protected val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
@@ -167,10 +175,6 @@ abstract class RtcCall {
 
         internal const val P2P_OFFER = "offerSDP"
         internal const val P2P_ANSWER = "answerSDP"
-
-        protected const val LOCAL_MEDIA_STREAM_LABEL = "stream1"
-        protected const val AUDIO_TRACK_ID = "audio1"
-        protected const val VIDEO_TRACK_ID = "video1"
 
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"

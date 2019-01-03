@@ -23,7 +23,7 @@ class RtcReceiver(
         this.listener = listener
         localView.init(sharedContext, null)
         videoTrack = createVideoTrack()
-        capturer?.startCapture(500, 500, 30)
+        capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
         Handler(Looper.getMainLooper()).post {
             val localVideoRenderer = VideoRenderer(localView)
             videoTrack?.addRenderer(localVideoRenderer)
