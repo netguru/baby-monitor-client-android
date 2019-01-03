@@ -131,7 +131,7 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     fun setRemoteRenderer(remoteRenderer: SurfaceViewRenderer) {
-        currentCall?.remoteRenderer = remoteRenderer
+        currentCall?.remoteView = remoteRenderer
     }
 
     fun startCall(

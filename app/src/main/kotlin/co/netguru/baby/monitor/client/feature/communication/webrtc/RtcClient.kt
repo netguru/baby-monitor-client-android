@@ -76,7 +76,7 @@ class RtcClient(
         upStream?.addTrack(audio)
         videoTrack = createVideoTrack()
         upStream?.addTrack(videoTrack)
-        capturer?.startCapture(500, 500, 30)
+        capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
         audio?.setEnabled(enableVoice)
         return upStream
     }
