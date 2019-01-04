@@ -51,6 +51,14 @@ class AddChildDialog @Inject constructor(
                     }.addTo(compositeDisposable)
         })
         nsdServiceManager.discoverService(object : NsdServiceManager.OnServiceConnectedListener {
+            override fun onRegistrationFailed(errorCode: Int) {
+                onServiceConnectionError()
+            }
+
+            override fun onStartDiscoveryFailed(errorCode: Int) {
+                onServiceConnectionError()
+            }
+
             override fun onServiceConnectionError(errorCode: Int) {
                 onServiceConnectionError()
             }

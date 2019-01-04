@@ -80,4 +80,7 @@
     <string name="child_monitoring">Child monitoring</string>
     <string name="child">Child</string>
     <string name="child_not_available">Child not available</string>
+
+    <string name="nsd_service_registration_failed">Device discovery registration failed</string>
+    <string name="discovery_start_failed">Device discovery start failed</string>
 </resources>
