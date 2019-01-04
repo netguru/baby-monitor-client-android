@@ -22,8 +22,10 @@ class NsdServiceManager @Inject constructor(
 
         override fun onServiceUnregistered(serviceInfo: NsdServiceInfo?) = Unit
 
-        override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
-                Timber.e("Baby Monitor Service registration failed")
+        override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
+            Timber.e("Baby Monitor Service registration failed")
+            onServiceConnectedListener?.onRegistrationFailed(errorCode)
+        }
 
         override fun onServiceRegistered(serviceInfo: NsdServiceInfo?) =
                 Timber.d("Baby Monitor Service registered")
@@ -51,8 +53,10 @@ class NsdServiceManager @Inject constructor(
 
         override fun onStopDiscoveryFailed(serviceType: String?, errorCode: Int) = Unit
 
-        override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) =
-                Timber.e("Baby Monitor Service discovery failed")
+        override fun onStartDiscoveryFailed(serviceType: String?, errorCode: Int) {
+            Timber.e("Baby Monitor Service discovery failed")
+            onServiceConnectedListener?.onStartDiscoveryFailed(errorCode)
+        }
 
         override fun onDiscoveryStarted(serviceType: String?) =
                 Timber.d("Baby Monitor Service discovery started")
@@ -94,7 +98,9 @@ class NsdServiceManager @Inject constructor(
     }
 
     internal interface OnServiceConnectedListener {
-        fun onServiceConnectionError(code: Int)
+        fun onServiceConnectionError(errorCode: Int)
+        fun onRegistrationFailed(errorCode: Int)
+        fun onStartDiscoveryFailed(errorCode: Int)
     }
 
     companion object {

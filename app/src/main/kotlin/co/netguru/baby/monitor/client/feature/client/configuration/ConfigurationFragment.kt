@@ -77,6 +77,14 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
         }
     }
 
+    override fun onRegistrationFailed(errorCode: Int) {
+        showSnackbarMessage(R.string.nsd_service_registration_failed)
+    }
+
+    override fun onStartDiscoveryFailed(errorCode: Int) {
+        showSnackbarMessage(R.string.discovery_start_failed)
+    }
+
     private fun setupView() {
         showProgressBar(true)
         viewModel.discoverNsdService(this)
