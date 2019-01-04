@@ -1,12 +1,14 @@
 package co.netguru.baby.monitor.client.application
 
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.net.nsd.NsdManager
+import co.netguru.baby.monitor.client.application.database.AppDatabase
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.ChildRepository
-import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import dagger.Module
 import dagger.Provides
@@ -37,4 +39,13 @@ class ApplicationModule {
 
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)
+
+    @AppScope
+    @Provides
+    fun applicationDatabse(context: Context) =
+            Room.databaseBuilder(
+                    context,
+                    AppDatabase::class.java,
+                    "baby-monitor-database"
+            ).build()
 }

@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.client.configuration
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,8 +63,18 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
         timeOutDisposable?.dispose()
     }
 
-    override fun onServiceConnectionError() {
-        showSnackbarMessage(R.string.discovering_services_error)
+    override fun onServiceConnectionError(errorCode: Int) {
+        when(errorCode) {
+            WifiP2pManager.P2P_UNSUPPORTED -> {
+                showSnackbarMessage(R.string.p2p_unsupported_on_device_error)
+            }
+            WifiP2pManager.BUSY -> {
+                showSnackbarMessage(R.string.system_is_busy_error)
+            }
+            else ->{
+                showSnackbarMessage(R.string.discovering_services_error)
+            }
+        }
     }
 
     private fun setupView() {

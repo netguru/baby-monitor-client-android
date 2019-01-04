@@ -1,5 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import co.netguru.baby.monitor.client.application.database.DataRepository
+import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall
@@ -10,13 +12,14 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.java_websocket.framing.CloseFrame
 import org.json.JSONObject
+import org.threeten.bp.LocalDateTime
 import timber.log.Timber
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class ClientsHandler(
         private val listener: ConnectionListener,
-        private val notificationHandler: NotificationHandler
+        private val notificationHandler: NotificationHandler,
+        private val dataRepository: DataRepository
 ) {
 
     private val webSocketClients = mutableMapOf<String, CustomWebSocketClient>()
@@ -71,10 +74,27 @@ class ClientsHandler(
         val json = JSONObject(message)
         if (json.has(RtcCall.WEB_SOCKET_ACTION_KEY)) {
             when (json.getString(RtcCall.WEB_SOCKET_ACTION_KEY)) {
-                RtcCall.BABY_IS_CRYING -> notificationHandler.showBabyIsCryingNotification()
+                RtcCall.BABY_IS_CRYING -> {
+                    notificationHandler.showBabyIsCryingNotification()
+                    addLogData(client.address)
+                }
                 else -> Timber.e("Unrecognized action from message: $message")
             }
         }
+    }
+
+    private fun addLogData(address: String) {
+        dataRepository.insertLogsToDatabase(
+                LogDataEntity(
+                        BABY_WAS_CRYING_EVENT,
+                        LocalDateTime.now().toString(),
+                        address
+                )
+        ).subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = { Timber.i("data inserted") },
+                        onError = Timber::e
+                )
     }
 
     private fun retryConnection(address: String) {
@@ -133,5 +153,6 @@ class ClientsHandler(
 
     companion object {
         private const val RETRY_SECONDS_DELAY = 10L
+        private const val BABY_WAS_CRYING_EVENT = "Baby was crying"
     }
 }

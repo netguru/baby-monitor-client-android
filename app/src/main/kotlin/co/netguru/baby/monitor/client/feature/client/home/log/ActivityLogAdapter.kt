@@ -5,36 +5,41 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderInterface
 import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.DataLogsViewHolder
 import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.HeaderViewHolder
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogData
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData.LogHeader
+import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
+import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData.Data
+import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData.LogHeader
+import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderInterface
 import org.threeten.bp.format.DateTimeFormatter
 
 class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderInterface {
 
     private var map = hashMapOf<String, Int>()
-    private var activityList = mutableListOf<LogActivityData>()
+    private var activityList = mutableListOf<LogData>()
 
-    internal fun setupList(list: List<LogActivityData.LogData>) {
+    internal fun setupList(list: List<LogData>) {
+        map = hashMapOf()
+        activityList = mutableListOf()
+
         list.asSequence()
                 .sortedByDescending { it.timeStamp }
-                .forEach {
-                    with(it.timeStamp) {
+                .forEach { data ->
+                    with(data.timeStamp) {
                         if (!map.containsKey(toLocalDate().toString())) {
                             activityList.add(LogHeader(this))
                             map[toLocalDate().toString()] = activityList.lastIndex
                         }
                     }
-                    activityList.add(it)
+                    if (!activityList.contains(data)) {
+                        activityList.add(data)
+                    }
                 }
         notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int) = when (activityList[position]) {
-        is LogData -> R.layout.item_log_activity_record
+        is Data -> R.layout.item_log_activity_record
         is LogHeader -> R.layout.item_log_activity_header
     }
 
@@ -59,7 +64,7 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
             if (activityList[itemPosition] is LogHeader) {
                 itemPosition
             } else {
-                map[(activityList[itemPosition] as LogData).timeStamp.toLocalDate().toString()] ?: 0
+                map[(activityList[itemPosition] as Data).timeStamp.toLocalDate().toString()] ?: 0
             }
 
 
@@ -73,6 +78,6 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
 
     companion object {
         internal val headerFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-        internal val timeStampFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
+        internal val timeStampFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm:ss")
     }
 }

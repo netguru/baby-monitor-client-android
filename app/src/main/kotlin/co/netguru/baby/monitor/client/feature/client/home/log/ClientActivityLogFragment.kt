@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -13,7 +12,6 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompat
-import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderDecorator
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_activity_log.*
 import javax.inject.Inject
@@ -37,7 +35,7 @@ class ClientActivityLogFragment : DaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
-        viewModel.activities.observe(this, Observer { activities ->
+        viewModel.logData.observe(this, Observer { activities ->
             activities ?: return@Observer
             logAdapter.setupList(activities)
         })
@@ -46,7 +44,8 @@ class ClientActivityLogFragment : DaggerFragment() {
     private fun setupRecyclerView() {
         with(clientActivityLogRv) {
             val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL).apply {
-                val drawable = requireContext().getDrawableCompat(R.drawable.divider) ?: return@apply
+                val drawable = requireContext().getDrawableCompat(R.drawable.divider)
+                        ?: return@apply
                 setDrawable(drawable)
             }
 

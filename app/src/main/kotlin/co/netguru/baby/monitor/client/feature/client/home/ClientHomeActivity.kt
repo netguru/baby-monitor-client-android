@@ -155,6 +155,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun getData() {
+        homeViewModel.fetchLogData()
         homeViewModel.selectedChild.observe(this, Observer {
             it ?: return@Observer
             setSelectedChildName(it.name ?: "")

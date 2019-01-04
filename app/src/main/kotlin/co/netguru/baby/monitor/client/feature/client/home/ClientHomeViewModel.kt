@@ -1,13 +1,14 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.content.Context
+import co.netguru.baby.monitor.client.application.database.DataRepository
 import co.netguru.baby.monitor.client.data.ChildData
 import co.netguru.baby.monitor.client.data.ChildRepository
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogActivityData
+import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
+import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
+import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcClient
@@ -28,9 +29,11 @@ import java.io.IOException
 import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
-        private val childRepository: ChildRepository
+        private val childRepository: ChildRepository,
+        private val dataRepository: DataRepository
 ) : ViewModel() {
 
+    internal val logData = MutableLiveData<List<LogData>>()
     internal val selectedChild = MutableLiveData<ChildData>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
@@ -39,14 +42,6 @@ class ClientHomeViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
     private var currentCall: RtcClient? = null
-
-    //TODO change it for real data fetch
-    val activities: LiveData<List<LogActivityData.LogData>> = Transformations.switchMap(selectedChild) { child ->
-        child ?: return@switchMap MutableLiveData<List<LogActivityData.LogData>>()
-        return@switchMap Transformations.map(LogActivityData.getSampleData()) { activitiesList ->
-            return@map activitiesList.map { LogActivityData.LogData(it.action, it.timeStamp, child.image) }
-        }
-    }
 
     fun refreshChildrenList(listener: (state: List<ChildData>) -> Unit = {}) {
         childRepository.refreshChildData()
@@ -154,6 +149,15 @@ class ClientHomeViewModel @Inject constructor(
         return (child.image != null)
     }
 
+    fun fetchLogData() {
+        dataRepository.getAllLogData()
+                .subscribeOn(Schedulers.newThread())
+                .subscribeBy(
+                        onNext = this::handleNextLogDataList,
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
+    }
+
     fun selectedChildAvailabilityPostValue(data: Pair<ChildData, ConnectionStatus>) {
         if (data.first.address == selectedChild.value?.address &&
                 data.second != selectedChildAvailability.value) {
@@ -164,5 +168,12 @@ class ClientHomeViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
+    }
+
+    @RunsInBackground
+    private fun handleNextLogDataList(list: List<LogDataEntity>) {
+        logData.postValue(list.map { data ->
+            data.toLogData(childList.value?.find { data.address == it.address }?.image)
+        })
     }
 }

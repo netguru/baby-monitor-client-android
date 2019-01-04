@@ -8,6 +8,7 @@ import android.os.Binder
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.database.DataRepository
 import co.netguru.baby.monitor.client.data.ChildData
 import co.netguru.baby.monitor.client.data.ChildRepository
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
@@ -23,7 +24,9 @@ import kotlin.random.Random
 
 class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandler.ConnectionListener {
 
-    private val webSocketClientHandler by lazy { ClientsHandler(this, notificationHandler) }
+    private val webSocketClientHandler by lazy {
+        ClientsHandler(this, notificationHandler, dataRepository)
+    }
     private val compositeDisposable = CompositeDisposable()
     private val childConnectionStatus = MutableLiveData<SingleEvent<Pair<ChildData, ConnectionStatus>>>()
 
@@ -31,6 +34,8 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
     lateinit var notificationHandler: NotificationHandler
     @Inject
     lateinit var childRepository: ChildRepository
+    @Inject
+    lateinit var dataRepository: DataRepository
 
     override fun onCreate() {
         AndroidInjection.inject(this)
