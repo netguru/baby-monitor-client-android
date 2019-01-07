@@ -5,31 +5,6 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/settingsLullabyVolumeTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xmedium"
-        android:text="@string/header_lullaby_volume"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/settingsLullabyVolumeSeekBar"
-        app:layout_constraintEnd_toStartOf="@+id/settingsLullabyVolumeSeekBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/settingsLullabyVolumeSeekBar" />
-
-    <SeekBar
-        android:id="@+id/settingsLullabyVolumeSeekBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xmedium"
-        android:layout_marginTop="@dimen/spacing_xxxmedium"
-        android:layout_marginEnd="@dimen/spacing_xmedium"
-        app:layout_constraintBottom_toTopOf="@+id/settingsRemoveDataBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsLullabyVolumeTv"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/settingsRemoveDataTv"
@@ -58,6 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/settingsRemoveDataTv"
-        app:layout_constraintTop_toBottomOf="@+id/settingsLullabyVolumeSeekBar" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
 
 </android.support.constraint.ConstraintLayout>

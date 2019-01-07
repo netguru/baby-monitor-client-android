@@ -38,6 +38,7 @@ class OnboardingConnectingWiFi : Fragment() {
         }
         wifiReceiver.isWifiConnected.observe(this, Observer { isConnected ->
             connectionConnectWiFiMbtn.text = if (isConnected == true) {
+                connectionConnectWiFiMbtn.callOnClick()
                 getString(R.string.connect_wifi_connected)
             } else {
                 getString(R.string.connect_to_wi_fi)
