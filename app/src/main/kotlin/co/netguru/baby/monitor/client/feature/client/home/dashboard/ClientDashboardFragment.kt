@@ -58,7 +58,7 @@ class ClientDashboardFragment : DaggerFragment() {
                 viewModel.updateChildName(it.trim())
             }
         }
-        if (!BuildConfig.DEBUG) {
+        if (!BuildConfig.BUILD_TYPE.contentEquals("debug")) {
             clientHomeTalkIbtn.setVisible(false)
             clientHomePlayLullabyIbtn.setVisible(false)
         }

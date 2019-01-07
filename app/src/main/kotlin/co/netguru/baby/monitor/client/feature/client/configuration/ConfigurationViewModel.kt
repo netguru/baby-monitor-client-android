@@ -25,9 +25,8 @@ class ConfigurationViewModel @Inject constructor(
     internal fun appendNewAddress(
             address: String, port: Int, onSuccess: (Boolean) -> Unit
     ) {
-        //TODO change default name from address 25.10.2018
         childRepository.appendChildrenList(
-                ChildData("ws://$address:$port", name = address)
+                ChildData("ws://$address:$port")
         ).subscribeBy(onSuccess = onSuccess).addTo(compositeDisposable)
     }
 
