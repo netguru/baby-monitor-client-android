@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.common.extensions.bindService
+import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -42,7 +43,7 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
 
     override fun onResume() {
         super.onResume()
-        viewModel.registerNsdService()
+        registerNsdService()
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
@@ -92,6 +93,12 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
                     rtcServiceBinder?.handleBabyCrying()
                 }
             }
+        }
+    }
+
+    private fun registerNsdService() {
+        viewModel.registerNsdService {
+            showSnackbarMessage(R.string.nsd_service_registration_failed)
         }
     }
 
