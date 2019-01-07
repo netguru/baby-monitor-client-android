@@ -15,6 +15,7 @@ class NsdServiceManager @Inject constructor(
     internal val serviceInfoData = MutableLiveData<List<NsdServiceInfo>>()
     private val serviceInfoList = mutableListOf<NsdServiceInfo>()
     private var discoveryStatus = DiscoveryStatus.STOPPED
+    private var onServiceConnectedListener: OnServiceConnectedListener? = null
 
     private val nsdServiceListener = object : NsdManager.RegistrationListener {
         override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
@@ -67,19 +68,20 @@ class NsdServiceManager @Inject constructor(
                 Timber.e("Baby Monitor Service failed lost")
     }
 
-    private var onServiceConnectedListener: OnServiceConnectedListener? = null
-
-    internal fun registerService() {
+    internal fun registerService(listener: OnServiceConnectedListener) {
         val serviceInfo = NsdServiceInfo().apply {
             serviceName = SERVICE_NAME
             serviceType = SERVICE_TYPE
             port = WebRtcService.SERVER_PORT
         }
-
+        onServiceConnectedListener = listener
         nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdServiceListener)
     }
 
-    internal fun unregisterService() = nsdManager.unregisterService(nsdServiceListener)
+    internal fun unregisterService() {
+        nsdManager.unregisterService(nsdServiceListener)
+        onServiceConnectedListener = null
+    }
 
     internal fun discoverService(onServiceConnectedListener: OnServiceConnectedListener) {
         if (discoveryStatus == DiscoveryStatus.STOPPED) {
