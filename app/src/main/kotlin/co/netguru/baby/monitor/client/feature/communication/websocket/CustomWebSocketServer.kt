@@ -11,7 +11,7 @@ import java.nio.charset.Charset
 
 class CustomWebSocketServer(
         port: Int? = null,
-        private val onConnectionRequestReceived: (WebSocket?, String?) -> Unit,
+        private val onMessageReceived: (WebSocket?, String?) -> Unit,
         private val onErrorListener: (Exception) -> Unit
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
@@ -29,7 +29,7 @@ class CustomWebSocketServer(
 
     override fun onMessage(conn: WebSocket?, message: String?) {
         Timber.i(message)
-        onConnectionRequestReceived(conn, message)
+        onMessageReceived(conn, message)
     }
 
     override fun onMessage(conn: WebSocket?, message: ByteBuffer?) {

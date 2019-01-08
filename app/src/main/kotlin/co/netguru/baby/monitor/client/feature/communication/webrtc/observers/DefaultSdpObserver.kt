@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.communication.webrtc
+package co.netguru.baby.monitor.client.feature.communication.webrtc.observers
 
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription

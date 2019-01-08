@@ -1,8 +1,13 @@
-package co.netguru.baby.monitor.client.feature.communication.webrtc
+package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import io.reactivex.Completable
 import org.java_websocket.WebSocket
 import org.json.JSONObject
@@ -14,14 +19,18 @@ import java.nio.charset.Charset
 
 class RtcReceiver(
         context: Context,
-        private val localView: SurfaceViewRenderer,
+        var localView: CustomSurfaceViewRenderer? = null,
         listener: (state: CallState) -> Unit
 ) : RtcCall() {
 
     init {
         initRtc(context)
         this.listener = listener
-        localView.init(sharedContext, null)
+        localView?.let {view ->
+            if (!view.initialized) {
+                view.init(sharedContext, null)
+            }
+        }
         videoTrack = createVideoTrack()
         capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
         Handler(Looper.getMainLooper()).post {
@@ -75,6 +84,10 @@ class RtcReceiver(
         }
         connection?.close()
         audioSource?.dispose()
+    }
+
+    fun startCapturer() {
+        capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
     }
 
     override fun createStream(): MediaStream? {

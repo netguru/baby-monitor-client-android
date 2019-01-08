@@ -1,9 +1,11 @@
-package co.netguru.baby.monitor.client.feature.communication.webrtc
+package co.netguru.baby.monitor.client.feature.communication.webrtc.base
 
 import android.content.Context
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
+import co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +18,7 @@ import timber.log.Timber
 
 abstract class RtcCall {
 
-    var remoteView: SurfaceViewRenderer? = null
+    var remoteView: CustomSurfaceViewRenderer? = null
     lateinit var offer: String
 
     protected val LOCAL_MEDIA_STREAM_LABEL = "stream1"
@@ -105,7 +107,9 @@ abstract class RtcCall {
             remoteView?.let { view ->
                 try {
                     view.setBackgroundColor(Color.TRANSPARENT)
-                    view.init(sharedContext, null)
+                    if (!view.initialized) {
+                        view.init(sharedContext, null)
+                    }
                     if (mediaStream.videoTracks.size > 0) {
                         mediaStream.videoTracks[0].addSink(view)
                     }
@@ -171,10 +175,12 @@ abstract class RtcCall {
         internal const val WEB_SOCKET_ACTION_RINGING = "ringing"
         internal const val WEB_SOCKET_ACTION_CONNECTED = "connected"
 
-        internal const val BABY_IS_CRYING = "BABY_IS_CRYING"
-
         internal const val P2P_OFFER = "offerSDP"
         internal const val P2P_ANSWER = "answerSDP"
+
+        internal const val BABY_IS_CRYING = "BABY_IS_CRYING"
+        internal const val EVENT_RECEIVED_CONFIRMATION = "CRYING_EVENT_MESSAGE_RECEIVED"
+        internal const val PUSH_NOTIFICATIONS_KEY = "PUSH_NOTIFICATIONS_KEY"
 
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"

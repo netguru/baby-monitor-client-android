@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <org.webrtc.SurfaceViewRenderer
+    <co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
