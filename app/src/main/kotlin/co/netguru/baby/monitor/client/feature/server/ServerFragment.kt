@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.common.extensions.bindService
@@ -48,6 +49,9 @@ class ServerFragment : DaggerFragment(), ServiceConnection {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
             bindServices()
+        }
+        goToSettingsImgBtn.setOnClickListener {
+            findNavController().navigate(R.id.clientSettings)
         }
     }
 

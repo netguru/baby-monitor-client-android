@@ -6,34 +6,18 @@
     android:background="@color/white">
 
 
-    <TextView
-        android:id="@+id/settingsRemoveDataTv"
+    <Button
+        android:id="@+id/settingsUploadDataBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_xmedium"
-        android:text="@string/header_remove_data"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/settingsRemoveDataBtn"
-        app:layout_constraintEnd_toStartOf="@+id/settingsRemoveDataBtn"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/settingsRemoveDataBtn" />
-
-    <Button
-        android:id="@+id/settingsRemoveDataBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xxxmedium"
+        android:layout_marginTop="@dimen/spacing_xmedium"
         android:layout_marginEnd="@dimen/spacing_xmedium"
         android:background="@drawable/button_rounded_ripple"
-        android:paddingStart="@dimen/spacing_xxxmedium"
-        android:paddingEnd="@dimen/spacing_xxxmedium"
-        android:text="@string/clear_data_btn"
+        android:text="@string/upload_recordings_btn"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsRemoveDataTv"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

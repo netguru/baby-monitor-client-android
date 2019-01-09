@@ -50,6 +50,8 @@ ext {
             bubblePagerIndicator: 'com.shuhart.bubblepagerindicator:bubblepagerindicator:1.1.2',
             room                : "android.arch.persistence.room:runtime:$roomVersion",
             roomRx              : "android.arch.persistence.room:rxjava2:$roomVersion",
+            firebaseStorage     : 'com.google.firebase:firebase-storage:16.0.5',
+            firebaseAuth        : 'com.google.firebase:firebase-auth:16.1.0'
     ]
 
     proc = [
