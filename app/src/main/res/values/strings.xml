@@ -30,6 +30,7 @@
     <string name="setup_address">setup address</string>
     <string name="header_remove_data">Clear data</string>
     <string name="clear_data_btn">remove data</string>
+    <string name="upload_recordings_btn">upload recordings</string>
     <string name="header_lullaby_volume">Lullaby volume</string>
     <string name="configuration_baby_save_btn">save</string>
     <string name="server_on_list_message">Already added</string>

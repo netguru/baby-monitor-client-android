@@ -4,6 +4,8 @@ import android.arch.persistence.room.Room
 import android.content.Context
 import android.net.nsd.NsdManager
 import co.netguru.baby.monitor.client.application.database.AppDatabase
+import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
+import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.ChildRepository
 import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
@@ -39,6 +41,10 @@ class ApplicationModule {
 
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)
+
+    @AppScope
+    @Provides
+    fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) = FirebaseRepository(preferencesWrapper, context)
 
     @AppScope
     @Provides
