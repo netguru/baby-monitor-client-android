@@ -13,26 +13,30 @@
 
         <action
             android:id="@+id/actionWelcomeToConnecting"
+            app:clearTask="true"
             app:destination="@+id/onboardingConnectingWiFi" />
 
         <action
             android:id="@+id/actionWelcomeToPermissions"
+            app:clearTask="true"
             app:destination="@+id/onboardingPermissions" />
 
         <action
             android:id="@+id/actionWelcomeToInstallAppFragment"
+            app:clearTask="true"
             app:destination="@+id/installAppFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/installAppFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.InstallAppFragment"
         android:label="Install App"
-        tools:layout="@layout/fragment_install_app"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.InstallAppFragment">
+        tools:layout="@layout/fragment_install_app">
 
         <action
             android:id="@+id/actionInstallAppToConfiguration"
-            app:destination="@+id/configurationFragment"/>
+            app:clearTask="true"
+            app:destination="@+id/configurationFragment" />
 
     </fragment>
 
@@ -44,6 +48,7 @@
 
         <action
             android:id="@+id/actionWifiToPermissions"
+            app:clearTask="true"
             app:destination="@+id/onboardingPermissions" />
     </fragment>
 
@@ -54,6 +59,7 @@
         tools:layout="@layout/fragment_connecting_permissions">
         <action
             android:id="@+id/actionPermissionToSetupInfo"
+            app:clearTask="true"
             app:destination="@+id/onboardingSetupInformation" />
     </fragment>
 
@@ -72,12 +78,12 @@
         android:id="@+id/serverFragment"
         android:name="co.netguru.baby.monitor.client.feature.server.ServerFragment"
         android:label="Server"
-        tools:layout="@layout/fragment_server" >
+        tools:layout="@layout/fragment_server">
 
         <action
             android:id="@+id/onboardingServerToWelcome"
             app:clearTask="true"
-            app:destination="@+id/welcomeFragment"/>
+            app:destination="@+id/welcomeFragment" />
     </fragment>
 
 
@@ -89,10 +95,12 @@
 
         <action
             android:id="@+id/actionConfigurationConnectingDone"
+            app:clearTask="true"
             app:destination="@+id/connectingDoneFragment" />
 
         <action
             android:id="@+id/actionConfigurationToFailed"
+            app:clearTask="true"
             app:destination="@+id/configurationFailedFragment" />
     </fragment>
 
@@ -104,7 +112,8 @@
 
         <action
             android:id="@+id/actionConfigurationFailedToWelcome"
-            app:destination="@+id/welcomeFragment"/>
+            app:clearTask="true"
+            app:destination="@+id/welcomeFragment" />
     </fragment>
 
     <fragment
@@ -115,7 +124,8 @@
 
         <action
             android:id="@+id/actionConnectingDoneToAllDone"
-            app:destination="@+id/allDoneFragment"/>
+            app:clearTask="true"
+            app:destination="@+id/allDoneFragment" />
     </fragment>
 
     <fragment
@@ -126,7 +136,8 @@
 
         <action
             android:id="@+id/actionAllDoneToClientHome"
-            app:destination="@+id/clientHomeActivity"/>
+            app:clearTask="true"
+            app:destination="@+id/clientHomeActivity" />
     </fragment>
 
     <fragment

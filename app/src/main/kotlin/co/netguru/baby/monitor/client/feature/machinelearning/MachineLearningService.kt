@@ -31,7 +31,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
         startRecording()
     }
 
-    override fun onBind(intent: Intent?) = MainBinder()
+    override fun onBind(intent: Intent?) = MachineLearningBinder()
 
     override fun onHandleIntent(intent: Intent?) = Unit
 
@@ -100,7 +100,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
                 ).addTo(compositeDisposable)
     }
 
-    inner class MainBinder : Binder() {
+    inner class MachineLearningBinder : Binder() {
         fun setOnCryingBabyDetectedListener(listener: () -> Unit) {
             onCryingBabyDetected = listener
         }

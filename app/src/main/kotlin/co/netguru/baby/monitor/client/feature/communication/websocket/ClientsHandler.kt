@@ -4,7 +4,7 @@ import co.netguru.baby.monitor.client.application.database.DataRepository
 import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
 import co.netguru.baby.monitor.client.feature.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
-import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcCall
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo

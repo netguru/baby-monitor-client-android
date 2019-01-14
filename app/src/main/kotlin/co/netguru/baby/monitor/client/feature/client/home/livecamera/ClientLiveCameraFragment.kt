@@ -17,9 +17,10 @@ import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.common.extensions.and
 import co.netguru.baby.monitor.client.feature.common.extensions.bindService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.client.WebRtcClientService.WebRtcClientBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
+import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
@@ -36,8 +37,8 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
     private val compositeDisposable = CompositeDisposable()
-    private var childServiceBinder: ClientHandlerService.ChildServiceBinder? = null
-    private var webRtcBinder: WebRtcService.MainBinder? = null
+    private var childServiceBinder: ChildServiceBinder? = null
+    private var webRtcClientBinder: WebRtcClientBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,14 +70,14 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     override fun onPause() {
         super.onPause()
-        if (webRtcBinder != null) {
+        if (webRtcClientBinder != null) {
             requireContext().unbindService(this)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        webRtcBinder?.cleanup()
+        webRtcClientBinder?.cleanup()
         viewModel.shouldHideNavbar.postValue(false)
         childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         compositeDisposable.dispose()
@@ -97,12 +98,11 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         when (service) {
-            is WebRtcService.MainBinder -> {
-                Timber.i("WebRtcService service connected")
-                webRtcBinder = service
-                webRtcBinder?.stopServer()
+            is WebRtcClientBinder -> {
+                Timber.i("WebRtcReceiverService service connected")
+                webRtcClientBinder = service
             }
-            is ClientHandlerService.ChildServiceBinder -> {
+            is ChildServiceBinder -> {
                 Timber.i("ClientHandlerService service connected")
                 childServiceBinder = service
             }
@@ -112,7 +112,7 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     private fun bindServices() {
         bindService(
-                WebRtcService::class.java,
+                WebRtcClientBinder::class.java,
                 this,
                 Service.BIND_AUTO_CREATE
         )
@@ -138,19 +138,16 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
     }
 
     private fun startCall() {
-        with((webRtcBinder and childServiceBinder)) {
+        with((webRtcClientBinder and childServiceBinder)) {
             this ?: return@with
             val address = viewModel.selectedChild.value?.address ?: return@with
-            val client = first.createClient(
-                    second.getChildClient(address) ?: return@with
-            )
-
-            viewModel.startCall(
-                    client,
+            val client = second.getChildClient(address) ?: return@with
+            first.createClient(client)
+            first.startCall(
                     requireActivity().applicationContext,
                     this@ClientLiveCameraFragment::handleStateChange
             )
-            viewModel.setRemoteRenderer(liveCameraRemoteRenderer)
+            first.setRemoteRenderer(liveCameraRemoteRenderer)
         }
     }
 

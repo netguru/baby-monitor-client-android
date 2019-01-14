@@ -3,7 +3,6 @@ package co.netguru.baby.monitor.client.feature.presentation
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
@@ -28,6 +27,7 @@ class PresentationActivity : FragmentActivity() {
             changeButtonVisibility()
         }
         presentationConfigurationBtn.setOnClickListener {
+            presentationConfigurationBtn.isEnabled = false
             startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
         }

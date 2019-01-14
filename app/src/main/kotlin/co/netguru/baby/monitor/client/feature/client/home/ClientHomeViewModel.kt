@@ -10,8 +10,8 @@ import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
 import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
 import co.netguru.baby.monitor.client.feature.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
-import co.netguru.baby.monitor.client.feature.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcClient
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
 import io.reactivex.Single
 import io.reactivex.SingleSource
@@ -123,25 +123,6 @@ class ClientHomeViewModel @Inject constructor(
                 .subscribeBy(onSuccess = { data ->
                     selectedChild.postValue(data)
                 }).addTo(compositeDisposable)
-    }
-
-    fun setRemoteRenderer(remoteRenderer: SurfaceViewRenderer) {
-        currentCall?.remoteView = remoteRenderer
-    }
-
-    fun startCall(
-            rtcClient: RtcClient,
-            context: Context,
-            listener: (state: CallState) -> Unit
-    ) {
-        currentCall = rtcClient
-                .also { client ->
-                    client.startCall(context, listener).subscribeOn(Schedulers.newThread())
-                            .subscribeBy(
-                                    onComplete = { Timber.i("completed") },
-                                    onError = Timber::e
-                            ).addTo(compositeDisposable)
-                }
     }
 
     fun isBabyDataFilled(): Boolean {
