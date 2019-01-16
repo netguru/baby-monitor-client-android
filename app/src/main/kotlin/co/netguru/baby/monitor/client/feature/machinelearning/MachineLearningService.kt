@@ -7,7 +7,7 @@ import android.os.Binder
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.NotificationHandler
+import co.netguru.baby.monitor.client.common.NotificationHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy

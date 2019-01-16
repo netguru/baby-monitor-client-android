@@ -7,10 +7,10 @@ import android.widget.TextView
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.DataLogsViewHolder
 import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.HeaderViewHolder
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData.Data
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData.LogHeader
-import co.netguru.baby.monitor.client.feature.common.view.StickyHeaderInterface
+import co.netguru.baby.monitor.client.data.client.home.log.LogData
+import co.netguru.baby.monitor.client.data.client.home.log.LogData.Data
+import co.netguru.baby.monitor.client.data.client.home.log.LogData.LogHeader
+import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
 import org.threeten.bp.format.DateTimeFormatter
 
 class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderInterface {

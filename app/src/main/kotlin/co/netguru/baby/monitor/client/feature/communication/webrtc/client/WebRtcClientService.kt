@@ -3,15 +3,14 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.WebRtcBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.webrtc.SurfaceViewRenderer
 import timber.log.Timber
 
 class WebRtcClientService : Service() {

@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.feature.splash
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.extensions.inTransaction
+import co.netguru.baby.monitor.client.common.extensions.inTransaction
 
 class EnterActivity : AppCompatActivity() {
 

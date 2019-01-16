@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
-import co.netguru.baby.monitor.client.feature.common.view.BaseViewHolder
+import co.netguru.baby.monitor.client.data.client.home.log.LogData
+import co.netguru.baby.monitor.client.common.view.BaseViewHolder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_log_activity_header.*
 import kotlinx.android.synthetic.main.item_log_activity_record.*

@@ -1,11 +1,11 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 
 import android.content.Context
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
-import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import io.reactivex.Completable
 import org.json.JSONObject

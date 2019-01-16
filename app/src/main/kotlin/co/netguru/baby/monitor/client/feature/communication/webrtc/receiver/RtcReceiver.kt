@@ -3,8 +3,8 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver

@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.client.configuration
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.database.sqlite.SQLiteConstraintException
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,13 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import dagger.android.support.DaggerFragment
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_configuration.*
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -45,11 +47,19 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
         viewModel.serviceInfoData.observe(this, Observer { service ->
             service ?: return@Observer
 
-            viewModel.appendNewAddress(service.host.hostAddress, service.port) { success ->
-                if (success) {
-                    findNavController().navigate(R.id.actionConfigurationConnectingDone)
-                }
-            }
+            viewModel.appendNewAddress(
+                    address = service.host.hostAddress,
+                    port = service.port,
+                    onSuccess = {
+                        findNavController().navigate(R.id.actionConfigurationConnectingDone)
+                    },
+                    onError = { e ->
+                        if (e is SQLiteConstraintException) {
+                            findNavController().navigate(R.id.actionConfigurationConnectingDone)
+                        }
+                        Timber.e(e)
+                    }
+            )
         })
     }
 
@@ -64,14 +74,14 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
     }
 
     override fun onServiceConnectionError(errorCode: Int) {
-        when(errorCode) {
+        when (errorCode) {
             WifiP2pManager.P2P_UNSUPPORTED -> {
                 showSnackbarMessage(R.string.p2p_unsupported_on_device_error)
             }
             WifiP2pManager.BUSY -> {
                 showSnackbarMessage(R.string.system_is_busy_error)
             }
-            else ->{
+            else -> {
                 showSnackbarMessage(R.string.discovering_services_error)
             }
         }

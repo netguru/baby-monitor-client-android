@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.App
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
+import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.machinelearning.WavFileGenerator
 import com.google.firebase.FirebaseApp
 import com.google.firebase.storage.FirebaseStorage

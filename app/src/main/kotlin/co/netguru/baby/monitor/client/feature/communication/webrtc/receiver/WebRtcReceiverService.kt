@@ -2,10 +2,10 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
 import android.content.Intent
-import co.netguru.baby.monitor.client.application.database.DataRepository
-import co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.MessageConfirmationStatus
+import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.data.communication.websocket.MessageConfirmationStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.EVENT_RECEIVED_CONFIRMATION
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.P2P_OFFER
@@ -13,7 +13,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.WEB_SOCKET_ACTION_KEY
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.WebRtcBinder
-import co.netguru.baby.monitor.client.feature.communication.webrtc.database.ClientEntity
+import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
 import dagger.android.AndroidInjection
 import io.reactivex.Maybe

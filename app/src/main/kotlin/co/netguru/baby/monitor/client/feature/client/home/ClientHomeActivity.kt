@@ -18,14 +18,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.feature.client.configuration.AddChildDialog
 import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
-import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompat
-import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
-import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbar
-import co.netguru.baby.monitor.client.feature.common.view.PresetedAnimations
+import co.netguru.baby.monitor.client.common.extensions.getDrawableCompat
+import co.netguru.baby.monitor.client.common.extensions.setVisible
+import co.netguru.baby.monitor.client.common.extensions.showSnackbar
+import co.netguru.baby.monitor.client.common.extensions.toJson
+import co.netguru.baby.monitor.client.common.view.PresetedAnimations
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
-import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
@@ -40,8 +40,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
-    @Inject
-    internal lateinit var addChildDialog: AddChildDialog
 
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
@@ -53,9 +51,10 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_home)
+        homeViewModel.saveConfiguration()
+
         setupView()
         getData()
-
         observeCurrentDestination()
         bindService()
     }
@@ -98,6 +97,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         if (service is ClientHandlerService.ChildServiceBinder) {
             childServiceBinder = service
             service.getChildConnectionStatus().observe(this, Observer { childEvent ->
+                Timber.i("child event: $childEvent")
                 val data = childEvent?.data ?: return@Observer
 
                 val childName = if (data.first.name.isNullOrEmpty()) {
@@ -129,12 +129,9 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                 clientHomeChildrenEll.expand()
             }
         }
-        clientHomeChildrenEll.setOnExpansionUpdateListener(this::handleExpandableLayout)
-
-        clientHomeToolbarAddChildAddBtn.setOnClickListener {
-            showAddChildDialog()
-        }
-
+        clientHomeChildrenEll.setOnExpansionUpdateListener(
+                this::handleExpandableLayout
+        )
         clientToolbarCancelButton.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
@@ -170,6 +167,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         })
         homeViewModel.childList.observe(this, Observer { list ->
             list ?: return@Observer
+            Timber.e(list.toJson())
             adapter.selectedChild = homeViewModel.selectedChild.value ?: adapter.selectedChild
             adapter.originalList = list
             clientHomeChildrenRv.adapter = adapter
@@ -182,7 +180,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             clientHomeChildrenRv.addItemDecoration(dividerItemDecoration)
             clientHomeChildrenRv.setHasFixedSize(true)
         })
-        homeViewModel.refreshChildrenList()
     }
 
     private fun bindService() {
@@ -200,19 +197,8 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             },
             onNewChildSelected = {
                 clientHomeChildrenEll.collapse()
-                showAddChildDialog()
             }
     )
-
-    private fun showAddChildDialog() {
-        addChildDialog.showDialog(this,
-                onChildAdded = { address ->
-                    homeViewModel.setSelectedChildWithAddress(address)
-                    homeViewModel.refreshChildrenList()
-                },
-                onServiceConnectionError = {}
-        )
-    }
 
     private fun setSelectedChildName(name: String) {
         clientHomeChildTv.text = if (!name.isEmpty()) {
