@@ -69,7 +69,6 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
             )
         }
         if (client.connectionStatus == ConnectionStatus.CONNECTED) {
-            Timber.i("$foundChild post status ${ConnectionStatus.CONNECTED}")
             childConnectionStatus.postValue(
                     SingleEvent(foundChild to ConnectionStatus.CONNECTED)
             )

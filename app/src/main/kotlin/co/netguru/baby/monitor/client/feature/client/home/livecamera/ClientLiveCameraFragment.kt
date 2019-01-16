@@ -52,10 +52,6 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (true == false) {
-
-        }
-
         clientLiveCameraStopIbtn.setOnClickListener {
             viewModel.callCleanUp {
                 requireActivity().onBackPressed()
@@ -144,7 +140,6 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     private fun startCall() {
         with((webRtcClientBinder and childServiceBinder)) {
-            Timber.e("$webRtcClientBinder and $childServiceBinder")
             this ?: return@with
             val address = viewModel.selectedChild.value?.address ?: return@with
             val client = second.getChildClient(address) ?: return@with

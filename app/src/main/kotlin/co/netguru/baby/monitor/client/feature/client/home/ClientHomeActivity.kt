@@ -97,7 +97,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         if (service is ClientHandlerService.ChildServiceBinder) {
             childServiceBinder = service
             service.getChildConnectionStatus().observe(this, Observer { childEvent ->
-                Timber.i("child event: $childEvent")
                 val data = childEvent?.data ?: return@Observer
 
                 val childName = if (data.first.name.isNullOrEmpty()) {
@@ -167,7 +166,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         })
         homeViewModel.childList.observe(this, Observer { list ->
             list ?: return@Observer
-            Timber.e(list.toJson())
             adapter.selectedChild = homeViewModel.selectedChild.value ?: adapter.selectedChild
             adapter.originalList = list
             clientHomeChildrenRv.adapter = adapter
