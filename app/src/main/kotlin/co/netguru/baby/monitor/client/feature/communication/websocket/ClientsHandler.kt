@@ -85,7 +85,7 @@ class ClientsHandler(
     }
 
     private fun addLogData(address: String) {
-        dataRepository.insertLogsToDatabase(
+        dataRepository.insertLogToDatabase(
                 LogDataEntity(
                         BABY_WAS_CRYING_EVENT,
                         LocalDateTime.now().toString(),

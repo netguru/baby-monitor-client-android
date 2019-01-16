@@ -3,7 +3,6 @@ package co.netguru.baby.monitor.client.feature.client.configuration
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.database.sqlite.SQLiteConstraintException
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +17,6 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_configuration.*
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -50,16 +48,13 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
             viewModel.appendNewAddress(
                     address = service.host.hostAddress,
                     port = service.port,
-                    onSuccess = {
-                        findNavController().navigate(R.id.actionConfigurationConnectingDone)
-                    },
-                    onError = { e ->
-                        if (e is SQLiteConstraintException) {
-                            findNavController().navigate(R.id.actionConfigurationConnectingDone)
-                        }
-                        Timber.e(e)
-                    }
+                    navController = findNavController()
             )
+        })
+        viewModel.childList.observe(this, Observer { list ->
+            if (!list.isNullOrEmpty()) {
+                findNavController().navigate(R.id.actionConfigurationConnectingDone)
+            }
         })
     }
 

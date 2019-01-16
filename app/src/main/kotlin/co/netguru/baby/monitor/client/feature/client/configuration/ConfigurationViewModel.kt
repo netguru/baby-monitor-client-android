@@ -1,7 +1,10 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
+import androidx.navigation.NavController
+import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
@@ -11,6 +14,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 @Reusable
@@ -20,6 +24,7 @@ class ConfigurationViewModel @Inject constructor(
         private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
+    internal val childList = MutableLiveData<List<ChildDataEntity>>()
     internal val serviceInfoData = Transformations.map(nsdServiceManager.serviceInfoData) {
         it ?: return@map null
         return@map it[0]
@@ -27,17 +32,32 @@ class ConfigurationViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
+    init {
+        dataRepository.getChildData()
+                .subscribeOn(Schedulers.newThread())
+                .subscribeBy(
+                        onNext = { list ->
+                            childList.postValue(list)
+                        },
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
+    }
+
     internal fun appendNewAddress(
-            address: String, port: Int,
-            onSuccess: () -> Unit,
-            onError: (Throwable) -> Unit
+            address: String,
+            port: Int,
+            navController: NavController
     ) {
         dataRepository.addChildData(
                 ChildDataEntity("ws://$address:$port")
         ).subscribeOn(Schedulers.io())
                 .subscribeBy(
-                        onComplete = onSuccess,
-                        onError = onError
+                        onComplete = {
+                            navController.navigate(R.id.actionConfigurationConnectingDone)
+                        },
+                        onError = { e ->
+                            Timber.e(e)
+                        }
                 ).addTo(compositeDisposable)
     }
 

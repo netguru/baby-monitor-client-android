@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.data
 
 import co.netguru.baby.monitor.client.application.scope.AppScope
-import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
@@ -19,10 +18,8 @@ class DataRepository @Inject constructor(
 
     fun getAllLogData() = database.logDataDao().getAllData()
 
-    fun insertLogsToDatabase(vararg data: LogDataEntity) = Completable.fromAction {
-        for (log in data) {
-            database.logDataDao().insertAll(log)
-        }
+    fun insertLogToDatabase(data: LogDataEntity) = Completable.fromAction {
+        database.logDataDao().insertAll(data)
     }
 
     fun getAllClientData() = database.clientDao().getAllData()

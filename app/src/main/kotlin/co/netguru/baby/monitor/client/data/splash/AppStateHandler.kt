@@ -1,12 +1,12 @@
 package co.netguru.baby.monitor.client.data.splash
 
-import android.content.Context
+import android.content.SharedPreferences
+import co.netguru.baby.monitor.client.application.ConfigurationPreferencesQualifier
 import co.netguru.baby.monitor.client.common.extensions.edit
 import javax.inject.Inject
 
-
 class AppStateHandler @Inject constructor(
-        context: Context
+        @ConfigurationPreferencesQualifier private val prefs: SharedPreferences
 ) {
     internal var appState: AppState
         get() = AppState.valueOf(
@@ -18,10 +18,7 @@ class AppStateHandler @Inject constructor(
             }
         }
 
-    private val prefs = context.getSharedPreferences(APP_STATE_HANDLER_PREFS, Context.MODE_PRIVATE)
-
     companion object {
-        private const val APP_STATE_HANDLER_PREFS = "APP_STATE_HANDLER_PREFS"
         private const val APP_STATE_KEY = "APP_STATE_KEY"
     }
 }
