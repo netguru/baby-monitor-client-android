@@ -7,14 +7,15 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.IBinder
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.feature.common.extensions.bindService
-import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.common.extensions.bindService
+import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -39,6 +40,11 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
     private var rtcReceiverServiceBinder: WebRtcReceiverBinder? = null
     private var machineLearningServiceBinder: MachineLearningBinder? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.saveConfiguration()
+    }
+
     override fun onResume() {
         super.onResume()
         registerNsdService()
@@ -49,7 +55,7 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
             rtcReceiverServiceBinder?.startCapturer()
         }
         goToSettingsImgBtn.setOnClickListener {
-            findNavController().navigate(R.id.clientSettings)
+            findNavController().navigate(R.id.serverToSettings)
         }
     }
 

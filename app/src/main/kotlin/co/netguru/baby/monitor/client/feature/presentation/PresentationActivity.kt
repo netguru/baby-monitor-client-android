@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.extensions.setVisible
+import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import kotlinx.android.synthetic.main.activity_presentation.*
 

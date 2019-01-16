@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.feature.machinelearning
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
+import co.netguru.baby.monitor.client.common.RunsInBackground
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber

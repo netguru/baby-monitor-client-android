@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import dagger.android.support.DaggerFragment
 import io.reactivex.Completable
@@ -45,10 +45,15 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
         viewModel.serviceInfoData.observe(this, Observer { service ->
             service ?: return@Observer
 
-            viewModel.appendNewAddress(service.host.hostAddress, service.port) { success ->
-                if (success) {
-                    findNavController().navigate(R.id.actionConfigurationConnectingDone)
-                }
+            viewModel.appendNewAddress(
+                    address = service.host.hostAddress,
+                    port = service.port,
+                    navController = findNavController()
+            )
+        })
+        viewModel.childList.observe(this, Observer { list ->
+            if (!list.isNullOrEmpty()) {
+                findNavController().navigate(R.id.actionConfigurationConnectingDone)
             }
         })
     }
@@ -64,14 +69,14 @@ class ConfigurationFragment : DaggerFragment(), NsdServiceManager.OnServiceConne
     }
 
     override fun onServiceConnectionError(errorCode: Int) {
-        when(errorCode) {
+        when (errorCode) {
             WifiP2pManager.P2P_UNSUPPORTED -> {
                 showSnackbarMessage(R.string.p2p_unsupported_on_device_error)
             }
             WifiP2pManager.BUSY -> {
                 showSnackbarMessage(R.string.system_is_busy_error)
             }
-            else ->{
+            else -> {
                 showSnackbarMessage(R.string.discovering_services_error)
             }
         }

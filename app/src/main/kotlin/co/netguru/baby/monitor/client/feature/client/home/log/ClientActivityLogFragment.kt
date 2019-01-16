@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.common.extensions.getDrawableCompat
+import co.netguru.baby.monitor.client.common.extensions.getDrawableCompat
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_activity_log.*
 import javax.inject.Inject

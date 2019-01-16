@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.common
 
-import co.netguru.baby.monitor.client.feature.common.extensions.Optional
-import co.netguru.baby.monitor.client.feature.common.extensions.filterOptionalNone
-import co.netguru.baby.monitor.client.feature.common.extensions.toOptional
+import co.netguru.baby.monitor.client.common.extensions.Optional
+import co.netguru.baby.monitor.client.common.extensions.filterOptionalNone
+import co.netguru.baby.monitor.client.common.extensions.toOptional
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single

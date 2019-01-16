@@ -4,7 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
-import co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import io.reactivex.Completable
 import io.reactivex.Single

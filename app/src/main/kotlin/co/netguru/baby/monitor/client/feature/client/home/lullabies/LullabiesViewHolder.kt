@@ -3,8 +3,9 @@ package co.netguru.baby.monitor.client.feature.client.home.lullabies
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.communication.websocket.Action
-import co.netguru.baby.monitor.client.feature.common.view.BaseViewHolder
+import co.netguru.baby.monitor.client.common.view.BaseViewHolder
+import co.netguru.baby.monitor.client.data.client.home.lullabies.LullabyData
+import co.netguru.baby.monitor.client.data.communication.websocket.Action
 import kotlinx.android.synthetic.main.item_lullaby_alternative.*
 import kotlinx.android.synthetic.main.item_lullaby_header.*
 

@@ -3,16 +3,15 @@ package co.netguru.baby.monitor.client.feature.client.home
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Context
-import co.netguru.baby.monitor.client.application.database.DataRepository
-import co.netguru.baby.monitor.client.data.ChildData
-import co.netguru.baby.monitor.client.data.ChildRepository
-import co.netguru.baby.monitor.client.feature.client.home.log.data.LogData
-import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
-import co.netguru.baby.monitor.client.feature.common.extensions.subscribeWithLiveData
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.client.ChildDataEntity
+import co.netguru.baby.monitor.client.data.client.home.log.LogData
+import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
+import co.netguru.baby.monitor.client.common.RunsInBackground
+import co.netguru.baby.monitor.client.common.extensions.subscribeWithLiveData
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient
-import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.splash.AppState
 import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,7 +20,6 @@ import io.reactivex.internal.operators.single.SingleDefer
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.webrtc.SurfaceViewRenderer
 import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
@@ -29,50 +27,47 @@ import java.io.IOException
 import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
-        private val childRepository: ChildRepository,
         private val dataRepository: DataRepository
 ) : ViewModel() {
 
     internal val logData = MutableLiveData<List<LogData>>()
-    internal val selectedChild = MutableLiveData<ChildData>()
+    internal val selectedChild = MutableLiveData<ChildDataEntity>()
     internal val shouldHideNavbar = MutableLiveData<Boolean>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
-    internal val childList: MutableLiveData<List<ChildData>>
-        get() = childRepository.childList
+    internal val childList = MutableLiveData<List<ChildDataEntity>>()
 
     private val compositeDisposable = CompositeDisposable()
     private var currentCall: RtcClient? = null
 
-    fun refreshChildrenList(listener: (state: List<ChildData>) -> Unit = {}) {
-        childRepository.refreshChildData()
-                .subscribeOn(Schedulers.io())
+    init {
+        dataRepository.getChildData()
+                .subscribeOn(Schedulers.newThread())
                 .subscribeBy(
-                        onSuccess = { list ->
+                        onNext = { list ->
                             if (selectedChild.value == null && list.isNotEmpty()) {
                                 selectedChild.postValue(list.first())
                             }
-                            listener(list)
+                            childList.postValue(list)
                         },
                         onError = Timber::e
                 ).addTo(compositeDisposable)
     }
 
     fun setSelectedChildWithAddress(address: String) {
-        childRepository.childList.value?.find { it.address == address }?.let { data ->
+        childList.value?.find { it.address == address }?.let { data ->
             selectedChild.postValue(data)
-            refreshChildrenList()
         }
     }
 
     fun updateChildName(name: String) {
         Single.just(selectedChild.value).flatMap { data ->
-            childRepository.updateChildData(data.apply { this.name = name })
-        }
-                .subscribeOn(Schedulers.io())
+            dataRepository.updateChildData(data.apply { this.name = name })
+        }.subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onSuccess = { data ->
                             selectedChild.postValue(data)
-                        }
+                        },
+                        onError = Timber::e
                 )
                 .addTo(compositeDisposable)
     }
@@ -118,11 +113,14 @@ class ClientHomeViewModel @Inject constructor(
 
     private fun updateChildImageSource(path: String) {
         Single.just(selectedChild.value).flatMap { data ->
-            childRepository.updateChildData(data.apply { image = path })
+            dataRepository.updateChildData(data.apply { image = path })
         }.subscribeOn(Schedulers.io())
-                .subscribeBy(onSuccess = { data ->
-                    selectedChild.postValue(data)
-                }).addTo(compositeDisposable)
+                .subscribeBy(
+                        onSuccess = { data ->
+                            selectedChild.postValue(data)
+                        },
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
     }
 
     fun isBabyDataFilled(): Boolean {
@@ -139,11 +137,20 @@ class ClientHomeViewModel @Inject constructor(
                 ).addTo(compositeDisposable)
     }
 
-    fun selectedChildAvailabilityPostValue(data: Pair<ChildData, ConnectionStatus>) {
+    fun selectedChildAvailabilityPostValue(data: Pair<ChildDataEntity, ConnectionStatus>) {
         if (data.first.address == selectedChild.value?.address &&
                 data.second != selectedChildAvailability.value) {
             selectedChildAvailability.postValue(data.second)
         }
+    }
+
+    fun saveConfiguration() {
+        dataRepository.saveConfiguration(AppState.CLIENT)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = { Timber.i("state saved") },
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
     }
 
     override fun onCleared() {

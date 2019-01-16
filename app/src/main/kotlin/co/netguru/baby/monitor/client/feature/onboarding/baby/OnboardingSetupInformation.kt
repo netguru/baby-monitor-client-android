@@ -21,6 +21,7 @@ class OnboardingSetupInformation : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         connectionInformationMbtn.setOnClickListener {
             findNavController().navigate(R.id.onboardingSetupToServer)
+            requireActivity().finish()
         }
     }
 }

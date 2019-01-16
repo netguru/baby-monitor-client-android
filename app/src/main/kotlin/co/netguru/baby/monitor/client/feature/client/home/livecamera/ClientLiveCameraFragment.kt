@@ -14,14 +14,15 @@ import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.feature.common.extensions.and
-import co.netguru.baby.monitor.client.feature.common.extensions.bindService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.CallState
+import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.common.extensions.and
+import co.netguru.baby.monitor.client.common.extensions.bindService
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.client.WebRtcClientService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.WebRtcClientService.WebRtcClientBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
-import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
@@ -112,7 +113,7 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
 
     private fun bindServices() {
         bindService(
-                WebRtcClientBinder::class.java,
+                WebRtcClientService::class.java,
                 this,
                 Service.BIND_AUTO_CREATE
         )

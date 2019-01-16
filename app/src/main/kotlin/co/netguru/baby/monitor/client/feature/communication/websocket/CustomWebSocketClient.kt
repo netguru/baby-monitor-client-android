@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
-import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus.*
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus.*
 import io.reactivex.Completable
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.framing.CloseFrame

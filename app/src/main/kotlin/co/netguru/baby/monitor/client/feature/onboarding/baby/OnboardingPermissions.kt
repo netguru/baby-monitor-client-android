@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import kotlinx.android.synthetic.main.fragment_connecting_permissions.*
 
 class OnboardingPermissions : Fragment() {

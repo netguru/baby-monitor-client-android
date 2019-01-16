@@ -2,17 +2,17 @@ package co.netguru.baby.monitor.client.feature.client.home.switchbaby
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import co.netguru.baby.monitor.client.data.ChildData
+import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import kotlin.properties.Delegates
 
 class ChildrenAdapter(
-        val onChildSelected: (ChildData) -> Unit,
+        val onChildSelected: (ChildDataEntity) -> Unit,
         val onNewChildSelected: () -> Unit
 ) : RecyclerView.Adapter<ChildViewHolder>() {
 
-    internal var selectedChild: ChildData? = null
+    internal var selectedChild: ChildDataEntity? = null
     internal var originalList by Delegates.observable(
-            emptyList<ChildData>(),
+            emptyList<ChildDataEntity>(),
             onChange = { property, oldValue, newValue ->
                 if (newValue.isNotEmpty() && selectedChild == null) {
                     selectedChild = newValue.first()
@@ -21,7 +21,7 @@ class ChildrenAdapter(
             }
     )
 
-    private var childrenList = listOf<ChildData>()
+    private var childrenList = listOf<ChildDataEntity>()
         set(value) {
             field = value.filter { it.address != selectedChild?.address }
             notifyDataSetChanged()

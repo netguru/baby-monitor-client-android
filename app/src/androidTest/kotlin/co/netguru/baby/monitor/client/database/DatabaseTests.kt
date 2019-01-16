@@ -4,8 +4,8 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.persistence.room.Room
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import co.netguru.baby.monitor.client.application.database.AppDatabase
-import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
+import co.netguru.baby.monitor.client.data.AppDatabase
+import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

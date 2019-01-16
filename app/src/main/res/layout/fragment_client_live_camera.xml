@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <co.netguru.baby.monitor.client.feature.common.view.CustomSurfaceViewRenderer
+    <co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
         android:id="@+id/liveCameraRemoteRenderer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

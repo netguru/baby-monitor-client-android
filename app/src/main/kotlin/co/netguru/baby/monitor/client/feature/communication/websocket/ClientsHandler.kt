@@ -1,9 +1,10 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
-import co.netguru.baby.monitor.client.application.database.DataRepository
-import co.netguru.baby.monitor.client.feature.client.home.log.database.LogDataEntity
-import co.netguru.baby.monitor.client.feature.common.NotificationHandler
-import co.netguru.baby.monitor.client.feature.common.RunsInBackground
+import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -84,7 +85,7 @@ class ClientsHandler(
     }
 
     private fun addLogData(address: String) {
-        dataRepository.insertLogsToDatabase(
+        dataRepository.insertLogToDatabase(
                 LogDataEntity(
                         BABY_WAS_CRYING_EVENT,
                         LocalDateTime.now().toString(),

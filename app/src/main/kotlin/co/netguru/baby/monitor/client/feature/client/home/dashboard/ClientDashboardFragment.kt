@@ -6,34 +6,29 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.common.extensions.*
-import co.netguru.baby.monitor.client.feature.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.extensions.*
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import com.bumptech.glide.request.RequestOptions
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
 import javax.inject.Inject
 
-class ClientDashboardFragment : DaggerFragment() {
+class ClientDashboardFragment : BaseDaggerFragment() {
+    override val layoutResource = R.layout.fragment_client_dashboard
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
     private val viewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_client_dashboard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

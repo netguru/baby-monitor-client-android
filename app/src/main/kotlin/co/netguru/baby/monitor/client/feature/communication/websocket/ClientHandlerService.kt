@@ -8,11 +8,11 @@ import android.os.Binder
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.database.DataRepository
-import co.netguru.baby.monitor.client.data.ChildData
-import co.netguru.baby.monitor.client.data.ChildRepository
-import co.netguru.baby.monitor.client.feature.common.NotificationHandler
-import co.netguru.baby.monitor.client.feature.common.data.SingleEvent
+import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.client.ChildDataEntity
+import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.data.communication.SingleEvent
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -28,14 +28,14 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
         ClientsHandler(this, notificationHandler, dataRepository)
     }
     private val compositeDisposable = CompositeDisposable()
-    private val childConnectionStatus = MutableLiveData<SingleEvent<Pair<ChildData, ConnectionStatus>>>()
+    private val childConnectionStatus = MutableLiveData<SingleEvent<Pair<ChildDataEntity, ConnectionStatus>>>()
 
     @Inject
     lateinit var notificationHandler: NotificationHandler
     @Inject
-    lateinit var childRepository: ChildRepository
-    @Inject
     lateinit var dataRepository: DataRepository
+
+    private var childList: List<ChildDataEntity>? = null
 
     override fun onCreate() {
         AndroidInjection.inject(this)
@@ -45,7 +45,12 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
         }
         startForeground(Random.nextInt(), createNotification())
 
-        childRepository.childList.observeForever(this::addAllChildren)
+        dataRepository.getChildData()
+                .subscribeOn(Schedulers.newThread())
+                .subscribeBy(
+                        onNext = this::addAllChildren,
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
     }
 
     override fun onBind(intent: Intent?) = ChildServiceBinder()
@@ -54,7 +59,7 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
 
     override fun onConnectionStatusChange(client: CustomWebSocketClient) {
         Timber.i("${client.address} ${client.connectionStatus}")
-        val foundChild = childRepository.childList.value
+        val foundChild = childList
                 ?.find { childData ->
                     childData.address == client.address
                 } ?: return
@@ -82,7 +87,8 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
                 .build()
     }
 
-    private fun addAllChildren(list: List<ChildData>?) {
+    private fun addAllChildren(list: List<ChildDataEntity>?) {
+        childList = list
         for (child in list ?: return) {
             webSocketClientHandler.addClient(child.address)
                     .subscribeOn(Schedulers.io())
