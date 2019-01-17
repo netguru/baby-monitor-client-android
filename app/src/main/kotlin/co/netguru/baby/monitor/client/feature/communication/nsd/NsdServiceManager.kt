@@ -44,6 +44,7 @@ class NsdServiceManager @Inject constructor(
                     }
 
                     override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                        Timber.i("${serviceInfo.serviceName} service resolved")
                         if (serviceInfoList.find { it.host.hostAddress == serviceInfo.host.hostAddress } == null) {
                             serviceInfoList.add(serviceInfo)
                             serviceInfoData.postValue(serviceInfoList)

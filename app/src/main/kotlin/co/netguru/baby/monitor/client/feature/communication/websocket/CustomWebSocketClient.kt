@@ -95,7 +95,6 @@ class CustomWebSocketClient(
                 RETRYING -> wasRetrying = true
                 CONNECTED -> wasRetrying = false
             }
-            Timber.e("$this connection change: $availability")
             onAvailabilityChange(this, availability)
         }
     }
