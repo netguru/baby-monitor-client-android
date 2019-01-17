@@ -3,17 +3,20 @@ package co.netguru.baby.monitor.client.feature.server
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.RECORD_AUDIO
 import android.app.Service
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
+import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
@@ -22,14 +25,13 @@ import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningSer
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_server.*
+import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
 import javax.inject.Inject
 
-//TODO Should be refactored
-class ServerFragment : BaseDaggerFragment(), ServiceConnection {
+class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
-    override val layoutResource = R.layout.fragment_server
+    override val layoutResource = R.layout.fragment_child_monitor
 
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
@@ -39,10 +41,17 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
     internal lateinit var factory: ViewModelProvider.Factory
     private var rtcReceiverServiceBinder: WebRtcReceiverBinder? = null
     private var machineLearningServiceBinder: MachineLearningBinder? = null
+    private var isNightModeEnabled = false
+    private var isFacingFront = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.saveConfiguration()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupView()
     }
 
     override fun onResume() {
@@ -54,14 +63,12 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
             bindServices()
             rtcReceiverServiceBinder?.startCapturer()
         }
-        goToSettingsImgBtn.setOnClickListener {
-            findNavController().navigate(R.id.serverToSettings)
-        }
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.unregisterNsdService()
+        pulsatingView.stop()
     }
 
     override fun onDestroy() {
@@ -88,13 +95,7 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
         when (service) {
             is WebRtcReceiverBinder -> {
                 Timber.i("WebRtcReceiverService service connected")
-                rtcReceiverServiceBinder = service
-                if (service.currentCall == null) {
-                    service.createReceiver(
-                            surfaceView,
-                            this@ServerFragment::handleCallStateChange
-                    )
-                }
+                handleWebRtcReceiverBinder(service)
             }
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
@@ -104,6 +105,30 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
                 }
             }
         }
+    }
+
+    private fun setupView() {
+        nightModeToggleBtn.setOnClickListener {
+            if (isNightModeEnabled) {
+                nightCoverV.setVisible(false)
+                nightModeActiveIv.setVisible(false)
+            } else {
+                nightCoverV.setVisible(true)
+                nightModeActiveIv.setVisible(true)
+            }
+            isNightModeEnabled = !isNightModeEnabled
+        }
+        cameraSwapBtn.setOnClickListener {
+            isFacingFront = !isFacingFront
+            rtcReceiverServiceBinder?.recreateCapturer(isFacingFront)
+        }
+        backIbtn.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+        settingsIbtn.setOnClickListener {
+            findNavController().navigate(R.id.serverToSettings)
+        }
+        childNameTv.text = "Jane" //todo provide non hardcoded string (18.01.2019)
     }
 
     private fun registerNsdService() {
@@ -145,6 +170,25 @@ class ServerFragment : BaseDaggerFragment(), ServiceConnection {
                 this,
                 Service.BIND_AUTO_CREATE
         )
+    }
+
+    private fun handleWebRtcReceiverBinder(service: WebRtcReceiverBinder) {
+        rtcReceiverServiceBinder = service
+        if (service.currentCall == null) {
+            service.createReceiver(
+                    surfaceView,
+                    this@ChildMonitorFragment::handleCallStateChange
+            )
+        }
+        service.isServerOnline.observe(this, Observer { isAvailable ->
+            if (isAvailable == true) {
+                pulsatingView.start()
+                activeIndicatorIv.setImageResource(R.drawable.ic_active)
+            } else {
+                pulsatingView.stop()
+                activeIndicatorIv.setImageResource(R.drawable.ic_inactive)
+            }
+        })
     }
 
     companion object {

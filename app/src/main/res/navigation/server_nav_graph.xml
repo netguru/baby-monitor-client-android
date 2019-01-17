@@ -7,8 +7,8 @@
 
     <fragment
         android:id="@+id/serverFragment"
-        android:name="co.netguru.baby.monitor.client.feature.server.ServerFragment"
-        tools:layout="@layout/fragment_server">
+        android:name="co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment"
+        tools:layout="@layout/fragment_child_monitor">
         <action
             android:id="@+id/serverToSettings"
             app:destination="@+id/serverSettings"/>

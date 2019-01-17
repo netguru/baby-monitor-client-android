@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
+import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
@@ -39,8 +40,8 @@ class WebRtcReceiverService : Service() {
 
     private val compositeDisposable = CompositeDisposable()
     private var server: CustomWebSocketServer? = null
-    private lateinit var binder: WebRtcReceiverBinder
-
+    private var binder: WebRtcReceiverBinder? = null
+    private var isServerOnline = MutableLiveData<Boolean>()
     private var messageConfirmationMap = mutableMapOf<String, MessageConfirmationStatus>()
     private var firebaseKeysMap = mutableMapOf<String, String>()
     private val messageConfirmationDisposable = CompositeDisposable()
@@ -57,7 +58,7 @@ class WebRtcReceiverService : Service() {
     override fun onBind(intent: Intent?) = WebRtcReceiverBinder().also { binder = it }
 
     override fun onDestroy() {
-        binder.cleanup()
+        binder?.cleanup()
         server?.let(::stopServer)
         compositeDisposable.dispose()
         messageConfirmationDisposable.dispose()
@@ -71,10 +72,12 @@ class WebRtcReceiverService : Service() {
         ).apply {
             startServer().subscribeOn(Schedulers.io()).subscribeBy(
                     onComplete = {
-                        Timber.e("CustomWebSocketServer started")
+                        Timber.i("CustomWebSocketServer started")
+                        isServerOnline.postValue(true)
                     },
                     onError = {
                         Timber.e("launch failed $it")
+                        isServerOnline.postValue(false)
                         stopServer()
                     }
             ).addTo(compositeDisposable)
@@ -129,7 +132,7 @@ class WebRtcReceiverService : Service() {
 
     private fun handleP2POffer(client: WebSocket, jsonObject: JSONObject) {
         Timber.i("$WEB_SOCKET_ACTION_RINGING...")
-        binder.currentCall?.let { call ->
+        binder?.currentCall?.let { call ->
             call.accept(
                     client,
                     jsonObject.getJSONObject(P2P_OFFER).getString("sdp")
@@ -156,7 +159,7 @@ class WebRtcReceiverService : Service() {
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {
-                            Timber.e("CustomWebSocketServer closed")
+                            Timber.i("CustomWebSocketServer closed")
                         },
                         onError = {
                             Timber.e("stop failed $it")
@@ -167,6 +170,8 @@ class WebRtcReceiverService : Service() {
     inner class WebRtcReceiverBinder : WebRtcBinder() {
 
         var currentCall: RtcReceiver? = null
+        val isServerOnline: MutableLiveData<Boolean>
+                get() = this@WebRtcReceiverService.isServerOnline
 
         fun createReceiver(
                 view: CustomSurfaceViewRenderer,
@@ -196,6 +201,10 @@ class WebRtcReceiverService : Service() {
 
         fun startCapturer() {
             currentCall?.startCapturer()
+        }
+
+        fun recreateCapturer(isFrontFacing: Boolean) {
+            currentCall?.recreateVideoTrack(isFrontFacing)
         }
 
         private fun waitForResponse() {
