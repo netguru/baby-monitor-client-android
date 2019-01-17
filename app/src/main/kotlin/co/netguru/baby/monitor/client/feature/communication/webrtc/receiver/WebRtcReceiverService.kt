@@ -2,8 +2,10 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
 import android.content.Intent
-import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.MessageConfirmationStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
@@ -13,7 +15,6 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.WEB_SOCKET_ACTION_KEY
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.WebRtcBinder
-import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
 import dagger.android.AndroidInjection
 import io.reactivex.Maybe
@@ -32,6 +33,9 @@ class WebRtcReceiverService : Service() {
 
     @Inject
     internal lateinit var dataRepository: DataRepository
+
+    @Inject
+    lateinit var notificationHandler: NotificationHandler
 
     private val compositeDisposable = CompositeDisposable()
     private var server: CustomWebSocketServer? = null
@@ -215,7 +219,7 @@ class WebRtcReceiverService : Service() {
 
         private fun sendNotificationsToAddresses(list: List<String>) {
             for (address in list) {
-                //todo 11.01.2019 send firebase notification
+                notificationHandler.sendFirabaseBabyIsCryingNotification(address)
             }
         }
 
