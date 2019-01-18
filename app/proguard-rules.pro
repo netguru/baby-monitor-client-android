@@ -107,3 +107,7 @@ public static ** valueOf(java.lang.String);
 -keep class org.webrtc.** { *; }
 -dontwarn org.chromium.build.**
 -dontwarn org.webrtc.Logging**
+
+#Firebase Database
+-keep class co.netguru.baby.monitor.client.data.communication.firebase.** { *; }
+

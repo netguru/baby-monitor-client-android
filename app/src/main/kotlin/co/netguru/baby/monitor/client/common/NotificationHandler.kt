@@ -11,7 +11,9 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.app.TaskStackBuilder
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.data.communication.firebase.FirebasePushMessage
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
+import com.google.firebase.database.FirebaseDatabase
 
 class NotificationHandler(private val context: Context) {
 
@@ -48,8 +50,18 @@ class NotificationHandler(private val context: Context) {
                 .build()
     }
 
+    fun sendFirabaseBabyIsCryingNotification(to: String) {
+        val message = FirebasePushMessage(to, context.getString(R.string.notification_baby_is_crying_title),
+                context.getString(R.string.notification_baby_is_crying_content))
+        FirebaseDatabase.getInstance().getReference()
+                .child(FIREBASE_NOTIFICATIONS_DB_PATH)
+                .push()
+                .setValue(message)
+    }
+
     companion object {
         const val NOTIFICAITON_ID = 1
+        const val FIREBASE_NOTIFICATIONS_DB_PATH = "notifications"
 
         fun createNotificationChannel(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

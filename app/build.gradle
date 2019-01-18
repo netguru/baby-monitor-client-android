@@ -229,6 +229,9 @@ dependencies {
     //Firebase Storage
     implementation libs.firebaseStorage
 
+    //Firebase Database
+    implementation libs.firebaseDatabase
+
     //Unit testing
     testImplementation test.junit
     testImplementation test.mockito
