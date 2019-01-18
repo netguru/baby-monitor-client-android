@@ -72,6 +72,10 @@ abstract class RtcCall {
     ): Completable = Completable.fromAction {
         listener = {}
         connection?.close()
+
+        remoteView?.release()
+        remoteView = null
+
         if (disposeConnection) {
             connection?.dispose()
         }
@@ -83,8 +87,6 @@ abstract class RtcCall {
         if (clearSocket) {
             commSocket?.close()
         }
-        remoteView?.release()
-        remoteView = null
         compositeDisposable.dispose()
     }
 

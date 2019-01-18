@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.client.home.settings
+package co.netguru.baby.monitor.client.feature.settings
 
 
 import android.arch.lifecycle.ViewModelProvider
@@ -28,6 +28,9 @@ class ClientSettingsFragment : DaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         settingsUploadDataBtn.setOnClickListener {
             viewModel.uploadAllRecordingsToFirebaseStorage()
+        }
+        settingsLogoutBtn.setOnClickListener {
+            viewModel.clearData(requireActivity())
         }
     }
 }

@@ -17,4 +17,7 @@ interface ChildDataDao {
 
     @Update
     fun updateChildData(data: ChildDataEntity)
+
+    @Query("DELETE FROM LOG_DATA")
+    fun deleteAll()
 }

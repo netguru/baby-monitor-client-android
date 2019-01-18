@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-
     <Button
         android:id="@+id/settingsUploadDataBtn"
         android:layout_width="wrap_content"
@@ -16,8 +15,24 @@
         android:background="@drawable/button_rounded_ripple"
         android:text="@string/upload_recordings_btn"
         android:textColor="@color/white"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/settingsLogoutBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:layout_marginTop="@dimen/spacing_xmedium"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        android:background="@drawable/button_rounded_ripple"
+        android:text="@string/clear_data_btn"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsUploadDataBtn" />
 </android.support.constraint.ConstraintLayout>
