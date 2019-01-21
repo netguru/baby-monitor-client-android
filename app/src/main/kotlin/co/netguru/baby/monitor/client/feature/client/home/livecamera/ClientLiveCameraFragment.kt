@@ -9,27 +9,26 @@ import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.and
 import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.WebRtcClientService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.WebRtcClientService.WebRtcClientBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
-import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
+class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
+    override val layoutResource = R.layout.fragment_client_live_camera
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
@@ -46,17 +45,8 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
         viewModel.shouldHideNavbar.postValue(true)
     }
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_client_live_camera, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        clientLiveCameraStopIbtn.setOnClickListener {
-            viewModel.callCleanUp {
-                requireActivity().onBackPressed()
-            }
-        }
         viewModel.selectedChildAvailability.observe(this, Observer(this::onAvailabilityChange))
     }
 
@@ -133,7 +123,7 @@ class ClientLiveCameraFragment : DaggerFragment(), ServiceConnection {
         when (connectionStatus) {
             ConnectionStatus.CONNECTED -> startCall()
             else -> {
-                clientLiveCameraStopIbtn.callOnClick()
+                requireActivity().onBackPressed()
             }
         }
     }
