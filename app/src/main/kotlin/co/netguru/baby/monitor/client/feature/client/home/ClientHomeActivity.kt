@@ -10,29 +10,20 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.support.design.widget.Snackbar
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.view.View
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.feature.client.home.switchbaby.ChildrenAdapter
-import co.netguru.baby.monitor.client.common.extensions.getDrawableCompat
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbar
-import co.netguru.baby.monitor.client.common.extensions.toJson
-import co.netguru.baby.monitor.client.common.view.PresetedAnimations
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_client_home.*
-import kotlinx.android.synthetic.main.layout_child_selector.*
 import kotlinx.android.synthetic.main.layout_client_toolbar.*
-import net.cachapa.expandablelayout.ExpandableLayout.State
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,7 +35,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
-    private val adapter by lazy { setupAdapter() }
     private val compositeDisposable = CompositeDisposable()
     private var childServiceBinder: ClientHandlerService.ChildServiceBinder? = null
 
@@ -70,24 +60,12 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     private fun observeCurrentDestination() {
         findNavController(R.id.clientDashboardNavigationHostFragment)
                 .addOnNavigatedListener { controller, destination ->
-                    val shouldToolbarBeVisible = (destination.id == R.id.clientLiveCamera) ||
-                            homeViewModel.isBabyDataFilled()
-
-                    clientHomeToolbarLayout.setVisible(shouldToolbarBeVisible)
                     clientToolbarCancelButton.setVisible(destination.id == R.id.clientLiveCamera)
                 }
     }
 
     override fun onSupportNavigateUp() =
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
-
-    override fun onBackPressed() {
-        if (clientHomeChildrenEll.isExpanded) {
-            clientHomeChildrenEll.collapse()
-        } else {
-            super.onBackPressed()
-        }
-    }
 
     override fun onServiceDisconnected(name: ComponentName?) {
         Timber.i("service disconnected $name")
@@ -121,32 +99,11 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         clientHomeBnv.setupWithNavController(
                 clientDashboardNavigationHostFragment.findNavController()
         )
-        clientHomeChildLl.setOnClickListener {
-            if (clientHomeChildrenEll.isExpanded) {
-                clientHomeChildrenEll.collapse()
-            } else {
-                clientHomeChildrenEll.expand()
-            }
+        settingsIbtn.setOnClickListener {
+            //todo open settings drawer (21.01.2019)
         }
-        clientHomeChildrenEll.setOnExpansionUpdateListener(
-                this::handleExpandableLayout
-        )
         clientToolbarCancelButton.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
-        }
-    }
-
-    private fun handleExpandableLayout(expansionFraction: Float, state: Int) {
-        if (state == State.COLLAPSED &&
-                clientHomeChildrenCoverLl.visibility == View.VISIBLE) {
-
-            clientHomeChildrenCoverLl.setVisible(false)
-            clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(180f, 0f))
-        } else if (state == State.EXPANDING &&
-                clientHomeChildrenCoverLl.visibility == View.GONE) {
-
-            clientHomeChildrenCoverLl.setVisible(true)
-            clientHomeArrowIv.startAnimation(PresetedAnimations.getRotationAnimation(0f, 180f))
         }
     }
 
@@ -164,20 +121,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             it ?: return@Observer
             clientHomeBnv.setVisible(!it)
         })
-        homeViewModel.childList.observe(this, Observer { list ->
-            list ?: return@Observer
-            adapter.selectedChild = homeViewModel.selectedChild.value ?: adapter.selectedChild
-            adapter.originalList = list
-            clientHomeChildrenRv.adapter = adapter
-
-            val dividerItemDecoration = DividerItemDecoration(this@ClientHomeActivity, LinearLayoutManager.VERTICAL).apply {
-                val drawable = getDrawableCompat(R.drawable.divider) ?: return@apply
-                setDrawable(drawable)
-            }
-
-            clientHomeChildrenRv.addItemDecoration(dividerItemDecoration)
-            clientHomeChildrenRv.setHasFixedSize(true)
-        })
     }
 
     private fun bindService() {
@@ -187,16 +130,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                 Service.BIND_AUTO_CREATE
         )
     }
-
-    private fun setupAdapter() = ChildrenAdapter(
-            onChildSelected = { childData ->
-                setSelectedChildName(childData.name ?: "")
-                homeViewModel.selectedChild.postValue(childData)
-            },
-            onNewChildSelected = {
-                clientHomeChildrenEll.collapse()
-            }
-    )
 
     private fun setSelectedChildName(name: String) {
         clientHomeChildTv.text = if (!name.isEmpty()) {

@@ -13,23 +13,18 @@
     app:layout_constraintVertical_bias="0"
     app:layout_constraintVertical_chainStyle="spread_inside">
 
-    <Button
+    <ImageButton
         android:id="@+id/clientToolbarCancelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xmedium"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:layout_marginBottom="@dimen/spacing_small"
-        android:background="@null"
-        android:fontFamily="@font/averta"
-        android:text="@string/cancel"
-        android:textSize="@dimen/text_size_normal"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
+
         android:visibility="gone"
+        app:backgroundTint="@color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_back"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/clientHomeChildLl"
@@ -71,15 +66,17 @@
             android:visibility="gone"
             tools:background="@color/material_red_a400" />
 
-        <ImageView
-            android:id="@+id/clientHomeArrowIv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_small"
-            android:src="@drawable/ic_keyboard_arrow_down_gray_24dp"
-            android:tint="@color/white" />
-
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/settingsIbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:backgroundTint="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_gear_wheel" />
 
     <View
         android:id="@+id/clientHomeToolbarSpacingLl"

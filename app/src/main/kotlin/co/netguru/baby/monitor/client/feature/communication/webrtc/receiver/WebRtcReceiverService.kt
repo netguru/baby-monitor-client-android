@@ -18,6 +18,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.WebRtcBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
 import dagger.android.AndroidInjection
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -75,10 +76,10 @@ class WebRtcReceiverService : Service() {
                         Timber.i("CustomWebSocketServer started")
                         isServerOnline.postValue(true)
                     },
-                    onError = {
-                        Timber.e("launch failed $it")
+                    onError = {e ->
+                        Timber.e("launch failed $e")
                         isServerOnline.postValue(false)
-                        stopServer()
+                        restartServer()
                     }
             ).addTo(compositeDisposable)
         }
@@ -112,6 +113,18 @@ class WebRtcReceiverService : Service() {
         if (jsonObject.has(WEB_SOCKET_ACTION_KEY)) {
             handleWebSocketAction(client, jsonObject)
         }
+    }
+
+    private fun restartServer() {
+        Completable.timer(5, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = { initWebSocketServer() },
+                        onError = { e ->
+                            Timber.e(e)
+                            restartServer()
+                        }
+                ).addTo(compositeDisposable)
     }
 
     private fun handleWebSocketAction(client: WebSocket, jsonObject: JSONObject) {
@@ -171,7 +184,7 @@ class WebRtcReceiverService : Service() {
 
         var currentCall: RtcReceiver? = null
         val isServerOnline: MutableLiveData<Boolean>
-                get() = this@WebRtcReceiverService.isServerOnline
+            get() = this@WebRtcReceiverService.isServerOnline
 
         fun createReceiver(
                 view: CustomSurfaceViewRenderer,
