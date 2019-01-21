@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
-import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
+import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -123,8 +123,8 @@ abstract class RtcCall {
         }
     }
 
-    protected fun createVideoTrack(): VideoTrack? {
-        capturer = createCapturer()
+    protected fun createVideoTrack(isFacingFront: Boolean = false): VideoTrack? {
+        capturer = createCapturer(isFacingFront)
         videoSource = factory?.createVideoSource(capturer)
         return factory?.createVideoTrack(VIDEO_TRACK_ID, videoSource)
     }
@@ -148,10 +148,12 @@ abstract class RtcCall {
         }
     }
 
-    private fun createCapturer(): CameraVideoCapturer? {
+    private fun createCapturer(isFacingFront: Boolean = false): CameraVideoCapturer? {
         val enumerator = Camera1Enumerator()
         for (name in enumerator.deviceNames) {
-            if (enumerator.isBackFacing(name)) {
+            if (isFacingFront && enumerator.isFrontFacing(name)) {
+                return enumerator.createCapturer(name, null)
+            } else if (!isFacingFront && enumerator.isBackFacing(name)) {
                 return enumerator.createCapturer(name, null)
             }
         }

@@ -31,11 +31,21 @@ class RtcReceiver(
                 view.init(sharedContext, null)
             }
         }
-        videoTrack = createVideoTrack()
+        recreateVideoTrack()
+    }
+
+    fun recreateVideoTrack(isFacingFront: Boolean = false) {
+        capturer?.stopCapture()
+        capturer?.dispose()
+
+        videoTrack = createVideoTrack(isFacingFront)
         capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
         Handler(Looper.getMainLooper()).post {
             val localVideoRenderer = VideoRenderer(localView)
             videoTrack?.addRenderer(localVideoRenderer)
+        }
+        if (state == CallState.CONNECTED) {
+            transferAnswer()
         }
     }
 
@@ -131,7 +141,9 @@ class RtcReceiver(
                     }
             )
         }
-        commSocket?.send(jsonObject.toString().toByteArray(Charset.defaultCharset()))
+        if (commSocket?.isOpen == true) {
+            commSocket?.send(jsonObject.toString().toByteArray(Charset.defaultCharset()))
+        }
         reportStateChange(CallState.CONNECTED)
     }
 }

@@ -8,7 +8,7 @@ import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogF
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
 import co.netguru.baby.monitor.client.feature.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment
-import co.netguru.baby.monitor.client.feature.server.ServerFragment
+import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment
 import co.netguru.baby.monitor.client.feature.splash.SplashFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -18,7 +18,7 @@ internal abstract class FragmentBindingsModule {
 
     @FragmentScope
     @ContributesAndroidInjector()
-    internal abstract fun serverFragmentInjector(): ServerFragment
+    internal abstract fun serverFragmentInjector(): ChildMonitorFragment
 
     @FragmentScope
     @ContributesAndroidInjector()
