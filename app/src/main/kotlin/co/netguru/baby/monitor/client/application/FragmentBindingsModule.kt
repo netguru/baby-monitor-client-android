@@ -2,13 +2,13 @@ package co.netguru.baby.monitor.client.application
 
 import co.netguru.baby.monitor.client.application.scope.FragmentScope
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment
+import co.netguru.baby.monitor.client.feature.client.configuration.InstallAppFragment
 import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
 import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
-import co.netguru.baby.monitor.client.feature.settings.ClientSettingsFragment
-import co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment
+import co.netguru.baby.monitor.client.feature.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.splash.SplashFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -34,21 +34,21 @@ internal abstract class FragmentBindingsModule {
 
     @FragmentScope
     @ContributesAndroidInjector
-    internal abstract fun clientTalkFragmentInjector(): ClientTalkFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
     internal abstract fun splashFragmentInjector(): SplashFragment
 
     @FragmentScope
     @ContributesAndroidInjector
-    internal abstract fun ClientLullabiesFragmentInjector(): ClientLullabiesFragment
+    internal abstract fun clientLullabiesFragmentInjector(): ClientLullabiesFragment
 
     @FragmentScope
     @ContributesAndroidInjector
-    internal abstract fun ClientSettingsFragmentInjector(): ClientSettingsFragment
+    internal abstract fun clientSettingsFragmentInjector(): ClientSettingsFragment
 
     @FragmentScope
     @ContributesAndroidInjector
     internal abstract fun clientActivityLogFragmentInjector(): ClientActivityLogFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    internal abstract fun installAppFragment(): InstallAppFragment
 }

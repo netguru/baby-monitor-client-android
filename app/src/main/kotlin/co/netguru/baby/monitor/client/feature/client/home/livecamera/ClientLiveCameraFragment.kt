@@ -40,11 +40,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     private var childServiceBinder: ChildServiceBinder? = null
     private var webRtcClientBinder: WebRtcClientBinder? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.shouldHideNavbar.postValue(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.selectedChildAvailability.observe(this, Observer(this::onAvailabilityChange))
@@ -69,7 +64,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         webRtcClientBinder?.cleanup()
-        viewModel.shouldHideNavbar.postValue(false)
         childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         compositeDisposable.dispose()
     }

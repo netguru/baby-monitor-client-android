@@ -30,7 +30,8 @@ class WelcomeFragment : Fragment() {
             findNavController().navigate(getNavControllerDestination())
         }
         clientButton.setOnClickListener {
-            findNavController().navigate(R.id.actionWelcomeToInstallAppFragment)
+            findNavController().navigate(R.id.actionWelcomeToClientHomeActivity)
+            requireActivity().finish()
         }
     }
 

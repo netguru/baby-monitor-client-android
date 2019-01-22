@@ -19,7 +19,7 @@
     <string name="system_is_busy_error">The system is to busy to process the request</string>
     <string name="p2p_unsupported_on_device_error">Wi-Fi P2P isn\'t supported on the device running the app</string>
     <string name="add_photo">Add a photo</string>
-    <string name="no_name">No name</string>
+    <string name="no_name">Your baby name</string>
     <string name="add_another_baby">Add another baby</string>
     <string name="play_lullaby">play lullaby</string>
     <string name="talk">talk</string>
@@ -84,4 +84,7 @@
 
     <string name="nsd_service_registration_failed">Device discovery registration failed</string>
     <string name="discovery_start_failed">Device discovery start failed</string>
+
+    <string name="devices_disconnected">Devices disconnected</string>
+    <string name="monitoring_enabled">Monitoring enabled</string>
 </resources>

@@ -3,7 +3,78 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/client_home_nav_graph"
-    app:startDestination="@+id/clientDashboard">
+    app:startDestination="@+id/installAppFragment">
+
+    <fragment
+        android:id="@+id/installAppFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.InstallAppFragment"
+        android:label="Install App"
+        tools:layout="@layout/fragment_install_app">
+
+        <action
+            android:id="@+id/actionInstallAppToConfiguration"
+            app:clearTask="true"
+            app:destination="@+id/configurationFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/configurationFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment"
+        android:label="Configuration"
+        tools:layout="@layout/fragment_configuration">
+
+        <action
+            android:id="@+id/actionConfigurationConnectingDone"
+            app:clearTask="true"
+            app:destination="@+id/connectingDoneFragment" />
+
+        <action
+            android:id="@+id/configurationToDashboard"
+            app:clearTask="true"
+            app:destination="@+id/clientDashboard"/>
+
+        <action
+            android:id="@+id/actionConfigurationToFailed"
+            app:clearTask="true"
+            app:destination="@+id/configurationFailedFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/configurationFailedFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFailedFragment"
+        android:label="Configuration Failed"
+        tools:layout="@layout/fragment_configuration_failed">
+
+        <action
+            android:id="@+id/actionConfigurationFailedToWelcome"
+            app:clearTask="true"
+            app:destination="@+id/welcomeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/connectingDoneFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDoneFragment"
+        android:label="Connecting Done"
+        tools:layout="@layout/fragment_connecting_done">
+
+        <action
+            android:id="@+id/actionConnectingDoneToAllDone"
+            app:clearTask="true"
+            app:destination="@+id/allDoneFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/allDoneFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.AllDoneFragment"
+        android:label="All Done"
+        tools:layout="@layout/fragment_all_done">
+
+        <action
+            android:id="@+id/actionAllDoneToClientHome"
+            app:clearTask="true"
+            app:destination="@+id/clientDashboard" />
+    </fragment>
 
     <fragment
         android:id="@+id/clientDashboard"
@@ -15,10 +86,6 @@
             android:id="@+id/actionDashboardToLiveCam"
             app:destination="@+id/clientLiveCamera" />
 
-        <action
-            android:id="@+id/actionDashboardToTalk"
-            app:destination="@+id/clientTalk" />
-
     </fragment>
 
     <fragment
@@ -26,12 +93,6 @@
         android:name="co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment"
         android:label="Live Camera"
         tools:layout="@layout/fragment_client_live_camera" />
-
-    <fragment
-        android:id="@+id/clientTalk"
-        android:name="co.netguru.baby.monitor.client.feature.client.home.talk.ClientTalkFragment"
-        android:label="Talk"
-        tools:layout="@layout/fragment_client_talk" />
 
     <fragment
         android:id="@+id/clientActivityLog"

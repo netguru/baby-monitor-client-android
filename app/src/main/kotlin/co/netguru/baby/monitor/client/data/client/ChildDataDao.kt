@@ -1,10 +1,8 @@
 package co.netguru.baby.monitor.client.data.client
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
-import android.arch.persistence.room.Update
+import android.arch.persistence.room.*
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface ChildDataDao {
@@ -12,7 +10,10 @@ interface ChildDataDao {
     @Query("SELECT * FROM CHILD_DATA")
     fun getAllChildren(): Flowable<List<ChildDataEntity>>
 
-    @Insert
+    @Query("SELECT * FROM CHILD_DATA WHERE address LIKE :address")
+    fun getChildByAddress(address: String): Single<List<ChildDataEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertChildData(data: ChildDataEntity)
 
     @Update

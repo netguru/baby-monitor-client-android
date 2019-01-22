@@ -44,12 +44,13 @@ class DataRepository @Inject constructor(
         database.childDataDao().insertChildData(data)
     }
 
-    fun updateChildData(data: ChildDataEntity) = Single.fromCallable {
+    fun updateChildData(data: ChildDataEntity) = Completable.fromAction {
         database.childDataDao().updateChildData(data)
-        data
     }
 
     fun getChildData() = database.childDataDao().getAllChildren()
+
+    fun getChildDataWithAddress(address: String) = database.childDataDao().getChildByAddress(address)
 
     fun deleteAllData() = Completable.fromAction {
         database.childDataDao().deleteAll()

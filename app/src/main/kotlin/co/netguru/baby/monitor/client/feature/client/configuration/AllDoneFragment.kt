@@ -21,7 +21,6 @@ class AllDoneFragment : Fragment() {
 
         allDoneGetStartedButton.setOnClickListener {
             findNavController().navigate(R.id.actionAllDoneToClientHome)
-            requireActivity().finish()
         }
     }
 }
