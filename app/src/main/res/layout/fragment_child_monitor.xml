@@ -16,19 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/childNameTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="@dimen/text_size_xxsmall"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_normal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Jane" />
-
         <ImageButton
             android:id="@+id/backIbtn"
             android:layout_width="wrap_content"
@@ -39,26 +26,31 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_arrow_back" />
 
+        <TextView
+            android:id="@+id/childNameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="@dimen/text_size_xxsmall"
+            android:fontFamily="@font/rubik_medium"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Jane" />
 
         <co.netguru.baby.monitor.client.common.view.PulsatingView
             android:id="@+id/pulsatingView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/activeIndicatorIv"
-            app:layout_constraintEnd_toEndOf="@+id/activeIndicatorIv"
-            app:layout_constraintStart_toStartOf="@+id/activeIndicatorIv"
-            app:layout_constraintTop_toTopOf="@+id/activeIndicatorIv" />
-
-        <ImageView
-            android:id="@+id/activeIndicatorIv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_xmedium"
-            app:backgroundTint="#00000000"
+            android:layout_width="@dimen/spacing_xxxmedium"
+            android:layout_height="@dimen/spacing_xxxmedium"
+            android:layout_marginStart="@dimen/spacing_small"
+            app:activeColor="@color/active_pulsating"
+            app:circleSize="@dimen/spacing_small"
+            app:inactiveColor="@color/inactive_pulsating"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/childNameTv"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_inactive" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/settingsIbtn"

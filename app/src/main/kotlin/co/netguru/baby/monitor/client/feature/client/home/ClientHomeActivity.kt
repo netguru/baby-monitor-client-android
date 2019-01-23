@@ -9,20 +9,17 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.design.widget.Snackbar
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.setVisible
-import co.netguru.baby.monitor.client.common.extensions.showSnackbar
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_client_home.*
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.layout_client_toolbar.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,7 +38,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_home)
-        homeViewModel.saveConfiguration()
 
         setupView()
         getData()
@@ -76,29 +72,12 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             childServiceBinder = service
             service.getChildConnectionStatus().observe(this, Observer { childEvent ->
                 val data = childEvent?.data ?: return@Observer
-
-                val childName = if (data.first.name.isNullOrEmpty()) {
-                    getString(R.string.child)
-                } else {
-                    data.first.name
-                }
-                val snackbarText = if (data.second == ConnectionStatus.DISCONNECTED) {
-                    getString(R.string.client_dashboard_child_disconnected, childName)
-                } else {
-                    getString(R.string.client_dashboard_child_connected, childName)
-                }
-                window.decorView.rootView.showSnackbar(
-                        snackbarText,
-                        Snackbar.LENGTH_LONG)
                 homeViewModel.selectedChildAvailabilityPostValue(data)
             })
         }
     }
 
     private fun setupView() {
-        clientHomeBnv.setupWithNavController(
-                clientDashboardNavigationHostFragment.findNavController()
-        )
         settingsIbtn.setOnClickListener {
             //todo open settings drawer (21.01.2019)
         }
@@ -114,13 +93,15 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             setSelectedChildName(it.name ?: "")
             GlideApp.with(this)
                     .load(it.image)
+                    .placeholder(R.drawable.child)
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeChildMiniatureIv)
         })
-        homeViewModel.shouldHideNavbar.observe(this, Observer {
-            it ?: return@Observer
-            clientHomeBnv.setVisible(!it)
-        })
+        homeViewModel.getApplicationSavedState()
+                .subscribeBy(
+                        onSuccess = this::navigateApp,
+                        onError = Timber::e
+                ).addTo(compositeDisposable)
     }
 
     private fun bindService() {
@@ -136,6 +117,19 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             name
         } else {
             getString(R.string.no_name)
+        }
+    }
+
+    private fun navigateApp(state: AppState) {
+        when (state) {
+            AppState.CLIENT -> {
+                findNavController(R.id.clientDashboardNavigationHostFragment)
+                        .navigate(R.id.configurationFragment)
+            }
+            else -> {
+                findNavController(R.id.clientDashboardNavigationHostFragment)
+                        .navigate(R.id.installAppFragment)
+            }
         }
     }
 }

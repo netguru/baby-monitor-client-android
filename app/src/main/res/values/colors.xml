@@ -27,4 +27,8 @@
 
     <color name="text_color">#211E35</color>
     <color name="text_color_a30">#4d211e35</color>
+
+
+    <color name="active_pulsating">#33FF99</color>
+    <color name="inactive_pulsating">#9b9b9b</color>
 </resources>

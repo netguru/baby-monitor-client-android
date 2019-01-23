@@ -22,22 +22,9 @@
             app:destination="@+id/onboardingPermissions" />
 
         <action
-            android:id="@+id/actionWelcomeToInstallAppFragment"
+            android:id="@+id/actionWelcomeToClientHomeActivity"
             app:clearTask="true"
-            app:destination="@+id/installAppFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/installAppFragment"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.InstallAppFragment"
-        android:label="Install App"
-        tools:layout="@layout/fragment_install_app">
-
-        <action
-            android:id="@+id/actionInstallAppToConfiguration"
-            app:clearTask="true"
-            app:destination="@+id/configurationFragment" />
-
+            app:destination="@+id/clientHomeActivity" />
     </fragment>
 
     <fragment
@@ -79,59 +66,6 @@
         android:name="co.netguru.baby.monitor.client.feature.server.ServerActivity"
         android:label="Server"
         tools:layout="@layout/activity_server" />
-
-    <fragment
-        android:id="@+id/configurationFragment"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment"
-        android:label="Configuration"
-        tools:layout="@layout/fragment_configuration">
-
-        <action
-            android:id="@+id/actionConfigurationConnectingDone"
-            app:clearTask="true"
-            app:destination="@+id/connectingDoneFragment" />
-
-        <action
-            android:id="@+id/actionConfigurationToFailed"
-            app:clearTask="true"
-            app:destination="@+id/configurationFailedFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/configurationFailedFragment"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFailedFragment"
-        android:label="Configuration Failed"
-        tools:layout="@layout/fragment_configuration_failed">
-
-        <action
-            android:id="@+id/actionConfigurationFailedToWelcome"
-            app:clearTask="true"
-            app:destination="@+id/welcomeFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/connectingDoneFragment"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDoneFragment"
-        android:label="Connecting Done"
-        tools:layout="@layout/fragment_connecting_done">
-
-        <action
-            android:id="@+id/actionConnectingDoneToAllDone"
-            app:clearTask="true"
-            app:destination="@+id/allDoneFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/allDoneFragment"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.AllDoneFragment"
-        android:label="All Done"
-        tools:layout="@layout/fragment_all_done">
-
-        <action
-            android:id="@+id/actionAllDoneToClientHome"
-            app:clearTask="true"
-            app:destination="@+id/clientHomeActivity" />
-    </fragment>
 
     <activity
         android:id="@+id/clientHomeActivity"

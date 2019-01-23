@@ -14,26 +14,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeBnv"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clientHomeToolbarLayout"
         app:navGraph="@navigation/client_home_nav_graph" />
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/clientHomeBnv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent_indigo_50"
-        android:backgroundTint="@color/transparent_indigo_50"
-        app:elevation="@dimen/spacing_xmedium"
-        app:itemIconTint="@color/indigo_accent"
-        app:labelVisibilityMode="unlabeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientDashboardNavigationHostFragment"
-        app:layout_constraintVertical_bias="1"
-        app:menu="@menu/home_menu" />
 
 </android.support.constraint.ConstraintLayout>

@@ -2,15 +2,13 @@ package co.netguru.baby.monitor.client.feature.client.configuration
 
 import android.app.Activity
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.content.Intent
-import androidx.navigation.NavController
-import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
+import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.splash.EnterActivity
 import io.reactivex.disposables.CompositeDisposable
@@ -26,40 +24,36 @@ class ConfigurationViewModel @Inject constructor(
         private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
-    internal val childList = MutableLiveData<List<ChildDataEntity>>()
-    internal val serviceInfoData = Transformations.map(nsdServiceManager.serviceInfoData) {
-        it ?: return@map null
-        return@map it[0]
-    }
-
+    internal val appSavedState = MutableLiveData<AppState>()
     private val compositeDisposable = CompositeDisposable()
 
     init {
-        dataRepository.getChildData()
-                .subscribeOn(Schedulers.newThread())
-                .subscribeBy(
-                        onNext = { list ->
-                            childList.postValue(list)
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+        nsdServiceManager.serviceInfoData.observeForever { list ->
+            list?.first()?.let { service ->
+                handleNewService(service.host.hostAddress, service.port)
+            }
+        }
     }
 
-    internal fun appendNewAddress(
+    private fun handleNewService(
             address: String,
-            port: Int,
-            navController: NavController
+            port: Int
     ) {
-        dataRepository.addChildData(
-                ChildDataEntity("ws://$address:$port")
-        ).subscribeOn(Schedulers.io())
+        val address = "ws://$address:$port"
+        dataRepository.getChildDataWithAddress(address)
+                .flatMapCompletable {list ->
+                    if (list.isNullOrEmpty()) {
+                        dataRepository.addChildData(ChildDataEntity(address))
+                    } else {
+                        dataRepository.updateChildData(list[0].copy(address = address))
+                    }
+                }.andThen(dataRepository.getSavedState())
+                .subscribeOn(Schedulers.io())
                 .subscribeBy(
-                        onComplete = {
-                            navController.navigate(R.id.actionConfigurationConnectingDone)
+                        onSuccess = { state ->
+                            appSavedState.postValue(state)
                         },
-                        onError = { e ->
-                            Timber.e(e)
-                        }
+                        onError = Timber::e
                 ).addTo(compositeDisposable)
     }
 

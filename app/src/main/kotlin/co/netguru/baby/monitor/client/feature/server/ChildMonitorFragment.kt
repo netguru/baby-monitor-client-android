@@ -183,10 +183,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         service.isServerOnline.observe(this, Observer { isAvailable ->
             if (isAvailable == true) {
                 pulsatingView.start()
-                activeIndicatorIv.setImageResource(R.drawable.ic_active)
             } else {
                 pulsatingView.stop()
-                activeIndicatorIv.setImageResource(R.drawable.ic_inactive)
             }
         })
     }

@@ -2,14 +2,16 @@ package co.netguru.baby.monitor.client.common.extensions
 
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.res.Resources
 import android.net.Uri
 import android.provider.Settings
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 
 fun Fragment.showSnackbarMessage(
-    @StringRes resId: Int, action: (Snackbar.() -> Unit)? = null
+        @StringRes resId: Int, action: (Snackbar.() -> Unit)? = null
 ): Snackbar? {
     return view?.run {
         Snackbar.make(this, resId, Snackbar.LENGTH_LONG).apply {
@@ -34,3 +36,9 @@ fun Fragment.bindService(intentClass: Class<*>, conn: ServiceConnection, flags: 
             flags
     )
 }
+
+fun Fragment.getColor(resource: Int, theme: Resources.Theme? = null) = ResourcesCompat.getColor(
+        resources,
+        resource,
+        theme
+)

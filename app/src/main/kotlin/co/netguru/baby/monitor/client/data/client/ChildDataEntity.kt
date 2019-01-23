@@ -5,7 +5,10 @@ import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "CHILD_DATA")
 data class ChildDataEntity(
-        @PrimaryKey val address: String,
+        val address: String,
         var image: String? = null,
         var name: String? = null
-)
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Long? = null
+}

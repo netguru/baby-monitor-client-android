@@ -26,47 +26,34 @@
         app:srcCompat="@drawable/ic_arrow_back"
         tools:visibility="visible" />
 
-    <LinearLayout
-        android:id="@+id/clientHomeChildLl"
+    <ImageView
+        android:id="@+id/clientHomeChildMiniatureIv"
+        android:layout_width="@dimen/spacing_xxmedium"
+        android:layout_height="@dimen/spacing_xxmedium"
+        android:layout_margin="@dimen/spacing_small"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/clientHomeChildTv"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/clientHomeChildTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
+        android:ellipsize="end"
+        android:fontFamily="@font/rubik_medium"
         android:gravity="center"
-        android:orientation="horizontal"
+        android:maxLength="14"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/clientHomeChildMiniatureIv"
-            android:layout_width="@dimen/spacing_xxmedium"
-            android:layout_height="@dimen/spacing_xxmedium"
-            android:layout_margin="@dimen/spacing_small"
-            android:src="@drawable/ripple" />
-
-        <TextView
-            android:id="@+id/clientHomeChildTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/averta"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_normal"
-            android:textStyle="bold"
-            tools:text="Jane" />
-
-        <ImageView
-            android:id="@+id/clientHomeChildAvailabilityIv"
-            android:layout_width="@dimen/spacing_xmedium"
-            android:layout_height="@dimen/spacing_xmedium"
-            android:layout_marginStart="@dimen/spacing_small"
-            android:layout_weight="0"
-            android:visibility="gone"
-            tools:background="@color/material_red_a400" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Jane" />
 
     <ImageButton
         android:id="@+id/settingsIbtn"
@@ -77,16 +64,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_gear_wheel" />
-
-    <View
-        android:id="@+id/clientHomeToolbarSpacingLl"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/spacing_xxxsmall"
-        android:background="@color/transparent_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1" />
-
 
 </android.support.constraint.ConstraintLayout>
 

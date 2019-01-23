@@ -8,7 +8,7 @@
     <dimen name="text_size_big">18sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="text_size_xxlarge">24sp</dimen>
-    <dimen name="text_size_huge">34sp</dimen>
+    <dimen name="text_size_huge">32sp</dimen>
 
     <dimen name="spacing_xxxsmall">1dp</dimen>
     <dimen name="spacing_xxsmall">4dp</dimen>

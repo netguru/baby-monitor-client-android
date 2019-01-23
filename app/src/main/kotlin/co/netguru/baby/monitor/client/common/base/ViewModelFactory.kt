@@ -7,6 +7,7 @@ import co.netguru.baby.monitor.client.feature.client.configuration.Configuration
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabiesViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
+import co.netguru.baby.monitor.client.feature.settings.SettingsViewModel
 import co.netguru.baby.monitor.client.feature.splash.SplashViewModel
 import dagger.Binds
 import dagger.MapKey
@@ -60,6 +61,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SplashViewModel::class)
     abstract fun bindSplashViewModel(lullabiesViewModel: SplashViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingsViewModel::class)
+    abstract fun bindSettingsViewModel(settingsViewModel: SettingsViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
