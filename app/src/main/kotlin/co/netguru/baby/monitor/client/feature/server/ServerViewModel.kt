@@ -1,9 +1,10 @@
 package co.netguru.baby.monitor.client.feature.server
 
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.DataRepository
-import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.data.splash.AppState
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -16,6 +17,7 @@ class ServerViewModel @Inject constructor(
         private val dataRepository: DataRepository
 ) : ViewModel() {
 
+    internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
     private val compositeDisposable = CompositeDisposable()
 
     internal fun registerNsdService(

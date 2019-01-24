@@ -16,6 +16,7 @@
 
     <color name="material_red_a400">#FF1744</color>
     <color name="material_green_a400">#00E676</color>
+    <color name="material_gray_50">#FAFAFA</color>
 
     <color name="transparent_indigo_50">#FFEDEDFD</color>
     <color name="indigo_accent">#7c75f6</color>
