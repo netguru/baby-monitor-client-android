@@ -54,9 +54,16 @@ class FirebaseRepository(
         }
     }
 
+    internal fun isUploadEnablad() = preferencesWrapper.isUploadEnablad()
+
+    internal fun setUploadEnabled(enable: Boolean) {
+        preferencesWrapper.setUploadEnabled(enable)
+        continueUploadingAfterProcessRestartIfNeeded()
+    }
+
     @RunsInBackground
     internal fun continueUploadingAfterProcessRestartIfNeeded() {
-        if (!preferencesWrapper.isUploadInProgress()) {
+        if (!preferencesWrapper.isUploadEnablad()) {
             return
         }
         if (!preferencesWrapper.isFirebaseSessionResumable()) {
@@ -76,11 +83,8 @@ class FirebaseRepository(
     internal fun uploadFirstRecording(): UploadTask? {
         val file = directory.listFiles().firstOrNull()
         if (file == null) {
-            preferencesWrapper.setUploadInProgress(false)
             return null
         }
-        preferencesWrapper.setUploadInProgress(true)
-
         val storage = FirebaseStorage.getInstance("gs://" + context.getString(R.string.google_storage_bucket))
         storageRef = storage.reference
         val fileUri = Uri.fromFile(file)

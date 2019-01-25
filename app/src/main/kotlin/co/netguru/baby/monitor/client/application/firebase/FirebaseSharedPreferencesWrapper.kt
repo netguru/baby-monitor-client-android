@@ -37,11 +37,10 @@ class FirebaseSharedPreferencesWrapper @Inject constructor(
                 getFileUriString() == null
     }
 
-    fun isUploadInProgress(): Boolean {
-        return preferences.getBoolean(
-                FIREBASE_UPLOAD_IS_IN_PROGRESS,
-                false)
-    }
+    fun isUploadEnablad() = preferences.getBoolean(
+            FIREBASE_UPLOAD_ENABLED,
+            false
+    )
 
     fun getSessionUri(): Uri {
         return Uri.parse(getSessionUriString())
@@ -51,9 +50,9 @@ class FirebaseSharedPreferencesWrapper @Inject constructor(
         return Uri.fromFile(File(getFileUriString()))
     }
 
-    fun setUploadInProgress(isInProgress: Boolean) {
+    fun setUploadEnabled(isInProgress: Boolean) {
         preferences.edit {
-            putBoolean(FIREBASE_UPLOAD_IS_IN_PROGRESS, isInProgress)
+            putBoolean(FIREBASE_UPLOAD_ENABLED, isInProgress)
         }
     }
 
@@ -80,7 +79,7 @@ class FirebaseSharedPreferencesWrapper @Inject constructor(
     }
 
     companion object {
-        private const val FIREBASE_UPLOAD_IS_IN_PROGRESS = "firebase_is_in_progress"
+        private const val FIREBASE_UPLOAD_ENABLED = "firebase_upload_enabled"
         private const val FIREBASE_SESSION_URI = "firebase_session_uri"
         private const val FIREBASE_FILE_URI = "firebase_file_uri"
         private const val FIREBASE_UPLOAD_DATE = "firebase_upload_date"
