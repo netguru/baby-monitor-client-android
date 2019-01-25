@@ -4,67 +4,273 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background">
+    tools:background="@color/background">
 
-    <android.widget.Button
-        android:id="@+id/serverButton"
-        style="@style/MainButtonStyle"
-        android:layout_width="0dp"
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeImageTopGl"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xxmedium"
-        android:layout_marginEnd="@dimen/spacing_xxmedium"
-        android:text="@string/start_server_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/clientButton"
-        app:layout_constraintTop_toBottomOf="@+id/clientButton" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.13" />
 
-    <android.widget.Button
-        android:id="@+id/clientButton"
-        style="@style/MainButtonStyle"
+    <ImageView
+        android:id="@+id/specifyDeviceCheckmarkIv"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_small"
-        android:layout_marginTop="@dimen/spacing_xmedium"
-        android:layout_marginEnd="@dimen/spacing_xxmedium"
-        android:layout_marginBottom="@dimen/spacing_normal"
-        android:text="@string/start_client_text"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/welcomeImageBottomGl"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/welcomeDescriptionTv"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/welcomeImageTopGl"
+        app:srcCompat="@drawable/ic_specify_device_checkmark" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeImageBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.30" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeTitleTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.36" />
 
     <TextView
         android:id="@+id/welcomeTitleTv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_bold"
+        android:gravity="center"
+        android:text="@string/specify_this_device_title"
+        android:textColor="@color/white"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/welcomeTitleBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/welcomeTitleTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeTitleBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xxmedium"
-        android:layout_marginBottom="@dimen/spacing_normal"
-        android:fontFamily="@font/averta"
-        android:text="@string/specify_this_device_title"
-        android:textColor="@color/primary_dark"
-        android:textSize="@dimen/text_size_big"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/welcomeDescriptionTv"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.45" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeDescriptionTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.48" />
 
     <TextView
         android:id="@+id/welcomeDescriptionTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_xmedium"
-        android:alpha="0.5"
-        android:fontFamily="@font/averta"
-        android:text="@string/welcome_to_baby_monitor_nlet_s_start_by_defining_this_device_description"
-        android:textColor="@color/primary_dark"
-        android:textSize="@dimen/text_size_normal"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="@+id/welcomeTitleTv" />
+        android:fontFamily="@font/rubik_regular"
+        android:text="@string/start_by_defining_this_device_description"
+        android:textColor="@color/accent"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/welcomeDescriptionBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/welcomeDescriptionTopGl" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/welcomeDescriptionBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
+        app:layout_constraintGuide_percent="0.50" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeParentButtonTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.54" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/parentCtl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        android:background="@drawable/button_outline_to_purple_rounded"
+        app:layout_constraintBottom_toBottomOf="@+id/welcomeParentButtonBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/welcomeParentButtonTopGl">
+
+        <android.support.constraint.Guideline
+            android:id="@+id/parentIvTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.14" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/parentIvStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.115" />
+
+        <ImageView
+            android:id="@+id/parentIv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/parentIvBottomGl"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@+id/parentIvStartGl"
+            app:layout_constraintTop_toTopOf="@+id/parentIvTopGl"
+            app:srcCompat="@drawable/ic_camera" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/parentIvBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.86" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/parentTvStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <TextView
+            android:id="@+id/parentTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/parent"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintBottom_toTopOf="@+id/parentDescriptionTv"
+            app:layout_constraintEnd_toEndOf="@+id/parentDescriptionTv"
+            app:layout_constraintStart_toStartOf="@+id/parentTvStartGl"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/parentDescriptionTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:text="@string/parent_button_description"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/parentTvStartGl"
+            app:layout_constraintTop_toBottomOf="@+id/parentTv" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeParentButtonBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.72" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeBabyButtonTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.74" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/babyCtl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/spacing_xmedium"
+        android:layout_marginEnd="@dimen/spacing_xmedium"
+        android:background="@drawable/button_outline_to_purple_rounded"
+        app:layout_constraintBottom_toBottomOf="@+id/welcomeBabyButtonBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/welcomeBabyButtonTopGl">
+
+        <android.support.constraint.Guideline
+            android:id="@+id/babyIvTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.14" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/babyIvStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.115" />
+
+        <ImageView
+            android:id="@+id/babyIv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/babyIvBottomGl"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@+id/babyIvStartGl"
+            app:layout_constraintTop_toTopOf="@+id/babyIvTopGl"
+            app:srcCompat="@drawable/ic_baby" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/babyIvBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.86" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/babyTvStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <TextView
+            android:id="@+id/babyTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/baby"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintBottom_toTopOf="@+id/babyDescriptionTv"
+            app:layout_constraintEnd_toEndOf="@+id/babyDescriptionTv"
+            app:layout_constraintStart_toStartOf="@+id/babyTvStartGl"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/babyDescriptionTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:text="@string/baby_button_description"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/babyTvStartGl"
+            app:layout_constraintTop_toBottomOf="@+id/babyTv" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/welcomeBabyButtonBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.92" />
+
 </android.support.constraint.ConstraintLayout>
