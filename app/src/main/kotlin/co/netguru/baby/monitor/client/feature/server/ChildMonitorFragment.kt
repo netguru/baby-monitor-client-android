@@ -11,7 +11,6 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
@@ -34,7 +33,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override val layoutResource = R.layout.fragment_child_monitor
 
     private val viewModel by lazy {
-        ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
     }
 
     @Inject
@@ -126,7 +125,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             requireActivity().onBackPressed()
         }
         settingsIbtn.setOnClickListener {
-            findNavController().navigate(R.id.serverToSettings)
+            viewModel.shouldDrawerBeOpen.postValue(true)
         }
         childNameTv.text = "Jane" //todo provide non hardcoded string (18.01.2019)
     }

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_dark">
+
+    <TextView
+        android:id="@+id/clientSettingsTitleTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxxmedium"
+        android:fontFamily="@font/rubik_medium"
+        android:text="@string/settings"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_normal"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/switchSendRecordingsTitleTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxnormal"
+        android:layout_marginEnd="@dimen/spacing_normal"
+        android:fontFamily="@font/rubik_medium"
+        android:text="@string/allow_to_send_recordings"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_normal"
+        app:layout_constraintEnd_toStartOf="@+id/sendRecordingsSw"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@+id/clientSettingsTitleTv" />
+
+    <Switch
+        android:id="@+id/sendRecordingsSw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEndt"
+        app:layout_constraintTop_toTopOf="@+id/switchSendRecordingsTitleTv" />
+
+    <ImageView
+        android:id="@+id/infoIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxsmall"
+        app:backgroundTint="@color/transparent"
+        app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toTopOf="@+id/switchSendRecordingsInfoTv"
+        app:srcCompat="@drawable/ic_info" />
+
+    <TextView
+        android:id="@+id/switchSendRecordingsInfoTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:fontFamily="@font/rubik_regular"
+        android:text="@string/send_recordings_info"
+        android:textColor="@color/inactive_pulsating"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEndt"
+        app:layout_constraintStart_toEndOf="@+id/infoIv"
+        app:layout_constraintTop_toBottomOf="@+id/switchSendRecordingsTitleTv" />
+
+    <ImageButton
+        android:id="@+id/closeIbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:backgroundTint="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/clientSettingsTitleTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/clientSettingsTitleTv"
+        app:srcCompat="@drawable/ic_close" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/rateUsBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:background="@drawable/button_purple_rounded"
+        android:enabled="true"
+        android:fontFamily="@font/rubik_bold"
+        android:text="@string/rate_us"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtn"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEndt"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/settingsLogoutBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xxxmedium"
+        android:background="@drawable/button_outline_to_purple_rounded"
+        android:enabled="true"
+        android:fontFamily="@font/rubik_bold"
+        android:text="@string/reset_the_app"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/middleHeartIv"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEndt"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin" />
+
+
+    <TextView
+        android:id="@+id/firstPartTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_xxnormal"
+        android:fontFamily="@font/rubik_light"
+        android:text="@string/splash_crafted_with"
+        android:textColor="@color/primary"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/middleHeartIv"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin" />
+
+    <ImageView
+        android:id="@+id/middleHeartIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_small"
+        android:src="@drawable/heart"
+        android:tint="@color/accent"
+        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
+        app:layout_constraintEnd_toStartOf="@+id/secondPartTv"
+        app:layout_constraintStart_toEndOf="@+id/firstPartTv"
+        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
+
+    <TextView
+        android:id="@+id/secondPartTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/rubik_regular"
+        android:text="@string/splash_by_netguru"
+        android:textColor="@color/accent"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEndt"
+        app:layout_constraintStart_toEndOf="@+id/middleHeartIv"
+        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientSettingsGLBegin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/spacing_xxmedium" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientSettingsGLEndt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/spacing_xxmedium" />
+</android.support.constraint.ConstraintLayout>
