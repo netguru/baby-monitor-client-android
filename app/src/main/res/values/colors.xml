@@ -5,30 +5,22 @@
     <color name="accent">#9c8fff</color>
 
     <color name="primary_dark_a30">#4d211e35</color>
-    <color name="primary_dark_a15">#26211e35</color>
     <color name="primary_dark_a50">#80211e35</color>
 
     <color name="transparent">#00000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="white_a30">#4DFFFFFF</color>
     <color name="black">#000000</color>
-    <color name="black_a60">#99000000</color>
     <color name="black_a82">#D1000000</color>
 
-    <color name="material_red_a400">#FF1744</color>
-    <color name="material_green_a400">#00E676</color>
     <color name="material_gray_50">#FAFAFA</color>
 
-    <color name="transparent_indigo_50">#FFEDEDFD</color>
     <color name="indigo_accent">#7c75f6</color>
     <color name="material_grey_400">#BDBDBD</color>
-    <color name="material_gray_800">#424242</color>
 
-    <color name="presentation_text_color">#80fafafa</color>
     <color name="transparent_white">#33FFFFFF</color>
 
-    <color name="text_color">#211E35</color>
-    <color name="text_color_a30">#4d211e35</color>
-
+    <color name="background">#211f36</color>
 
     <color name="active_pulsating">#33FF99</color>
     <color name="inactive_pulsating">#9b9b9b</color>

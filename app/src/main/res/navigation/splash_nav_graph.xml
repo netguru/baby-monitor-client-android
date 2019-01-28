@@ -3,7 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splash_nav_graph"
-    app:startDestination="@+id/welcomeFragment">
+    app:startDestination="@+id/feature">
+
+    <fragment
+        android:id="@+id/feature"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.FeaturePresentationFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_feature_a">
+        <action
+            android:id="@+id/actionToFeature"
+            app:destination="@+id/feature" />
+        <action
+            android:id="@+id/actionFeatureSkip"
+            app:destination="@+id/specifyDevice" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/specifyDevice"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.SpecifyDevicesFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_specify_devices">
+
+        <action
+            android:id="@+id/specifyDeviceToWelcome"
+            app:destination="@+id/welcomeFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/welcomeFragment"

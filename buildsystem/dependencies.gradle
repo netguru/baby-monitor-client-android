@@ -76,6 +76,6 @@ ext {
             rules              : 'com.android.support.test:rules:1.0.1',
             espresso           : 'com.android.support.test.espresso:espresso-core:2.2.2',
             room               : "android.arch.persistence.room:testing:$roomVersion",
-            supportAnnotations  : 'com.android.support:support-annotations:28.0.0',
+            supportAnnotations : 'com.android.support:support-annotations:28.0.0',
     ]
 }

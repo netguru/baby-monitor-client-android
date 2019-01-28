@@ -223,9 +223,6 @@ dependencies {
     //WebRtc
     implementation libs.googleWebRtc
 
-    //BubblePagerIndicator
-    implementation libs.bubblePagerIndicator
-
     //Firebase Storage
     implementation libs.firebaseStorage
 

@@ -1,11 +1,11 @@
 package co.netguru.baby.monitor.client.common.base
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import dagger.android.support.DaggerFragment
 
-abstract class BaseDaggerFragment : DaggerFragment() {
+abstract class BaseFragment: Fragment() {
     abstract val layoutResource: Int
 
     override fun onCreateView(

@@ -7,11 +7,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.feature.presentation.PresentationActivity
-import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import co.netguru.baby.monitor.client.data.splash.AppState
+import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
+import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
+import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -54,7 +54,7 @@ class SplashFragment : BaseDaggerFragment() {
                             ClientHomeActivity::class.java
                         }
                         else -> {
-                            PresentationActivity::class.java
+                            OnboardingActivity::class.java
                         }
                     }
                     startActivity(Intent(requireContext(), classJava))
