@@ -36,6 +36,8 @@ class ConfigurationViewModel @Inject constructor(
                 handleNewService(service.host.hostAddress, service.port)
             }
         }
+
+        handleNewService("192.168.1.85", 100000)
     }
 
     private fun handleNewService(

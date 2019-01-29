@@ -32,7 +32,7 @@
         <action
             android:id="@+id/configurationToDashboard"
             app:clearTask="true"
-            app:destination="@+id/clientDashboard"/>
+            app:destination="@+id/clientDashboard" />
 
         <action
             android:id="@+id/actionConfigurationToFailed"
@@ -85,6 +85,10 @@
         <action
             android:id="@+id/actionDashboardToLiveCam"
             app:destination="@+id/clientLiveCamera" />
+
+        <action
+            android:id="@+id/actionDashboardToLogs"
+            app:destination="@+id/clientActivityLog" />
 
     </fragment>
 

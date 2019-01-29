@@ -76,4 +76,12 @@
     <string name="sync_header">Prepare 2 devices\nfor setup</string>
     <string name="sync_description"><![CDATA[<font color=#9c8fff>You need 2 devices to start using Baby<br>Monitor. </font><font color=#ffffff>One</font><font color=#9c8fff> - that will keep an eye on your<br>baby, and </font><font color=#ffffff>second</font><font color=#9c8fff> - which you will have<br>with you to easily check on your baby.</font>]]></string>
     <string name="sync_now_go">Now go to the step where you decide if this\ndevice will stay with you or with your baby</string>
+
+    <string name="end_of_logs_info">It seems you don’t have more notifications!\nEnjoy using Baby Monitor!</string>
+    <string name="your_baby_name">Your baby name</string>
+    <string name="latest_activity">Latest activity</string>
+
+    <string name="date_today">Today, %1$s</string>
+    <string name="date_yesterday">Yesterday, %1$s</string>
+    <string name="minutes_ago">%1$l minutes ago</string>
 </resources>

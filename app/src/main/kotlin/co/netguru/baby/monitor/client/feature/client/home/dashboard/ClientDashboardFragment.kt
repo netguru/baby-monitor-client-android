@@ -34,6 +34,9 @@ class ClientDashboardFragment : BaseDaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getData()
+        clientHomeActivityLogIbtn.setOnClickListener {
+            findNavController().navigate(R.id.actionDashboardToLogs)
+        }
     }
 
     private fun getData() {

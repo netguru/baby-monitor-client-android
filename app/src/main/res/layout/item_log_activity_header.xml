@@ -3,20 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
+    android:background="@color/background"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/itemActivityLogHeaderTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_xxxmedium"
+        android:layout_marginStart="@dimen/spacing_xmedium"
         android:layout_marginTop="@dimen/spacing_xmedium"
         android:layout_marginBottom="@dimen/spacing_xmedium"
-        android:textColor="@color/primary_dark"
-        android:fontFamily="@font/averta"
-        android:textSize="@dimen/text_size_big"
-        android:textStyle="bold"
-        tools:text="Today" />
+        android:fontFamily="@font/rubik_medium"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_normal"
+        tools:text="Today, Jan 3, 2019" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/separator_color" />
 
 </LinearLayout>

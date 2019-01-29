@@ -15,4 +15,6 @@ sealed class LogData {
     data class LogHeader(
             override val timeStamp: LocalDateTime
     ) : LogData()
+
+    class EndText(override val timeStamp: LocalDateTime) : LogData()
 }

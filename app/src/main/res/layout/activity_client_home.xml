@@ -2,11 +2,25 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background">
 
     <include
-        android:id="@+id/clientHomeToolbarLayout"
-        layout="@layout/layout_client_toolbar" />
+        android:id="@+id/childToolbarLayout"
+        layout="@layout/toolbar_child"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        app:layout_constraintBottom_toTopOf="@+id/defaultToolbarLayout"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/defaultToolbarLayout"
+        layout="@layout/toolbar_default"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="?android:actionBarSize"
+        app:layout_constraintBottom_toTopOf="@+id/clientDashboardNavigationHostFragment"
+        app:layout_constraintTop_toBottomOf="@+id/childToolbarLayout" />
 
     <fragment
         android:id="@+id/clientDashboardNavigationHostFragment"
@@ -17,7 +31,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeToolbarLayout"
+        app:layout_constraintTop_toBottomOf="@+id/defaultToolbarLayout"
         app:navGraph="@navigation/client_home_nav_graph" />
 
 </android.support.constraint.ConstraintLayout>

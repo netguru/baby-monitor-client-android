@@ -4,65 +4,142 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:focusableInTouchMode="false">
+    android:focusableInTouchMode="false"
+    tools:background="@color/background">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardShapesTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.068" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardShapesStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
 
     <ImageView
         android:id="@+id/dashboardShapesIv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dashboardShapesBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/dashboardShapesEndGl"
+        app:layout_constraintStart_toStartOf="@+id/dashboardShapesStartGl"
+        app:layout_constraintTop_toTopOf="@+id/dashboardShapesTopGl"
+        app:srcCompat="@drawable/shapes" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardShapesBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_normal"
-        android:src="@drawable/shapes"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeBabyNameTv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintVertical_chainStyle="packed" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.518" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardShapesEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardBabyIvTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.141" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardBabyIvStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.283" />
 
     <ImageView
         android:id="@+id/clientHomeBabyIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_small"
-        android:padding="@dimen/spacing_xxmedium"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:src="@drawable/child_large"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/dashboardShapesIv"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="@+id/dashboardShapesIv"
-        app:layout_constraintStart_toStartOf="@+id/dashboardShapesIv"
-        app:layout_constraintTop_toTopOf="@+id/dashboardShapesIv" />
+        app:layout_constraintBottom_toBottomOf="@+id/dashboardBabyIvBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/dashboardBabyIvEndGl"
+        app:layout_constraintStart_toStartOf="@+id/dashboardBabyIvStartGl"
+        app:layout_constraintTop_toTopOf="@+id/dashboardBabyIvTopGl" />
 
-    <TextView
-        android:id="@+id/clientHomeBabyNameTv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_normal"
-        android:fontFamily="@font/rubik_medium"
-        android:gravity="center"
-        android:text="Your baby name"
-        android:textColor="@color/accent"
-        android:textSize="@dimen/text_size_huge"
-        app:layout_constraintBottom_toTopOf="@+id/clientConnectionStatusTv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dashboardShapesIv"
-        app:met_floatingLabel="none" />
-
-    <TextView
-        android:id="@+id/clientConnectionStatusTv"
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardBabyIvBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.42" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardBabyIvEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.717" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardBabyTvTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.579" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/clientHomeBabyNameTv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_medium"
+        android:gravity="center"
+        android:text="@string/your_baby_name"
+        android:textColor="@color/accent"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/dashboardBabyTvBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dashboardBabyTvTopGl"
+        app:met_floatingLabel="none" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardBabyTvBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardConnectionTvTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.662" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/clientConnectionStatusTv"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:fontFamily="@font/rubik_regular"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_size_medium"
-        app:layout_constraintBottom_toTopOf="@+id/clientHomeLiveCameraIbtn"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/dashboardConnectionTvBottomGl"
         app:layout_constraintEnd_toStartOf="@+id/clientConnectionStatusPv"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientHomeBabyNameTv"
+        app:layout_constraintTop_toTopOf="@+id/dashboardConnectionTvTopGl"
         tools:text="Devices disconnected" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardConnectionTvBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.69" />
 
     <co.netguru.baby.monitor.client.common.view.PulsatingView
         android:id="@+id/clientConnectionStatusPv"
@@ -76,32 +153,65 @@
         app:layout_constraintStart_toEndOf="@+id/clientConnectionStatusTv"
         app:layout_constraintTop_toTopOf="@+id/clientConnectionStatusTv" />
 
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardButtonsTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.816" />
+
     <ImageButton
         android:id="@+id/clientHomeLiveCameraIbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_large"
-        android:layout_marginBottom="@dimen/spacing_xxnormal"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="0dp"
         android:src="@drawable/baby_preview"
         app:backgroundTint="@color/transparent"
         app:elevation="@dimen/spacing_small"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/clientHomeActivityLogIbtn"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintBottom_toBottomOf="@+id/dashboardButtonsBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/dashboardLiveCameraEndGl"
+        app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clientConnectionStatusTv" />
+        app:layout_constraintTop_toTopOf="@+id/dashboardButtonsTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardLiveCameraEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.459" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardActivityLogStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.544" />
 
     <ImageButton
         android:id="@+id/clientHomeActivityLogIbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="0dp"
         android:src="@drawable/activity"
         app:backgroundTint="@color/transparent"
         app:elevation="@dimen/spacing_small"
-        app:layout_constraintBottom_toBottomOf="@+id/clientHomeLiveCameraIbtn"
+        app:layout_constraintBottom_toBottomOf="@+id/dashboardButtonsBottomGl"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/clientHomeLiveCameraIbtn"
-        app:layout_constraintTop_toTopOf="@+id/clientHomeLiveCameraIbtn" />
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/dashboardActivityLogStartGl"
+        app:layout_constraintTop_toTopOf="@+id/dashboardButtonsTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/dashboardButtonsBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.911" />
 
     <ProgressBar
         android:id="@+id/clientHomeDashboardPb"

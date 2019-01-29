@@ -4,32 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent">
+    tools:background="@color/background">
 
-    <ImageView
+    <android.support.constraint.Guideline
+        android:id="@+id/itemActivityIvStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.056" />
+
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/itemActivityLogIv"
-        android:layout_width="@dimen/spacing_normal"
-        android:layout_height="@dimen/spacing_normal"
-        android:layout_marginStart="@dimen/spacing_xxmedium"
-        android:layout_marginTop="@dimen/spacing_xmedium"
-        android:layout_marginEnd="@dimen/spacing_xmedium"
-        android:src="@drawable/circle_placeholder"
-        android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/itemActivityLogActionTv"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/itemActivityIvStartGl"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_info" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/itemActivityTvStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.192" />
 
     <TextView
         android:id="@+id/itemActivityLogActionTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_xmedium"
-        android:textColor="@color/primary_dark"
-        android:fontFamily="@font/averta"
+        android:fontFamily="@font/rubik_regular"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_small"
         app:layout_constraintBottom_toTopOf="@+id/itemActivityLogActionTimestampTv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/itemActivityLogIv"
+        app:layout_constraintStart_toStartOf="@+id/itemActivityTvStartGl"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Marysia was crying" />
@@ -39,13 +49,35 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_xmedium"
+        android:fontFamily="@font/rubik_regular"
+        android:textColor="@color/inactive_pulsating"
         android:textSize="@dimen/text_size_xsmall"
-        android:textColor="@color/primary_dark"
-        android:fontFamily="@font/averta"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/itemActivityLogActionTv"
+        app:layout_constraintStart_toStartOf="@+id/itemActivityTvStartGl"
         app:layout_constraintTop_toBottomOf="@+id/itemActivityLogActionTv"
         tools:text="Sep 9, 2018 3:55" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/itemActivityLogSeparatorStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.043" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/separator_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/itemActivityLogSeparatorEndGl"
+        app:layout_constraintStart_toStartOf="@+id/itemActivityLogSeparatorStartGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/itemActivityLogSeparatorEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.957" />
 
 </android.support.constraint.ConstraintLayout>
