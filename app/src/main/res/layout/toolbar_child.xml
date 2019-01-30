@@ -2,43 +2,24 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clientHomeToolbarRootLayout"
     android:layout_width="match_parent"
     android:layout_height="?android:actionBarSize"
-    android:background="@color/primary_dark"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0"
-    app:layout_constraintVertical_chainStyle="spread_inside">
-
-    <ImageButton
-        android:id="@+id/clientToolbarCancelButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:backgroundTint="@color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_arrow_back"
-        tools:visibility="visible" />
+    android:background="@color/primary_dark">
 
     <ImageView
-        android:id="@+id/clientHomeChildMiniatureIv"
+        android:id="@+id/toolbarChildMiniatureIv"
         android:layout_width="@dimen/spacing_xxmedium"
         android:layout_height="@dimen/spacing_xxmedium"
         android:layout_margin="@dimen/spacing_small"
         android:layout_marginEnd="@dimen/spacing_xmedium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/clientHomeChildTv"
+        app:layout_constraintEnd_toStartOf="@+id/toolbarChildTv"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/clientHomeChildTv"
+        android:id="@+id/toolbarChildTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -55,7 +36,7 @@
         tools:text="Jane" />
 
     <ImageButton
-        android:id="@+id/settingsIbtn"
+        android:id="@+id/toolbarSettingsIbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:backgroundTint="@color/transparent"
@@ -65,4 +46,3 @@
         app:srcCompat="@drawable/ic_gear_wheel" />
 
 </android.support.constraint.ConstraintLayout>
-

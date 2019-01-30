@@ -208,6 +208,7 @@ class WebRtcReceiverService : Service() {
         }
 
         fun handleBabyCrying() {
+            Timber.i("broadcasting cry event: ${generateCryingEventJSON()}")
             server?.broadcast(generateCryingEventJSON().toByteArray())
             waitForResponse()
         }
@@ -231,6 +232,7 @@ class WebRtcReceiverService : Service() {
         }
 
         private fun getListOfUnconfirmedAddresses(value: Long) = mutableListOf<String>().apply {
+            Timber.i("generating list of addresses")
             for (data in messageConfirmationMap) {
                 if (data.value != MessageConfirmationStatus.CONFIRMED) {
                     firebaseKeysMap[data.key]?.let { key -> add(key) }
@@ -240,6 +242,7 @@ class WebRtcReceiverService : Service() {
 
 
         private fun sendNotificationsToAddresses(list: List<String>) {
+            Timber.i("sending messages to ${list.size} addresses")
             for (address in list) {
                 notificationHandler.sendFirabaseBabyIsCryingNotification(address)
             }

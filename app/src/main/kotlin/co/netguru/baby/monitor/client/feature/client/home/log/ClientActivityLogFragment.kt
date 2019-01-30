@@ -4,31 +4,29 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
+import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.common.extensions.getDrawableCompat
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_client_activity_log.*
 import javax.inject.Inject
 
-class ClientActivityLogFragment : DaggerFragment() {
+class ClientActivityLogFragment : BaseDaggerFragment() {
+    override val layoutResource = R.layout.fragment_client_activity_log
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
 
     private val logAdapter by lazy { ActivityLogAdapter() }
-
     private val viewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_client_activity_log, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.toolbarState.postValue(ToolbarState.HISTORY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,16 +39,15 @@ class ClientActivityLogFragment : DaggerFragment() {
         })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.toolbarState.postValue(ToolbarState.DEFAULT)
+    }
+
     private fun setupRecyclerView() {
         with(clientActivityLogRv) {
-            val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL).apply {
-                val drawable = requireContext().getDrawableCompat(R.drawable.divider)
-                        ?: return@apply
-                setDrawable(drawable)
-            }
-
             adapter = logAdapter
-            addItemDecoration(dividerItemDecoration)
+            addItemDecoration(StickyHeaderDecorator(logAdapter))
         }
     }
 }

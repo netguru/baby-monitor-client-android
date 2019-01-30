@@ -7,6 +7,7 @@ import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.common.RunsInBackground
+import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.data.splash.AppState
 import io.reactivex.disposables.CompositeDisposable
@@ -24,6 +25,7 @@ class ClientHomeViewModel @Inject constructor(
     internal val selectedChild = MutableLiveData<ChildDataEntity>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
     internal val childList = MutableLiveData<List<ChildDataEntity>>()
+    internal val toolbarState = MutableLiveData<ToolbarState>()
 
     private val compositeDisposable = CompositeDisposable()
 

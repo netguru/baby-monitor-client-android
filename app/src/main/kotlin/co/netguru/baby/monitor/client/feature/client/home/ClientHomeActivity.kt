@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.setVisible
+import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import com.bumptech.glide.request.RequestOptions
@@ -20,7 +21,9 @@ import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
-import kotlinx.android.synthetic.main.layout_client_toolbar.*
+import kotlinx.android.synthetic.main.activity_client_home.*
+import kotlinx.android.synthetic.main.toolbar_child.*
+import kotlinx.android.synthetic.main.toolbar_default.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -41,7 +44,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
         setupView()
         getData()
-        observeCurrentDestination()
         bindService()
     }
 
@@ -51,13 +53,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         if (childServiceBinder != null) {
             unbindService(this)
         }
-    }
-
-    private fun observeCurrentDestination() {
-        findNavController(R.id.clientDashboardNavigationHostFragment)
-                .addOnNavigatedListener { controller, destination ->
-                    clientToolbarCancelButton.setVisible(destination.id == R.id.clientLiveCamera)
-                }
     }
 
     override fun onSupportNavigateUp() =
@@ -78,10 +73,10 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun setupView() {
-        settingsIbtn.setOnClickListener {
+        toolbarSettingsIbtn.setOnClickListener {
             //todo open settings drawer (21.01.2019)
         }
-        clientToolbarCancelButton.setOnClickListener {
+        toolbarBackBtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
     }
@@ -95,13 +90,14 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                     .load(it.image)
                     .placeholder(R.drawable.child)
                     .apply(RequestOptions.circleCropTransform())
-                    .into(clientHomeChildMiniatureIv)
+                    .into(toolbarChildMiniatureIv)
         })
         homeViewModel.getApplicationSavedState()
                 .subscribeBy(
                         onSuccess = this::navigateApp,
                         onError = Timber::e
                 ).addTo(compositeDisposable)
+        homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
     }
 
     private fun bindService() {
@@ -113,7 +109,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun setSelectedChildName(name: String) {
-        clientHomeChildTv.text = if (!name.isEmpty()) {
+        toolbarChildTv.text = if (!name.isEmpty()) {
             name
         } else {
             getString(R.string.no_name)
@@ -129,6 +125,24 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             else -> {
                 findNavController(R.id.clientDashboardNavigationHostFragment)
                         .navigate(R.id.installAppFragment)
+            }
+        }
+    }
+
+    private fun handleToolbarStateChange(state: ToolbarState?) {
+        when(state) {
+            ToolbarState.HIDDEN -> {
+                childToolbarLayout.setVisible(false)
+                defaultToolbarLayout.setVisible(false)
+            }
+            ToolbarState.HISTORY -> {
+                childToolbarLayout.setVisible(false)
+                defaultToolbarLayout.setVisible(true)
+                toolbarTitleTv.text = getString(R.string.latest_activity)
+            }
+            ToolbarState.DEFAULT -> {
+                defaultToolbarLayout.setVisible(false)
+                childToolbarLayout.setVisible(true)
             }
         }
     }

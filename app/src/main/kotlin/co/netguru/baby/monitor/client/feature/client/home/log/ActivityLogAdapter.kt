@@ -5,13 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.DataLogsViewHolder
-import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.HeaderViewHolder
-import co.netguru.baby.monitor.client.data.client.home.log.LogData
-import co.netguru.baby.monitor.client.data.client.home.log.LogData.Data
-import co.netguru.baby.monitor.client.data.client.home.log.LogData.LogHeader
+import co.netguru.baby.monitor.client.common.DateProvider
 import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
-import org.threeten.bp.format.DateTimeFormatter
+import co.netguru.baby.monitor.client.data.client.home.log.LogData
+import co.netguru.baby.monitor.client.data.client.home.log.LogData.*
+import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.*
+import org.threeten.bp.LocalDateTime
 
 class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderInterface {
 
@@ -35,19 +34,21 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
                         activityList.add(data)
                     }
                 }
+        activityList.add(EndText(LocalDateTime.now()))
         notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int) = when (activityList[position]) {
         is Data -> R.layout.item_log_activity_record
         is LogHeader -> R.layout.item_log_activity_header
+        is EndText -> R.layout.item_log_activity_end_text
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            if (viewType == R.layout.item_log_activity_header) {
-                HeaderViewHolder(parent, viewType)
-            } else {
-                DataLogsViewHolder(parent, viewType)
+            when (viewType) {
+                R.layout.item_log_activity_header -> HeaderViewHolder(parent, viewType)
+                R.layout.item_log_activity_record -> DataLogsViewHolder(parent, viewType)
+                else -> EndTextHolder(parent, viewType)
             }
 
     override fun getItemCount() = activityList.size
@@ -72,12 +73,15 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
         val textView = header.findViewById(R.id.itemActivityLogHeaderTv) as TextView
         val data = activityList[headerPosition]
         if (data is LogHeader) {
-            textView.text = data.timeStamp.format(headerFormatter)
-        }
-    }
+            val today = DateProvider.midnight
+            val yesterday = DateProvider.yesterdaysMidnight
+            val baseText = data.timeStamp.format(DateProvider.headerFormatter)
 
-    companion object {
-        internal val headerFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-        internal val timeStampFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm:ss")
+            textView.text = when {
+                data.timeStamp.isAfter(today) -> header.context.getString(R.string.date_today, baseText)
+                data.timeStamp.isAfter(yesterday) -> header.context.getString(R.string.date_yesterday, baseText)
+                else -> baseText
+            }
+        }
     }
 }
