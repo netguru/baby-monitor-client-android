@@ -37,4 +37,6 @@
     <dimen name="drawer_width">320dp</dimen>
 
     <dimen name="padding_normal">20dp</dimen>
+
+    <dimen name="shadow_padding">1dp</dimen>
 </resources>

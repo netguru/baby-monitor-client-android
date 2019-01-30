@@ -21,7 +21,7 @@
     </style>
 
     <style name="MainButtonStyle.OutlineOnly" parent="MainButtonStyle">
-        <item name="android:background">@drawable/button_rounded_ripple_outline</item>
+        <item name="android:background">@drawable/button_purple_outline_to_purple_rounded</item>
         <item name="android:textColor">@color/primary_dark</item>
     </style>
     

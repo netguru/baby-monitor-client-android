@@ -11,77 +11,111 @@
         android:label="Specify Device"
         tools:layout="@layout/fragment_feature_a">
         <action
-            android:id="@+id/actionToFeature"
+            android:id="@+id/featureToFeature"
             app:destination="@+id/feature" />
         <action
-            android:id="@+id/actionFeatureSkip"
+            android:id="@+id/featureToInfoAboutDevices"
+            app:destination="@+id/infoAboutDevices" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoAboutDevices"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.InfoAboutDevicesFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_info_about_devices">
+
+        <action
+            android:id="@+id/infoAboutDevicesToSpecifyDevice"
             app:destination="@+id/specifyDevice" />
     </fragment>
 
     <fragment
         android:id="@+id/specifyDevice"
-        android:name="co.netguru.baby.monitor.client.feature.onboarding.SpecifyDevicesFragment"
-        android:label="Specify Device"
-        tools:layout="@layout/fragment_specify_devices">
-
-        <action
-            android:id="@+id/specifyDeviceToWelcome"
-            app:destination="@+id/welcomeFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/welcomeFragment"
-        android:name="co.netguru.baby.monitor.client.feature.welcome.WelcomeFragment"
+        android:name="co.netguru.baby.monitor.client.feature.welcome.SpecifyDeviceFragment"
         android:label="Welcome Fragment"
-        tools:layout="@layout/fragment_welcome">
+        tools:layout="@layout/fragment_specify_device">
+        <action
+            android:id="@+id/specifyDeviceToFeatureD"
+            app:destination="@+id/featureD" />
 
         <action
-            android:id="@+id/actionWelcomeToConnecting"
-            app:clearTask="true"
-            app:destination="@+id/onboardingConnectingWiFi" />
-
-        <action
-            android:id="@+id/actionWelcomeToPermissions"
-            app:clearTask="true"
-            app:destination="@+id/onboardingPermissions" />
-
-        <action
-            android:id="@+id/actionWelcomeToClientHomeActivity"
-            app:clearTask="true"
+            android:id="@+id/specifyDeviceToClientHomeActivity"
             app:destination="@+id/clientHomeActivity" />
     </fragment>
 
     <fragment
-        android:id="@+id/onboardingConnectingWiFi"
-        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.OnboardingConnectingWiFi"
+        android:id="@+id/featureD"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.FeatureDFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_feature_d">
+
+        <action
+            android:id="@+id/featureDToConnecting"
+            app:destination="@+id/connectWiFi" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/connectWiFi"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.ConnectWifiFragment"
         android:label="Connecting WiFi"
-        tools:layout="@layout/fragment_connecting_wifi">
+        tools:layout="@layout/fragment_connect_wifi">
 
         <action
-            android:id="@+id/actionWifiToPermissions"
-            app:clearTask="true"
-            app:destination="@+id/onboardingPermissions" />
+            android:id="@+id/connectWiFiToPermissionCamera"
+            app:destination="@+id/permissionCamera" />
+
+        <action
+            android:id="@+id/connectWiFiToPermissionMicrophone"
+            app:destination="@+id/permissionMicrophone" />
+
+        <action
+            android:id="@+id/connectWiFiToSetupInformation"
+            app:destination="@+id/setupInformation" />
     </fragment>
 
     <fragment
-        android:id="@+id/onboardingPermissions"
-        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.OnboardingPermissions"
-        android:label="Connecting Permissions"
-        tools:layout="@layout/fragment_connecting_permissions">
+        android:id="@+id/permissionCamera"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.PermissionCameraFragment"
+        android:label="Camera Permissions"
+        tools:layout="@layout/fragment_camera_permission">
+
         <action
-            android:id="@+id/actionPermissionToSetupInfo"
-            app:clearTask="true"
-            app:destination="@+id/onboardingSetupInformation" />
+            android:id="@+id/permissionCameraToPermissionMicrophone"
+            app:destination="@+id/permissionMicrophone" />
+
+        <action
+            android:id="@+id/permissionCameraToPermissionDenied"
+            app:destination="@+id/permissionDenied"/>
     </fragment>
 
     <fragment
-        android:id="@+id/onboardingSetupInformation"
-        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.OnboardingSetupInformation"
+        android:id="@+id/permissionMicrophone"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.PermissionMicrophoneFragment"
+        android:label="Microphone Permissions"
+        tools:layout="@layout/fragment_microphone_permission">
+
+        <action
+            android:id="@+id/permissionMicrophoneToSetupInformation"
+            app:destination="@+id/setupInformation" />
+
+        <action
+            android:id="@+id/permissionMicrophoneToPermissionDenied"
+            app:destination="@+id/permissionDenied"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/permissionDenied"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.PermissionDenied"
+        android:label="Permissions Denied"
+        tools:layout="@layout/fragment_denied_permission" />
+
+    <fragment
+        android:id="@+id/setupInformation"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.SetupInformationFragment"
         android:label="Setup Information"
         tools:layout="@layout/fragment_connecting_setup_information">
         <action
-            android:id="@+id/onboardingSetupToServer"
-            app:clearTask="true"
+            android:id="@+id/setupInformationToServer"
             app:destination="@+id/server" />
     </fragment>
 
