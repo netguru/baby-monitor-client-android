@@ -12,9 +12,12 @@ class AllDoneFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        allDoneGetStartedButton.setOnClickListener {
+        addDoneCtrl.setOnClickListener {
             findNavController().navigate(R.id.allDoneToClientHome)
             requireActivity().finish()
+        }
+        allDoneBackIv.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
 }

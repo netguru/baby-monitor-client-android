@@ -16,12 +16,12 @@ import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_configuration.*
+import kotlinx.android.synthetic.main.fragment_connecting_devices.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ConfigurationFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceConnectedListener {
-    override val layoutResource = R.layout.fragment_configuration
+class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceConnectedListener {
+    override val layoutResource = R.layout.fragment_connecting_devices
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
@@ -33,9 +33,9 @@ class ConfigurationFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceC
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupView()
-        setTimeOutForConnecting()
+        viewModel.discoverNsdService(this)
         viewModel.appSavedState.observe(this, Observer(this::handleAppState))
+        setTimeOutForConnecting()
     }
 
     override fun onDestroy() {
@@ -70,15 +70,6 @@ class ConfigurationFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceC
         showSnackbarMessage(R.string.discovery_start_failed)
     }
 
-    private fun setupView() {
-        showProgressBar(true)
-        viewModel.discoverNsdService(this)
-
-        configurationBackButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
-    }
-
     private fun setTimeOutForConnecting() {
         timeOutDisposable = Completable.timer(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
@@ -87,10 +78,6 @@ class ConfigurationFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceC
                             findNavController().navigate(R.id.configurationToConfigurationFailed)
                         }
                 )
-    }
-
-    private fun showProgressBar(isVisible: Boolean) {
-        progressBar.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 
     private fun handleAppState(state: AppState?) {

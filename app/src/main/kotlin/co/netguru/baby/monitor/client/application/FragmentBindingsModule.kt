@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.application
 
 import co.netguru.baby.monitor.client.application.scope.FragmentScope
-import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment
+import co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFragment
 import co.netguru.baby.monitor.client.feature.client.configuration.SecondAppInfo
 import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
@@ -22,7 +22,7 @@ internal abstract class FragmentBindingsModule {
 
     @FragmentScope
     @ContributesAndroidInjector()
-    internal abstract fun configurationFragmentInjector(): ConfigurationFragment
+    internal abstract fun connectingDevicesFragmentInjector(): ConnectingDevicesFragment
 
     @FragmentScope
     @ContributesAndroidInjector

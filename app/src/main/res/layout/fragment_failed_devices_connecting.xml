@@ -7,61 +7,21 @@
     tools:background="@color/background">
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneBaseStartGl"
+        android:id="@+id/connectingDevicesFailedBaseStartGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.064" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneBaseEndGl"
+        android:id="@+id/connectingDevicesFailedBaseEndGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.936" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneBackIvTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.057" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/allDoneBackIvStartGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.043" />
-
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/allDoneBackIv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/allDoneBackIvBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/allDoneBackIvEndGl"
-        app:layout_constraintStart_toStartOf="@+id/allDoneBackIvStartGl"
-        app:layout_constraintTop_toTopOf="@+id/allDoneBackIvTopGl"
-        app:srcCompat="@drawable/ic_arrow_back" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/allDoneBackIvBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.093" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/allDoneBackIvEndGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.107" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/allDoneHeaderTopGl"
+        android:id="@+id/connectingDevicesFailedHeaderTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -71,108 +31,132 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fontFamily="@font/rubik_bold"
-        android:text="@string/all_done_title"
+        android:text="@string/connecting"
         android:textColor="@color/accent"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/allDoneHeaderBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/allDoneBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/allDoneBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/allDoneHeaderTopGl" />
+        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesFailedHeaderBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesFailedBaseEndGl"
+        app:layout_constraintStart_toStartOf="@+id/connectingDevicesFailedBaseStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingDevicesFailedHeaderTopGl" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneHeaderBottomGl"
+        android:id="@+id/connectingDevicesFailedHeaderBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.19" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneText1TopGl"
+        android:id="@+id/connectingDevicesFailedText1TopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.202" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/allDoneDescriptionTv"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fontFamily="@font/rubik_medium"
-        android:text="@string/all_done_description"
+        android:text="@string/connecting_devices_failed_text_1"
         android:textColor="@color/white"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/allDoneText1BottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/allDoneBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/allDoneBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/allDoneText1TopGl" />
+        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesFailedText1BottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesFailedBaseEndGl"
+        app:layout_constraintStart_toStartOf="@+id/connectingDevicesFailedBaseStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingDevicesFailedText1TopGl" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneText1BottomGl"
+        android:id="@+id/connectingDevicesFailedText1BottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.322" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneImageTopGl"
+        android:id="@+id/connectingDevicesFailedText2TopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.405" />
+        app:layout_constraintGuide_percent="0.34" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_regular"
+        android:text="@string/connecting_devices_failed_text_2"
+        android:textColor="@color/accent"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesFailedText2BottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesFailedBaseEndGl"
+        app:layout_constraintStart_toStartOf="@+id/connectingDevicesFailedBaseStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingDevicesFailedText2TopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingDevicesFailedText2BottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.388" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingDevicesFailedImageTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.486" />
 
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/allDoneImageBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/allDoneBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/allDoneBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/allDoneImageTopGl"
-        app:srcCompat="@drawable/all_done" />
+        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesFailedImageBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesFailedBaseEndGl"
+        app:layout_constraintStart_toStartOf="@+id/connectingDevicesFailedBaseStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingDevicesFailedImageTopGl"
+        app:srcCompat="@drawable/failed" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneImageBottomGl"
+        android:id="@+id/connectingDevicesFailedImageBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.754" />
+        app:layout_constraintGuide_percent="0.606" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneButtonTopGl"
+        android:id="@+id/connectingDevicesFailedButtonTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.844" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/addDoneCtrl"
+        android:id="@+id/configurationFailedTryAgainButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/button_shadow"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/allDoneButtonBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/allDoneBaseEndGl"
-        app:layout_constraintHeight_percent="0.12"
-        app:layout_constraintStart_toStartOf="@+id/allDoneBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/allDoneButtonTopGl"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.93">
+        android:text="@string/try_again"
+        android:background="@drawable/button_purple_outline_to_purple_rounded"
+        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesFailedButtonBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesFailedBaseEndGl"
+        app:layout_constraintStart_toStartOf="@+id/connectingDevicesFailedBaseStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingDevicesFailedButtonTopGl" >
 
         <TextView
+            android:id="@+id/connectionConnectWiFiTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/rubik_bold"
-            android:text="@string/get_started"
+            android:text="@string/try_again"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.Guideline
-        android:id="@+id/allDoneButtonBottomGl"
+        android:id="@+id/connectingDevicesFailedButtonBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

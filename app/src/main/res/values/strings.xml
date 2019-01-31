@@ -16,8 +16,7 @@
     <string name="rate_us">Rate us</string>
     <string name="reset_the_app">Reset the app</string>
     <string name="allow_to_send_recordings">Allow to send baby voice recordings</string>
-    <string name="send_recordings_info">No worries, your data will be safe! We need voice recordings only for app development. What does it mean? \n\nWith your help  will be able to learn to recognize baby’s voice more accurately! Data will be sent automatically, only using WiFi connection.
-</string>
+    <string name="send_recordings_info">No worries, your data will be safe! We need voice recordings only for app development. What does it mean? \n\nWith your help  will be able to learn to recognize baby’s voice more accurately! Data will be sent automatically, only using WiFi connection.</string>
 
     <string name="feature_a_text_1">Do your daily and keep an \neye on your baby</string>
     <string name="feature_a_text_2">Easily check on your baby whenever \nand wherever you are</string>
@@ -56,8 +55,6 @@
     <string name="done">Done</string>
     <string name="back_underlined"><u>Back</u></string>
     <string name="connecting">Connecting</string>
-    <string name="configuration_description">Searching for second device</string>
-    <string name="configuration_failed_description">Ups! Something went wrong :(\nMake sure that you are connected to the same\nWi-Fi network</string>
     <string name="try_again">Try again</string>
     <string name="done_exclamation">Done!</string>
     <string name="continue_text">Continue</string>
@@ -94,4 +91,15 @@
     <string name="date_today">Today, %1$s</string>
     <string name="date_yesterday">Yesterday, %1$s</string>
     <string name="minutes_ago">%1$d minutes ago</string>
+
+    <string name="hello">Hello!</string>
+
+    <string name="second_app_info_text_3">It’s time to install Baby Monitor on\non your second device</string>
+    <string name="second_app_info_text_4">IMPORTANT: Make sure you have already installed\nBaby Monitor on baby device</string>
+    <string name="second_app_info_text_button">Connect devices</string>
+
+    <string name="connecting_devices_description_text">Searching for\nsecond device</string>
+
+    <string name="connecting_devices_failed_text_1">Ups! Something\nwent wrong :(</string>
+    <string name="connecting_devices_failed_text_2">Make sure that you are connected\nto the same Wi-Fi network</string>
 </resources>

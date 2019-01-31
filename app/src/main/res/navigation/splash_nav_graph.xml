@@ -22,7 +22,6 @@
         <action
             android:id="@+id/splashToServer"
             app:destination="@+id/server"/>
-
     </fragment>
 
     <fragment
@@ -154,18 +153,17 @@
         <action
             android:id="@+id/secondAppInfoToConfiguration"
             app:destination="@+id/configuration" />
-
     </fragment>
 
     <fragment
         android:id="@+id/configuration"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFragment"
         android:label="Configuration"
-        tools:layout="@layout/fragment_configuration">
+        tools:layout="@layout/fragment_connecting_devices">
 
         <action
             android:id="@+id/configurationToAllDone"
-            app:destination="@+id/allDoneFragment" />
+            app:destination="@+id/allDone" />
 
         <action
             android:id="@+id/configurationToClientHome"
@@ -178,12 +176,12 @@
 
     <fragment
         android:id="@+id/configurationFailed"
-        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFailedFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFailedFragment"
         android:label="Configuration Failed"
-        tools:layout="@layout/fragment_configuration_failed"/>
+        tools:layout="@layout/fragment_failed_devices_connecting"/>
 
     <fragment
-        android:id="@+id/allDoneFragment"
+        android:id="@+id/allDone"
         android:name="co.netguru.baby.monitor.client.feature.client.configuration.AllDoneFragment"
         android:label="All Done"
         tools:layout="@layout/fragment_all_done">
