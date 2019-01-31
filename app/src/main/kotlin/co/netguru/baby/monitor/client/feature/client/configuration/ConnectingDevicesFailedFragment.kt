@@ -5,10 +5,10 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_configuration_failed.*
+import kotlinx.android.synthetic.main.fragment_failed_devices_connecting.*
 
-class ConfigurationFailedFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_configuration_failed
+class ConnectingDevicesFailedFragment : BaseFragment() {
+    override val layoutResource = R.layout.fragment_failed_devices_connecting
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

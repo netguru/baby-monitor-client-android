@@ -1,55 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background">
+    tools:background="@color/background">
 
-    <ImageView
+    <android.support.constraint.Guideline
+        android:id="@+id/splashImageTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/purple_logo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.406" />
 
-    <TextView
-        android:id="@+id/firstPartTv"
+    <android.support.constraint.Guideline
+        android:id="@+id/splashImageStartGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_xxxmedium"
-        android:fontFamily="@font/averta"
-        android:text="@string/splash_crafted_with"
-        android:textColor="@color/primary_dark_a30"
-        android:textSize="@dimen/text_size_medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/middleHeartIv"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.333" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/splashImageBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/splashImageEndGl"
+        app:layout_constraintStart_toStartOf="@+id/splashImageStartGl"
+        app:layout_constraintTop_toTopOf="@+id/splashImageTopGl"
+        app:srcCompat="@drawable/baby_logo_welcome_screen" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/splashImageBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.594" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/splashImageEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.667" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/splashDescriptionTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.894" />
 
     <ImageView
         android:id="@+id/middleHeartIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/spacing_small"
-        android:src="@drawable/heart"
-        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
-        app:layout_constraintEnd_toStartOf="@+id/secondPartTv"
-        app:layout_constraintStart_toEndOf="@+id/firstPartTv"
-        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
-
-    <TextView
-        android:id="@+id/secondPartTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_xxxmedium"
-        android:fontFamily="@font/averta"
-        android:text="@string/splash_by_netguru"
-        android:textColor="@color/primary_dark_a30"
-        android:textSize="@dimen/text_size_medium"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/made_with_love"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/middleHeartIv" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/splashDescriptionTopGl" />
 </android.support.constraint.ConstraintLayout>

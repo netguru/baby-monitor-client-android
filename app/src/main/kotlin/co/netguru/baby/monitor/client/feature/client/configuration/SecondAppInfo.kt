@@ -12,11 +12,11 @@ class SecondAppInfo : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        installAppDoneButton.setOnClickListener {
+        secondAppButtonCtrl.setOnClickListener {
             findNavController().navigate(R.id.secondAppInfoToConfiguration)
         }
 
-        installAppBackButton.setOnClickListener {
+        secondAppInfoBackIv.setOnClickListener {
             findNavController().navigateUp()
         }
     }
