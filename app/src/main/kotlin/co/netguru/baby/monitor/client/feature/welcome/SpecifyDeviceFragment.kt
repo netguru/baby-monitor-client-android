@@ -16,8 +16,7 @@ class SpecifyDeviceFragment : BaseFragment() {
             findNavController().navigate(R.id.specifyDeviceToFeatureD)
         }
         parentCtl.setOnClickListener {
-            findNavController().navigate(R.id.specifyDeviceToClientHomeActivity)
-            requireActivity().finish()
+            findNavController().navigate(R.id.specifyDeviceToSecondAppInfo)
         }
     }
 }

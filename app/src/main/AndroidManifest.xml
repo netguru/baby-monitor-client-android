@@ -26,7 +26,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".feature.splash.EnterActivity"
+            android:name=".feature.onboarding.OnboardingActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,10 +38,6 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".feature.onboarding.OnboardingActivity"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name=".feature.client.home.ClientHomeActivity"

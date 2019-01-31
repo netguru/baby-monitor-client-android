@@ -5,16 +5,19 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_all_done.*
+import kotlinx.android.synthetic.main.fragment_second_app_info.*
 
-class AllDoneFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_all_done
+class SecondAppInfo : BaseFragment() {
+    override val layoutResource = R.layout.fragment_second_app_info
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        allDoneGetStartedButton.setOnClickListener {
-            findNavController().navigate(R.id.allDoneToClientHome)
-            requireActivity().finish()
+        installAppDoneButton.setOnClickListener {
+            findNavController().navigate(R.id.secondAppInfoToConfiguration)
+        }
+
+        installAppBackButton.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
 }

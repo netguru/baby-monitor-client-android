@@ -3,15 +3,12 @@ package co.netguru.baby.monitor.client.feature.splash
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.data.splash.AppState
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
-import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
-import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -46,19 +43,19 @@ class SplashFragment : BaseDaggerFragment() {
                 .timer(DELAY_MILLISECONDS, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .subscribeBy {
-                    val classJava: Class<*> = when (appState) {
-                        AppState.SERVER -> {
-                            ServerActivity::class.java
-                        }
-                        AppState.CLIENT -> {
-                            ClientHomeActivity::class.java
-                        }
-                        else -> {
-                            OnboardingActivity::class.java
-                        }
-                    }
-                    startActivity(Intent(requireContext(), classJava))
-                    requireActivity().finish()
+                    findNavController().navigate(
+                            when (appState) {
+                                AppState.SERVER -> {
+                                    R.id.splashToServer
+                                }
+                                AppState.CLIENT -> {
+                                    R.id.splashToConfiguration
+                                }
+                                else -> {
+                                    R.id.splashToOnboarding
+                                }
+                            }
+                    )
                 }.addTo(compositeDisposable)
     }
 

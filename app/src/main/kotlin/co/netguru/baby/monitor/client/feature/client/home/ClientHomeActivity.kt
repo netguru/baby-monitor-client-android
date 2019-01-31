@@ -92,11 +92,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                     .apply(RequestOptions.circleCropTransform())
                     .into(toolbarChildMiniatureIv)
         })
-        homeViewModel.getApplicationSavedState()
-                .subscribeBy(
-                        onSuccess = this::navigateApp,
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
         homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
     }
 
@@ -113,19 +108,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             name
         } else {
             getString(R.string.no_name)
-        }
-    }
-
-    private fun navigateApp(state: AppState) {
-        when (state) {
-            AppState.CLIENT -> {
-                findNavController(R.id.clientDashboardNavigationHostFragment)
-                        .navigate(R.id.configurationFragment)
-            }
-            else -> {
-                findNavController(R.id.clientDashboardNavigationHostFragment)
-                        .navigate(R.id.installAppFragment)
-            }
         }
     }
 
