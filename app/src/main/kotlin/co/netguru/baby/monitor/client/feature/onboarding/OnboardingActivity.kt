@@ -17,13 +17,14 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-
         val controller = findNavController(R.id.onboardingNavigationHostFragment).currentDestination?.id
                 ?: 0
         if (controller == R.id.permissionMicrophone
                 || controller == R.id.permissionMicrophone
                 || controller == R.id.setupInformation) {
             findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.connectWiFi, false)
+        } else if (controller == R.id.configurationFailed) {
+            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.secondAppInfo, false)
         } else {
             super.onBackPressed()
         }

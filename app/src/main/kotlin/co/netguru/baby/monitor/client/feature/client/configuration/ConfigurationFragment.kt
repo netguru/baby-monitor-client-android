@@ -13,10 +13,10 @@ import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_configuration.*
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -80,8 +80,13 @@ class ConfigurationFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceC
     }
 
     private fun setTimeOutForConnecting() {
-        timeOutDisposable = Completable.timer(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-                .subscribe { findNavController().navigate(R.id.actionConfigurationToFailed) }
+        timeOutDisposable = Completable.timer(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                        onComplete = {
+                            findNavController().navigate(R.id.configurationToConfigurationFailed)
+                        }
+                )
     }
 
     private fun showProgressBar(isVisible: Boolean) {
@@ -89,12 +94,15 @@ class ConfigurationFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceC
     }
 
     private fun handleAppState(state: AppState?) {
-        Timber.e("$state")
-        val destination = when(state) {
-            AppState.CLIENT -> R.id.configurationToDashboard
-            else -> R.id.actionConfigurationConnectingDone
+        when (state) {
+            AppState.CLIENT -> {
+                findNavController().navigate(R.id.configurationToClientHome)
+                requireActivity().finish()
+            }
+            else -> {
+                findNavController().navigate(R.id.configurationToAllDone)
+            }
         }
-        findNavController().navigate(destination)
     }
 
     companion object {

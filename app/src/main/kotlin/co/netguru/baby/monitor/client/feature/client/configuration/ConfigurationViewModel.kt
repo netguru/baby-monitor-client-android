@@ -13,7 +13,7 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.splash.EnterActivity
+import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -44,7 +44,7 @@ class ConfigurationViewModel @Inject constructor(
     ) {
         val address = "ws://$address:$port"
         dataRepository.getChildDataWithAddress(address)
-                .flatMapCompletable {list ->
+                .flatMapCompletable { list ->
                     if (list.isNullOrEmpty()) {
                         dataRepository.addChildData(ChildDataEntity(address))
                     } else {
@@ -95,7 +95,7 @@ class ConfigurationViewModel @Inject constructor(
     @RunsInBackground
     private fun handleDataCleared(activity: Activity) {
         activity.startActivity(
-                Intent(activity, EnterActivity::class.java)
+                Intent(activity, OnboardingActivity::class.java)
         )
         activity.finish()
     }

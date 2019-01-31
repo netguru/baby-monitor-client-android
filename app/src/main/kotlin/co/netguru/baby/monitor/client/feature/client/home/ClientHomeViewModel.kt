@@ -68,8 +68,6 @@ class ClientHomeViewModel @Inject constructor(
                 ).addTo(compositeDisposable)
     }
 
-    fun getApplicationSavedState() = dataRepository.getSavedState()
-
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()

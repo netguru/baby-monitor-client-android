@@ -3,7 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splash_nav_graph"
-    app:startDestination="@+id/feature">
+    app:startDestination="@+id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="co.netguru.baby.monitor.client.feature.splash.SplashFragment"
+        android:label="Splash Fragment"
+        tools:layout="@layout/fragment_splash">
+
+        <action
+            android:id="@+id/splashToOnboarding"
+            app:destination="@+id/feature" />
+
+        <action
+            android:id="@+id/splashToConfiguration"
+            app:destination="@+id/configuration"/>
+
+        <action
+            android:id="@+id/splashToServer"
+            app:destination="@+id/server"/>
+
+    </fragment>
 
     <fragment
         android:id="@+id/feature"
@@ -39,8 +59,8 @@
             app:destination="@+id/featureD" />
 
         <action
-            android:id="@+id/specifyDeviceToClientHomeActivity"
-            app:destination="@+id/clientHomeActivity" />
+            android:id="@+id/specifyDeviceToSecondAppInfo"
+            app:destination="@+id/secondAppInfo" />
     </fragment>
 
     <fragment
@@ -85,7 +105,7 @@
 
         <action
             android:id="@+id/permissionCameraToPermissionDenied"
-            app:destination="@+id/permissionDenied"/>
+            app:destination="@+id/permissionDenied" />
     </fragment>
 
     <fragment
@@ -100,7 +120,7 @@
 
         <action
             android:id="@+id/permissionMicrophoneToPermissionDenied"
-            app:destination="@+id/permissionDenied"/>
+            app:destination="@+id/permissionDenied" />
     </fragment>
 
     <fragment
@@ -124,6 +144,54 @@
         android:name="co.netguru.baby.monitor.client.feature.server.ServerActivity"
         android:label="Server"
         tools:layout="@layout/activity_server" />
+
+    <fragment
+        android:id="@+id/secondAppInfo"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.SecondAppInfo"
+        android:label="Second App Info"
+        tools:layout="@layout/fragment_second_app_info">
+
+        <action
+            android:id="@+id/secondAppInfoToConfiguration"
+            app:destination="@+id/configuration" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/configuration"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFragment"
+        android:label="Configuration"
+        tools:layout="@layout/fragment_configuration">
+
+        <action
+            android:id="@+id/configurationToAllDone"
+            app:destination="@+id/allDoneFragment" />
+
+        <action
+            android:id="@+id/configurationToClientHome"
+            app:destination="@+id/clientHomeActivity" />
+
+        <action
+            android:id="@+id/configurationToConfigurationFailed"
+            app:destination="@+id/configurationFailed" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/configurationFailed"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationFailedFragment"
+        android:label="Configuration Failed"
+        tools:layout="@layout/fragment_configuration_failed"/>
+
+    <fragment
+        android:id="@+id/allDoneFragment"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.AllDoneFragment"
+        android:label="All Done"
+        tools:layout="@layout/fragment_all_done">
+
+        <action
+            android:id="@+id/allDoneToClientHome"
+            app:destination="@+id/clientHomeActivity" />
+    </fragment>
 
     <activity
         android:id="@+id/clientHomeActivity"

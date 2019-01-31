@@ -5,20 +5,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <android.widget.Button
-        android:id="@+id/configurationFailedBackButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:background="@null"
-        android:fontFamily="@font/averta"
-        android:text="@string/back_underlined"
-        android:textAllCaps="false"
-        android:textColor="@color/primary_dark"
-        android:textSize="@dimen/text_size_normal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/configurationFailedTitleTv"
         android:layout_width="wrap_content"
