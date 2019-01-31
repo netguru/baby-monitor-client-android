@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.welcome
+package co.netguru.baby.monitor.client.feature.onboarding
 
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
@@ -8,21 +8,17 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.feature.onboarding.baby.WifiReceiver
-import kotlinx.android.synthetic.main.fragment_welcome.*
+import kotlinx.android.synthetic.main.fragment_feature_d.*
 
-class WelcomeFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_welcome
+class FeatureDFragment : BaseFragment() {
+    override val layoutResource = R.layout.fragment_feature_d
 
     private val wifiReceiver by lazy { WifiReceiver() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        babyCtl.setOnClickListener {
-            findNavController().navigate(getNavControllerDestination())
-        }
-        parentCtl.setOnClickListener {
-            findNavController().navigate(R.id.actionWelcomeToClientHomeActivity)
-            requireActivity().finish()
+        featureDNextBtn.setOnClickListener {
+            findNavController().navigate(R.id.featureDToConnecting)
         }
     }
 
@@ -37,11 +33,4 @@ class WelcomeFragment : BaseFragment() {
         super.onPause()
         requireContext().unregisterReceiver(wifiReceiver)
     }
-
-    private fun getNavControllerDestination() =
-            if (wifiReceiver.isWifiConnected.value != true) {
-                R.id.actionWelcomeToConnecting
-            } else {
-                R.id.actionWelcomeToPermissions
-            }
 }

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/background">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedDefaultStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.064" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedDefaultEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.936" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedHeadlineTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.156" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_bold"
+        android:text="@string/permission_denied"
+        android:textColor="@color/accent"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/deniedHeadlineBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/deniedDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/deniedHeadlineTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedHeadlineBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.19" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedInfoTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.202" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_medium"
+        android:text="@string/permission_denied_info"
+        android:textColor="@color/white"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/deniedInfoBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/deniedDefaultEndGl"
+        app:layout_constraintStart_toStartOf="@+id/deniedDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/deniedInfoTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedInfoBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedQuestionTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.393" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_regular"
+        android:text="@string/permission_denied_are_you_sure"
+        android:textColor="@color/accent"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/deniedQuestionBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/deniedDefaultEndGl"
+        app:layout_constraintStart_toStartOf="@+id/deniedDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/deniedQuestionTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedQuestionBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.47" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedImageTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.486" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/deniedImageBottomGl"
+        app:layout_constraintEnd_toEndOf="@id/deniedDefaultEndGl"
+        app:layout_constraintStart_toStartOf="@+id/deniedDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/deniedImageTopGl"
+        app:srcCompat="@drawable/failed" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedImageBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.606" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedRetryTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.76" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/deniedRetryButtonCtrl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/button_purple_outline_to_purple_rounded"
+        app:layout_constraintBottom_toBottomOf="@+id/deniedRetryBottomGl"
+        app:layout_constraintEnd_toEndOf="@id/deniedDefaultEndGl"
+        app:layout_constraintStart_toStartOf="@id/deniedDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/deniedRetryTopGl">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/permission_denied_retry_button"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedRetryBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.844" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedSureTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.868" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/deniedSureButtonCtrl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/button_purple_outline_to_purple_rounded"
+        app:layout_constraintBottom_toBottomOf="@+id/deniedSureBottomGl"
+        app:layout_constraintEnd_toEndOf="@id/deniedDefaultEndGl"
+        app:layout_constraintStart_toStartOf="@id/deniedDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/deniedSureTopGl">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/permission_denied_sure_button"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/deniedSureBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.952" />
+
+</android.support.constraint.ConstraintLayout>

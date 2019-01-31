@@ -116,14 +116,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.846" />
 
-    <android.support.v7.widget.AppCompatImageView
+    <android.support.constraint.Guideline
+        android:id="@+id/featureDButtonTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.909" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/featureDNextBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_xxmedium"
+        android:background="?android:attr/selectableItemBackground"
+        android:fontFamily="@font/rubik_bold"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="@dimen/spacing_small"
+        android:text="@string/feature_lets_start"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/presentationDIndicatorTopGl"
-        app:srcCompat="@drawable/feature_d_indicator" />
-
-    <include layout="@layout/onboarding_buttons" />
+        app:layout_constraintTop_toTopOf="@+id/featureDButtonTopGl" />
 
 </android.support.constraint.ConstraintLayout>

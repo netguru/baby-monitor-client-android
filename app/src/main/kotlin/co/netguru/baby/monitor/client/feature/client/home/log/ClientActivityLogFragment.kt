@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
@@ -35,7 +36,11 @@ class ClientActivityLogFragment : BaseDaggerFragment() {
 
         viewModel.logData.observe(this, Observer { activities ->
             activities ?: return@Observer
-            logAdapter.setupList(activities)
+            if (activities.isNotEmpty()) {
+                logAdapter.setupList(activities)
+            }
+            clientActivityLogRv.setVisible(activities.isNotEmpty())
+            clientActivityLogEndTv.setVisible(activities.isEmpty())
         })
     }
 

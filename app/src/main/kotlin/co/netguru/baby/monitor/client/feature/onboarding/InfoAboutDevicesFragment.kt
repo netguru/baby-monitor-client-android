@@ -6,16 +6,16 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_specify_devices.*
+import kotlinx.android.synthetic.main.fragment_info_about_devices.*
 
-class SpecifyDevicesFragment: BaseFragment() {
-    override val layoutResource = R.layout.fragment_specify_devices
+class InfoAboutDevicesFragment: BaseFragment() {
+    override val layoutResource = R.layout.fragment_info_about_devices
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         specifyDeviceDescriptionTv.text = Html.fromHtml(getString(R.string.sync_description))
         specifyDeviceBtn.setOnClickListener {
-            findNavController().navigate(R.id.specifyDeviceToWelcome)
+            findNavController().navigate(R.id.infoAboutDevicesToSpecifyDevice)
         }
     }
 }

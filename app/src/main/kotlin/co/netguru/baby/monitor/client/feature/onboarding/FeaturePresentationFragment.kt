@@ -17,25 +17,18 @@ class FeaturePresentationFragment : Fragment() {
         layoutResource = when (arguments?.getString(FEATURE_KEY)) {
             FEATURE_B -> R.layout.fragment_feature_b
             FEATURE_C -> R.layout.fragment_feature_c
-            FEATURE_D -> R.layout.fragment_feature_d
             else -> R.layout.fragment_feature_a
         }
-
         return inflater.inflate(layoutResource, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (layoutResource == R.layout.fragment_feature_d) {
-            featureNextBtn.text = getString(R.string.feature_lets_start)
-            featureSkipBtn.text = getString(R.string.feature_maybe_later_btn)
-        }
-
         featureNextBtn.setOnClickListener {
             handleNextClicked()
         }
         featureSkipBtn.setOnClickListener {
-            findNavController().navigate(R.id.actionFeatureSkip)
+            findNavController().navigate(R.id.featureToInfoAboutDevices)
         }
     }
 
@@ -43,7 +36,6 @@ class FeaturePresentationFragment : Fragment() {
         val nextFeature = when (layoutResource) {
             R.layout.fragment_feature_a -> FEATURE_B
             R.layout.fragment_feature_b -> FEATURE_C
-            R.layout.fragment_feature_c -> FEATURE_D
             else -> ""
         }
         val bundle = Bundle().apply {
@@ -51,9 +43,9 @@ class FeaturePresentationFragment : Fragment() {
         }
         findNavController().navigate(
                 if (nextFeature.isEmpty()) {
-                    R.id.actionFeatureSkip
+                    R.id.featureToInfoAboutDevices
                 } else {
-                    R.id.actionToFeature
+                    R.id.featureToFeature
                 },
                 bundle
         )
@@ -63,6 +55,5 @@ class FeaturePresentationFragment : Fragment() {
         private const val FEATURE_KEY = "FEATURE_KEY"
         private const val FEATURE_B = "FEATURE_B"
         private const val FEATURE_C = "FEATURE_C"
-        private const val FEATURE_D = "FEATURE_D"
     }
 }

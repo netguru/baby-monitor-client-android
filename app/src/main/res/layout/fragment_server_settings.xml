@@ -92,7 +92,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/spacing_xxxmedium"
-        android:background="@drawable/button_outline_to_purple_rounded"
+        android:background="@drawable/button_white_outline_to_purple_rounded"
         android:enabled="true"
         android:fontFamily="@font/rubik_bold"
         android:text="@string/reset_the_app"

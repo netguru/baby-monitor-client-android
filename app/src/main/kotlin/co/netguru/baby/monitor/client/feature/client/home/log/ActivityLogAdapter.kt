@@ -34,7 +34,7 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
                         activityList.add(data)
                     }
                 }
-        activityList.add(EndText(LocalDateTime.now()))
+        activityList.add(EndText(activityList.lastOrNull()?.timeStamp ?: LocalDateTime.now()))
         notifyDataSetChanged()
     }
 
@@ -65,7 +65,7 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
             if (activityList[itemPosition] is LogHeader) {
                 itemPosition
             } else {
-                map[(activityList[itemPosition] as Data).timeStamp.toLocalDate().toString()] ?: 0
+                map[activityList[itemPosition].timeStamp.toLocalDate().toString()] ?: 0
             }
 
 
