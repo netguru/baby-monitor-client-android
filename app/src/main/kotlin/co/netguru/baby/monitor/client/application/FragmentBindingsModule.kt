@@ -8,6 +8,7 @@ import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveC
 import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment
+import co.netguru.baby.monitor.client.feature.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.settings.ServerSettingsFragment
 import co.netguru.baby.monitor.client.feature.splash.SplashFragment
 import dagger.Module
@@ -19,6 +20,10 @@ internal abstract class FragmentBindingsModule {
     @FragmentScope
     @ContributesAndroidInjector()
     internal abstract fun serverFragmentInjector(): ChildMonitorFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector()
+    internal abstract fun serverSettingsFragmentInjector(): ServerSettingsFragment
 
     @FragmentScope
     @ContributesAndroidInjector()
@@ -42,7 +47,7 @@ internal abstract class FragmentBindingsModule {
 
     @FragmentScope
     @ContributesAndroidInjector
-    internal abstract fun clientSettingsFragmentInjector(): ServerSettingsFragment
+    internal abstract fun clientSettingsFragmentInjector(): ClientSettingsFragment
 
     @FragmentScope
     @ContributesAndroidInjector

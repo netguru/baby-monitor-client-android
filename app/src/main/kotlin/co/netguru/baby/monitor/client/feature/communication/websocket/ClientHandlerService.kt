@@ -3,14 +3,15 @@ package co.netguru.baby.monitor.client.feature.communication.websocket
 import android.app.IntentService
 import android.app.Notification
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
-import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.communication.SingleEvent
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import dagger.android.AndroidInjection
@@ -46,11 +47,9 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
         startForeground(Random.nextInt(), createNotification())
 
         dataRepository.getChildData()
-                .subscribeOn(Schedulers.newThread())
-                .subscribeBy(
-                        onNext = this::addAllChildren,
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+                .observeForever(Observer { list ->
+                    addAllChildren(list ?: return@Observer)
+                })
     }
 
     override fun onBind(intent: Intent?) = ChildServiceBinder()
