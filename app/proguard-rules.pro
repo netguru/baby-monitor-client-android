@@ -110,4 +110,3 @@ public static ** valueOf(java.lang.String);
 
 #Firebase Database
 -keep class co.netguru.baby.monitor.client.data.communication.firebase.** { *; }
-
