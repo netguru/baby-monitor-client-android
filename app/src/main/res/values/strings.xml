@@ -69,6 +69,7 @@
     <string name="notification_title_sound_processing">Sound processing</string>
     <string name="child_monitoring">Child monitoring</string>
     <string name="child_not_available">Child not available</string>
+    <string name="dialog_title_choose_source">Choose source</string>
 
     <string name="nsd_service_registration_failed">Device discovery registration failed</string>
     <string name="discovery_start_failed">Device discovery start failed</string>

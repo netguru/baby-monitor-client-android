@@ -50,6 +50,8 @@ class DataRepository @Inject constructor(
 
     fun getChildData() = database.childDataDao().getAllChildren()
 
+    fun getFirstChild() = database.childDataDao().getFirstChild()
+
     fun getChildDataWithAddress(address: String) = database.childDataDao().getChildByAddress(address)
 
     fun deleteAllData() = Completable.fromAction {

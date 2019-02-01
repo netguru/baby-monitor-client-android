@@ -9,18 +9,17 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.Gravity
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
-import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
+import co.netguru.baby.monitor.client.feature.settings.DefaultDrawerObserver
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.toolbar_child.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -74,7 +73,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     private fun setupView() {
         toolbarSettingsIbtn.setOnClickListener {
-            //todo open settings drawer (21.01.2019)
+            homeViewModel.shouldDrawerBeOpen.postValue(true)
         }
         toolbarBackBtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
@@ -93,6 +92,21 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                     .into(toolbarChildMiniatureIv)
         })
         homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
+        homeViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
+            if (shouldClose == true) {
+                client_drawer.openDrawer(Gravity.END)
+            } else {
+                client_drawer.closeDrawer(Gravity.END)
+            }
+        })
+        client_drawer.isDrawerOpen(Gravity.END)
+
+        client_drawer.addDrawerListener(DefaultDrawerObserver(
+                onDrawerisClosing = {
+                    homeViewModel.saveChildNameRequired.postValue(true)
+                }
+        )
+        )
     }
 
     private fun bindService() {

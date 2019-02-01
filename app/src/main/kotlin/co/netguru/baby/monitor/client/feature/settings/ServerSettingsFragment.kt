@@ -23,6 +23,7 @@ class ServerSettingsFragment : BaseDaggerFragment() {
 
     private val viewModel by lazy { ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java] }
     private val serverViewModel by lazy { ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java] }
+    private val settingsViewModel by lazy { ViewModelProviders.of(this, factory)[SettingsViewModel::class.java] }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -30,11 +31,7 @@ class ServerSettingsFragment : BaseDaggerFragment() {
         sendRecordingsSw.isChecked = viewModel.isUploadEnablad()
 
         rateUsBtn.setOnClickListener {
-            viewModel.openMarket(requireActivity())
-        }
-
-        settingsLogoutBtn.setOnClickListener {
-            viewModel.clearData(requireActivity())
+            settingsViewModel.openMarket(requireActivity())
         }
 
         secondPartTv.setOnClickListener {
@@ -43,6 +40,10 @@ class ServerSettingsFragment : BaseDaggerFragment() {
 
         closeIbtn.setOnClickListener {
             serverViewModel.shouldDrawerBeOpen.postValue(false)
+        }
+
+        settingsLogoutBtn.setOnClickListener {
+            viewModel.clearData(requireActivity())
         }
 
         sendRecordingsSw.setOnCheckedChangeListener { buttonView, isChecked ->

@@ -3,10 +3,7 @@ package co.netguru.baby.monitor.client.feature.client.configuration
 import android.app.Activity
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
@@ -98,25 +95,5 @@ class ConfigurationViewModel @Inject constructor(
                 Intent(activity, OnboardingActivity::class.java)
         )
         activity.finish()
-    }
-
-    fun openMarket(activity: Activity) {
-        val uri = Uri.parse("market://details?id=" + activity.packageName)
-        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-
-        var flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        flags = if (Build.VERSION.SDK_INT >= 21) {
-            flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-        } else {
-            flags or Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET
-        }
-
-        goToMarket.addFlags(flags)
-        try {
-            activity.startActivity(goToMarket)
-        } catch (e: ActivityNotFoundException) {
-            activity.startActivity(Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + activity.packageName)))
-        }
     }
 }

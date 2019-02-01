@@ -2,12 +2,12 @@ package co.netguru.baby.monitor.client.feature.client.home
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
+import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
-import co.netguru.baby.monitor.client.common.RunsInBackground
-import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.data.splash.AppState
 import io.reactivex.disposables.CompositeDisposable
@@ -22,26 +22,14 @@ class ClientHomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     internal val logData = MutableLiveData<List<LogData>>()
-    internal val selectedChild = MutableLiveData<ChildDataEntity>()
+    internal val selectedChild = dataRepository.getFirstChild()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
-    internal val childList = MutableLiveData<List<ChildDataEntity>>()
+    internal val childList = dataRepository.getChildData()
     internal val toolbarState = MutableLiveData<ToolbarState>()
+    internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
+    internal val saveChildNameRequired = MutableLiveData<Boolean>()
 
     private val compositeDisposable = CompositeDisposable()
-
-    init {
-        dataRepository.getChildData()
-                .subscribeOn(Schedulers.newThread())
-                .subscribeBy(
-                        onNext = { list ->
-                            if (selectedChild.value == null && list.isNotEmpty()) {
-                                selectedChild.postValue(list.first())
-                            }
-                            childList.postValue(list)
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
-    }
 
     fun fetchLogData() {
         dataRepository.getAllLogData()

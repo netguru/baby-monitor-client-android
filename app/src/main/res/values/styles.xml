@@ -30,4 +30,8 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="SettingsEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="colorControlNormal">@color/accent</item>
+    </style>
 </resources>
