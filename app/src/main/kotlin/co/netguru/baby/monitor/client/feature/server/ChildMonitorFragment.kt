@@ -121,13 +121,9 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             isFacingFront = !isFacingFront
             rtcReceiverServiceBinder?.recreateCapturer(isFacingFront)
         }
-        backIbtn.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
         settingsIbtn.setOnClickListener {
             viewModel.shouldDrawerBeOpen.postValue(true)
         }
-        childNameTv.text = "Jane" //todo provide non hardcoded string (18.01.2019)
     }
 
     private fun registerNsdService() {

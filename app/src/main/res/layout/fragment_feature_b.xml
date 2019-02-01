@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
+        app:layout_constraintGuide_percent="0.63" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/presentationBTv1"
@@ -57,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.684" />
+        app:layout_constraintGuide_percent="0.666" />
 
     <android.support.constraint.Guideline
         android:id="@+id/horizontalTop2TextBGl"

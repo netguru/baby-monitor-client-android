@@ -111,6 +111,7 @@
         android:gravity="center_horizontal"
         android:text="@string/sync_now_go"
         android:textColor="@color/white"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="@+id/syncText3BottomGl"
         app:layout_constraintEnd_toEndOf="parent"
