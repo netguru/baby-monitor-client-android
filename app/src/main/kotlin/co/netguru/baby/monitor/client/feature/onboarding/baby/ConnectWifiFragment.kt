@@ -3,8 +3,6 @@ package co.netguru.baby.monitor.client.feature.onboarding.baby
 import android.Manifest
 import android.arch.lifecycle.Observer
 import android.content.Intent
-import android.content.IntentFilter
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -22,7 +20,7 @@ class ConnectWifiFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         connectionConnectWiFiCtrl.setOnClickListener {
-            if (wifiReceiver.isWifiConnected.value == true) {
+            if (wifiReceiver.isWifiConnected.value?.fetchData() == true) {
                 findNavController().navigate(
                         when {
                             requireContext().allPermissionsGranted(allPermissions) -> R.id.connectWiFiToSetupInformation
@@ -35,7 +33,7 @@ class ConnectWifiFragment : BaseFragment() {
             }
         }
         wifiReceiver.isWifiConnected.observe(this, Observer { isConnected ->
-            connectionConnectWiFiTv.text = if (isConnected == true) {
+            connectionConnectWiFiTv.text = if (isConnected?.fetchData() == true) {
                 getString(R.string.connect_wifi_connected)
             } else {
                 getString(R.string.connect_to_wi_fi)

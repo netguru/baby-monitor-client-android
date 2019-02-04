@@ -1,5 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
 import io.reactivex.Completable
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
@@ -12,7 +14,7 @@ import java.nio.charset.Charset
 class CustomWebSocketServer(
         port: Int? = null,
         private val onMessageReceived: (WebSocket?, String?) -> Unit,
-        private val onErrorListener: (Exception) -> Unit
+        private val onConnectionStatusChange: (ServerStatus) -> Unit
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
 
     init {
@@ -42,11 +44,12 @@ class CustomWebSocketServer(
 
     override fun onStart() {
         Timber.i("CustomWebSocketServer started")
+        onConnectionStatusChange(ServerStatus.STARTED)
     }
 
     override fun onError(conn: WebSocket?, ex: Exception?) {
         Timber.e("onError: $ex")
-        ex?.let(onErrorListener)
+        onConnectionStatusChange(ServerStatus.ERROR)
         stopServer()
     }
 
@@ -56,6 +59,7 @@ class CustomWebSocketServer(
 
     fun stopServer() = Completable.fromAction {
         stop()
+        onConnectionStatusChange(ServerStatus.STOPPED)
     }
 
     companion object {

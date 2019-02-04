@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
@@ -9,6 +10,7 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.MessageConfirmationStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.EVENT_RECEIVED_CONFIRMATION
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.P2P_OFFER
@@ -16,9 +18,9 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.WEB_SOCKET_ACTION_KEY
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.WEB_SOCKET_ACTION_RINGING
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.WebRtcBinder
-import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerHandler
+import co.netguru.baby.monitor.client.feature.onboarding.baby.WifiReceiver
 import dagger.android.AndroidInjection
-import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -39,10 +41,10 @@ class WebRtcReceiverService : Service() {
     @Inject
     lateinit var notificationHandler: NotificationHandler
 
+    private val wifiReceiver = WifiReceiver()
     private val compositeDisposable = CompositeDisposable()
-    private var server: CustomWebSocketServer? = null
+    private var serverHandler = WebSocketServerHandler(this::handleMessage)
     private var binder: WebRtcReceiverBinder? = null
-    private var isServerOnline = MutableLiveData<Boolean>()
     private var messageConfirmationMap = mutableMapOf<String, MessageConfirmationStatus>()
     private var firebaseKeysMap = mutableMapOf<String, String>()
     private val messageConfirmationDisposable = CompositeDisposable()
@@ -50,8 +52,17 @@ class WebRtcReceiverService : Service() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
-        initWebSocketServer()
+        serverHandler.startServer()
         getClientsData()
+        registerReceiver(wifiReceiver, WifiReceiver.intentFilter)
+
+        wifiReceiver.isWifiConnected.observeForever {event ->
+            if (event?.data == true) {
+                serverHandler.startServer()
+            } else {
+                serverHandler.stopServer()
+            }
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) = START_STICKY
@@ -59,30 +70,12 @@ class WebRtcReceiverService : Service() {
     override fun onBind(intent: Intent?) = WebRtcReceiverBinder().also { binder = it }
 
     override fun onDestroy() {
+        unregisterReceiver(wifiReceiver)
         binder?.cleanup()
-        server?.let(::stopServer)
+        serverHandler.stopServer()
         compositeDisposable.dispose()
         messageConfirmationDisposable.dispose()
         super.onDestroy()
-    }
-
-    private fun initWebSocketServer() {
-        server = CustomWebSocketServer(SERVER_PORT,
-                onMessageReceived = this::handleMessage,
-                onErrorListener = Timber::e
-        ).apply {
-            startServer().subscribeOn(Schedulers.io()).subscribeBy(
-                    onComplete = {
-                        Timber.i("CustomWebSocketServer started")
-                        isServerOnline.postValue(true)
-                    },
-                    onError = {e ->
-                        Timber.e("launch failed $e")
-                        isServerOnline.postValue(false)
-                        restartServer()
-                    }
-            ).addTo(compositeDisposable)
-        }
     }
 
     private fun getClientsData() {
@@ -113,18 +106,6 @@ class WebRtcReceiverService : Service() {
         if (jsonObject.has(WEB_SOCKET_ACTION_KEY)) {
             handleWebSocketAction(client, jsonObject)
         }
-    }
-
-    private fun restartServer() {
-        Completable.timer(5, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = { initWebSocketServer() },
-                        onError = { e ->
-                            Timber.e(e)
-                            restartServer()
-                        }
-                ).addTo(compositeDisposable)
     }
 
     private fun handleWebSocketAction(client: WebSocket, jsonObject: JSONObject) {
@@ -167,24 +148,11 @@ class WebRtcReceiverService : Service() {
                 ).addTo(compositeDisposable)
     }
 
-    private fun stopServer(server: CustomWebSocketServer) {
-        server.stopServer()
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = {
-                            Timber.i("CustomWebSocketServer closed")
-                        },
-                        onError = {
-                            Timber.e("stop failed $it")
-                        }
-                ).addTo(compositeDisposable)
-    }
-
     inner class WebRtcReceiverBinder : WebRtcBinder() {
 
         var currentCall: RtcReceiver? = null
-        val isServerOnline: MutableLiveData<Boolean>
-            get() = this@WebRtcReceiverService.isServerOnline
+        val serverStatus: MutableLiveData<ServerStatus>
+            get() = this@WebRtcReceiverService.serverHandler.serverStatus
 
         fun createReceiver(
                 view: CustomSurfaceViewRenderer,
@@ -195,8 +163,7 @@ class WebRtcReceiverService : Service() {
 
         fun hangUpReceiver() = Maybe.just(currentCall)
                 .flatMapCompletable { call ->
-                    server?.let(this@WebRtcReceiverService::stopServer)
-                    initWebSocketServer()
+                    serverHandler.stopServer(true)
                     call.stopCall()
                 }
 
@@ -204,12 +171,12 @@ class WebRtcReceiverService : Service() {
             Timber.i("cleanup")
             currentCall?.localView = null
             currentCall?.let(this::callCleanup)
-            server?.stop()
+            serverHandler.startServer()
         }
 
         fun handleBabyCrying() {
             Timber.i("broadcasting cry event: ${generateCryingEventJSON()}")
-            server?.broadcast(generateCryingEventJSON().toByteArray())
+            serverHandler.broadcast(generateCryingEventJSON().toByteArray())
             waitForResponse()
         }
 
@@ -253,7 +220,7 @@ class WebRtcReceiverService : Service() {
                     .subscribeOn(Schedulers.io())
                     .subscribeBy(
                             onComplete = {
-                                server?.let(this@WebRtcReceiverService::stopServer)
+                                serverHandler.stopServer()
                             },
                             onError = Timber::e
                     ).addTo(compositeDisposable)
