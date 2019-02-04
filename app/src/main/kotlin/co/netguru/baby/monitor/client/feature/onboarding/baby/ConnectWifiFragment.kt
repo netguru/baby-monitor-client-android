@@ -45,9 +45,7 @@ class ConnectWifiFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
-        requireContext().registerReceiver(wifiReceiver, intentFilter)
+        requireContext().registerReceiver(wifiReceiver, WifiReceiver.intentFilter)
     }
 
     override fun onPause() {

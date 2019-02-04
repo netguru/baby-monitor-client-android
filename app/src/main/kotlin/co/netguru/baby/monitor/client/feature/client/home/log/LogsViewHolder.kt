@@ -28,7 +28,7 @@ abstract class LogsViewHolder(
             if (item is LogData.Data) {
                 itemActivityLogActionTv.text = item.action
                 itemActivityLogActionTimestampTv.text = if (item.timeStamp.isAfter(hourBefore)) {
-                    itemView.context.getString(R.string.minutes_ago, hourBefore.until(item.timeStamp, ChronoUnit.MINUTES))
+                    itemView.context.getString(R.string.minutes_ago, (HOUR_IN_MINUTES - hourBefore.until(item.timeStamp, ChronoUnit.MINUTES)))
                 } else {
                     item.timeStamp.format(DateProvider.timeStampFormatter)
                 }
@@ -59,5 +59,9 @@ abstract class LogsViewHolder(
             viewType: Int
     ) : LogsViewHolder(parent, viewType) {
         override fun bindView(item: LogData) = Unit
+    }
+
+    companion object {
+        const val HOUR_IN_MINUTES = 60
     }
 }

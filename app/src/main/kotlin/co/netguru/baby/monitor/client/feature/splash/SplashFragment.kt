@@ -46,9 +46,11 @@ class SplashFragment : BaseDaggerFragment() {
                     findNavController().navigate(
                             when (appState) {
                                 AppState.SERVER -> {
+                                    requireActivity().finish()
                                     R.id.splashToServer
                                 }
                                 AppState.CLIENT -> {
+                                    requireActivity().finish()
                                     R.id.splashToConfiguration
                                 }
                                 else -> {

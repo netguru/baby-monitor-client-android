@@ -17,6 +17,7 @@ class App : DaggerApplication() {
 
     @Inject
     lateinit var firebaseRepository: FirebaseRepository
+
     override fun onCreate() {
         super.onCreate()
         debugMetricsHelper.init(this)
