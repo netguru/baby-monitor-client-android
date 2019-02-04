@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Baby Monitor</string>
+    <string name="app_name">BabyGuard</string>
     <string name="company_url">https://www.netguru.com/</string>
 
     <string name="discovering_services_error">Error while connecting to service</string>
@@ -63,10 +63,14 @@
     <string name="get_started">Get started</string>
     <string name="notification_baby_is_crying_title">Your baby is crying!</string>
     <string name="notification_baby_is_crying_content">Check what happened on live camera.</string>
-    <string name="notification_channel_name">Baby Monitor</string>
+    <string name="notification_channel_name">BabyGuard channel</string>
     <string name="notification_channel_description">Notifications for Baby Monitor</string>
     <string name="notification_channel_id">baby-monitor-channel</string>
     <string name="notification_title_sound_processing">Sound processing</string>
+    
+    <string name="notification_foreground_content_title">Secure monitoring</string>
+    <string name="notification_foreground_content_text">Keeping an eye on your baby</string>
+
     <string name="child_monitoring">Child monitoring</string>
     <string name="child_not_available">Child not available</string>
     <string name="dialog_title_choose_source">Choose source</string>

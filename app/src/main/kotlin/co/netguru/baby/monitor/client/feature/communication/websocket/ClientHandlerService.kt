@@ -76,13 +76,13 @@ class ClientHandlerService : IntentService("ClientHandlerService"), ClientsHandl
 
     private fun createNotification(): Notification {
         val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            R.drawable.logo else R.mipmap.ic_launcher
+            R.drawable.top_monitoring_icon else R.mipmap.ic_launcher
 
         return NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.notification_channel_id))
                 .setOngoing(true)
                 .setSmallIcon(drawableResId)
-                .setProgress(0, 100, true)
-                .setContentTitle(getString(R.string.child_monitoring))
+                .setContentTitle(getString(R.string.notification_foreground_content_title))
+                .setContentText(getString(R.string.notification_foreground_content_text))
                 .build()
     }
 

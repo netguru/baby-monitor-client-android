@@ -11,7 +11,6 @@ import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientsHandler
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -50,17 +49,12 @@ class ConfigurationViewModel @Inject constructor(
                     } else {
                         dataRepository.updateChildData(list[0].copy(address = address))
                     }
-                }.andThen(dataRepository.getSavedState())
+                }
+                .andThen(addParingEventToDataBase(address))
+                .andThen(dataRepository.getSavedState())
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onSuccess = { state ->
-                            dataRepository.insertLogToDatabase(
-                                    LogDataEntity(
-                                            DEVICES_PAIRED,
-                                            LocalDateTime.now().toString(),
-                                            address
-                                    )
-                            )
                             appSavedState.postValue(state)
                         },
                         onError = Timber::e
@@ -106,6 +100,16 @@ class ConfigurationViewModel @Inject constructor(
         )
         activity.finish()
     }
+
+    @RunsInBackground
+    private fun addParingEventToDataBase(address: String) =
+            dataRepository.insertLogToDatabase(
+                    LogDataEntity(
+                            DEVICES_PAIRED,
+                            LocalDateTime.now().toString(),
+                            address
+                    )
+            )
 
     companion object {
         private const val DEVICES_PAIRED = "Devices were paired correctly"

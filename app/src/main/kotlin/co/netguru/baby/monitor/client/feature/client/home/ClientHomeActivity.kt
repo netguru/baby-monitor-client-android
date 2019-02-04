@@ -78,6 +78,9 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         toolbarBackBtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
+        backIbtn.setOnClickListener {
+            findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
+        }
     }
 
     private fun getData() {
