@@ -42,23 +42,24 @@ class SplashFragment : BaseDaggerFragment() {
         Completable
                 .timer(DELAY_MILLISECONDS, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
-                .subscribeBy {
-                    findNavController().navigate(
-                            when (appState) {
-                                AppState.SERVER -> {
-                                    requireActivity().finish()
-                                    R.id.splashToServer
-                                }
-                                AppState.CLIENT -> {
-                                    requireActivity().finish()
-                                    R.id.splashToConfiguration
-                                }
-                                else -> {
-                                    R.id.splashToOnboarding
-                                }
-                            }
-                    )
-                }.addTo(compositeDisposable)
+                .subscribeBy(
+                        onComplete = { handleSplashDelay(appState) }
+                ).addTo(compositeDisposable)
+    }
+
+    private fun handleSplashDelay(appState: AppState?) {
+        when (appState) {
+            AppState.SERVER -> {
+                findNavController().navigate(R.id.splashToServer)
+                requireActivity().finish()
+            }
+            AppState.CLIENT -> {
+                findNavController().navigate(R.id.splashToConfiguration)
+            }
+            else -> {
+                findNavController().navigate(R.id.splashToOnboarding)
+            }
+        }
     }
 
     companion object {

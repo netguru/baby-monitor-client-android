@@ -13,14 +13,17 @@
 
         <action
             android:id="@+id/splashToOnboarding"
+            app:clearTask="true"
             app:destination="@+id/feature" />
 
         <action
             android:id="@+id/splashToConfiguration"
+            app:clearTask="true"
             app:destination="@+id/configuration"/>
 
         <action
             android:id="@+id/splashToServer"
+            app:clearTask="true"
             app:destination="@+id/server"/>
     </fragment>
 
