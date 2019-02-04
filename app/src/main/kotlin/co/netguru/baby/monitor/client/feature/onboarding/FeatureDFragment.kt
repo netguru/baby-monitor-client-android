@@ -6,12 +6,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
 import kotlinx.android.synthetic.main.fragment_feature_d.*
 import javax.inject.Inject
 
-class FeatureDFragment : BaseFragment() {
+class FeatureDFragment : BaseDaggerFragment() {
     override val layoutResource = R.layout.fragment_feature_d
 
     @Inject
