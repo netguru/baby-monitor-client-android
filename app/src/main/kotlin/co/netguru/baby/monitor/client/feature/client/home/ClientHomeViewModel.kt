@@ -28,6 +28,7 @@ class ClientHomeViewModel @Inject constructor(
     internal val toolbarState = MutableLiveData<ToolbarState>()
     internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
     internal val saveChildNameRequired = MutableLiveData<Boolean>()
+    internal val backButtonShouldBeVisible = MutableLiveData<Boolean>()
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -66,5 +67,9 @@ class ClientHomeViewModel @Inject constructor(
         logData.postValue(list.map { data ->
             data.toLogData(childList.value?.find { data.address == it.address }?.image)
         })
+    }
+
+    fun showBackButton(shouldBeVisible: Boolean) {
+        backButtonShouldBeVisible.postValue(shouldBeVisible)
     }
 }

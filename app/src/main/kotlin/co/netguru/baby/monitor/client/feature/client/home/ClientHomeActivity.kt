@@ -92,6 +92,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                     .into(toolbarChildMiniatureIv)
         })
         homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
+        homeViewModel.backButtonShouldBeVisible.observe(this, Observer { backIbtn.setVisible(it == true) })
         homeViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
             if (shouldClose == true) {
                 client_drawer.openDrawer(Gravity.END)
@@ -126,7 +127,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun handleToolbarStateChange(state: ToolbarState?) {
-        when(state) {
+        when (state) {
             ToolbarState.HIDDEN -> {
                 childToolbarLayout.setVisible(false)
                 defaultToolbarLayout.setVisible(false)

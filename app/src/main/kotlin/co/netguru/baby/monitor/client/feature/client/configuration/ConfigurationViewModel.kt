@@ -8,13 +8,16 @@ import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
+import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.communication.websocket.ClientsHandler
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -51,6 +54,13 @@ class ConfigurationViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onSuccess = { state ->
+                            dataRepository.insertLogToDatabase(
+                                    LogDataEntity(
+                                            DEVICES_PAIRED,
+                                            LocalDateTime.now().toString(),
+                                            address
+                                    )
+                            )
                             appSavedState.postValue(state)
                         },
                         onError = Timber::e
@@ -95,5 +105,9 @@ class ConfigurationViewModel @Inject constructor(
                 Intent(activity, OnboardingActivity::class.java)
         )
         activity.finish()
+    }
+
+    companion object {
+        private const val DEVICES_PAIRED = "Devices were paired correctly"
     }
 }
