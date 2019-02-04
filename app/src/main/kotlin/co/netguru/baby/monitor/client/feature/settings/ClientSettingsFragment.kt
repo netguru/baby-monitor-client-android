@@ -82,6 +82,13 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                 }
             }
         })
+
+        childNameEt.onFocusChangeListener =
+                View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
+                    if (!hasFocus) {
+                        settingsViewModel.hideKeyboard(view, requireContext())
+                    }
+                }
     }
 
     private fun getPictureWithEasyPicker() {
