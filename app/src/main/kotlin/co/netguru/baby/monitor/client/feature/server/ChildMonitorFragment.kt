@@ -18,6 +18,7 @@ import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -175,8 +176,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     this@ChildMonitorFragment::handleCallStateChange
             )
         }
-        service.isServerOnline.observe(this, Observer { isAvailable ->
-            if (isAvailable == true) {
+        service.serverStatus.observe(this, Observer { status ->
+            if (status == ServerStatus.STARTED) {
                 pulsatingView.start()
             } else {
                 pulsatingView.stop()
