@@ -43,6 +43,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.selectedChildAvailability.observe(this, Observer(this::onAvailabilityChange))
+        viewModel.showBackButton(true)
     }
 
     override fun onResume() {
@@ -63,6 +64,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
+        viewModel.showBackButton(false)
         webRtcClientBinder?.cleanup()
         childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         compositeDisposable.dispose()
