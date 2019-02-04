@@ -17,6 +17,10 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
+import android.support.v4.content.ContextCompat.getSystemService
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+
 
 class SettingsViewModel @Inject constructor(
         private val dataRepository: DataRepository
@@ -80,5 +84,10 @@ class SettingsViewModel @Inject constructor(
             activity.startActivity(Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://play.google.com/store/apps/details?id=" + activity.packageName)))
         }
+    }
+
+    fun hideKeyboard(view: View, context: Context) {
+        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
+        inputMethodManager?.hideSoftInputFromWindow(view.getWindowToken(), 0)
     }
 }
