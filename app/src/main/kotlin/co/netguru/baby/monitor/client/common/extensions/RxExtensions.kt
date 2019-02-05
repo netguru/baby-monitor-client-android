@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.common.extensions
 
 import io.reactivex.*
-
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 

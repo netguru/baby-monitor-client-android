@@ -30,14 +30,6 @@
     native <methods>;
 }
 
-# remove log call
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-}
--assumenosideeffects class timber.log.Timber {
-    public static *** d(...);
-}
-
 # Models!
 # TODO 07.09.2017 Rule should be adjusted to current project - all models used with GSON should keep their members name
 # TODO 07.09.2017 or all their members should be annotated with @SerializedName().
@@ -97,6 +89,10 @@
   **[] $VALUES;
   public *;
 }
+-keepclassmembers enum * {
+public static **[] values();
+public static ** valueOf(java.lang.String);
+}
 
 -dontwarn okhttp3.**
 -dontwarn okio.**
@@ -104,3 +100,13 @@
 
 #dagger
 -dontwarn com.google.errorprone.annotations.*
+
+# Same for MediaLibrary
+-keep class org.videolan.medialibrary.** { *; }
+# WebRtc
+-keep class org.webrtc.** { *; }
+-dontwarn org.chromium.build.**
+-dontwarn org.webrtc.Logging**
+
+#Firebase Database
+-keep class co.netguru.baby.monitor.client.data.communication.firebase.** { *; }

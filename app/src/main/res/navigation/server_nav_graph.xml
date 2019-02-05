@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/server_nav_graph"
+    app:startDestination="@+id/serverFragment">
+
+    <fragment
+        android:id="@+id/serverFragment"
+        android:name="co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment"
+        tools:layout="@layout/fragment_child_monitor">
+    </fragment>
+
+</navigation>

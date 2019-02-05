@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/splash_nav_graph"
+    app:startDestination="@+id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="co.netguru.baby.monitor.client.feature.splash.SplashFragment"
+        android:label="Splash Fragment"
+        tools:layout="@layout/fragment_splash">
+
+        <action
+            android:id="@+id/splashToOnboarding"
+            app:clearTask="true"
+            app:destination="@+id/feature" />
+
+        <action
+            android:id="@+id/splashToConfiguration"
+            app:clearTask="true"
+            app:destination="@+id/configuration"/>
+
+        <action
+            android:id="@+id/splashToServer"
+            app:clearTask="true"
+            app:destination="@+id/server"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/feature"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.FeaturePresentationFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_feature_a">
+        <action
+            android:id="@+id/featureToFeature"
+            app:destination="@+id/feature" />
+        <action
+            android:id="@+id/featureToInfoAboutDevices"
+            app:destination="@+id/infoAboutDevices" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infoAboutDevices"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.InfoAboutDevicesFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_info_about_devices">
+
+        <action
+            android:id="@+id/infoAboutDevicesToSpecifyDevice"
+            app:destination="@+id/specifyDevice" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/specifyDevice"
+        android:name="co.netguru.baby.monitor.client.feature.welcome.SpecifyDeviceFragment"
+        android:label="Welcome Fragment"
+        tools:layout="@layout/fragment_specify_device">
+        <action
+            android:id="@+id/specifyDeviceToFeatureD"
+            app:destination="@+id/featureD" />
+
+        <action
+            android:id="@+id/specifyDeviceToSecondAppInfo"
+            app:destination="@+id/secondAppInfo" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/featureD"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.FeatureDFragment"
+        android:label="Specify Device"
+        tools:layout="@layout/fragment_feature_d">
+
+        <action
+            android:id="@+id/featureDToConnecting"
+            app:destination="@+id/connectWiFi" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/connectWiFi"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.ConnectWifiFragment"
+        android:label="Connecting WiFi"
+        tools:layout="@layout/fragment_connect_wifi">
+
+        <action
+            android:id="@+id/connectWiFiToPermissionCamera"
+            app:destination="@+id/permissionCamera" />
+
+        <action
+            android:id="@+id/connectWiFiToPermissionMicrophone"
+            app:destination="@+id/permissionMicrophone" />
+
+        <action
+            android:id="@+id/connectWiFiToSetupInformation"
+            app:destination="@+id/setupInformation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/permissionCamera"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.PermissionCameraFragment"
+        android:label="Camera Permissions"
+        tools:layout="@layout/fragment_camera_permission">
+
+        <action
+            android:id="@+id/permissionCameraToPermissionMicrophone"
+            app:destination="@+id/permissionMicrophone" />
+
+        <action
+            android:id="@+id/permissionCameraToPermissionDenied"
+            app:destination="@+id/permissionDenied" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/permissionMicrophone"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.PermissionMicrophoneFragment"
+        android:label="Microphone Permissions"
+        tools:layout="@layout/fragment_microphone_permission">
+
+        <action
+            android:id="@+id/permissionMicrophoneToSetupInformation"
+            app:destination="@+id/setupInformation" />
+
+        <action
+            android:id="@+id/permissionMicrophoneToPermissionDenied"
+            app:destination="@+id/permissionDenied" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/permissionDenied"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.PermissionDenied"
+        android:label="Permissions Denied"
+        tools:layout="@layout/fragment_denied_permission" />
+
+    <fragment
+        android:id="@+id/setupInformation"
+        android:name="co.netguru.baby.monitor.client.feature.onboarding.baby.SetupInformationFragment"
+        android:label="Setup Information"
+        tools:layout="@layout/fragment_connecting_setup_information">
+        <action
+            android:id="@+id/setupInformationToServer"
+            app:destination="@+id/server" />
+    </fragment>
+
+    <activity
+        android:id="@+id/server"
+        android:name="co.netguru.baby.monitor.client.feature.server.ServerActivity"
+        android:label="Server"
+        tools:layout="@layout/activity_server" />
+
+    <fragment
+        android:id="@+id/secondAppInfo"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.SecondAppInfo"
+        android:label="Second App Info"
+        tools:layout="@layout/fragment_second_app_info">
+
+        <action
+            android:id="@+id/secondAppInfoToConfiguration"
+            app:destination="@+id/configuration" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/configuration"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFragment"
+        android:label="Configuration"
+        tools:layout="@layout/fragment_connecting_devices">
+
+        <action
+            android:id="@+id/configurationToAllDone"
+            app:destination="@+id/allDone" />
+
+        <action
+            android:id="@+id/configurationToClientHome"
+            app:destination="@+id/clientHomeActivity" />
+
+        <action
+            android:id="@+id/configurationToConfigurationFailed"
+            app:destination="@+id/configurationFailed" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/configurationFailed"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFailedFragment"
+        android:label="Configuration Failed"
+        tools:layout="@layout/fragment_failed_devices_connecting"/>
+
+    <fragment
+        android:id="@+id/allDone"
+        android:name="co.netguru.baby.monitor.client.feature.client.configuration.AllDoneFragment"
+        android:label="All Done"
+        tools:layout="@layout/fragment_all_done">
+
+        <action
+            android:id="@+id/allDoneToClientHome"
+            app:destination="@+id/clientHomeActivity" />
+    </fragment>
+
+    <activity
+        android:id="@+id/clientHomeActivity"
+        android:name="co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity"
+        android:label="Client Home"
+        tools:layout="@layout/activity_client_home" />
+</navigation>

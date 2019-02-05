@@ -1,4 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="text_size_xxsmall">8sp</dimen>
+    <dimen name="text_size_xsmall">10sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_big">18sp</dimen>
+    <dimen name="text_size_large">20sp</dimen>
+    <dimen name="text_size_xxlarge">24sp</dimen>
+    <dimen name="text_size_huge">32sp</dimen>
 
+    <dimen name="spacing_xxxsmall">1dp</dimen>
+    <dimen name="spacing_xxsmall">4dp</dimen>
+    <dimen name="spacing_xsmall">6dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+
+    <dimen name="spacing_medium">12dp</dimen>
+    <dimen name="spacing_xmedium">16dp</dimen>
+    <dimen name="spacing_xxmedium">24dp</dimen>
+    <dimen name="spacing_xxxmedium">32dp</dimen>
+
+    <dimen name="spacing_normal">40dp</dimen>
+    <dimen name="spacing_xnormal">48dp</dimen>
+    <dimen name="spacing_xxnormal">56dp</dimen>
+    <dimen name="spacing_xxxnormal">64dp</dimen>
+
+    <dimen name="spacing_large">72dp</dimen>
+    <dimen name="spacing_xlarge">80dp</dimen>
+    <dimen name="spacing_xxlarge">88dp</dimen>
+    <dimen name="spacing_xxxlarge">96dp</dimen>
+
+    <dimen name="spacing_tiny">2dp</dimen>
+
+    <dimen name="toolbar_elevation">12dp</dimen>
+    <dimen name="elevation_big">20dp</dimen>
+    <dimen name="drawer_width">320dp</dimen>
+
+    <dimen name="padding_normal">20dp</dimen>
+
+    <dimen name="shadow_padding">1dp</dimen>
 </resources>

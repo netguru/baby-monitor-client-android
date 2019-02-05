@@ -1,4 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">BabyGuard</string>
+    <string name="company_url">https://www.netguru.com/</string>
 
+    <string name="discovering_services_error">Error while connecting to service</string>
+    <string name="system_is_busy_error">The system is to busy to process the request</string>
+    <string name="p2p_unsupported_on_device_error">Wi-Fi P2P isn\'t supported on the device running the app</string>
+    <string name="no_name">Your baby name</string>
+    <string name="add_another_baby">Add another baby</string>
+    <string name="settings">Settings</string>
+    <string name="specify_this_device_title">Specify this\ndevice</string>
+    <string name="start_by_defining_this_device_description">Let’s start by defining this device</string>
+    <string name="splash_by_netguru">by <u>Netguru</u></string>
+    <string name="splash_crafted_with">Crafted with</string>
+    <string name="rate_us">Rate us</string>
+    <string name="reset_the_app">Reset the app</string>
+    <string name="allow_to_send_recordings">Send anonymized baby voice recordings</string>
+    <string name="send_recordings_info">Don\'t worry, your data is safe. We only use\nvoice recordings for app development. What\ndoes it mean?\n\nWith your help, BabyGuard will learn to\nrecognise baby voices more accurately! The\ndata is sent automatically and only over\nWiFi.</string>
+
+    <string name="feature_a_text_1">Do your daily errands and\nkeep an eye on your baby</string>
+    <string name="feature_a_text_2">Easily check on the baby anywhere\nand anytime you want.</string>
+    <string name="feature_b_text_1">Crying baby alert</string>
+    <string name="feature_b_text_2">You\'ll get a notification every time your\nbaby starts crying.</string>
+    <string name="feature_c_text_1">Your privacy is safe when\nusing BabyGuard</string>
+    <string name="feature_c_text_2">Video and audio will not be recorded, unless\nyou want to help us develop the app and\ngive your permission to do it.</string>
+    <string name="feature_d_text_1">Send anonymized baby\nvoice recordings</string>
+    <string name="feature_d_text_2">Voice recordings are only used for\ndevelopment purposes and never without\nyour permission.</string>
+    <string name="feature_next_btn">Next</string>
+    <string name="feature_skip_btn">Skip</string>
+    <string name="feature_maybe_later_btn">Maybe later</string>
+    <string name="feature_lets_start">Let\'s start!</string>
+
+    <string name="back"><u>Back</u></string>
+    <string name="connecting_description">Get started by \nconnecting\nBabyGuard to \nWi-Fi</string>
+    <string name="connect_to_wi_fi">Connect to Wi-Fi</string>
+    <string name="connect_wifi_connected">Next</string>
+
+    <string name="camera_permission_ok">Tap “OK” to keep an\neye on your baby!</string>
+    <string name="camera_permission_guard_info">Don\'t worry - we care about your safety. No video\nwill not be recorded and we will protect you from any\ndata leakage.</string>
+    <string name="microphone_permission_ok">Tap “OK” if you want \nto know if your baby \nis crying</string>
+    <string name="microphone_permission_guard_info">>Don\'t worry - we care about your safety. Voice will\nonly be recorded with your permission, and will only\nbe used to let you know if your baby us crying.</string>
+    <string name="permission_denied">Permissions denied</string>
+    <string name="permission_denied_info">BabyGuard is\nunable to work\nwithout permissions</string>
+    <string name="permission_denied_are_you_sure">Are you sure you want to deny\npermissions?</string>
+    <string name="permission_denied_retry_button">Re-try</string>
+    <string name="permission_denied_sure_button">I\'m sure</string>
+
+    <string name="setup_information">Setup information</string>
+    <string name="connecting_setup_information">Put this device next\nto your baby\'s bed, so\nthat you can see him\nor her in a real time\nview</string>
+    <string name="start_monitoring">Start monitoring</string>
+
+    <string name="isntall_app_title">Hello!</string>
+    <string name="install_app_description">It’s time to install BabyGuard\non your second device</string>
+    <string name="done">Done</string>
+    <string name="back_underlined"><u>Back</u></string>
+    <string name="connecting">Connecting</string>
+    <string name="try_again">Try again</string>
+    <string name="done_exclamation">Done!</string>
+    <string name="continue_text">Continue</string>
+    <string name="all_done_title">All done!</string>
+    <string name="all_done_description">You can now start using BabyGuard!</string>
+    <string name="get_started">Get started</string>
+    <string name="notification_baby_is_crying_title">Your baby is crying!</string>
+    <string name="notification_baby_is_crying_content">Check what happened on live camera.</string>
+    <string name="notification_channel_name">BabyGuard channel</string>
+    <string name="notification_channel_description">Notifications for BabyGuard</string>
+    <string name="notification_channel_id">baby-monitor-channel</string>
+    <string name="notification_title_sound_processing">Sound processing</string>
+    
+    <string name="notification_foreground_content_title">Secure monitoring</string>
+    <string name="notification_foreground_content_text">Keeping an eye on your baby</string>
+
+    <string name="child_monitoring">Child monitoring</string>
+    <string name="child_not_available">Child not available</string>
+    <string name="dialog_title_choose_source">Choose source</string>
+
+    <string name="nsd_service_registration_failed">Device discovery registration failed</string>
+    <string name="discovery_start_failed">Device discovery start failed</string>
+
+    <string name="devices_disconnected">Devices disconnected</string>
+    <string name="monitoring_enabled">Monitoring enabled</string>
+    <string name="parent">Parent</string>
+    <string name="parent_button_description">This device will stay \nwith me</string>
+    <string name="baby">Baby</string>
+    <string name="baby_button_description">This device will stay \nwith my baby</string>
+
+    <string name="sync_header">Prepare two devices\nfor setup</string>
+    <string name="sync_description"><![CDATA[<font color=#9c8fff>You need two devices to start using<br>BabyGuard. </font><font color=#ffffff>One</font><font color=#9c8fff>, to monitor your baby<br>in a room, and </font><font color=#ffffff>the other</font><font color=#9c8fff> to show<br>a real time view of your baby, when<br>you leave the room.</font>]]></string>
+    <string name="sync_now_go">Now go to the step where you decide if this\ndevice will stay with you or with your baby</string>
+
+    <string name="end_of_logs_info">It seems you don’t have more notifications!\nEnjoy using BabyGuard!</string>
+    <string name="your_baby_name">Your baby name</string>
+    <string name="latest_activity">Latest activity</string>
+
+    <string name="date_today">Today, %1$s</string>
+    <string name="date_yesterday">Yesterday, %1$s</string>
+    <string name="minutes_ago">%1$d minutes ago</string>
+
+    <string name="hello">Hello!</string>
+
+    <string name="second_app_info_text_3">It’s time to install BabyGuard \non your second device</string>
+    <string name="second_app_info_text_4">IMPORTANT: Make sure you have already installed\nBabyGuard on baby device</string>
+    <string name="second_app_info_text_button">Connect devices</string>
+
+    <string name="connecting_devices_description_text">Searching for\nsecond device</string>
+
+    <string name="connecting_devices_failed_text_1">Ups! Something\nwent wrong :(</string>
+    <string name="connecting_devices_failed_text_2">Make sure that you are connected\nto the same Wi-Fi network</string>
 </resources>

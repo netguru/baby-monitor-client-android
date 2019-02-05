@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tool:background="@color/background">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingDefaultStartGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.064" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingDefaultEndGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.936" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingHeadlineTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.156" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_bold"
+        android:text="@string/connecting"
+        android:textColor="@color/accent"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/connectingHeadlineBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/connectingDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingHeadlineTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingHeadlineBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.19" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingInformationTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.202" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_medium"
+        android:text="@string/connecting_description"
+        android:textColor="@color/white"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/connectingInformationBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/connectingDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingInformationTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingInformationBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.43" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingLogoTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.486" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/wifi"
+        app:layout_constraintBottom_toBottomOf="@+id/connectingLogoBottomGl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/connectingLogoTopGl" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingLogoBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.606" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingButtonTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.868" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/connectionConnectWiFiCtrl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/button_shadow"
+        app:layout_constraintBottom_toBottomOf="@+id/connectingButtonBottomGl"
+        app:layout_constraintEnd_toEndOf="@+id/connectingDefaultEndGl"
+        app:layout_constraintHeight_percent="0.12"
+        app:layout_constraintStart_toStartOf="@+id/connectingDefaultStartGl"
+        app:layout_constraintTop_toTopOf="@+id/connectingButtonTopGl"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.93">
+
+        <TextView
+            android:id="@+id/connectionConnectWiFiTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/connect_to_wi_fi"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/connectingButtonBottomGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.952" />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -12,25 +13,22 @@ apply from: '../buildsystem/sonarqube.gradle'
 ext {
 
     secrets = [
-            // define your app secrets, for example:
-            // hockeyAppId: keyProperty("HOCKEY_APP_ID")
+            hockeyAppIdProduction: keyProperty("HOCKEY_APP_ID_PRODUCTION")
     ]
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
-
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     defaultConfig {
-        applicationId "co.netguru.android.template"
-        minSdkVersion 18
-        targetSdkVersion 27
+        applicationId "co.netguru.baby.monitor"
+        minSdkVersion 19
+        targetSdkVersion 28
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.1.0'
-
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         debug {
             versionNameSuffix "-DEBUG"
@@ -41,7 +39,20 @@ android {
             shrinkResources false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro', 'proguard-rules-test.pro'
+                    'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_DEBUG")]
+        }
+        releasePreprod {
+            versionNameSuffix "-PREPROD"
+            applicationIdSuffix ".preprod"
+            debuggable true
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules-release-preprod.pro'
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PREPROD")]
         }
         release {
             debuggable false
@@ -50,61 +61,26 @@ android {
             zipAlignEnabled true
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+                    'proguard-rules-release.pro'
+            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PRODUCTION")]
         }
     }
-
-    flavorDimensions "api"
-
-    productFlavors {
-        mock {
-            versionNameSuffix "-MOCK"
-            applicationIdSuffix ".mock"
-            dimension "api"
-
-            // put your secrets in the BuildConfig.java class, for example:
-            // buildConfigField 'String', 'HOCKEY_APP_ID', "\"${secrets.hockeyAppId}\""
-        }
-        production {
-            dimension "api"
-            // inherit
-        }
-    }
-
-    variantFilter { variant ->
-        def buildName = variant.buildType.name
-        def flavorName = variant.getFlavors().get(0).name
-        // remove unnecessary variants
-        ['release'].each {
-            if (buildName == it) {
-                ['mock'].each {
-                    if (flavorName == it) {
-                        variant.setIgnore(true)
-                    }
-                }
-            }
-        }
-    }
-
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
         testLogging {
             events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
         }
     }
-
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
-
     sourceSets.all {
         it.java.srcDir "src/$it.name/kotlin"
     }
-
     junitJacoco {
-        jacocoVersion='0.7.9'
+        jacocoVersion = '0.8.1'
         excludes = ['android/databinding/**/*.class',
                     '**/android/databinding/*Binding.class',
                     '**/BR.*',
@@ -125,10 +101,17 @@ android {
                     '**/*Lambda.class',
                     '**/*Lambda*.class']
     }
-
     lintOptions {
         abortOnError false
     }
+}
+
+kapt {
+    correctErrorTypes = true
+}
+
+androidExtensions {
+    experimental = true
 }
 
 configurations {
@@ -147,24 +130,24 @@ configurations {
 }
 
 dependencies {
+    implementation project(':visualizer')
 
     //Kotlin
     implementation libs.kotlin
+    implementation libs.constraintLayout
 
-    // Anko Commons
-    implementation libs.ankoCommons
-    implementation libs.ankoCommonsSupportV7
-    implementation libs.ankoCommonsSupportV4
+    //Live Data
+    implementation libs.lifecycleExtensions
+    kapt proc.lifecycleExtensions
+
+    //Room
+    implementation libs.room
+    implementation libs.roomRx
+    kapt proc.room
 
     // Support
     implementation libs.appCompat
-    implementation libs.recyclerView
-
-    // MVP
-    implementation(libs.mosby) {
-        exclude module: 'appcompat-v7'
-        exclude module: 'support-annotations'
-    }
+    implementation libs.design
 
     // Dagger
     implementation libs.dagger
@@ -176,24 +159,13 @@ dependencies {
 
     //RxJava
     implementation libs.rxJava2
-    implementation (libs.rxKotlin2)  {
+    implementation(libs.rxKotlin2) {
         exclude module: 'rxjava'
         exclude module: 'kotlin-stdlib'
     }
     implementation(libs.rxAndroid2) {
         exclude module: 'rxjava'
     }
-
-    // OkHttp + Retrofit
-    implementation libs.okHttp
-    implementation libs.okHttpLoggingInterceptor
-    implementation libs.retrofit
-    implementation libs.retrofitGsonConverter
-    implementation libs.retrofitRxJava2Adapter
-
-    // PaperParcel
-    implementation libs.paperParcel
-    kapt proc.paperParcel
 
     // Timber
     implementation libs.timber
@@ -210,8 +182,63 @@ dependencies {
     // StrictMode
     debugImplementation libs.strictmodeNotifier
 
-    // Unit testing
+    // HockeyApp
+    implementation libs.hockeyApp
+
+    //MaterialEditText
+    implementation libs.materialEditText
+
+    //Glide
+    implementation libs.glide
+    kapt proc.glide
+
+    //ThreeTen
+    implementation libs.threeTen
+
+    //Expandable Layout
+    implementation libs.expandableLayout
+
+    //Gson
+    implementation libs.gson
+
+    //EasyImage
+    implementation libs.easyImage
+
+    //Navigation Components
+    implementation libs.navigationFragment
+    implementation libs.navigationUiKtx
+
+    //Tensor Flow
+    implementation libs.tensorFlow
+
+    //Java Web Socket
+    implementation libs.javaWebSocket
+
+    //Material Dialogs
+    implementation libs.materialDialogs
+
+    //ExoPlayer
+    implementation libs.exoPlayer
+
+    //WebRtc
+    implementation libs.googleWebRtc
+
+    //Firebase Storage
+    implementation libs.firebaseStorage
+
+    //Firebase Database
+    implementation libs.firebaseDatabase
+
+    //Unit testing
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
+
+    //Instrumented tests
+    androidTestImplementation test.supportAnnotations
+    androidTestImplementation test.runner
+    androidTestImplementation test.rules
+    androidTestImplementation test.espresso
+    androidTestImplementation test.room
+    androidTestImplementation test.lifecycleExtensions
 }

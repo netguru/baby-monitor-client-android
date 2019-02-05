@@ -24,8 +24,8 @@ sealed class Optional<out T : Any> {
      * result.  Otherwise return an empty [Optional.None].
      */
     inline fun <U : Any> map(f: (T) -> U?): Optional<U> = when (this) {
-        is Optional.Some -> f(value).toOptional()
-        Optional.None -> None
+        is Some -> f(value).toOptional()
+        None -> None
     }
 
     /**
@@ -35,8 +35,8 @@ sealed class Optional<out T : Any> {
      * but the provided mapper is one whose result is already an [Optional].
      */
     inline fun <U : Any> flatMap(f: (T) -> Optional<U>): Optional<U> = when (this) {
-        is Optional.Some -> f(value)
-        Optional.None -> None
+        is Some -> f(value)
+        None -> None
     }
 }
 

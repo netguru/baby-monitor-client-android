@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/featureButtonsTopGl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.909" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/featureSkipBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_xxmedium"
+        android:background="?android:attr/selectableItemBackground"
+        android:fontFamily="@font/rubik_medium"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="@dimen/spacing_small"
+        android:text="@string/feature_skip_btn"
+        android:textAllCaps="false"
+        android:textColor="@color/white_a30"
+        app:layout_constraintEnd_toStartOf="@+id/featureNextBtn"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/featureButtonsTopGl" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/featureNextBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_xxmedium"
+        android:background="?android:attr/selectableItemBackground"
+        android:fontFamily="@font/rubik_bold"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:padding="@dimen/spacing_small"
+        android:text="@string/feature_next_btn"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/featureSkipBtn"
+        app:layout_constraintTop_toTopOf="@+id/featureButtonsTopGl" />
+
+</android.support.constraint.ConstraintLayout>

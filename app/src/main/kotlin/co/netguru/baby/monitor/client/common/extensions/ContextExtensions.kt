@@ -1,18 +1,15 @@
 package co.netguru.baby.monitor.client.common.extensions
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.annotation.AttrRes
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
-
-inline fun <reified T : Activity> Context.startActivity() {
-    val intent = Intent(this, T::class.java)
-    startActivity(intent)
-}
+import io.reactivex.Single
+import java.io.File
+import java.io.FileOutputStream
 
 fun Context.getColorCompat(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
@@ -30,3 +27,27 @@ fun Context.getAttributeDrawable(@AttrRes attrDrawableRes: Int): Int {
     theme.resolveAttribute(attrDrawableRes, typedValue, true)
     return typedValue.resourceId
 }
+
+fun Context.allPermissionsGranted(permissions: Array<String>): Boolean {
+    for (permission in permissions) {
+        if (ContextCompat.checkSelfPermission(this, permission)
+                != PackageManager.PERMISSION_GRANTED
+        ) {
+            return false
+        }
+    }
+
+    return true
+}
+
+fun Context.saveAssetToCache(name: String) = Single.just(File(cacheDir.toString() + name))
+        .map { file ->
+            assets.open(name).use { inputStream ->
+                val buffer = ByteArray(inputStream.available())
+                inputStream.read(buffer)
+                FileOutputStream(file).use {
+                    it.write(buffer)
+                }
+                return@map file
+            }
+        }

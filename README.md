@@ -10,14 +10,15 @@
 -->
 
 <!-- Put your project's name -->
-# netguru-android-template
+# Baby monitor client android
 
 <!-- METADATA -->
 <!-- Add links to JIRA, Google Drive, mailing list and other relevant resources -->
 <!-- Add links to CI configs with build status and deployment environment, e.g.: -->
 | environment | deployment            | status             |
 |-------------|-----------------------|--------------------|
-| name        | HockeyApp/Fabric link | bitrise status tag |
+| mockRelease        | https://rink.hockeyapp.net/manage/apps/821156| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
+| productionRelease  | https://rink.hockeyapp.net/manage/apps/821318| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
 <!--- If applies, add link to app on Google Play -->
 
 ## Synopsis
@@ -53,7 +54,8 @@
 
 ### Product flavors
 <!-- List and describe product flavors, purposes and dedicated deployment channels -->
-#### develop
+ 
+#### mock
  - preview API, functional testing
  
 #### production
@@ -64,10 +66,13 @@
 
 | Property         | External property name | Environment variable |
 |------------------|------------------------|----------------------|
-| HockeyApp App ID | HockeyAppId            | HOCKEY_APP_ID        |
+| HockeyApp App ID mock | HockeyAppIdMock            | HOCKEY_APP_ID_MOCK|
+| HockeyApp App Secret mock | HockeyAppSecretMock            | HOCKEY_APP_SECRET_MOCK|
+| HockeyApp App ID production | HockeyAppIdProduction           | HOCKEY_APP_ID_PRODUCTION|
+| HockeyApp App Secret production | HockeyAppSecretProduction           | HOCKEY_APP_Secret_PRODUCTION|
 
 #### Secrets
 Follow [this guide](https://netguru.atlassian.net/wiki/pages/viewpage.action?pageId=33030753) 
 
 #### Supported devices
-<!-- Describe the supported and target devices (do not put stuff that can be easily found in build.gradle files) --> 
+SDK 21+ (5.0 Lollipop)

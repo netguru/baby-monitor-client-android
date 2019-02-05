@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/primary_dark">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/clientSettingsTitleTv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/rubik_medium"
+        android:text="@string/settings"
+        android:textColor="@color/white"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toTopOf="@+id/clientSettingsTitleTvGLBottom"
+        app:layout_constraintEnd_toStartOf="@+id/closeIbtn"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@+id/clientSettingsTitleTvGLTop" />
+
+    <ImageView
+        android:id="@+id/childPhotoIv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        app:backgroundTint="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/childPhotoIvGLBottom"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+        app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@+id/childPhotoIvGLTop" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/childNameEt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_edit"
+        android:fontFamily="@font/rubik_bold"
+        android:hint="@string/your_baby_name"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@color/accent"
+        android:textColorHighlight="@color/accent"
+        android:textColorHint="@color/accent"
+        android:theme="@style/SettingsEditTextStyle"
+        app:layout_constraintBottom_toTopOf="@+id/childNameEtGLBottom"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+        app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@+id/childNameEtGLTop" />
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/closeIbtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:backgroundTint="@color/transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/closeIbtnGLBottom"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+        app:layout_constraintTop_toBottomOf="@+id/closeIbtnGLTop"
+        app:srcCompat="@drawable/ic_close" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/rateUsBtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/button_purple_rounded"
+        android:enabled="true"
+        android:fontFamily="@font/rubik_bold"
+        android:text="@string/rate_us"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/rateUsBtnGLBottom"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@id/rateUsBtnGLTop"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/settingsLogoutBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_purple_outline_to_purple_rounded"
+        android:enabled="true"
+        android:fontFamily="@font/rubik_bold"
+        android:text="@string/reset_the_app"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtnGLBottom"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@+id/settingsLogoutBtnGLTop" />
+
+
+    <TextView
+        android:id="@+id/firstPartTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/rubik_light"
+        android:text="@string/splash_crafted_with"
+        android:textColor="@color/primary"
+        app:layout_constraintBottom_toTopOf="@+id/footerGLBottom"
+        app:layout_constraintEnd_toStartOf="@+id/middleHeartIv"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+        app:layout_constraintTop_toBottomOf="@+id/footerGLTop" />
+
+    <ImageView
+        android:id="@+id/middleHeartIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_small"
+        android:src="@drawable/heart"
+        android:tint="@color/accent"
+        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
+        app:layout_constraintEnd_toStartOf="@+id/secondPartTv"
+        app:layout_constraintStart_toEndOf="@+id/firstPartTv"
+        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
+
+    <TextView
+        android:id="@+id/secondPartTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/rubik_regular"
+        android:text="@string/splash_by_netguru"
+        android:textColor="@color/accent"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
+        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+        app:layout_constraintStart_toEndOf="@+id/middleHeartIv"
+        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientSettingsGLBegin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.083" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientSettingsGLEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.917" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientSettingsTitleTvGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.054" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/clientSettingsTitleTvGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.087" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/closeIbtnGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.055" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/closeIbtnGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.085" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/childPhotoIvGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.168" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/childPhotoIvGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.312" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/childNameEtGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.373" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/childNameEtGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.432" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/rateUsBtnGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.69" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/rateUsBtnGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.762" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/settingsLogoutBtnGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.786" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/settingsLogoutBtnGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.858" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/footerGLTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.901" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/footerGLBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.922" />
+</android.support.constraint.ConstraintLayout>
