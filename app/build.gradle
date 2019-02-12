@@ -136,6 +136,9 @@ dependencies {
     implementation libs.kotlin
     implementation libs.constraintLayout
 
+    //Anko Commons
+    implementation libs.ankoCommons
+
     //Live Data
     implementation libs.lifecycleExtensions
     kapt proc.lifecycleExtensions
