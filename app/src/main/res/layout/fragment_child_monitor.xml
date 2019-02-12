@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary_dark"
-        app:layout_constraintBottom_toTopOf="@+id/surfaceView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -87,6 +86,11 @@
         android:layout_height="match_parent"
         android:background="@color/black_a82"
         android:visibility="gone" />
+
+    <!-- Allows to set proper height for NavigationDrawer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/nightModeActiveIv"

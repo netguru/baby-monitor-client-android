@@ -9,11 +9,11 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.app.TaskStackBuilder
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.data.communication.firebase.FirebasePushMessage
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import com.google.firebase.database.FirebaseDatabase
+import org.jetbrains.anko.singleTop
 
 class NotificationHandler(private val context: Context) {
 
@@ -31,11 +31,9 @@ class NotificationHandler(private val context: Context) {
     }
 
     private fun createNotification(title: String, content: String): Notification {
-        val resultIntent = Intent(context, ClientHomeActivity::class.java)
-        val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
-            addNextIntentWithParentStack(resultIntent)
-            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
+        val resultIntent = Intent(context, ClientHomeActivity::class.java).singleTop()
+        val resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
 
         val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             R.drawable.logo else R.mipmap.ic_launcher
