@@ -57,6 +57,7 @@
         android:text="@string/send_recordings_info"
         android:textColor="@color/inactive_pulsating"
         app:autoSizeTextType="uniform"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
         app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
         app:layout_constraintStart_toStartOf="@+id/switchSendRecordingsInfoTvGLStart"
         app:layout_constraintTop_toBottomOf="@+id/switchSendRecordingsInfoTvGLTop"
