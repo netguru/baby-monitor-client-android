@@ -26,7 +26,7 @@ class RtcReceiver(
     init {
         initRtc(context)
         this.listener = listener
-        localView?.let {view ->
+        localView?.let { view ->
             if (!view.initialized) {
                 view.init(sharedContext, null)
             }
@@ -34,9 +34,15 @@ class RtcReceiver(
         recreateVideoTrack()
     }
 
-    fun recreateVideoTrack(isFacingFront: Boolean = false) {
+    fun recreateVideoTrack(isFacingFront: Boolean = false, cameraChangedListener: (() -> Unit) = {}) {
         capturer?.stopCapture()
         capturer?.dispose()
+        localView?.addFrameListener({
+            cameraChangedListener()
+            localView?.post {
+                localView?.removeFrameListener { cameraChangedListener() }
+            }
+        }, SURFACE_VIEW_FRAME_SCALE)
 
         videoTrack = createVideoTrack(isFacingFront)
         capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
@@ -145,5 +151,9 @@ class RtcReceiver(
             commSocket?.send(jsonObject.toString().toByteArray(Charset.defaultCharset()))
         }
         reportStateChange(CallState.CONNECTED)
+    }
+
+    companion object {
+        private const val SURFACE_VIEW_FRAME_SCALE = 1f
     }
 }

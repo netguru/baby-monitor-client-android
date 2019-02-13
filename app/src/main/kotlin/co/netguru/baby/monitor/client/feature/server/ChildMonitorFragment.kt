@@ -119,8 +119,9 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             isNightModeEnabled = !isNightModeEnabled
         }
         cameraSwapBtn.setOnClickListener {
+            cameraSwapBtn.isEnabled = false
             isFacingFront = !isFacingFront
-            rtcReceiverServiceBinder?.recreateCapturer(isFacingFront)
+            rtcReceiverServiceBinder?.recreateCapturer(isFacingFront) { cameraSwapBtn.post { it.isEnabled = true } }
         }
         settingsIbtn.setOnClickListener {
             viewModel.shouldDrawerBeOpen.postValue(true)

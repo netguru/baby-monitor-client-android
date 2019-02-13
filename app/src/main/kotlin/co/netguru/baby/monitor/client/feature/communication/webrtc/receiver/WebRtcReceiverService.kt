@@ -2,7 +2,6 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
@@ -49,6 +48,8 @@ class WebRtcReceiverService : Service() {
     private var firebaseKeysMap = mutableMapOf<String, String>()
     private val messageConfirmationDisposable = CompositeDisposable()
 
+    private var isVideoRecreated = true
+
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
@@ -56,7 +57,7 @@ class WebRtcReceiverService : Service() {
         getClientsData()
         registerReceiver(wifiReceiver, WifiReceiver.intentFilter)
 
-        wifiReceiver.isWifiConnected.observeForever {event ->
+        wifiReceiver.isWifiConnected.observeForever { event ->
             if (event?.data == true) {
                 serverHandler.startServer()
             } else {
@@ -184,8 +185,14 @@ class WebRtcReceiverService : Service() {
             currentCall?.startCapturer()
         }
 
-        fun recreateCapturer(isFrontFacing: Boolean) {
-            currentCall?.recreateVideoTrack(isFrontFacing)
+        fun recreateCapturer(isFrontFacing: Boolean, videoRecreatedListener : () -> Unit) {
+            if (isVideoRecreated) {
+                isVideoRecreated = false
+                currentCall?.recreateVideoTrack(isFrontFacing) {
+                    isVideoRecreated = true
+                    videoRecreatedListener()
+                }
+            }
         }
 
         private fun waitForResponse() {
