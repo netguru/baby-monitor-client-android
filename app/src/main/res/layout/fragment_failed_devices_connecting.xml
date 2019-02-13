@@ -133,7 +133,6 @@
         android:id="@+id/configurationFailedTryAgainButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="@string/try_again"
         android:background="@drawable/button_purple_outline_to_purple_rounded"
         app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesFailedButtonBottomGl"
         app:layout_constraintEnd_toEndOf="@+id/connectingDevicesFailedBaseEndGl"
