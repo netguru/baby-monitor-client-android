@@ -10,6 +10,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
@@ -60,6 +61,8 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         if (webRtcClientBinder != null) {
             requireContext().unbindService(this)
         }
+        // Workaround for ensuring that sound isn't playable in the background.
+        findNavController().popBackStack(R.id.clientDashboard, false)
     }
 
     override fun onDestroy() {
