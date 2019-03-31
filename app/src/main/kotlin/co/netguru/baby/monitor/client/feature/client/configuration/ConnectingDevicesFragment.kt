@@ -35,7 +35,6 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
         super.onViewCreated(view, savedInstanceState)
         viewModel.discoverNsdService(this)
         viewModel.appSavedState.observe(this, Observer(this::handleAppState))
-        setTimeOutForConnecting()
     }
 
     override fun onDestroy() {
@@ -70,16 +69,6 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
         showSnackbarMessage(R.string.discovery_start_failed)
     }
 
-    private fun setTimeOutForConnecting() {
-        timeOutDisposable = Completable.timer(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = {
-                            findNavController().navigate(R.id.configurationToConfigurationFailed)
-                        }
-                )
-    }
-
     private fun handleAppState(state: AppState?) {
         when (state) {
             AppState.CLIENT -> {
@@ -90,9 +79,5 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
                 findNavController().navigate(R.id.configurationToAllDone)
             }
         }
-    }
-
-    companion object {
-        const val TIMEOUT_IN_SECONDS = 20L
     }
 }

@@ -57,6 +57,7 @@
         android:background="@drawable/button_rounded_ripple"
         android:padding="@dimen/spacing_xmedium"
         app:elevation="@dimen/spacing_small"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/nightModeToggleBtn"
         app:layout_constraintHorizontal_chainStyle="packed"

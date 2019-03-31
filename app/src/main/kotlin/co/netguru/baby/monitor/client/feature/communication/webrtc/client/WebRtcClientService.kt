@@ -12,6 +12,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 
 class WebRtcClientService : Service() {
 
@@ -29,9 +30,11 @@ class WebRtcClientService : Service() {
     inner class WebRtcClientBinder : WebRtcBinder() {
 
         var currentCall: RtcClient? = null
+        val callInProgress = AtomicBoolean(false)
 
         override fun cleanup() {
             currentCall?.let(this::callCleanup)
+            callInProgress.set(false)
         }
 
         fun createClient(client: CustomWebSocketClient) {
@@ -46,6 +49,7 @@ class WebRtcClientService : Service() {
                 context: Context,
                 listener: (state: CallState) -> Unit
         ) {
+            callInProgress.set(true)
             currentCall?.let {
                 it.startCall(context, listener).subscribeOn(Schedulers.newThread())
                         .subscribeBy(

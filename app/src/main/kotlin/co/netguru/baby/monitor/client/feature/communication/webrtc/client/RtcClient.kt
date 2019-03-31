@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 
 import android.content.Context
+import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
@@ -41,9 +42,13 @@ class RtcClient(
             }
 
             override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
-                Timber.i("change ${iceConnectionState?.name}")
+                Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
                 if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
                     reportStateChange(CallState.ENDED)
+                }
+                if (iceConnectionState == PeerConnection.IceConnectionState.COMPLETED) {
+                    Timber.e("Handled state compleated. probably video has been freezed")
+                    reportStateChange(CallState.COMPLETED)
                 }
             }
 
@@ -57,7 +62,6 @@ class RtcClient(
             }
         })
         Timber.i("PeerConnection created")
-        connection?.addStream(createStream())
         dataChannel = connection?.createDataChannel("data", DataChannel.Init())
         dataChannel?.registerObserver(dataChannelObserver)
         connection?.createOffer(
