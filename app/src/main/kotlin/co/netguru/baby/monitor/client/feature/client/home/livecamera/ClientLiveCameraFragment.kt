@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.Service
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
@@ -10,7 +11,6 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
@@ -41,6 +41,8 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     private var childServiceBinder: ChildServiceBinder? = null
     private var webRtcClientBinder: WebRtcClientBinder? = null
 
+    private var errorOccurs = false;
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.selectedChildAvailability.observe(this, Observer(this::onAvailabilityChange))
@@ -59,10 +61,10 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onPause() {
         super.onPause()
         if (webRtcClientBinder != null) {
+            webRtcClientBinder?.cleanup()
+            childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
             requireContext().unbindService(this)
         }
-        // Workaround for ensuring that sound isn't playable in the background.
-        findNavController().popBackStack(R.id.clientDashboard, false)
     }
 
     override fun onDestroy() {
@@ -74,7 +76,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requireContext().allPermissionsGranted(Companion.permissions)) {
@@ -97,30 +99,52 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
                 childServiceBinder = service
             }
         }
-        startCall()
+        if (webRtcClientBinder == null || webRtcClientBinder?.callInProgress?.get() != true)
+            startCall()
     }
 
     private fun bindServices() {
         bindService(
-                WebRtcClientService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
+            WebRtcClientService::class.java,
+            this,
+            Service.BIND_AUTO_CREATE
         )
         bindService(
-                ClientHandlerService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
+            ClientHandlerService::class.java,
+            this,
+            Service.BIND_AUTO_CREATE
         )
     }
 
     private fun handleStateChange(state: CallState) {
         Timber.i(state.toString())
+        if (state == CallState.COMPLETED) {
+            errorOccurs = true
+            //todo temporary fix for video freeze problem
+            webRtcClientBinder?.cleanup()
+        }
     }
 
     private fun onAvailabilityChange(connectionStatus: ConnectionStatus?) {
-        Timber.i("AvailabilityChange $connectionStatus")
+        Timber.e("AvailabilityChange $connectionStatus")
         when (connectionStatus) {
-            ConnectionStatus.CONNECTED -> startCall()
+            ConnectionStatus.CONNECTED -> if (webRtcClientBinder == null || webRtcClientBinder?.callInProgress?.get() != true || errorOccurs) {
+                startCall()
+            }
+            ConnectionStatus.DISCONNECTED -> {
+                if (errorOccurs) {
+                    //todo temporary fix for video freeze problem
+                    AlertDialog.Builder(requireActivity())
+                        .setMessage(getString(R.string.camera_error))
+                        .setPositiveButton(
+                            android.R.string.ok
+                        ) { dialog, which -> requireActivity().onBackPressed() }
+                        .create()
+                        .show()
+                } else {
+                    requireActivity().onBackPressed()
+                }
+            }
             else -> {
                 requireActivity().onBackPressed()
             }
@@ -128,16 +152,19 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun startCall() {
+        errorOccurs = false
         with((webRtcClientBinder and childServiceBinder)) {
             this ?: return@with
             val address = viewModel.selectedChild.value?.address ?: return@with
             val client = second.getChildClient(address) ?: return@with
-            first.createClient(client)
-            first.startCall(
+            first.apply {
+                createClient(client)
+                startCall(
                     requireActivity().applicationContext,
                     this@ClientLiveCameraFragment::handleStateChange
-            )
-            first.setRemoteRenderer(liveCameraRemoteRenderer)
+                )
+                setRemoteRenderer(liveCameraRemoteRenderer)
+            }
         }
     }
 
@@ -145,7 +172,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         private const val PERMISSIONS_REQUEST_CODE = 125
 
         private val permissions = arrayOf(
-                Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA
         )
     }
 }

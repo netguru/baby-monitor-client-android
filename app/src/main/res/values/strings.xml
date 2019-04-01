@@ -67,7 +67,7 @@
     <string name="notification_channel_description">Notifications for BabyGuard</string>
     <string name="notification_channel_id">baby-monitor-channel</string>
     <string name="notification_title_sound_processing">Sound processing</string>
-    
+
     <string name="notification_foreground_content_title">Secure monitoring</string>
     <string name="notification_foreground_content_text">Keeping an eye on your baby</string>
 
@@ -107,4 +107,5 @@
 
     <string name="connecting_devices_failed_text_1">Ups! Something\nwent wrong :(</string>
     <string name="connecting_devices_failed_text_2">Make sure that you are connected\nto the same Wi-Fi network</string>
+    <string name="camera_error">Unfortunatelly, there was an unexpected problem with your camera preview. Please Try again</string>
 </resources>
