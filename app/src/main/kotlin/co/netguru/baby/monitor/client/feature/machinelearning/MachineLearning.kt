@@ -10,7 +10,7 @@ class MachineLearning(context: Context) {
 
     private val inferenceInterface = TensorFlowInferenceInterface(
             context.assets,
-            "tiny_conv_dataset.pb"
+            "model_exp76.pb"
     )
     private val sampleRateList = intArrayOf(SAMPLING_RATE)
 
@@ -36,25 +36,21 @@ class MachineLearning(context: Context) {
 
     private fun mapData(floats: Array<Float>): MutableMap<String, Float> {
         val map = mutableMapOf<String, Float>()
-        map[OUTPUT_1_SILENCE] = floats[0]
-        map[OUTPUT_2_BACKGROUND_NOISE] = floats[1]
-        map[OUTPUT_3_CRYING_BABY] = floats[2]
-        map[OUTPUT_4_NOISE] = floats[3]
+        map[OUTPUT_1_NOISE] = floats[0]
+        map[OUTPUT_2_CRYING_BABY] = floats[1]
         Timber.i("data: $map")
         return map
     }
 
     companion object {
-        internal const val DATA_SIZE = 441_000
-        private const val INPUT_DATA_NAME = "decoded_sample_data:0"
-        private const val SAMPLE_RATE_NAME = "decoded_sample_data:1"
+        internal const val DATA_SIZE = 176_400
+        private const val INPUT_DATA_NAME = "raw_audio:0"
+        private const val SAMPLE_RATE_NAME = "sample_rate:0"
         private const val OUTPUT_SCORES_NAME = "labels_softmax"
 
-        private const val OUTPUTS_NUMBER = 4
-        const val OUTPUT_1_SILENCE = "SILENCE"
-        const val OUTPUT_2_BACKGROUND_NOISE = "BACKGROUND_NOISE"
-        const val OUTPUT_3_CRYING_BABY = "CRYING_BABY"
-        const val OUTPUT_4_NOISE = "NOISE"
+        private const val OUTPUTS_NUMBER = 2
+        const val OUTPUT_1_NOISE = "NOISE"
+        const val OUTPUT_2_CRYING_BABY = "CRYING_BABY"
 
         private val outputScoresNames = arrayOf(OUTPUT_SCORES_NAME)
     }
