@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.Manifest
-import android.app.AlertDialog
 import android.app.Service
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
@@ -118,11 +117,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun handleStateChange(state: CallState) {
         Timber.i(state.toString())
-        if (state == CallState.COMPLETED) {
-            errorOccurs = true
-            //todo temporary fix for video freeze problem
-            webRtcClientBinder?.cleanup()
-        }
     }
 
     private fun onAvailabilityChange(connectionStatus: ConnectionStatus?) {
@@ -131,22 +125,8 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
             ConnectionStatus.CONNECTED -> if (webRtcClientBinder == null || webRtcClientBinder?.callInProgress?.get() != true || errorOccurs) {
                 startCall()
             }
-            ConnectionStatus.DISCONNECTED -> {
-                if (errorOccurs) {
-                    //todo temporary fix for video freeze problem
-                    AlertDialog.Builder(requireActivity())
-                        .setMessage(getString(R.string.camera_error))
-                        .setPositiveButton(
-                            android.R.string.ok
-                        ) { dialog, which -> requireActivity().onBackPressed() }
-                        .create()
-                        .show()
-                } else {
-                    requireActivity().onBackPressed()
-                }
-            }
             else -> {
-                requireActivity().onBackPressed()
+                Timber.i("connection status: $connectionStatus")
             }
         }
     }

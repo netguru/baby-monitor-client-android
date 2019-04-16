@@ -18,49 +18,58 @@ import timber.log.Timber
 import java.nio.charset.Charset
 
 class RtcClient(
-        client: CustomWebSocketClient,
-        var enableVoice: Boolean = false
+    client: CustomWebSocketClient,
+    var enableVoice: Boolean = false
 ) : RtcCall() {
 
     init {
         commSocket = client
     }
 
+    private val defaultObserver = object : DefaultObserver() {
+        override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
+            if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
+                onIceGatheringComplete()
+                reportStateChange(CallState.CONNECTING)
+            }
+        }
+
+        override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
+            Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
+            if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
+                Timber.e("Handled state ended. Should send restart offer")
+            }
+            if (iceConnectionState == PeerConnection.IceConnectionState.COMPLETED) {
+                Timber.e("Handled state compleated. probably video has been freezed")
+                //todo temporary fix for connection problem
+                connection?.close()
+                createConnection()
+            }
+        }
+
+        override fun onAddStream(mediaStream: MediaStream?) {
+            mediaStream?.let(::handleMediaStream)
+        }
+
+        override fun onDataChannel(dataChannel: DataChannel?) {
+            this@RtcClient.dataChannel = dataChannel
+            dataChannel?.registerObserver(dataChannelObserver)
+        }
+    }
+
     internal fun startCall(
-            context: Context,
-            listener: (state: CallState) -> Unit
+        context: Context,
+        listener: (state: CallState) -> Unit
     ) = Completable.fromAction {
         initRtc(context)
         this.listener = listener
         Timber.i("starting call to ${(commSocket as CustomWebSocketClient?)?.address}")
-        connection = factory?.createPeerConnection(emptyList(), constraints, object : DefaultObserver() {
-            override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
-                if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
-                    onIceGatheringComplete()
-                    reportStateChange(CallState.CONNECTING)
-                }
-            }
+        createConnection()
+    }
 
-            override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
-                Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
-                if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
-                    reportStateChange(CallState.ENDED)
-                }
-                if (iceConnectionState == PeerConnection.IceConnectionState.COMPLETED) {
-                    Timber.e("Handled state compleated. probably video has been freezed")
-                    reportStateChange(CallState.COMPLETED)
-                }
-            }
-
-            override fun onAddStream(mediaStream: MediaStream?) {
-                mediaStream?.let(::handleMediaStream)
-            }
-
-            override fun onDataChannel(dataChannel: DataChannel?) {
-                this@RtcClient.dataChannel = dataChannel
-                dataChannel?.registerObserver(dataChannelObserver)
-            }
-        })
+    private fun createConnection() {
+        connection =
+            factory?.createPeerConnection(emptyList(), constraints, defaultObserver)
         Timber.i("PeerConnection created")
         dataChannel = connection?.createDataChannel("data", DataChannel.Init())
         dataChannel?.registerObserver(dataChannelObserver)
