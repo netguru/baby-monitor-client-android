@@ -36,15 +36,6 @@ class RtcClient(
 
         override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
             Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
-            if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
-                Timber.e("Handled state ended. Should send restart offer")
-            }
-            if (iceConnectionState == PeerConnection.IceConnectionState.COMPLETED) {
-                Timber.e("Handled state compleated. probably video has been freezed")
-                //todo temporary fix for connection problem
-                connection?.close()
-                createConnection()
-            }
         }
 
         override fun onAddStream(mediaStream: MediaStream?) {
@@ -80,6 +71,12 @@ class RtcClient(
                                     DefaultSdpObserver(),
                                     sessionDescription
                             )
+                        },
+                        onCreateFailure = {
+                            Timber.d("sdb observer create failure")
+                        },
+                        onSetFailure = {
+                            Timber.d("sdb set failure: $it")
                         }
                 ),
                 constraints
