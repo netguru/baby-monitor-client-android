@@ -15,6 +15,7 @@ import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionSta
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class ClientDashboardFragment : BaseDaggerFragment() {
@@ -39,7 +40,13 @@ class ClientDashboardFragment : BaseDaggerFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        clientConnectionStatusPv.stop()
+        super.onDestroyView()
+    }
+
     private fun getData() {
+        showClientDisconnected()
         viewModel.selectedChild.observe(this, Observer { child ->
             child ?: return@Observer
 
@@ -57,20 +64,28 @@ class ClientDashboardFragment : BaseDaggerFragment() {
         viewModel.selectedChildAvailability.observe(this, Observer { connectionStatus ->
             when (connectionStatus) {
                 ConnectionStatus.CONNECTED -> {
-                    clientConnectionStatusTv.text = getString(R.string.monitoring_enabled)
-                    clientConnectionStatusPv.start()
-                    clientHomeLiveCameraIbtn.setOnClickListener {
-                        findNavController().navigate(R.id.actionDashboardToLiveCam)
-                    }
+                    showClientConnected()
                 }
                 else -> {
-                    clientConnectionStatusTv.text = getString(R.string.devices_disconnected)
-                    clientConnectionStatusPv.stop()
-                    clientHomeLiveCameraIbtn.setOnClickListener {
-                        Toast.makeText(requireContext(), getString(R.string.child_not_available), Toast.LENGTH_SHORT).show()
-                    }
+                    showClientDisconnected()
                 }
             }
         })
+    }
+
+    private fun showClientConnected() {
+        clientConnectionStatusTv.text = getString(R.string.monitoring_enabled)
+        clientConnectionStatusPv.start()
+        clientHomeLiveCameraIbtn.setOnClickListener {
+            findNavController().navigate(R.id.actionDashboardToLiveCam)
+        }
+    }
+
+    private fun showClientDisconnected() {
+        clientConnectionStatusTv.text = getString(R.string.devices_disconnected)
+        clientConnectionStatusPv.stop()
+        clientHomeLiveCameraIbtn.setOnClickListener {
+            Toast.makeText(requireContext(), getString(R.string.child_not_available), Toast.LENGTH_SHORT).show()
+        }
     }
 }

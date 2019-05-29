@@ -41,11 +41,8 @@ class ClientHomeViewModel @Inject constructor(
                 ).addTo(compositeDisposable)
     }
 
-    fun selectedChildAvailabilityPostValue(data: Pair<ChildDataEntity, ConnectionStatus>) {
-        if (data.first.address == selectedChild.value?.address &&
-                data.second != selectedChildAvailability.value) {
-            selectedChildAvailability.postValue(data.second)
-        }
+    fun selectedChildAvailabilityPostValue(status: ConnectionStatus) {
+            selectedChildAvailability.postValue(status)
     }
 
     fun saveConfiguration() {

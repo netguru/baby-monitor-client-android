@@ -43,6 +43,7 @@ android {
             manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_DEBUG")]
         }
         releasePreprod {
+            signingConfig signingConfigs.debug
             versionNameSuffix "-PREPROD"
             applicationIdSuffix ".preprod"
             debuggable true

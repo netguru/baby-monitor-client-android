@@ -7,7 +7,6 @@ import android.os.Looper
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -32,7 +31,7 @@ abstract class RtcCall {
 
     protected val compositeDisposable = CompositeDisposable()
     protected val eglBase by lazy { EglBase.create() }
-    protected val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
+    protected var sharedContext: EglBase.Context? = eglBase.eglBaseContext
 
     protected lateinit var constraints: MediaConstraints
 
@@ -69,7 +68,7 @@ abstract class RtcCall {
     fun cleanup(
             clearSocket: Boolean = true,
             disposeConnection: Boolean = false
-    ): Completable = Completable.fromAction {
+    ) {
         listener = {}
         connection?.close()
 
@@ -79,7 +78,10 @@ abstract class RtcCall {
         if (disposeConnection) {
             connection?.dispose()
         }
+
+        eglBase.releaseSurface()
         eglBase.release()
+
         audioSource?.dispose()
         capturer?.stopCapture()
         capturer?.dispose()

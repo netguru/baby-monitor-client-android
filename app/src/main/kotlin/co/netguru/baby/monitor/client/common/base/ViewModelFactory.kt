@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragmentViewModel
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabiesViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import co.netguru.baby.monitor.client.feature.settings.SettingsViewModel
@@ -40,6 +41,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ClientHomeViewModel::class)
     abstract fun bindClientHomeActivityViewModel(clientHomeViewModel: ClientHomeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ClientLiveCameraFragmentViewModel::class)
+    abstract fun bindClientLiveCameraFragmentViewModel(clientHomeViewModel: ClientLiveCameraFragmentViewModel): ViewModel
 
     @Binds
     @IntoMap

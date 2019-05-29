@@ -10,6 +10,7 @@ import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
 import com.nshmura.strictmodenotifier.StrictModeNotifier
 import com.squareup.leakcanary.LeakCanary
+import net.hockeyapp.android.CrashManager
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,5 +41,6 @@ class DebugMetricsHelper @Inject constructor() {
 
         //Timber
         Timber.plant(Timber.DebugTree())
+        CrashManager.register(context)
     }
 }
