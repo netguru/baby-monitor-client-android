@@ -79,9 +79,6 @@ abstract class RtcCall {
             connection?.dispose()
         }
 
-        eglBase.releaseSurface()
-        eglBase.release()
-
         audioSource?.dispose()
         capturer?.stopCapture()
         capturer?.dispose()
