@@ -127,7 +127,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
             val client = getChildClient(address) ?: return@with
             Timber.d("BOCHEN START CALL")
             fragmentViewModel.startCall(
-                    requireContext(),
+                    requireActivity().applicationContext,
                     liveCameraRemoteRenderer,
                     client,
                     this@ClientLiveCameraFragment::handleStateChange
