@@ -51,7 +51,6 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".feature.communication.webrtc.receiver.WebRtcReceiverService" />
-        <service android:name=".feature.communication.webrtc.client.WebRtcClientService" />
         <service android:name=".feature.machinelearning.MachineLearningService" />
         <service android:name=".feature.communication.websocket.ClientHandlerService" />
 
