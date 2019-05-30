@@ -13,7 +13,7 @@ apply from: '../buildsystem/sonarqube.gradle'
 ext {
 
     secrets = [
-            hockeyAppIdPreProd: keyProperty("Hockey_App_Id_Preprod"),
+            hockeyAppIdPreProd: keyProperty("HOCKEY_APP_ID_PREPROD"),
             hockeyAppIdProduction: keyProperty("HOCKEY_APP_ID_PRODUCTION")
     ]
 }
