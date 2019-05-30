@@ -67,7 +67,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         findNavController().popBackStack()
 
         viewModel.showBackButton(false)
-        //childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
+        childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         requireContext().unbindService(this)
     }
 

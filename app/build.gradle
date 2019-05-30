@@ -48,7 +48,7 @@ android {
             applicationIdSuffix ".preprod"
             debuggable true
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             zipAlignEnabled true
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
@@ -58,7 +58,7 @@ android {
         release {
             debuggable false
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             zipAlignEnabled true
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
