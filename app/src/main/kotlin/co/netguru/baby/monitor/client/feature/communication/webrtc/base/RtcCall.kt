@@ -83,6 +83,8 @@ abstract class RtcCall {
         capturer?.stopCapture()
         capturer?.dispose()
 
+        videoTrack?.dispose()
+
         if (clearSocket) {
             commSocket?.close()
         }

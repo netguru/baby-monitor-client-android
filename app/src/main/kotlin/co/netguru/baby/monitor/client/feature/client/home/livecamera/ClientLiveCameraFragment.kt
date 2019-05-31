@@ -57,11 +57,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         }
     }
 
-    override fun onDestroyView() {
-        liveCameraRemoteRenderer?.release()
-        super.onDestroyView()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         findNavController().popBackStack()

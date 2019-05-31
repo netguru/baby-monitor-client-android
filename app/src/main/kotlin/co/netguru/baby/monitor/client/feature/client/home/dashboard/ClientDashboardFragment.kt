@@ -46,7 +46,7 @@ class ClientDashboardFragment : BaseDaggerFragment() {
     }
 
     private fun getData() {
-        showClientDisconnected()
+        //showClientDisconnected()
         viewModel.selectedChild.observe(this, Observer { child ->
             child ?: return@Observer
 
