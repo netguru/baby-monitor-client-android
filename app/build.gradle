@@ -13,6 +13,7 @@ apply from: '../buildsystem/sonarqube.gradle'
 ext {
 
     secrets = [
+            hockeyAppIdPreProd: keyProperty("HOCKEY_APP_ID_PREPROD"),
             hockeyAppIdProduction: keyProperty("HOCKEY_APP_ID_PRODUCTION")
     ]
 }
@@ -43,6 +44,7 @@ android {
             manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_DEBUG")]
         }
         releasePreprod {
+            signingConfig signingConfigs.debug
             versionNameSuffix "-PREPROD"
             applicationIdSuffix ".preprod"
             debuggable true
@@ -52,7 +54,7 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release-preprod.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PREPROD")]
+            manifestPlaceholders = [HOCKEY_APP_ID: secrets.hockeyAppIdPreProd]
         }
         release {
             debuggable false
@@ -62,7 +64,7 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_PRODUCTION")]
+            manifestPlaceholders = [HOCKEY_APP_ID: secrets.hockeyAppIdProduction]
         }
     }
     // Always show the result of every unit test, even if it passes.

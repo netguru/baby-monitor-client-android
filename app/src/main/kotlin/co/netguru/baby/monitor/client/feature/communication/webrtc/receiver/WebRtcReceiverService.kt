@@ -224,13 +224,7 @@ class WebRtcReceiverService : Service() {
 
         private fun callCleanup(call: RtcCall) {
             call.cleanup(clearSocket = false)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeBy(
-                            onComplete = {
-                                serverHandler.stopServer()
-                            },
-                            onError = Timber::e
-                    ).addTo(compositeDisposable)
+            serverHandler.stopServer()
         }
     }
 

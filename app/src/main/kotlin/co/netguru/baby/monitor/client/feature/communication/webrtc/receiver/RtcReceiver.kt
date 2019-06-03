@@ -22,6 +22,7 @@ class RtcReceiver(
         var localView: CustomSurfaceViewRenderer? = null,
         listener: (state: CallState) -> Unit
 ) : RtcCall() {
+    var localVideoRenderer: VideoRenderer? = null
 
     init {
         initRtc(context)
@@ -37,6 +38,9 @@ class RtcReceiver(
     fun recreateVideoTrack(isFacingFront: Boolean = false, cameraChangedListener: (() -> Unit) = {}) {
         capturer?.stopCapture()
         capturer?.dispose()
+        if(videoTrack != null){
+            videoTrack?.dispose()
+        }
         localView?.addFrameListener({
             cameraChangedListener()
             localView?.post {
@@ -47,7 +51,7 @@ class RtcReceiver(
         videoTrack = createVideoTrack(isFacingFront)
         capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
         Handler(Looper.getMainLooper()).post {
-            val localVideoRenderer = VideoRenderer(localView)
+            localVideoRenderer = VideoRenderer(localView)
             videoTrack?.addRenderer(localVideoRenderer)
         }
         if (state == CallState.CONNECTED) {
@@ -100,6 +104,10 @@ class RtcReceiver(
         }
         connection?.close()
         audioSource?.dispose()
+        localView = null
+
+        cleanup()
+
     }
 
     fun startCapturer() {

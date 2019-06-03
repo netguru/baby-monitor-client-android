@@ -49,7 +49,8 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
-        if (childServiceBinder != null) {
+        childServiceBinder?.let {
+            childServiceBinder?.stopService()
             unbindService(this)
         }
     }
@@ -64,10 +65,12 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         if (service is ClientHandlerService.ChildServiceBinder) {
             childServiceBinder = service
-            service.getChildConnectionStatus().observe(this, Observer { childEvent ->
-                val data = childEvent?.data ?: return@Observer
-                homeViewModel.selectedChildAvailabilityPostValue(data)
+
+            service.getChildConnectionStatusLivedata().observe(this, Observer { childEvent ->
+                val data = childEvent ?: return@Observer
+                homeViewModel.selectedChildAvailabilityPostValue(data.second)
             })
+            homeViewModel.selectedChildAvailabilityPostValue(service.getConnectionStatus())
         }
     }
 
@@ -114,6 +117,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun bindService() {
+        startService(Intent(this, ClientHandlerService::class.java))
         bindService(
                 Intent(this, ClientHandlerService::class.java),
                 this,

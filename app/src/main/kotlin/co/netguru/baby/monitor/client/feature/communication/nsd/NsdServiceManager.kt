@@ -22,7 +22,8 @@ class NsdServiceManager @Inject constructor(
         override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
                 Timber.e("Baby Monitor Service unregistration failed")
 
-        override fun onServiceUnregistered(serviceInfo: NsdServiceInfo?) = Unit
+        override fun onServiceUnregistered(serviceInfo: NsdServiceInfo?) =
+                Timber.i("Baby Monitor service unregistered")
 
         override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
             Timber.e("Baby Monitor Service registration failed")

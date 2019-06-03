@@ -43,7 +43,7 @@
         <activity
             android:name=".feature.client.home.ClientHomeActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan|adjustResize" />
 
         <activity
@@ -51,7 +51,6 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".feature.communication.webrtc.receiver.WebRtcReceiverService" />
-        <service android:name=".feature.communication.webrtc.client.WebRtcClientService" />
         <service android:name=".feature.machinelearning.MachineLearningService" />
         <service android:name=".feature.communication.websocket.ClientHandlerService" />
 
