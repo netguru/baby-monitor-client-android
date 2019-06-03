@@ -13,7 +13,6 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
-import co.netguru.baby.monitor.client.data.communication.SingleEvent
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.AndroidInjection
@@ -79,16 +78,12 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
 
     fun getCurrentConnectionStatus(): ConnectionStatus {
         val client = webSocketClientHandler.getClient("")
-        if (client != null) {
-
-            if (!client.wasRetrying && client.connectionStatus == ConnectionStatus.DISCONNECTED) {
-                return  ConnectionStatus.DISCONNECTED
-            }
-            if (client.connectionStatus == ConnectionStatus.CONNECTED) {
-                return ConnectionStatus.CONNECTED
-            }
+        return when {
+            client == null -> ConnectionStatus.DISCONNECTED
+            (!client.wasRetrying && client.connectionStatus == ConnectionStatus.DISCONNECTED) -> ConnectionStatus.DISCONNECTED
+            (client.connectionStatus == ConnectionStatus.CONNECTED) -> ConnectionStatus.CONNECTED
+            else -> ConnectionStatus.DISCONNECTED
         }
-        return ConnectionStatus.UNKNOWN
     }
 
     private fun createNotification(): Notification {
@@ -100,7 +95,7 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
                 .setSmallIcon(drawableResId)
                 .setContentTitle(getString(R.string.notification_foreground_content_title))
                 .setContentText(getString(R.string.notification_foreground_content_text))
-                .setContentIntent(PendingIntent.getActivity(applicationContext,0,Intent(applicationContext,ClientHomeActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT))
+                .setContentIntent(PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, ClientHomeActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT))
                 .build()
     }
 
@@ -127,6 +122,7 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
         fun getConnectionStatus(): ConnectionStatus {
             return getCurrentConnectionStatus()
         }
+
         fun getChildConnectionStatusLivedata() = childConnectionStatus
 
         fun refreshChildWebSocketConnection(address: String?) {
@@ -137,7 +133,7 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
                 webSocketClientHandler.getClient(address)
 
         fun stopService() {
-            if(childConnectionStatus.value?.second == ConnectionStatus.DISCONNECTED){
+            if (childConnectionStatus.value?.second == ConnectionStatus.DISCONNECTED) {
                 stopSelf()
             }
         }

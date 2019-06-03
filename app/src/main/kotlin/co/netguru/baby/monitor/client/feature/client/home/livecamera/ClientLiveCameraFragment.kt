@@ -120,7 +120,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
             this ?: return@with
             val address = viewModel.selectedChild.value?.address ?: return@with
             val client = getChildClient(address) ?: return@with
-            Timber.d("BOCHEN START CALL")
             fragmentViewModel.startCall(
                     requireActivity().applicationContext,
                     liveCameraRemoteRenderer,
