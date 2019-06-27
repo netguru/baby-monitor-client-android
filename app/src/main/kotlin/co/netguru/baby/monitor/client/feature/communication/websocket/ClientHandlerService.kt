@@ -137,5 +137,13 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
                 stopSelf()
             }
         }
+
+        fun disableNotification(){
+            webSocketClientHandler.notificationsEnabled(false)
+        }
+
+        fun enableNotification(){
+            webSocketClientHandler.notificationsEnabled(true)
+        }
     }
 }

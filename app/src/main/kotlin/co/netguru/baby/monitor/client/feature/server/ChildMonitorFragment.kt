@@ -136,9 +136,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun handleCallStateChange(state: CallState) {
         when (state) {
-            CallState.CONNECTING -> {
-                machineLearningServiceBinder?.stopRecording()
-            }
             CallState.ENDED -> {
                 rtcReceiverServiceBinder?.let(this::endCall)
             }

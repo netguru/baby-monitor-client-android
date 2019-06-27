@@ -60,8 +60,8 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         findNavController().popBackStack()
-
         viewModel.showBackButton(false)
+        childServiceBinder?.enableNotification()
         childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         requireContext().unbindService(this)
     }
@@ -118,6 +118,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         errorOccurs = false
         with(childServiceBinder) {
             this ?: return@with
+            disableNotification()
             val address = viewModel.selectedChild.value?.address ?: return@with
             val client = getChildClient(address) ?: return@with
             fragmentViewModel.startCall(

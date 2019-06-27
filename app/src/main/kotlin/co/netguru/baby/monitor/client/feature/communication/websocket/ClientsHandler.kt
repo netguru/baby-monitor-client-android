@@ -1,10 +1,10 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
-import co.netguru.baby.monitor.client.common.NotificationHandler
-import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -26,6 +26,7 @@ class ClientsHandler(
     private var webSocketClient: CustomWebSocketClient? = null
     private var address = ""
     private val compositeDisposable = CompositeDisposable()
+    private var notificationsEnabled = true;
 
     @RunsInBackground
     fun addClient(address: String) = Completable.fromAction {
@@ -49,6 +50,10 @@ class ClientsHandler(
                             onError = Timber::e
                     ).addTo(compositeDisposable)
         }
+    }
+
+    fun notificationsEnabled(enabled: Boolean){
+        notificationsEnabled = enabled
     }
 
     fun onDestroy() {
@@ -76,8 +81,12 @@ class ClientsHandler(
         if (json.has(RtcCall.WEB_SOCKET_ACTION_KEY)) {
             when (json.getString(RtcCall.WEB_SOCKET_ACTION_KEY)) {
                 RtcCall.BABY_IS_CRYING -> {
-                    notificationHandler.showBabyIsCryingNotification()
-                    addLogData(client.address)
+                    if (notificationsEnabled) {
+                        notificationHandler.showBabyIsCryingNotification()
+                        addLogData(client.address)
+                    } else {
+                        Timber.i("Notifications disabled")
+                    }
                 }
                 else -> Timber.e("Unrecognized action from message: $message")
             }
