@@ -1,9 +1,10 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import android.arch.lifecycle.MutableLiveData
-import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -15,20 +16,20 @@ import java.util.concurrent.TimeUnit
 class WebSocketServerHandler(
         private val handleMessage: (WebSocket?, String?) -> Unit
 ) {
-    internal val serverStatus = MutableLiveData<ServerStatus>()
+    private val clientConnectionStatus = MutableLiveData<ClientConnectionStatus>()
+
+    fun clientConnectionStatus() =
+            clientConnectionStatus
 
     private val compositeDisposable = CompositeDisposable()
     private var server: CustomWebSocketServer? = null
 
     fun startServer() {
-        if (serverStatus.value == ServerStatus.STARTED) {
-            return
-        }
+        if (server != null) return
 
         compositeDisposable.clear()
         server = CustomWebSocketServer(WebRtcReceiverService.SERVER_PORT,
-                onMessageReceived = { webSocket, message -> handleMessage(webSocket, message) },
-                onConnectionStatusChange = this::onConnectionStatusChange
+                onMessageReceived = { webSocket, message -> handleMessage(webSocket, message) }
         ).apply {
             startServer().subscribeOn(Schedulers.io())
                     .subscribeBy(
@@ -40,11 +41,20 @@ class WebSocketServerHandler(
                                 Timber.e("launch failed $e")
                             }
                     ).addTo(compositeDisposable)
+            connectedClients()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(onNext = { connections ->
+                        clientConnectionStatus.postValue(
+                                if (connections > 0) ClientConnectionStatus.CLIENT_CONNECTED
+                                else ClientConnectionStatus.EMPTY)
+                    })
+                    .addTo(compositeDisposable)
         }
     }
 
     fun restartServer() {
-        compositeDisposable.clear()
+        stopServer()
         Completable.timer(5, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
@@ -61,17 +71,11 @@ class WebSocketServerHandler(
     fun stopServer(shouldRestart: Boolean = false) {
         compositeDisposable.clear()
         server?.let { server -> stopServer(shouldRestart, server) }
+        server = null
     }
 
     fun broadcast(byteArray: ByteArray) {
         server?.broadcast(byteArray)
-    }
-
-    private fun onConnectionStatusChange(status: ServerStatus) {
-        serverStatus.postValue(status)
-        if (serverStatus == ServerStatus.ERROR) {
-            restartServer()
-        }
     }
 
     private fun stopServer(shouldRestart: Boolean, server: CustomWebSocketServer) {
