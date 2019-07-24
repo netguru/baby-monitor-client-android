@@ -1,9 +1,12 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.common.extensions.toData
+import co.netguru.baby.monitor.client.common.proto.Message
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
@@ -47,6 +50,7 @@ class WebRtcReceiverService : Service() {
     private var messageConfirmationMap = mutableMapOf<String, MessageConfirmationStatus>()
     private var firebaseKeysMap = mutableMapOf<String, String>()
     private val messageConfirmationDisposable = CompositeDisposable()
+    private val babyName = MutableLiveData<String>()
 
     private var isVideoRecreated = true
 
@@ -107,6 +111,8 @@ class WebRtcReceiverService : Service() {
         if (jsonObject.has(WEB_SOCKET_ACTION_KEY)) {
             handleWebSocketAction(client, jsonObject)
         }
+        val msg = message.toData<Message>() ?: return
+        msg.babyName?.let(babyName::postValue)
     }
 
     private fun handleWebSocketAction(client: WebSocket, jsonObject: JSONObject) {
@@ -154,6 +160,9 @@ class WebRtcReceiverService : Service() {
         var currentCall: RtcReceiver? = null
         val serverStatus: MutableLiveData<ServerStatus>
             get() = this@WebRtcReceiverService.serverHandler.serverStatus
+
+        fun babyName(): LiveData<String> =
+                babyName
 
         fun createReceiver(
                 view: CustomSurfaceViewRenderer,

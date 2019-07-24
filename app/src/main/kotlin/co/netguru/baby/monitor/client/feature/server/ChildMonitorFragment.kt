@@ -181,6 +181,9 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 pulsatingView.stop()
             }
         })
+        service.babyName().observe(this, Observer { name ->
+            baby_name.text = name
+        })
     }
 
     companion object {

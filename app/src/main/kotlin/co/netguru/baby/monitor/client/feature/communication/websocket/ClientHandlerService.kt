@@ -10,12 +10,14 @@ import android.os.Binder
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.DataModule
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.AndroidInjection
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -27,7 +29,7 @@ import kotlin.random.Random
 class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListener {
 
     private val webSocketClientHandler by lazy {
-        ClientsHandler(this, notificationHandler, dataRepository)
+        ClientsHandler(babyNameObservable, this, notificationHandler, dataRepository)
     }
     private val compositeDisposable = CompositeDisposable()
     private val childConnectionStatus = MutableLiveData<Pair<ChildDataEntity, ConnectionStatus>>()
@@ -36,6 +38,9 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
     lateinit var notificationHandler: NotificationHandler
     @Inject
     lateinit var dataRepository: DataRepository
+    @Inject
+    @field:DataModule.BabyName
+    internal lateinit var babyNameObservable: Observable<String>
 
     private var childList: List<ChildDataEntity>? = null
 
