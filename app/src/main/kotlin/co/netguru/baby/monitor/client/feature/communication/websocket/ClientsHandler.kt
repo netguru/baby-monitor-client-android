@@ -7,7 +7,7 @@ import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -19,7 +19,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class ClientsHandler(
-        private val babyNameObservable: Observable<String>,
+        private val babyNameObservable: Flowable<String>,
         private val listener: ConnectionListener,
         private val notificationHandler: NotificationHandler,
         private val dataRepository: DataRepository

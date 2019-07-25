@@ -17,7 +17,7 @@ import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.AndroidInjection
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -40,7 +40,7 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
     lateinit var dataRepository: DataRepository
     @Inject
     @field:DataModule.BabyName
-    internal lateinit var babyNameObservable: Observable<String>
+    internal lateinit var babyNameObservable: Flowable<String>
 
     private var childList: List<ChildDataEntity>? = null
 

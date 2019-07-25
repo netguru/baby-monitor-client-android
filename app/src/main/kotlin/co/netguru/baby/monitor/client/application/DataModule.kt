@@ -1,9 +1,10 @@
 package co.netguru.baby.monitor.client.application
 
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Qualifier
 
@@ -15,12 +16,8 @@ class DataModule {
     @BabyName
     internal fun provideBabyNameObservable(
             dataRepository: DataRepository
-    ): Observable<String> =
-            babyNameRelay.apply {
-                dataRepository.getFirstChild().observeForever { child ->
-                    child?.name?.let(::onNext)
-                }
-            }
+    ): Flowable<String> =
+            dataRepository.getFirstChild().map(ChildDataEntity::name)
 
     /**
      * This [Qualifier] is to be used to pass baby name in different parts of the application, and

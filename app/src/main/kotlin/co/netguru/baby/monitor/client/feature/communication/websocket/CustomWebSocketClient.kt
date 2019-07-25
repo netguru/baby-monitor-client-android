@@ -5,7 +5,7 @@ import co.netguru.baby.monitor.client.common.proto.Message
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus.*
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -20,7 +20,7 @@ import java.nio.charset.Charset
 
 class CustomWebSocketClient(
         val address: String,
-        private val babyNameObservable: Observable<String>,
+        private val babyNameObservable: Flowable<String>,
         private var onAvailabilityChange: (CustomWebSocketClient, ConnectionStatus) -> Unit,
         onMessageReceived: (CustomWebSocketClient, String?) -> Unit
 ) : WebSocketClient(URI(address)) {

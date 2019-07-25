@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
@@ -24,11 +23,13 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketS
 import co.netguru.baby.monitor.client.feature.onboarding.baby.WifiReceiver
 import dagger.android.AndroidInjection
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import org.java_websocket.WebSocket
 import org.json.JSONObject
 import timber.log.Timber
@@ -50,7 +51,7 @@ class WebRtcReceiverService : Service() {
     private var messageConfirmationMap = mutableMapOf<String, MessageConfirmationStatus>()
     private var firebaseKeysMap = mutableMapOf<String, String>()
     private val messageConfirmationDisposable = CompositeDisposable()
-    private val babyName = MutableLiveData<String>()
+    private val babyName = BehaviorSubject.create<String>()
 
     private var isVideoRecreated = true
 
@@ -112,7 +113,7 @@ class WebRtcReceiverService : Service() {
             handleWebSocketAction(client, jsonObject)
         }
         val msg = message.toData<Message>() ?: return
-        msg.babyName?.let(babyName::postValue)
+        msg.babyName?.let(babyName::onNext)
     }
 
     private fun handleWebSocketAction(client: WebSocket, jsonObject: JSONObject) {
@@ -161,7 +162,7 @@ class WebRtcReceiverService : Service() {
         val serverStatus: MutableLiveData<ServerStatus>
             get() = this@WebRtcReceiverService.serverHandler.serverStatus
 
-        fun babyName(): LiveData<String> =
+        fun babyName(): Observable<String> =
                 babyName
 
         fun createReceiver(
@@ -194,7 +195,7 @@ class WebRtcReceiverService : Service() {
             currentCall?.startCapturer()
         }
 
-        fun recreateCapturer(isFrontFacing: Boolean, videoRecreatedListener : () -> Unit) {
+        fun recreateCapturer(isFrontFacing: Boolean, videoRecreatedListener: () -> Unit) {
             if (isVideoRecreated) {
                 isVideoRecreated = false
                 currentCall?.recreateVideoTrack(isFrontFacing) {
