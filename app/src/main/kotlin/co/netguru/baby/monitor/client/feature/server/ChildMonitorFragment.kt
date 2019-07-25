@@ -18,7 +18,7 @@ import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -68,7 +68,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onPause() {
         super.onPause()
         viewModel.unregisterNsdService()
-        pulsatingView.stop()
     }
 
     override fun onDestroy() {
@@ -174,11 +173,13 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     this@ChildMonitorFragment::handleCallStateChange
             )
         }
-        service.serverStatus.observe(this, Observer { status ->
-            if (status == ServerStatus.STARTED) {
-                pulsatingView.start()
-            } else {
-                pulsatingView.stop()
+        service.clientConnectionStatus().observe(this, Observer { status ->
+            Timber.d("Client status: $status.")
+            when (status) {
+                ClientConnectionStatus.CLIENT_CONNECTED ->
+                    pulsatingView.start()
+                ClientConnectionStatus.EMPTY ->
+                    pulsatingView.stop()
             }
         })
     }
