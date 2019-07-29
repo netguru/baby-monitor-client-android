@@ -167,6 +167,14 @@ class WebRtcReceiverService : Service() {
                     call.stopCall()
                 }
 
+        fun startRendering() {
+            currentCall?.startRendering()
+        }
+
+        fun stopRendering() {
+            currentCall?.stopRendering()
+        }
+
         override fun cleanup() {
             Timber.i("cleanup")
             currentCall?.localView = null
