@@ -23,7 +23,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebR
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
-import io.reactivex.Single
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -141,19 +141,27 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun startVideoPreview() {
         rtcReceiverServiceBinder?.startRendering() ?: return
-        surfaceView.visibility = View.VISIBLE
+        video_preview_group.visibility = View.VISIBLE
 
-        Single.timer(5, TimeUnit.MINUTES)
+        val totalTime = 65L
+        Observable.intervalRange(0, totalTime + 1, 0, 1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy {
-                    stopVideoPreview()
-                }
+                .subscribeBy(
+                        onNext = { elapsedSeconds ->
+                            val secondsLeft = totalTime - elapsedSeconds
+                            timer.text = if (secondsLeft < 60)
+                                getString(R.string.message_disabling_video_preview_soon, "0:%02d".format(secondsLeft))
+                            else ""
+                        },
+                        onComplete = ::stopVideoPreview
+                )
                 .addTo(disposables)
     }
 
     private fun stopVideoPreview() {
         rtcReceiverServiceBinder?.stopRendering()
-        surfaceView.visibility = View.GONE
+        video_preview_group.visibility = View.GONE
     }
 
     private fun registerNsdService() {
