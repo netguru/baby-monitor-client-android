@@ -17,7 +17,9 @@ class DataModule {
     internal fun provideBabyNameObservable(
             dataRepository: DataRepository
     ): Flowable<String> =
-            dataRepository.getFirstChild().map(ChildDataEntity::name)
+            dataRepository.getFirstChild().map { child ->
+                child.name.orEmpty()
+            }
 
     /**
      * This [Qualifier] is to be used to pass baby name in different parts of the application, and
