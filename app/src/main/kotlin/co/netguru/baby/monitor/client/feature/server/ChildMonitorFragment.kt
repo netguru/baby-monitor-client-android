@@ -145,25 +145,23 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         }
         logo.setOnClickListener { startVideoPreview() }
         message_video_disabled_energy_saver.setOnClickListener { startVideoPreview() }
+        viewModel.previewingVideo().observe(this, Observer { previewing ->
+            if (previewing == true)
+                startVideoPreview()
+            else
+                stopVideoPreview()
+        })
+        viewModel.timer().observe(this, Observer { secondsLeft ->
+            timer.text = if (secondsLeft != null && secondsLeft < 60)
+                getString(R.string.message_disabling_video_preview_soon, "0:%02d".format(secondsLeft))
+            else ""
+        })
     }
 
     private fun startVideoPreview() {
         rtcReceiverServiceBinder?.startRendering() ?: return
         video_preview_group.visibility = View.VISIBLE
-
-        val totalTime = 65L
-        Observable.intervalRange(0, totalTime + 1, 0, 1, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onNext = { elapsedSeconds ->
-                            val secondsLeft = totalTime - elapsedSeconds
-                            timer.text = if (secondsLeft < 60)
-                                getString(R.string.message_disabling_video_preview_soon, "0:%02d".format(secondsLeft))
-                            else ""
-                        },
-                        onComplete = ::stopVideoPreview
-                )
-                .addTo(disposables)
+        viewModel.resetTimer()
     }
 
     private fun stopVideoPreview() {
