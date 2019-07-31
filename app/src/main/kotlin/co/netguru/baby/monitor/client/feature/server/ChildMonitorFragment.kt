@@ -153,7 +153,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
         val totalTime = 65L
         Observable.intervalRange(0, totalTime + 1, 0, 1, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = { elapsedSeconds ->
