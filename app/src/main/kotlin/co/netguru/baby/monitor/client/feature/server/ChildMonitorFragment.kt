@@ -61,6 +61,11 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         setupView()
     }
 
+    override fun onStart() {
+        super.onStart()
+        startVideoPreview()
+    }
+
     override fun onResume() {
         super.onResume()
         registerNsdService()
@@ -70,14 +75,17 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             bindServices()
             rtcReceiverServiceBinder?.startCapturer()
         }
-        startVideoPreview()
     }
 
     override fun onPause() {
         disposables.clear()
         viewModel.unregisterNsdService()
-        stopVideoPreview()
         super.onPause()
+    }
+
+    override fun onStop() {
+        stopVideoPreview()
+        super.onStop()
     }
 
     override fun onDestroy() {
