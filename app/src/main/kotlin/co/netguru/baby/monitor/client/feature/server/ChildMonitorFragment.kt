@@ -7,6 +7,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -19,6 +20,7 @@ import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -26,6 +28,7 @@ import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningSer
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
+import org.webrtc.EglBase
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -90,11 +93,14 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         Timber.i("Service Disconnected: $name")
     }
 
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
         when (service) {
             is WebRtcReceiverBinder -> {
                 Timber.i("WebRtcReceiverService service connected")
                 handleWebRtcReceiverBinder(service)
+            }
+            is WebRtcService.Binder -> {
+                handleWebRtcBinder(service)
             }
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
@@ -153,26 +159,33 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun bindServices() {
-        bindService(
-                WebRtcReceiverService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
-        )
+//        bindService(
+//                WebRtcReceiverService::class.java,
+//                this,
+//                Service.BIND_AUTO_CREATE
+//        )
         bindService(
                 MachineLearningService::class.java,
                 this,
                 Service.BIND_AUTO_CREATE
         )
+        requireContext().run {
+            bindService(
+                Intent(this, WebRtcService::class.java),
+                this@ChildMonitorFragment,
+                Service.BIND_AUTO_CREATE
+            )
+        }
     }
 
     private fun handleWebRtcReceiverBinder(service: WebRtcReceiverBinder) {
         rtcReceiverServiceBinder = service
-        if (service.currentCall == null) {
-            service.createReceiver(
-                    surfaceView,
-                    this@ChildMonitorFragment::handleCallStateChange
-            )
-        }
+//        if (service.currentCall == null) {
+//            service.createReceiver(
+//                    surfaceView,
+//                    this@ChildMonitorFragment::handleCallStateChange
+//            )
+//        }
         service.clientConnectionStatus().observe(this, Observer { status ->
             Timber.d("Client status: $status.")
             when (status) {
@@ -182,6 +195,12 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     pulsatingView.stop()
             }
         })
+    }
+
+    private fun handleWebRtcBinder(service: WebRtcService.Binder) {
+        Timber.d("handleWebRtcBinder($service)")
+        surfaceView.init(EglBase.create().eglBaseContext, null)
+        service.addSurfaceView(surfaceView)
     }
 
     companion object {

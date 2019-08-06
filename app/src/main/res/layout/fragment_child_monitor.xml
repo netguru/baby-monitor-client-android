@@ -39,7 +39,7 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
+    <org.webrtc.SurfaceViewRenderer
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
