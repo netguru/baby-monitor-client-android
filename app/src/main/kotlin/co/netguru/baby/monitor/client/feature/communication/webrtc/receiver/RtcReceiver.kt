@@ -81,7 +81,7 @@ class RtcReceiver(
                 }
             }
 
-            override fun onAddStream(mediaStream: MediaStream?) {
+            override fun onAddStream(mediaStream: MediaStream) {
                 mediaStream?.let(::handleMediaStream)
             }
 

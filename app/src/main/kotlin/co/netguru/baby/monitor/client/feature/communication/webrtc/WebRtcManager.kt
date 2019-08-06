@@ -1,11 +1,16 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc
 
 import android.content.Context
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
+import org.json.JSONObject
 import org.webrtc.*
 import timber.log.Timber
-import javax.inject.Inject
 
-class WebRtcManager @Inject constructor() {
+class WebRtcManager constructor(
+    private val sendMessage: (String) -> Unit
+) {
+
     private lateinit var peerConnectionFactory: PeerConnectionFactory
 
     private lateinit var videoCapturer: VideoCapturer
@@ -13,6 +18,19 @@ class WebRtcManager @Inject constructor() {
     private lateinit var videoTrack: VideoTrack
     private lateinit var audioSource: AudioSource
     private lateinit var audioTrack: AudioTrack
+
+    private lateinit var peerConnection: PeerConnection
+
+    private val sharedContext by lazy { EglBase.create().eglBaseContext }
+
+    private val mediaConstraints = MediaConstraints().apply {
+        mandatory.addAll(
+            arrayOf(
+                MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"),
+                MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
+            )
+        )
+    }
 
     private fun createCameraCapturer(cameraEnumerator: CameraEnumerator) =
         cameraEnumerator.deviceNames.asSequence()
@@ -28,20 +46,43 @@ class WebRtcManager @Inject constructor() {
 
     fun beginCapturing(context: Context) {
         Timber.d("beginCapturing()")
+
         Logging.enableLogToDebugOutput(Logging.Severity.LS_VERBOSE)
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(context)
                 .setEnableInternalTracer(false)
                 .createInitializationOptions()
         )
-        peerConnectionFactory = PeerConnectionFactory(PeerConnectionFactory.Options())
+        peerConnectionFactory = PeerConnectionFactory(PeerConnectionFactory.Options()).apply {
+            setVideoHwAccelerationOptions(sharedContext, sharedContext)
+        }
         videoCapturer = createCameraCapturer(Camera2Enumerator(context))
         videoSource = peerConnectionFactory.createVideoSource(videoCapturer)
         videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
-        val mediaConstraints = MediaConstraints()
-        audioSource = peerConnectionFactory.createAudioSource(mediaConstraints)
+        audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
         videoCapturer.startCapture(320, 480, 30)
+
+        peerConnection = peerConnectionFactory.createPeerConnection(
+            emptyList(),
+            mediaConstraints,
+            object : DefaultObserver() {
+                override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
+                    Timber.d("onIceGatheringChange($iceGatheringState)")
+                    if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE)
+                        transferAnswer()
+                }
+
+                override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
+                    Timber.d("onIceConnectionChange($iceConnectionState)")
+                }
+            }
+        )
+
+        val stream = peerConnectionFactory.createLocalMediaStream("stream")
+        stream.addTrack(audioTrack)
+        stream.addTrack(videoTrack)
+        peerConnection.addStream(stream)
     }
 
     fun stopCapturing() {
@@ -52,9 +93,50 @@ class WebRtcManager @Inject constructor() {
         videoTrack.dispose()
         videoSource.dispose()
         videoCapturer.dispose()
+        peerConnection.dispose()
+    }
+
+    fun acceptOffer(offer: String) {
+        Timber.i("acceptOffer($offer)")
+        peerConnection.setRemoteDescription(DefaultSdpObserver(
+            onSetSuccess = {
+                answer()
+            }
+        ), SessionDescription(SessionDescription.Type.OFFER, offer))
+    }
+
+    private fun answer() {
+        Timber.i("answer()")
+        peerConnection.createAnswer(DefaultSdpObserver(
+            onCreateSuccess = { sessionDescription ->
+                Timber.d("Successfully created answer.")
+                peerConnection.setLocalDescription(
+                    DefaultSdpObserver(),
+                    sessionDescription
+                )
+            },
+            onCreateFailure = { error ->
+                Timber.w("Creating answer failed.")
+            }
+        ), mediaConstraints)
+    }
+
+    private fun transferAnswer() {
+        Timber.i("Transferring answer.")
+        val jsonObject = JSONObject().apply {
+            put(
+                "answerSDP",
+                JSONObject().apply {
+                    put("sdp", peerConnection.localDescription?.description)
+                    put("type", peerConnection.localDescription?.type?.canonicalForm())
+                }
+            )
+        }
+        sendMessage(jsonObject.toString())
     }
 
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
+        surfaceViewRenderer.init(sharedContext, null)
         videoTrack.addSink(surfaceViewRenderer)
     }
 }
