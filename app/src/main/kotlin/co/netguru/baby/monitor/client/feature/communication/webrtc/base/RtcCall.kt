@@ -70,7 +70,7 @@ abstract class RtcCall {
             disposeConnection: Boolean = false
     ) {
         listener = {}
-        connection?.close()
+        connection?.dispose()
 
         remoteView?.release()
         remoteView = null
