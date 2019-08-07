@@ -18,7 +18,7 @@ import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
+import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -48,6 +48,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private var isFacingFront = false
     private val disposables = CompositeDisposable()
 
+    private val disposables = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.saveConfiguration()
@@ -56,6 +58,11 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        startVideoPreview()
     }
 
     override fun onResume() {
@@ -70,9 +77,14 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     override fun onPause() {
-        super.onPause()
+        disposables.clear()
         viewModel.unregisterNsdService()
-        pulsatingView.stop()
+        super.onPause()
+    }
+
+    override fun onStop() {
+        stopVideoPreview()
+        super.onStop()
     }
 
     override fun onDestroy() {
@@ -131,6 +143,33 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         settingsIbtn.setOnClickListener {
             viewModel.shouldDrawerBeOpen.postValue(true)
         }
+        logo.setOnClickListener { startVideoPreview() }
+        message_video_disabled_energy_saver.setOnClickListener { startVideoPreview() }
+        viewModel.previewingVideo().observe(this, Observer { previewing ->
+            if (previewing == true)
+                startVideoPreview()
+            else
+                stopVideoPreview()
+        })
+        viewModel.timer().observe(this, Observer { secondsLeft ->
+            timer.text = if (secondsLeft != null && secondsLeft < 60)
+                getString(
+                    R.string.message_disabling_video_preview_soon,
+                    "0:%02d".format(secondsLeft)
+                )
+            else ""
+        })
+    }
+
+    private fun startVideoPreview() {
+        rtcReceiverServiceBinder?.startRendering() ?: return
+        video_preview_group.visibility = View.VISIBLE
+        viewModel.resetTimer()
+    }
+
+    private fun stopVideoPreview() {
+        rtcReceiverServiceBinder?.stopRendering()
+        video_preview_group.visibility = View.GONE
     }
 
     private fun registerNsdService() {
@@ -178,12 +217,15 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     surfaceView,
                     this@ChildMonitorFragment::handleCallStateChange
             )
+            startVideoPreview()
         }
-        service.serverStatus.observe(this, Observer { status ->
-            if (status == ServerStatus.STARTED) {
-                pulsatingView.start()
-            } else {
-                pulsatingView.stop()
+        service.clientConnectionStatus().observe(this, Observer { status ->
+            Timber.d("Client status: $status.")
+            when (status) {
+                ClientConnectionStatus.CLIENT_CONNECTED ->
+                    pulsatingView.start()
+                ClientConnectionStatus.EMPTY ->
+                    pulsatingView.stop()
             }
         })
         service.babyName()

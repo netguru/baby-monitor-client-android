@@ -108,4 +108,7 @@
     <string name="connecting_devices_failed_text_1">Ups! Something\nwent wrong :(</string>
     <string name="connecting_devices_failed_text_2">Make sure that you are connected\nto the same Wi-Fi network</string>
     <string name="camera_error">Unfortunatelly, there was an unexpected problem with your camera preview. Please Try again</string>
+
+    <string name="message_video_preview_disabled_tap_to_enable">Video preview disabled to conserve energy. Tap to enable it.</string>
+    <string name="message_disabling_video_preview_soon">Disabling video preview in %s</string>
 </resources>

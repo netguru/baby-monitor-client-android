@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
-import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
 import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
@@ -13,29 +13,38 @@ import java.nio.charset.Charset
 
 class CustomWebSocketServer(
         port: Int? = null,
-        private val onMessageReceived: (WebSocket?, String?) -> Unit,
-        private val onConnectionStatusChange: (ServerStatus) -> Unit
+        private val onMessageReceived: (WebSocket?, String?) -> Unit
 ) : WebSocketServer(InetSocketAddress(port ?: PORT)) {
+
+    private val connectedClientsSubject =
+            BehaviorSubject.createDefault(0)
 
     init {
         isReuseAddr = true
+        connectionLostTimeout = 10
     }
 
-    override fun onOpen(conn: WebSocket?, handshake: ClientHandshake?) {
-        Timber.i("onOpen: ${conn?.remoteSocketAddress?.address?.hostAddress}")
+    private fun updateConnectedClients() {
+        Timber.d("updateConnectedClients(): ${connections.size}")
+        connectedClientsSubject.onNext(connections.size)
     }
 
-    override fun onClose(conn: WebSocket?, code: Int, reason: String?, remote: Boolean) {
-        Timber.i("onClose")
+    override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
+        Timber.d("onOpen(${conn.remoteSocketAddress}, $handshake)")
+        updateConnectedClients()
     }
 
-    override fun onMessage(conn: WebSocket?, message: String?) {
-        Timber.i(message)
+    override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
+        Timber.d("onClose(${conn.remoteSocketAddress}, $code, $reason, $remote)")
+        updateConnectedClients()
+    }
+
+    override fun onMessage(conn: WebSocket, message: String) {
+        Timber.d("onMessage(${conn.remoteSocketAddress}, $message)")
         onMessageReceived(conn, message)
     }
 
-    override fun onMessage(conn: WebSocket?, message: ByteBuffer?) {
-        message ?: return
+    override fun onMessage(conn: WebSocket, message: ByteBuffer) {
         Timber.i("byte message")
         val buffer = ByteArray(message.remaining())
         message.get(buffer)
@@ -43,15 +52,15 @@ class CustomWebSocketServer(
     }
 
     override fun onStart() {
-        Timber.i("CustomWebSocketServer started")
-        onConnectionStatusChange(ServerStatus.STARTED)
+        Timber.d("onStart()")
     }
 
-    override fun onError(conn: WebSocket?, ex: Exception?) {
-        Timber.e("onError: $ex")
-        onConnectionStatusChange(ServerStatus.ERROR)
-        stopServer()
+    override fun onError(conn: WebSocket?, ex: Exception) {
+        Timber.w("onError(${conn?.remoteSocketAddress}, $ex)")
     }
+
+    fun connectedClients(): Observable<Int> =
+            connectedClientsSubject
 
     fun startServer() = Completable.fromAction {
         start()
@@ -59,7 +68,6 @@ class CustomWebSocketServer(
 
     fun stopServer() = Completable.fromAction {
         stop()
-        onConnectionStatusChange(ServerStatus.STOPPED)
     }
 
     companion object {

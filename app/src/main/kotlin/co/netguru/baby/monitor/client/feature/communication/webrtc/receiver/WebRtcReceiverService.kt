@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.app.Service
-import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.extensions.toData
@@ -11,7 +10,6 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.MessageConfirmationStatus
-import co.netguru.baby.monitor.client.data.communication.websocket.ServerStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.EVENT_RECEIVED_CONFIRMATION
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall.Companion.P2P_OFFER
@@ -159,8 +157,9 @@ class WebRtcReceiverService : Service() {
     inner class WebRtcReceiverBinder : WebRtcBinder() {
 
         var currentCall: RtcReceiver? = null
-        val serverStatus: MutableLiveData<ServerStatus>
-            get() = this@WebRtcReceiverService.serverHandler.serverStatus
+
+        fun clientConnectionStatus() =
+                serverHandler.clientConnectionStatus()
 
         fun babyName(): Observable<String> =
                 babyName
@@ -177,6 +176,14 @@ class WebRtcReceiverService : Service() {
                     serverHandler.stopServer(true)
                     call.stopCall()
                 }
+
+        fun startRendering() {
+            currentCall?.startRendering()
+        }
+
+        fun stopRendering() {
+            currentCall?.stopRendering()
+        }
 
         override fun cleanup() {
             Timber.i("cleanup")
