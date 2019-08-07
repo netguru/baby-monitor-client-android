@@ -48,8 +48,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private var isFacingFront = false
     private val disposables = CompositeDisposable()
 
-    private val disposables = CompositeDisposable()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.saveConfiguration()
