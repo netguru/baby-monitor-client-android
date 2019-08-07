@@ -22,7 +22,7 @@ class ClientHomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     internal val logData = MutableLiveData<List<LogData>>()
-    internal val selectedChild = dataRepository.getFirstChild()
+    internal val selectedChild = MutableLiveData<ChildDataEntity>()
     internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
     internal val childList = dataRepository.getChildData()
     internal val toolbarState = MutableLiveData<ToolbarState>()
@@ -31,6 +31,12 @@ class ClientHomeViewModel @Inject constructor(
     internal val backButtonShouldBeVisible = MutableLiveData<Boolean>()
 
     private val compositeDisposable = CompositeDisposable()
+
+    init {
+        dataRepository.getFirstChild()
+                .subscribe(selectedChild::postValue)
+                .addTo(compositeDisposable)
+    }
 
     fun fetchLogData() {
         dataRepository.getAllLogData()

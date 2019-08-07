@@ -23,7 +23,6 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebR
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -31,7 +30,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
@@ -48,7 +46,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var isNightModeEnabled = false
     private var isFacingFront = false
-
     private val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +86,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     override fun onDestroy() {
+        disposables.clear()
         requireContext().unbindService(this)
         rtcReceiverServiceBinder?.cleanup()
         machineLearningServiceBinder?.cleanup()
@@ -153,7 +151,10 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         })
         viewModel.timer().observe(this, Observer { secondsLeft ->
             timer.text = if (secondsLeft != null && secondsLeft < 60)
-                getString(R.string.message_disabling_video_preview_soon, "0:%02d".format(secondsLeft))
+                getString(
+                    R.string.message_disabling_video_preview_soon,
+                    "0:%02d".format(secondsLeft)
+                )
             else ""
         })
     }
@@ -225,6 +226,13 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     pulsatingView.stop()
             }
         })
+        service.babyName()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { name ->
+                    baby_name.text = name
+                }
+                .addTo(disposables)
     }
 
     companion object {
