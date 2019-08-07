@@ -22,6 +22,7 @@ import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
 import io.reactivex.rxkotlin.subscribeBy
@@ -95,6 +96,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         when (service) {
             is WebRtcService.Binder ->
                 handleWebRtcBinder(service)
+            is WebSocketServerService.Binder ->
+                handleWebSocketServerBinder(service)
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
                 machineLearningServiceBinder = service
@@ -163,13 +166,22 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 this@ChildMonitorFragment,
                 Service.BIND_AUTO_CREATE
             )
+            bindService(
+                Intent(this, WebSocketServerService::class.java),
+                this@ChildMonitorFragment,
+                Service.BIND_AUTO_CREATE
+            )
         }
     }
 
     private fun handleWebRtcBinder(service: WebRtcService.Binder) {
         Timber.d("handleWebRtcBinder($service)")
         service.addSurfaceView(surfaceView)
-        service.clientConnectionStatus().observe(this, Observer { status ->
+    }
+
+    private fun handleWebSocketServerBinder(binder: WebSocketServerService.Binder) {
+        Timber.d("handleWebSocketServerBinder($binder)")
+        binder.clientConnectionStatus().observe(this, Observer { status ->
             Timber.d("Client status: $status.")
             when (status) {
                 ClientConnectionStatus.CLIENT_CONNECTED ->

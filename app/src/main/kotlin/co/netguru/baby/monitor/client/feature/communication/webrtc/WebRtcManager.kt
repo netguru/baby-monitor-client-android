@@ -3,12 +3,12 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc
 import android.content.Context
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
-import org.json.JSONObject
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import org.webrtc.*
 import timber.log.Timber
 
 class WebRtcManager constructor(
-    private val sendMessage: (String) -> Unit
+    private val sendMessage: (Message) -> Unit
 ) {
 
     private lateinit var peerConnectionFactory: PeerConnectionFactory
@@ -123,16 +123,14 @@ class WebRtcManager constructor(
 
     private fun transferAnswer() {
         Timber.i("Transferring answer.")
-        val jsonObject = JSONObject().apply {
-            put(
-                "answerSDP",
-                JSONObject().apply {
-                    put("sdp", peerConnection.localDescription?.description)
-                    put("type", peerConnection.localDescription?.type?.canonicalForm())
-                }
+        sendMessage(
+            Message(
+                sdpAnswer = Message.SdpAnswer(
+                    sdp = peerConnection.localDescription?.description,
+                    type = peerConnection.localDescription?.type?.canonicalForm()
+                )
             )
-        }
-        sendMessage(jsonObject.toString())
+        )
     }
 
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
