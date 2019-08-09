@@ -53,6 +53,8 @@
         <service android:name=".feature.communication.webrtc.receiver.WebRtcReceiverService" />
         <service android:name=".feature.machinelearning.MachineLearningService" />
         <service android:name=".feature.communication.websocket.ClientHandlerService" />
+        <service android:name=".feature.communication.webrtc.WebRtcService" />
+        <service android:name=".feature.communication.websocket.WebSocketServerService" />
 
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"

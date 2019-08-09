@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import co.netguru.baby.monitor.client.common.extensions.toJson
-import co.netguru.baby.monitor.client.common.proto.Message
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus.*
 import io.reactivex.Completable
