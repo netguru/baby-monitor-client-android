@@ -234,6 +234,8 @@ dependencies {
     //Firebase Database
     implementation libs.firebaseDatabase
 
+    implementation libs.firebaseMessaging
+
     //Unit testing
     testImplementation test.junit
     testImplementation test.mockito

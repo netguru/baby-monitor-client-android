@@ -8,11 +8,14 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
+import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.random.Random
 
 class MachineLearningService : IntentService("MachineLearningService") {
@@ -22,7 +25,11 @@ class MachineLearningService : IntentService("MachineLearningService") {
     private val machineLearning by lazy { MachineLearning(applicationContext) }
     private var onCryingBabyDetected: () -> Unit = {}
 
+    @Inject
+    internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
+
     override fun onCreate() {
+        AndroidInjection.inject(this)
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationHandler.createNotificationChannel(applicationContext)
@@ -81,7 +88,8 @@ class MachineLearningService : IntentService("MachineLearningService") {
         val entry = map.maxBy { it.value }
         if (entry?.key == MachineLearning.OUTPUT_2_CRYING_BABY) {
             Timber.i("Cry detected with probability of: ${entry.value}")
-            onCryingBabyDetected()
+            notifyBabyCryingUseCase.notifyBabyCrying()
+//            onCryingBabyDetected()
             saveDataToFile(rawData)
         }
     }
