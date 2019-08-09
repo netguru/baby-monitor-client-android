@@ -4,15 +4,18 @@ import android.app.Service
 import android.content.Intent
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
+import dagger.android.AndroidInjection
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import org.java_websocket.WebSocket
 import timber.log.Timber
+import javax.inject.Inject
 
 class WebSocketServerService : Service() {
 
     private lateinit var serverHandler: WebSocketServerHandler
-    private val gson = Gson()
+    @Inject
+    internal lateinit var gson: Gson
 
     private val messages = PublishSubject.create<Pair<WebSocket, Message>>()
 
@@ -20,6 +23,7 @@ class WebSocketServerService : Service() {
         Binder()
 
     override fun onCreate() {
+        AndroidInjection.inject(this)
         super.onCreate()
         serverHandler = WebSocketServerHandler { ws, msg ->
             Timber.d("Got a message: ${msg?.substring(0, 20)}.")
