@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.data.client
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -11,7 +12,7 @@ interface ChildDataDao {
     fun getAllChildren(): LiveData<List<ChildDataEntity>>
 
     @Query("SELECT * FROM CHILD_DATA LIMIT 1")
-    fun getFirstChild(): LiveData<ChildDataEntity>
+    fun getFirstChild(): Flowable<ChildDataEntity>
 
     @Query("SELECT * FROM CHILD_DATA WHERE address LIKE :address")
     fun getChildByAddress(address: String): Single<List<ChildDataEntity>>
