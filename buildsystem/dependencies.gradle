@@ -53,7 +53,7 @@ ext {
             firebaseStorage     : 'com.google.firebase:firebase-storage:16.0.5',
             firebaseAuth        : 'com.google.firebase:firebase-auth:16.1.0',
             firebaseDatabase    : 'com.google.firebase:firebase-database:16.0.5',
-            firebaseMessaging   : 'com.google.firebase:firebase-messaging:18.0.0',
+            firebaseMessaging   : 'com.google.firebase:firebase-messaging:17.4.0',
     ]
 
     proc = [
