@@ -125,7 +125,7 @@ class WebRtcManager constructor(
         Timber.i("Transferring answer.")
         sendMessage(
             Message(
-                sdpAnswer = Message.SdpAnswer(
+                sdpAnswer = Message.SdpData(
                     sdp = peerConnection.localDescription?.description,
                     type = peerConnection.localDescription?.type?.canonicalForm()
                 )
