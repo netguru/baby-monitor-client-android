@@ -1,8 +1,14 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import co.netguru.baby.monitor.client.common.extensions.toJson
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus.*
 import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.framing.CloseFrame
 import org.java_websocket.handshake.ServerHandshake
@@ -13,6 +19,7 @@ import java.nio.charset.Charset
 
 class CustomWebSocketClient(
         val address: String,
+        private val babyNameObservable: Flowable<String>,
         private var onAvailabilityChange: (CustomWebSocketClient, ConnectionStatus) -> Unit,
         onMessageReceived: (CustomWebSocketClient, String?) -> Unit
 ) : WebSocketClient(URI(address)) {
@@ -21,17 +28,29 @@ class CustomWebSocketClient(
     var wasRetrying = false
     private var onMessageReceivedListeners = mutableListOf<(CustomWebSocketClient, String?) -> Unit>()
 
+    private val socketOpenDisposables = CompositeDisposable()
+
     init {
         onMessageReceivedListeners.add(onMessageReceived)
     }
 
     override fun onOpen(handshakedata: ServerHandshake?) {
         notifyAvailabilityChange(CONNECTED)
+        babyNameObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { name ->
+                    Message(babyName = name)
+                            .toJson()
+                            .let(::sendMessage)
+                }
+                .addTo(socketOpenDisposables)
     }
 
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
         Timber.i("onClose")
         notifyAvailabilityChange(DISCONNECTED)
+        socketOpenDisposables.clear()
     }
 
     override fun onMessage(message: String?) {

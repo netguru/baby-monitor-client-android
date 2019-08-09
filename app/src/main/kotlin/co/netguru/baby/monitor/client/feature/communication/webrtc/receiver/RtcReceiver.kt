@@ -1,8 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
@@ -50,13 +48,24 @@ class RtcReceiver(
 
         videoTrack = createVideoTrack(isFacingFront)
         capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
-        Handler(Looper.getMainLooper()).post {
-            localVideoRenderer = VideoRenderer(localView)
-            videoTrack?.addRenderer(localVideoRenderer)
-        }
         if (state == CallState.CONNECTED) {
             transferAnswer()
         }
+    }
+
+    fun startRendering() {
+        Timber.i("startRendering()")
+        localVideoRenderer = localVideoRenderer ?: VideoRenderer(localView)
+        videoTrack?.addRenderer(localVideoRenderer)
+        Timber.i("startRendering(): done.")
+    }
+
+    fun stopRendering() {
+        Timber.d("stopRendering()")
+        val renderer = localVideoRenderer ?: return
+        videoTrack?.removeRenderer(renderer)
+        localVideoRenderer = null
+        Timber.d("stopRendering(): done.")
     }
 
     fun accept(

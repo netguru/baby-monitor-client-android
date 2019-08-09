@@ -3,6 +3,8 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.receiver
 import android.app.Service
 import android.content.Intent
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.common.extensions.toData
+import co.netguru.baby.monitor.client.common.proto.Message
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
@@ -19,11 +21,13 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketS
 import co.netguru.baby.monitor.client.feature.onboarding.baby.WifiReceiver
 import dagger.android.AndroidInjection
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import org.java_websocket.WebSocket
 import org.json.JSONObject
 import timber.log.Timber
@@ -45,6 +49,7 @@ class WebRtcReceiverService : Service() {
     private var messageConfirmationMap = mutableMapOf<String, MessageConfirmationStatus>()
     private var firebaseKeysMap = mutableMapOf<String, String>()
     private val messageConfirmationDisposable = CompositeDisposable()
+    private val babyName = BehaviorSubject.create<String>()
 
     private var isVideoRecreated = true
 
@@ -105,6 +110,8 @@ class WebRtcReceiverService : Service() {
         if (jsonObject.has(WEB_SOCKET_ACTION_KEY)) {
             handleWebSocketAction(client, jsonObject)
         }
+        val msg = message.toData<Message>() ?: return
+        msg.babyName?.let(babyName::onNext)
     }
 
     private fun handleWebSocketAction(client: WebSocket, jsonObject: JSONObject) {
@@ -154,6 +161,9 @@ class WebRtcReceiverService : Service() {
         fun clientConnectionStatus() =
                 serverHandler.clientConnectionStatus()
 
+        fun babyName(): Observable<String> =
+                babyName
+
         fun createReceiver(
                 view: CustomSurfaceViewRenderer,
                 listener: (state: CallState) -> Unit
@@ -166,6 +176,14 @@ class WebRtcReceiverService : Service() {
                     serverHandler.stopServer(true)
                     call.stopCall()
                 }
+
+        fun startRendering() {
+            currentCall?.startRendering()
+        }
+
+        fun stopRendering() {
+            currentCall?.stopRendering()
+        }
 
         override fun cleanup() {
             Timber.i("cleanup")
@@ -184,7 +202,7 @@ class WebRtcReceiverService : Service() {
             currentCall?.startCapturer()
         }
 
-        fun recreateCapturer(isFrontFacing: Boolean, videoRecreatedListener : () -> Unit) {
+        fun recreateCapturer(isFrontFacing: Boolean, videoRecreatedListener: () -> Unit) {
             if (isVideoRecreated) {
                 isVideoRecreated = false
                 currentCall?.recreateVideoTrack(isFrontFacing) {

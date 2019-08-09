@@ -5,9 +5,12 @@ import android.app.Notification
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
+import android.support.annotation.UiThread
 import android.support.v4.app.NotificationCompat
+import android.widget.Toast
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import io.reactivex.android.schedulers.AndroidSchedulers
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
@@ -79,8 +82,10 @@ class MachineLearningService : IntentService("MachineLearningService") {
     private fun handleRecordingData(dataPair: Pair<ByteArray, ShortArray>) {
         machineLearning.processData(dataPair.second)
                 .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onSuccess = { map -> handleMachineLearningData(map, dataPair.first) }
+                        onSuccess = { map -> handleMachineLearningData(map, dataPair.first) },
+                        onError = { error -> complain("ML model error", error) }
                 ).addTo(compositeDisposable)
     }
 
@@ -107,6 +112,12 @@ class MachineLearningService : IntentService("MachineLearningService") {
                         onSuccess = { succeed -> Timber.i("File saved $succeed") },
                         onError = Timber::e
                 ).addTo(compositeDisposable)
+    }
+
+    @UiThread
+    private fun complain(message: String, error: Throwable) {
+        Timber.w(error, message)
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     inner class MachineLearningBinder : Binder() {

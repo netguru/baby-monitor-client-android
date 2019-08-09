@@ -61,7 +61,7 @@ class WebRtcManager constructor(
         videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
-        videoCapturer.startCapture(320, 480, 30)
+        videoCapturer.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FRAMERATE)
 
         peerConnection = peerConnectionFactory.createPeerConnection(
             emptyList(),
@@ -136,5 +136,11 @@ class WebRtcManager constructor(
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
         surfaceViewRenderer.init(sharedContext, null)
         videoTrack.addSink(surfaceViewRenderer)
+    }
+
+    companion object {
+        private const val VIDEO_HEIGHT = 480
+        private const val VIDEO_WIDTH = 320
+        private const val VIDEO_FRAMERATE = 30
     }
 }

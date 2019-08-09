@@ -19,7 +19,8 @@ import javax.inject.Inject
 class WebSocketServerService : Service() {
 
     private lateinit var serverHandler: WebSocketServerHandler
-    private val gson = Gson()
+    @Inject
+    internal lateinit var gson: Gson
 
     private val messages = PublishSubject.create<Pair<WebSocket, Message>>()
 
