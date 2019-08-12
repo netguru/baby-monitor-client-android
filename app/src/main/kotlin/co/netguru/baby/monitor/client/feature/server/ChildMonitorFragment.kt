@@ -231,6 +231,11 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { name ->
                     baby_name.text = name
+                    baby_name.visibility =
+                        if (name.isBlank())
+                            View.GONE
+                        else
+                            View.VISIBLE
                 }
                 .addTo(disposables)
     }
