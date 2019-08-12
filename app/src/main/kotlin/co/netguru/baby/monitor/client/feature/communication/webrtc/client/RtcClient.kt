@@ -38,8 +38,8 @@ class RtcClient(
             Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
         }
 
-        override fun onAddStream(mediaStream: MediaStream?) {
-            mediaStream?.let(::handleMediaStream)
+        override fun onAddStream(mediaStream: MediaStream) {
+            mediaStream.let(::handleMediaStream)
         }
 
         override fun onDataChannel(dataChannel: DataChannel?) {

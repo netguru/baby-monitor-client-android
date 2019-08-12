@@ -7,6 +7,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -19,10 +20,12 @@ import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
-import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
+import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -106,12 +109,12 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         Timber.i("Service Disconnected: $name")
     }
 
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
         when (service) {
-            is WebRtcReceiverBinder -> {
-                Timber.i("WebRtcReceiverService service connected")
-                handleWebRtcReceiverBinder(service)
-            }
+            is WebRtcService.Binder ->
+                handleWebRtcBinder(service)
+            is WebSocketServerService.Binder ->
+                handleWebSocketServerBinder(service)
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
                 machineLearningServiceBinder = service
@@ -197,27 +200,33 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun bindServices() {
         bindService(
-                WebRtcReceiverService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
-        )
-        bindService(
                 MachineLearningService::class.java,
                 this,
                 Service.BIND_AUTO_CREATE
         )
-    }
-
-    private fun handleWebRtcReceiverBinder(service: WebRtcReceiverBinder) {
-        rtcReceiverServiceBinder = service
-        if (service.currentCall == null) {
-            service.createReceiver(
-                    surfaceView,
-                    this@ChildMonitorFragment::handleCallStateChange
+        requireContext().run {
+            bindService(
+                Intent(this, WebRtcService::class.java),
+                this@ChildMonitorFragment,
+                Service.BIND_AUTO_CREATE
+            )
+            bindService(
+                Intent(this, WebSocketServerService::class.java),
+                this@ChildMonitorFragment,
+                Service.BIND_AUTO_CREATE
             )
             startVideoPreview()
         }
-        service.clientConnectionStatus().observe(this, Observer { status ->
+    }
+
+    private fun handleWebRtcBinder(service: WebRtcService.Binder) {
+        Timber.d("handleWebRtcBinder($service)")
+        service.addSurfaceView(surfaceView)
+    }
+
+    private fun handleWebSocketServerBinder(binder: WebSocketServerService.Binder) {
+        Timber.d("handleWebSocketServerBinder($binder)")
+        binder.clientConnectionStatus().observe(this, Observer { status ->
             Timber.d("Client status: $status.")
             when (status) {
                 ClientConnectionStatus.CLIENT_CONNECTED ->
@@ -226,18 +235,21 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     pulsatingView.stop()
             }
         })
-        service.babyName()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { name ->
-                    baby_name.text = name
-                    baby_name.visibility =
-                        if (name.isBlank())
-                            View.GONE
-                        else
-                            View.VISIBLE
-                }
-                .addTo(disposables)
+        binder.messages()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .flatMapMaybe { (_, msg) ->
+                msg.babyName?.let { Maybe.just(it) } ?: Maybe.empty()
+            }
+            .subscribe { name ->
+                baby_name.text = name
+                baby_name.visibility =
+                    if (name.isBlank())
+                        View.GONE
+                    else
+                        View.VISIBLE
+            }
+            .addTo(disposables)
     }
 
     companion object {

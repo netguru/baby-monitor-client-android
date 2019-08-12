@@ -10,6 +10,7 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -49,4 +50,9 @@ class ApplicationModule {
                     AppDatabase::class.java,
                     "baby-monitor-database"
             ).build()
+
+    @Provides
+    @Reusable
+    fun provideGson() =
+        Gson()
 }
