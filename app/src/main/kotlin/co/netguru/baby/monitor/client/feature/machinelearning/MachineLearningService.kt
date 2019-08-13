@@ -93,8 +93,10 @@ class MachineLearningService : IntentService("MachineLearningService") {
         val entry = map.maxBy { it.value }
         if (entry?.key == MachineLearning.OUTPUT_2_CRYING_BABY) {
             Timber.i("Cry detected with probability of: ${entry.value}")
-            notifyBabyCryingUseCase.notifyBabyCrying()
-//            onCryingBabyDetected()
+            notifyBabyCryingUseCase.notifyBabyCrying(
+                title = getString(R.string.notification_baby_is_crying_title),
+                text = getString(R.string.notification_baby_is_crying_content)
+            )
             saveDataToFile(rawData)
         }
     }

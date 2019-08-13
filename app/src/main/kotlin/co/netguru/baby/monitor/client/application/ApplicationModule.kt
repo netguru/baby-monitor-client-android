@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
+import okhttp3.OkHttpClient
 
 @Module
 class ApplicationModule {
@@ -55,4 +56,10 @@ class ApplicationModule {
     @Reusable
     fun provideGson() =
         Gson()
+
+    @Provides
+    @Reusable
+    fun provideOkHttp() =
+        OkHttpClient.Builder()
+            .build()
 }
