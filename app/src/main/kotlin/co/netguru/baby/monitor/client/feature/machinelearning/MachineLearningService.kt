@@ -83,9 +83,9 @@ class MachineLearningService : IntentService("MachineLearningService") {
     }
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
-        val entry = map.maxBy { it.value }
-        if (entry?.key == MachineLearning.OUTPUT_2_CRYING_BABY) {
-            Timber.i("Cry detected with probability of: ${entry.value}")
+        val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
+        if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
+            Timber.i("Cry detected with probability of $cryingProbability.")
             onCryingBabyDetected()
             saveDataToFile(rawData)
         }
