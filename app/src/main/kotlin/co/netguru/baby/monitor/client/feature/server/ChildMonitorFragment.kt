@@ -21,10 +21,12 @@ import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
+import dagger.Lazy
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -32,6 +34,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
+import org.java_websocket.WebSocket
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -45,6 +48,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
+    @Inject
+    internal lateinit var receiveFirebaseTokenUseCase: Lazy<ReceiveFirebaseTokenUseCase>
     private var rtcReceiverServiceBinder: WebRtcReceiverBinder? = null
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var isNightModeEnabled = false
@@ -238,6 +243,15 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         binder.messages()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { (ws, msg) ->
+                msg.action()?.let { (key, value) ->
+                    handleWebSocketAction(ws, key, value)
+                }
+            }
+            .addTo(disposables)
+        binder.messages()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .flatMapMaybe { (_, msg) ->
                 msg.babyName?.let { Maybe.just(it) } ?: Maybe.empty()
             }
@@ -245,6 +259,27 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 baby_name.text = name
             }
             .addTo(disposables)
+    }
+
+    private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
+        when (key) {
+            RtcCall.PUSH_NOTIFICATIONS_KEY ->
+                receiveFirebaseTokenUseCase.get().receiveToken(
+                    ws.remoteSocketAddress.address.hostAddress,
+                    value
+                )
+                    .subscribeBy(
+                        onComplete = {
+                            Timber.d("Firebase token saved for address ${ws.remoteSocketAddress.address.hostAddress}.")
+                        },
+                        onError = { error ->
+                            Timber.w(error, "Couldn't save Firebase token.")
+                        }
+                    )
+                    .addTo(disposables)
+            else ->
+                Timber.w("Unhandled web socket action: '$key', '$value'.")
+        }
     }
 
     companion object {
