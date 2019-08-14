@@ -52,6 +52,8 @@ class MachineLearning(context: Context) {
         const val OUTPUT_1_NOISE = "NOISE"
         const val OUTPUT_2_CRYING_BABY = "CRYING_BABY"
 
+        const val CRYING_THRESHOLD = 0.9
+
         private val outputScoresNames = arrayOf(OUTPUT_SCORES_NAME)
     }
 }

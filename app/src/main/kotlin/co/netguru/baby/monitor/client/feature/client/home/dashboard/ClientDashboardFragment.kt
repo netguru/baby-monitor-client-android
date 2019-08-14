@@ -15,7 +15,6 @@ import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionSta
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class ClientDashboardFragment : BaseDaggerFragment() {
@@ -50,10 +49,16 @@ class ClientDashboardFragment : BaseDaggerFragment() {
         viewModel.selectedChild.observe(this, Observer { child ->
             child ?: return@Observer
 
-            if (!child.name.isNullOrEmpty()) {
-                clientHomeBabyNameTv.text = child.name
-                clientHomeBabyNameTv.setTextColor(getColor(R.color.white))
+            clientHomeBabyNameTv.apply {
+                if (child.name.isNullOrBlank()) {
+                    text = getString(R.string.your_baby_name)
+                    setTextColor(getColor(R.color.accent))
+                } else {
+                    text = child.name
+                    setTextColor(getColor(R.color.white))
+                }
             }
+
             if (!child.image.isNullOrEmpty()) {
                 GlideApp.with(requireContext())
                         .load(child.image)
