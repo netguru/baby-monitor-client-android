@@ -8,11 +8,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
+import okhttp3.*
 import org.json.JSONObject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -40,7 +36,9 @@ class NotifyBabyCryingUseCase @Inject constructor(
                             put("title", title)
                             put("text", text)
                         })
-                    }.toString().toRequestBody("application/json".toMediaType()))
+                    }.toString().let { body ->
+                        RequestBody.create(MediaType.get("application/json"), body)
+                    })
                     .build()
             ).execute()
         }

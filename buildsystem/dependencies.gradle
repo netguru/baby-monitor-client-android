@@ -54,7 +54,7 @@ ext {
             firebaseAuth        : 'com.google.firebase:firebase-auth:16.1.0',
             firebaseDatabase    : 'com.google.firebase:firebase-database:16.0.5',
             firebaseMessaging   : 'com.google.firebase:firebase-messaging:17.4.0',
-            okHttp              : 'com.squareup.okhttp3:okhttp:4.1.0'
+            okHttp              : 'com.squareup.okhttp3:okhttp:3.14.2',
     ]
 
     proc = [
