@@ -5,7 +5,9 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import dagger.Reusable
 import io.reactivex.Single
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.PublishSubject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,6 +15,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Reusable
@@ -20,6 +23,8 @@ class NotifyBabyCryingUseCase @Inject constructor(
     private val dataRepository: DataRepository,
     private val httpClient: OkHttpClient
 ) {
+    private val babyCryingEvents: PublishSubject<BabyCrying> = PublishSubject.create()
+
     private fun postNotificationToFcm(to: String, title: String, text: String): Single<Response> =
         Single.fromCallable {
             httpClient.newCall(
@@ -40,7 +45,7 @@ class NotifyBabyCryingUseCase @Inject constructor(
             ).execute()
         }
 
-    fun notifyBabyCrying(title: String, text: String) =
+    private fun fetchClientsAndPostNotification(title: String, text: String) =
         dataRepository.getAllClientData()
             .firstOrError()
             .flattenAsObservable { it }
@@ -59,4 +64,16 @@ class NotifyBabyCryingUseCase @Inject constructor(
                     Timber.w(error, "Sending push messages error.")
                 }
             )
+
+    fun subscribe(title: String, text: String): Disposable =
+        babyCryingEvents
+            .throttleFirst(1, TimeUnit.MINUTES)
+            .subscribe {
+                fetchClientsAndPostNotification(title = title, text = text)
+            }
+
+    fun notifyBabyCrying() =
+        babyCryingEvents.onNext(BabyCrying)
+
+    private object BabyCrying
 }

@@ -10,9 +10,9 @@ import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
-import io.reactivex.android.schedulers.AndroidSchedulers
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import dagger.android.AndroidInjection
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -39,6 +39,10 @@ class MachineLearningService : IntentService("MachineLearningService") {
         }
         startForeground(Random.nextInt(), createNotification())
         startRecording()
+        notifyBabyCryingUseCase.subscribe(
+            title = getString(R.string.notification_baby_is_crying_title),
+            text = getString(R.string.notification_baby_is_crying_content)
+        )
     }
 
     override fun onBind(intent: Intent?) = MachineLearningBinder()
@@ -93,10 +97,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
-            notifyBabyCryingUseCase.notifyBabyCrying(
-                title = getString(R.string.notification_baby_is_crying_title),
-                text = getString(R.string.notification_baby_is_crying_content)
-            )
+            notifyBabyCryingUseCase.notifyBabyCrying()
             saveDataToFile(rawData)
         }
     }
