@@ -19,12 +19,14 @@
             android:id="@+id/baby_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_small"
             android:fontFamily="@font/rubik_medium"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_normal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/pulsatingView"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Baby name"
             />
@@ -33,15 +35,14 @@
             android:id="@+id/pulsatingView"
             android:layout_width="@dimen/spacing_xxxmedium"
             android:layout_height="@dimen/spacing_xxxmedium"
-            android:layout_marginStart="@dimen/spacing_small"
             app:activeColor="@color/active_pulsating"
             app:circleSize="@dimen/spacing_small"
             app:inactiveColor="@color/inactive_pulsating"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@+id/baby_name"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <ImageButton
             android:id="@+id/settingsIbtn"
@@ -162,7 +163,9 @@
     <!-- Allows to set proper height for NavigationDrawer -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:visibility="gone"
+        />
 
     <ImageView
         android:id="@+id/nightModeActiveIv"

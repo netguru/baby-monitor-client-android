@@ -243,6 +243,11 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             }
             .subscribe { name ->
                 baby_name.text = name
+                baby_name.visibility =
+                    if (name.isBlank())
+                        View.GONE
+                    else
+                        View.VISIBLE
             }
             .addTo(disposables)
     }
