@@ -1,17 +1,27 @@
 package co.netguru.baby.monitor.client.feature.babycrynotification
 
-import android.widget.Toast
+import android.support.v4.app.NotificationManagerCompat
+import co.netguru.baby.monitor.client.common.NotificationHandler
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import timber.log.Timber
 
 class BabyMonitorMessagingService : FirebaseMessagingService() {
+
+    private val notificationHandler by lazy { NotificationHandler(this) }
+
     override fun onMessageReceived(message: RemoteMessage) {
         Timber.i("Received a message: $message.")
-        Toast.makeText(
-            this,
-            "Title: ${message.notification?.title}, body: ${message.notification?.body}.",
-            Toast.LENGTH_LONG
-        ).show()
+        message.notification?.let(::handleRemoteNotification)
+    }
+
+    private fun handleRemoteNotification(remoteNotification: RemoteMessage.Notification) {
+        val title = remoteNotification.title.orEmpty()
+        val body = remoteNotification.body.orEmpty()
+
+        NotificationManagerCompat.from(this).notify(
+            0,
+            notificationHandler.createNotification(title = title, content = body)
+        )
     }
 }

@@ -30,7 +30,7 @@ class NotificationHandler(private val context: Context) {
         }
     }
 
-    private fun createNotification(title: String, content: String): Notification {
+    fun createNotification(title: String, content: String): Notification {
         val resultIntent = Intent(context, ClientHomeActivity::class.java).singleTop()
         val resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
