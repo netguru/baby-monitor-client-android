@@ -19,6 +19,7 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
         val title = remoteNotification.title.orEmpty()
         val body = remoteNotification.body.orEmpty()
 
+        NotificationHandler.createNotificationChannel(this)
         NotificationManagerCompat.from(this).notify(
             0,
             notificationHandler.createNotification(title = title, content = body)
