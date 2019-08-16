@@ -26,7 +26,6 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebR
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
-import dagger.Lazy
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -38,18 +37,20 @@ import org.java_websocket.WebSocket
 import timber.log.Timber
 import javax.inject.Inject
 
+
 class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override val layoutResource = R.layout.fragment_child_monitor
 
-    private val viewModel by lazy {
+    private val serverViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
+    }
+    private val viewModel by lazy {
+        ViewModelProviders.of(requireActivity(), factory).get(ChildMonitorViewModel::class.java)
     }
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
-    @Inject
-    internal lateinit var receiveFirebaseTokenUseCase: Lazy<ReceiveFirebaseTokenUseCase>
     private var rtcReceiverServiceBinder: WebRtcReceiverBinder? = null
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var isNightModeEnabled = false
@@ -58,7 +59,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.saveConfiguration()
+        serverViewModel.saveConfiguration()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,7 +85,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onPause() {
         disposables.clear()
-        viewModel.unregisterNsdService()
+        serverViewModel.unregisterNsdService()
         super.onPause()
     }
 
@@ -147,17 +148,17 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             rtcReceiverServiceBinder?.recreateCapturer(isFacingFront) { cameraSwapBtn.post { it.isEnabled = true } }
         }
         settingsIbtn.setOnClickListener {
-            viewModel.shouldDrawerBeOpen.postValue(true)
+            serverViewModel.shouldDrawerBeOpen.postValue(true)
         }
         logo.setOnClickListener { startVideoPreview() }
         message_video_disabled_energy_saver.setOnClickListener { startVideoPreview() }
-        viewModel.previewingVideo().observe(this, Observer { previewing ->
+        serverViewModel.previewingVideo().observe(this, Observer { previewing ->
             if (previewing == true)
                 startVideoPreview()
             else
                 stopVideoPreview()
         })
-        viewModel.timer().observe(this, Observer { secondsLeft ->
+        serverViewModel.timer().observe(this, Observer { secondsLeft ->
             timer.text = if (secondsLeft != null && secondsLeft < 60)
                 getString(
                     R.string.message_disabling_video_preview_soon,
@@ -170,7 +171,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private fun startVideoPreview() {
         rtcReceiverServiceBinder?.startRendering() ?: return
         video_preview_group.visibility = View.VISIBLE
-        viewModel.resetTimer()
+        serverViewModel.resetTimer()
     }
 
     private fun stopVideoPreview() {
@@ -179,7 +180,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun registerNsdService() {
-        viewModel.registerNsdService {
+        serverViewModel.registerNsdService {
             showSnackbarMessage(R.string.nsd_service_registration_failed)
         }
     }
@@ -269,19 +270,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
         when (key) {
             RtcCall.PUSH_NOTIFICATIONS_KEY ->
-                receiveFirebaseTokenUseCase.get().receiveToken(
-                    ws.remoteSocketAddress.address.hostAddress,
-                    value
-                )
-                    .subscribeBy(
-                        onComplete = {
-                            Timber.d("Firebase token saved for address ${ws.remoteSocketAddress.address.hostAddress}.")
-                        },
-                        onError = { error ->
-                            Timber.w(error, "Couldn't save Firebase token.")
-                        }
-                    )
-                    .addTo(disposables)
+               viewModel.receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
             else ->
                 Timber.w("Unhandled web socket action: '$key', '$value'.")
         }
