@@ -21,6 +21,7 @@ import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
@@ -32,15 +33,20 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
+import org.java_websocket.WebSocket
 import timber.log.Timber
 import javax.inject.Inject
+
 
 class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override val layoutResource = R.layout.fragment_child_monitor
 
-    private val viewModel by lazy {
+    private val serverViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
+    }
+    private val viewModel by lazy {
+        ViewModelProviders.of(requireActivity(), factory).get(ChildMonitorViewModel::class.java)
     }
 
     @Inject
@@ -53,7 +59,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.saveConfiguration()
+        serverViewModel.saveConfiguration()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,7 +85,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onPause() {
         disposables.clear()
-        viewModel.unregisterNsdService()
+        serverViewModel.unregisterNsdService()
         super.onPause()
     }
 
@@ -142,17 +148,17 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             rtcReceiverServiceBinder?.recreateCapturer(isFacingFront) { cameraSwapBtn.post { it.isEnabled = true } }
         }
         settingsIbtn.setOnClickListener {
-            viewModel.shouldDrawerBeOpen.postValue(true)
+            serverViewModel.shouldDrawerBeOpen.postValue(true)
         }
         logo.setOnClickListener { startVideoPreview() }
         message_video_disabled_energy_saver.setOnClickListener { startVideoPreview() }
-        viewModel.previewingVideo().observe(this, Observer { previewing ->
+        serverViewModel.previewingVideo().observe(this, Observer { previewing ->
             if (previewing == true)
                 startVideoPreview()
             else
                 stopVideoPreview()
         })
-        viewModel.timer().observe(this, Observer { secondsLeft ->
+        serverViewModel.timer().observe(this, Observer { secondsLeft ->
             timer.text = if (secondsLeft != null && secondsLeft < 60)
                 getString(
                     R.string.message_disabling_video_preview_soon,
@@ -165,7 +171,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private fun startVideoPreview() {
         rtcReceiverServiceBinder?.startRendering() ?: return
         video_preview_group.visibility = View.VISIBLE
-        viewModel.resetTimer()
+        serverViewModel.resetTimer()
     }
 
     private fun stopVideoPreview() {
@@ -174,7 +180,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun registerNsdService() {
-        viewModel.registerNsdService {
+        serverViewModel.registerNsdService {
             showSnackbarMessage(R.string.nsd_service_registration_failed)
         }
     }
@@ -238,6 +244,15 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         binder.messages()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { (ws, msg) ->
+                msg.action()?.let { (key, value) ->
+                    handleWebSocketAction(ws, key, value)
+                }
+            }
+            .addTo(disposables)
+        binder.messages()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .flatMapMaybe { (_, msg) ->
                 msg.babyName?.let { Maybe.just(it) } ?: Maybe.empty()
             }
@@ -250,6 +265,15 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                         View.VISIBLE
             }
             .addTo(disposables)
+    }
+
+    private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
+        when (key) {
+            RtcCall.PUSH_NOTIFICATIONS_KEY ->
+               viewModel.receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
+            else ->
+                Timber.w("Unhandled web socket action: '$key', '$value'.")
+        }
     }
 
     companion object {

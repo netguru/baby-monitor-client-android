@@ -55,6 +55,14 @@
         <service android:name=".feature.communication.websocket.ClientHandlerService" />
         <service android:name=".feature.communication.webrtc.WebRtcService" />
         <service android:name=".feature.communication.websocket.WebSocketServerService" />
+        <service
+            android:name=".feature.babycrynotification.BabyMonitorMessagingService"
+            android:exported="false"
+            >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"

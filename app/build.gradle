@@ -13,8 +13,9 @@ apply from: '../buildsystem/sonarqube.gradle'
 ext {
 
     secrets = [
-            hockeyAppIdPreProd: keyProperty("HOCKEY_APP_ID_PREPROD"),
-            hockeyAppIdProduction: keyProperty("HOCKEY_APP_ID_PRODUCTION")
+            firebaseCloudMessagingServerKey: keyProperty("FIREBASE_CLOUD_MESSAGING_SERVER_KEY"),
+            hockeyAppIdPreProd             : keyProperty("HOCKEY_APP_ID_PREPROD"),
+            hockeyAppIdProduction          : keyProperty("HOCKEY_APP_ID_PRODUCTION")
     ]
 }
 
@@ -67,6 +68,11 @@ android {
             manifestPlaceholders = [HOCKEY_APP_ID: secrets.hockeyAppIdProduction]
         }
     }
+
+    buildTypes.each { type ->
+        type.buildConfigField 'String', 'FIREBASE_CLOUD_MESSAGING_SERVER_KEY', "\"$secrets.firebaseCloudMessagingServerKey\""
+    }
+
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
         testLogging {
@@ -105,6 +111,10 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -233,6 +243,10 @@ dependencies {
 
     //Firebase Database
     implementation libs.firebaseDatabase
+
+    implementation libs.firebaseMessaging
+
+    implementation libs.okHttp
 
     //Unit testing
     testImplementation test.junit

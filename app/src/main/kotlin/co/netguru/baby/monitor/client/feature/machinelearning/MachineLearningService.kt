@@ -10,12 +10,15 @@ import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
+import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.random.Random
 
 class MachineLearningService : IntentService("MachineLearningService") {
@@ -25,13 +28,21 @@ class MachineLearningService : IntentService("MachineLearningService") {
     private val machineLearning by lazy { MachineLearning(applicationContext) }
     private var onCryingBabyDetected: () -> Unit = {}
 
+    @Inject
+    internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
+
     override fun onCreate() {
+        AndroidInjection.inject(this)
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationHandler.createNotificationChannel(applicationContext)
         }
         startForeground(Random.nextInt(), createNotification())
         startRecording()
+        notifyBabyCryingUseCase.subscribe(
+            title = getString(R.string.notification_baby_is_crying_title),
+            text = getString(R.string.notification_baby_is_crying_content)
+        )
     }
 
     override fun onBind(intent: Intent?) = MachineLearningBinder()
@@ -86,7 +97,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
-            onCryingBabyDetected()
+            notifyBabyCryingUseCase.notifyBabyCrying()
             saveDataToFile(rawData)
         }
     }

@@ -6,6 +6,7 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
+import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
@@ -150,6 +151,7 @@ class ClientsHandler(
                     .subscribeBy(
                             onComplete = {
                                 Timber.i("Complete")
+                                sendFirebaseToken()
                             },
                             onError = {
                                 Timber.e("connection error: $it")
@@ -158,6 +160,24 @@ class ClientsHandler(
                     ).addTo(compositeDisposable)
         }
         return webSocketClient
+    }
+
+    private fun sendFirebaseToken() {
+        Timber.d("sendFirebaseToken()")
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+            Timber.d("Sending Firebase token completed!")
+            if (!task.isSuccessful || task.result == null) {
+                Timber.w("Couldn't get Firebase token.")
+                return@addOnCompleteListener
+            }
+
+            val token = task.result?.token
+
+            webSocketClient?.sendMessage(JSONObject().apply {
+                put(RtcCall.WEB_SOCKET_ACTION_KEY, RtcCall.PUSH_NOTIFICATIONS_KEY)
+                put("value", token)
+            }.toString())
+        }
     }
 
     interface ConnectionListener {

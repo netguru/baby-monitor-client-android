@@ -4,6 +4,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
+import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -17,7 +18,10 @@ internal abstract class ServiceBindingsModule {
     internal abstract fun WebRtcReceiverServiceInjector(): WebRtcReceiverService
 
     @ContributesAndroidInjector
-    internal abstract fun WebRtcService(): WebRtcService
+    internal abstract fun bindMachineLearningService(): MachineLearningService
+
+    @ContributesAndroidInjector
+    internal abstract fun bindWebRtcService(): WebRtcService
 
     @ContributesAndroidInjector
     internal abstract fun bindWebSocketServerService(): WebSocketServerService

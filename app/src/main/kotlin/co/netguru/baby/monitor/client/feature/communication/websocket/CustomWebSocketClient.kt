@@ -81,7 +81,7 @@ class CustomWebSocketClient(
     }
 
     fun connectClient() = Completable.fromAction {
-        connect()
+        connectBlocking()
     }
 
     fun onDestroy() {

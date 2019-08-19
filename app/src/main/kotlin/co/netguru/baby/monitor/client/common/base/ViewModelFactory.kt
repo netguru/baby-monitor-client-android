@@ -7,6 +7,7 @@ import co.netguru.baby.monitor.client.feature.client.configuration.Configuration
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragmentViewModel
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabiesViewModel
+import co.netguru.baby.monitor.client.feature.server.ChildMonitorViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import co.netguru.baby.monitor.client.feature.settings.SettingsViewModel
 import co.netguru.baby.monitor.client.feature.splash.SplashViewModel
@@ -72,6 +73,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SettingsViewModel::class)
     abstract fun bindSettingsViewModel(settingsViewModel: SettingsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChildMonitorViewModel::class)
+    internal abstract fun bindChildMonitorViewModel(childMonitorViewModel: ChildMonitorViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
