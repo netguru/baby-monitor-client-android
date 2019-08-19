@@ -82,7 +82,7 @@ class ClientDashboardFragment : BaseDaggerFragment() {
         clientConnectionStatusTv.text = getString(R.string.monitoring_enabled)
         clientConnectionStatusPv.start()
         clientHomeLiveCameraIbtn.setOnClickListener {
-            findNavController().navigate(R.id.actionDashboardToLiveCam)
+            findNavController().navigate(R.id.clientLiveCamera)
         }
     }
 
