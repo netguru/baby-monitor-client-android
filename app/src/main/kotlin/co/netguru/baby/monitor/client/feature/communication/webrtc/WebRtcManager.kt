@@ -47,15 +47,16 @@ class WebRtcManager constructor(
     fun beginCapturing(context: Context) {
         Timber.d("beginCapturing()")
 
-        Logging.enableLogToDebugOutput(Logging.Severity.LS_VERBOSE)
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(context)
                 .setEnableInternalTracer(false)
                 .createInitializationOptions()
         )
-        peerConnectionFactory = PeerConnectionFactory(PeerConnectionFactory.Options()).apply {
-            setVideoHwAccelerationOptions(sharedContext, sharedContext)
-        }
+        peerConnectionFactory = PeerConnectionFactory.builder()
+            .createPeerConnectionFactory()
+            .apply {
+                setVideoHwAccelerationOptions(sharedContext, sharedContext)
+            }
         videoCapturer = createCameraCapturer(Camera2Enumerator(context))
         videoSource = peerConnectionFactory.createVideoSource(videoCapturer)
         videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
