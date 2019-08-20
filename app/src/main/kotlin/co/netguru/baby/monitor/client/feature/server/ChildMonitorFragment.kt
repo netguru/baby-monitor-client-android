@@ -18,19 +18,15 @@ import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
-import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService.WebRtcReceiverBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
-import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import org.java_websocket.WebSocket
@@ -51,7 +47,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
-    private var rtcReceiverServiceBinder: WebRtcReceiverBinder? = null
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var isNightModeEnabled = false
     private var isFacingFront = false
@@ -79,7 +74,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
         } else {
             bindServices()
-            rtcReceiverServiceBinder?.startCapturer()
         }
     }
 
@@ -97,7 +91,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onDestroy() {
         disposables.clear()
         requireContext().unbindService(this)
-        rtcReceiverServiceBinder?.cleanup()
         machineLearningServiceBinder?.cleanup()
         super.onDestroy()
     }
@@ -124,9 +117,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
                 machineLearningServiceBinder = service
-                service.setOnCryingBabyDetectedListener {
-                    rtcReceiverServiceBinder?.handleBabyCrying()
-                }
             }
         }
     }
@@ -145,7 +135,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         cameraSwapBtn.setOnClickListener {
             cameraSwapBtn.isEnabled = false
             isFacingFront = !isFacingFront
-            rtcReceiverServiceBinder?.recreateCapturer(isFacingFront) { cameraSwapBtn.post { it.isEnabled = true } }
         }
         settingsIbtn.setOnClickListener {
             serverViewModel.shouldDrawerBeOpen.postValue(true)
@@ -169,39 +158,20 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun startVideoPreview() {
-        rtcReceiverServiceBinder?.startRendering() ?: return
         video_preview_group.visibility = View.VISIBLE
         serverViewModel.resetTimer()
+        surfaceView.disableFpsReduction()
     }
 
     private fun stopVideoPreview() {
-        rtcReceiverServiceBinder?.stopRendering()
         video_preview_group.visibility = View.GONE
+        surfaceView.pauseVideo()
     }
 
     private fun registerNsdService() {
         serverViewModel.registerNsdService {
             showSnackbarMessage(R.string.nsd_service_registration_failed)
         }
-    }
-
-    private fun handleCallStateChange(state: CallState) {
-        when (state) {
-            CallState.ENDED -> {
-                rtcReceiverServiceBinder?.let(this::endCall)
-            }
-        }
-    }
-
-    private fun endCall(binder: WebRtcReceiverBinder) {
-        binder.hangUpReceiver()
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = {
-                            machineLearningServiceBinder?.startRecording()
-                        },
-                        onError = Timber::e
-                )
     }
 
     private fun bindServices() {
@@ -248,21 +218,14 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 msg.action()?.let { (key, value) ->
                     handleWebSocketAction(ws, key, value)
                 }
-            }
-            .addTo(disposables)
-        binder.messages()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMapMaybe { (_, msg) ->
-                msg.babyName?.let { Maybe.just(it) } ?: Maybe.empty()
-            }
-            .subscribe { name ->
-                baby_name.text = name
-                baby_name.visibility =
-                    if (name.isBlank())
-                        View.GONE
-                    else
-                        View.VISIBLE
+                msg.babyName?.let { name ->
+                    baby_name.text = name
+                    baby_name.visibility =
+                        if (name.isBlank())
+                            View.GONE
+                        else
+                            View.VISIBLE
+                }
             }
             .addTo(disposables)
     }

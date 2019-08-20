@@ -26,7 +26,6 @@ class MachineLearningService : IntentService("MachineLearningService") {
     private val compositeDisposable = CompositeDisposable()
     private var aacRecorder: AacRecorder? = null
     private val machineLearning by lazy { MachineLearning(applicationContext) }
-    private var onCryingBabyDetected: () -> Unit = {}
 
     @Inject
     internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
@@ -124,10 +123,6 @@ class MachineLearningService : IntentService("MachineLearningService") {
     }
 
     inner class MachineLearningBinder : Binder() {
-        fun setOnCryingBabyDetectedListener(listener: () -> Unit) {
-            onCryingBabyDetected = listener
-        }
-
         fun startRecording() {
             this@MachineLearningService.startRecording()
         }
@@ -139,7 +134,6 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
         fun cleanup() {
             compositeDisposable.dispose()
-            onCryingBabyDetected = {}
             aacRecorder?.release()
             aacRecorder = null
         }

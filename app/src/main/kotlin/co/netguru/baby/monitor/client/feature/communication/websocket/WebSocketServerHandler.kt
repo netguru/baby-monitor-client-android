@@ -2,7 +2,7 @@ package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import android.arch.lifecycle.MutableLiveData
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
-import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
+import co.netguru.baby.monitor.client.feature.communication.SERVER_PORT
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -28,7 +28,7 @@ class WebSocketServerHandler(
         if (server != null) return
 
         compositeDisposable.clear()
-        server = CustomWebSocketServer(WebRtcReceiverService.SERVER_PORT,
+        server = CustomWebSocketServer(SERVER_PORT,
                 onMessageReceived = { webSocket, message -> handleMessage(webSocket, message) }
         ).apply {
             startServer().subscribeOn(Schedulers.io())

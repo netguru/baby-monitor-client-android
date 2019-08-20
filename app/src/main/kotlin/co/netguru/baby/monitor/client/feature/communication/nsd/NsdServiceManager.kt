@@ -4,7 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import co.netguru.baby.monitor.client.data.communication.nsd.DiscoveryStatus
-import co.netguru.baby.monitor.client.feature.communication.webrtc.receiver.WebRtcReceiverService
+import co.netguru.baby.monitor.client.feature.communication.SERVER_PORT
 import dagger.Reusable
 import timber.log.Timber
 import javax.inject.Inject
@@ -75,7 +75,7 @@ class NsdServiceManager @Inject constructor(
         val serviceInfo = NsdServiceInfo().apply {
             serviceName = SERVICE_NAME
             serviceType = SERVICE_TYPE
-            port = WebRtcReceiverService.SERVER_PORT
+            port = SERVER_PORT
         }
         onServiceConnectedListener = listener
         nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdServiceListener)
