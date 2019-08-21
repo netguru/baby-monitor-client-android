@@ -55,11 +55,10 @@ captures/
 !/.idea/fileTemplates/
 !/.idea/inspectionProfiles/
 !/.idea/scopes/
-!/.idea/codeStyleSettings.xml
+!/.idea/codeStyles
 /.idea/encodings.xml
 !/.idea/copyright/
 !/.idea/compiler.xml
-/.idea/codeStyles
 
 # Project files backups generated on failures
 projectFilesBackup*/
