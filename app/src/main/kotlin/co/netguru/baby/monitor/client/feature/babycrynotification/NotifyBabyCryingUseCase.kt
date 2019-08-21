@@ -32,7 +32,7 @@ class NotifyBabyCryingUseCase @Inject constructor(
                     )
                     .post(JSONObject().apply {
                         put("to", to)
-                        put("notification", JSONObject().apply {
+                        put("data", JSONObject().apply {
                             put("title", title)
                             put("text", text)
                         })

@@ -12,17 +12,22 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Timber.i("Received a message: $message.")
-        message.notification?.let(::handleRemoteNotification)
+        message.data?.let(::handleRemoteNotification)
     }
 
-    private fun handleRemoteNotification(remoteNotification: RemoteMessage.Notification) {
-        val title = remoteNotification.title.orEmpty()
-        val body = remoteNotification.body.orEmpty()
+    private fun handleRemoteNotification(remoteNotification: Map<String, String>) {
+        val title = remoteNotification[NOTIFICATION_TITLE_KEY].orEmpty()
+        val body = remoteNotification[NOTIFICATION_CONTENT_KEY].orEmpty()
 
         NotificationHandler.createNotificationChannel(this)
         NotificationManagerCompat.from(this).notify(
             0,
             notificationHandler.createNotification(title = title, content = body)
         )
+    }
+
+    companion object {
+        const val NOTIFICATION_TITLE_KEY = "title"
+        const val NOTIFICATION_CONTENT_KEY = "text"
     }
 }

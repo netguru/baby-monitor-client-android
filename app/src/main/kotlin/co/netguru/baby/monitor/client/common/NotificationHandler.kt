@@ -34,9 +34,8 @@ class NotificationHandler(private val context: Context) {
         val resultIntent = Intent(context, ClientHomeActivity::class.java).singleTop()
         val resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-
         val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            R.drawable.logo else R.mipmap.ic_launcher
+            R.drawable.white_logo else R.mipmap.ic_launcher
 
         return NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
                 .setSmallIcon(drawableResId)
