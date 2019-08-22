@@ -48,6 +48,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
     private var machineLearningServiceBinder: MachineLearningBinder? = null
+    private var webRtcServiceBinder: WebRtcService.Binder? = null
     private var isNightModeEnabled = false
     private var isFacingFront = false
     private val disposables = CompositeDisposable()
@@ -60,6 +61,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
+        webRtcServiceBinder?.addSurfaceView(surfaceView)
     }
 
     override fun onStart() {
@@ -86,6 +88,11 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onStop() {
         stopVideoPreview()
         super.onStop()
+    }
+
+    override fun onDestroyView() {
+        surfaceView.release()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -197,6 +204,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun handleWebRtcBinder(service: WebRtcService.Binder) {
         Timber.d("handleWebRtcBinder($service)")
+        webRtcServiceBinder = service
         service.addSurfaceView(surfaceView)
     }
 
