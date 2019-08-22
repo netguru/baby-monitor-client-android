@@ -21,8 +21,8 @@ class NotificationHandler(private val context: Context) {
         createNotificationChannel(context)
 
         val notification = createNotification(
-                context.getString(R.string.notification_baby_is_crying_title),
-                context.getString(R.string.notification_baby_is_crying_content)
+            context.getString(R.string.notification_baby_is_crying_title),
+            context.getString(R.string.notification_baby_is_crying_content)
         )
 
         with(NotificationManagerCompat.from(context)) {
@@ -30,16 +30,17 @@ class NotificationHandler(private val context: Context) {
         }
     }
 
-    fun createNotification(title: String, content: String): Notification {
+    fun createNotification(title: String, content: String, iconResId: Int? = null): Notification {
         val resultIntent = Intent(context, ClientHomeActivity::class.java).singleTop()
         val resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val notificationBuilder =
+            NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
 
+        iconResId?.let { icon ->
+            notificationBuilder.setSmallIcon(icon)
+        }
 
-        val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            R.drawable.logo else R.mipmap.ic_launcher
-
-        return NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
-                .setSmallIcon(drawableResId)
+        return notificationBuilder
                 .setContentTitle(title)
                 .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
