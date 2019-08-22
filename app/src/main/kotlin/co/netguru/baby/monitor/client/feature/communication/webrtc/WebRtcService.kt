@@ -62,6 +62,7 @@ class WebRtcService : Service() {
     }
 
     override fun onDestroy() {
+        unbindService(serviceConnection)
         disposables.clear()
         super.onDestroy()
     }

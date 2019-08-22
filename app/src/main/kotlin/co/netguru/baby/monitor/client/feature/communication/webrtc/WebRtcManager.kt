@@ -2,7 +2,6 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc
 
 import android.content.Context
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import org.webrtc.*
 import timber.log.Timber
@@ -21,16 +20,8 @@ class WebRtcManager constructor(
 
     private lateinit var peerConnection: PeerConnection
 
-    private val sharedContext by lazy { EglBase.create().eglBaseContext }
-
-    private val mediaConstraints = MediaConstraints().apply {
-        mandatory.addAll(
-            arrayOf(
-                MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"),
-                MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
-            )
-        )
-    }
+    private val eglBase: EglBase by lazy { EglBase.create() }
+    private val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
 
     private fun createCameraCapturer(cameraEnumerator: CameraEnumerator) =
         cameraEnumerator.deviceNames.asSequence()
@@ -66,18 +57,7 @@ class WebRtcManager constructor(
 
         peerConnection = peerConnectionFactory.createPeerConnection(
             emptyList(),
-            mediaConstraints,
-            object : DefaultObserver() {
-                override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
-                    Timber.d("onIceGatheringChange($iceGatheringState)")
-                    if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE)
-                        transferAnswer()
-                }
-
-                override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
-                    Timber.d("onIceConnectionChange($iceConnectionState)")
-                }
-            }
+            DefaultObserver()
         )
 
         val stream = peerConnectionFactory.createLocalMediaStream("stream")
@@ -88,50 +68,33 @@ class WebRtcManager constructor(
 
     fun stopCapturing() {
         Timber.d("stopCapturing()")
-        videoCapturer.stopCapture()
-        audioTrack.dispose()
         audioSource.dispose()
-        videoTrack.dispose()
         videoSource.dispose()
         videoCapturer.dispose()
         peerConnection.dispose()
+        peerConnectionFactory.dispose()
     }
 
     fun acceptOffer(offer: String) {
         Timber.i("acceptOffer($offer)")
-        peerConnection.setRemoteDescription(DefaultSdpObserver(
-            onSetSuccess = {
-                answer()
-            }
-        ), SessionDescription(SessionDescription.Type.OFFER, offer))
-    }
-
-    private fun answer() {
-        Timber.i("answer()")
-        peerConnection.createAnswer(DefaultSdpObserver(
-            onCreateSuccess = { sessionDescription ->
-                Timber.d("Successfully created answer.")
-                peerConnection.setLocalDescription(
-                    DefaultSdpObserver(),
-                    sessionDescription
+        peerConnection
+            .setRemoteDescription(SessionDescription(SessionDescription.Type.OFFER, offer))
+            .doOnComplete { Timber.d("Offer set as a remote description.") }
+            .andThen(peerConnection.createAnswer())
+            .doOnSuccess { Timber.d("Answer created.") }
+            .flatMapCompletable { answer: SessionDescription ->
+                sendMessage(
+                    Message(
+                        sdpAnswer = Message.SdpData(
+                            sdp = answer.description,
+                            type = answer.type.canonicalForm()
+                        )
+                    )
                 )
-            },
-            onCreateFailure = { error ->
-                Timber.w("Creating answer failed.")
+                peerConnection.setLocalDescription(answer)
             }
-        ), mediaConstraints)
-    }
-
-    private fun transferAnswer() {
-        Timber.i("Transferring answer.")
-        sendMessage(
-            Message(
-                sdpAnswer = Message.SdpData(
-                    sdp = peerConnection.localDescription?.description,
-                    type = peerConnection.localDescription?.type?.canonicalForm()
-                )
-            )
-        )
+            .doOnComplete { Timber.d("Answer set as a local description.") }
+            .subscribe()
     }
 
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
