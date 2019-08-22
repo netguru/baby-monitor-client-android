@@ -57,15 +57,7 @@ class WebRtcManager constructor(
 
         peerConnection = peerConnectionFactory.createPeerConnection(
             emptyList(),
-            object : DefaultObserver() {
-                override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
-                    Timber.d("onIceGatheringChange($iceGatheringState)")
-                }
-
-                override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
-                    Timber.d("onIceConnectionChange($iceConnectionState)")
-                }
-            }
+            DefaultObserver()
         )
 
         val stream = peerConnectionFactory.createLocalMediaStream("stream")
@@ -76,9 +68,7 @@ class WebRtcManager constructor(
 
     fun stopCapturing() {
         Timber.d("stopCapturing()")
-        audioTrack.dispose()
         audioSource.dispose()
-        videoTrack.dispose()
         videoSource.dispose()
         videoCapturer.dispose()
         peerConnection.dispose()
