@@ -66,5 +66,10 @@
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"
             android:value="${HOCKEY_APP_ID}" />
+
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/white_logo"
+                />
     </application>
 </manifest>
