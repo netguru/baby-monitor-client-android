@@ -108,7 +108,7 @@ class RtcClient(
                     if (state == CallState.CONNECTED) {
                         connection?.close()
                     }
-                    state = CallState.CONNECTED
+                    reportStateChange(CallState.CONNECTED)
                     handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
                 }
             }
