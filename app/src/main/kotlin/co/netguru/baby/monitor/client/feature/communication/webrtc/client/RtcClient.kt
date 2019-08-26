@@ -1,14 +1,17 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 
 import android.content.Context
-import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
+import co.netguru.baby.monitor.client.feature.communication.webrtc.createPeerConnection
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.json.JSONObject
 import org.webrtc.DataChannel
 import org.webrtc.MediaConstraints
@@ -26,60 +29,64 @@ class RtcClient(
         commSocket = client
     }
 
-    private val defaultObserver = object : DefaultObserver() {
-        override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
-            if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
-                onIceGatheringComplete()
-                reportStateChange(CallState.CONNECTING)
-            }
-        }
-
-        override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
-            Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
-        }
-
-        override fun onAddStream(mediaStream: MediaStream) {
-            mediaStream.let(::handleMediaStream)
-        }
-
-        override fun onDataChannel(dataChannel: DataChannel?) {
-            this@RtcClient.dataChannel = dataChannel
-            dataChannel?.registerObserver(dataChannelObserver)
-        }
-    }
-
     internal fun startCall(
         context: Context,
-        listener: (state: CallState) -> Unit
+        callStateListener: (state: CallState) -> Unit,
+        streamStateListener: (streamState: StreamState) -> Unit
     ) = Completable.fromAction {
         initRtc(context)
-        this.listener = listener
+        this.callStateListener = callStateListener
+        this.streamStateListener = streamStateListener
         Timber.i("starting call to ${(commSocket as CustomWebSocketClient?)?.address}")
         createConnection()
     }
 
     private fun createConnection() {
-        connection =
-            factory?.createPeerConnection(emptyList(), constraints, defaultObserver)
+        val conState = factory?.createPeerConnection(
+            constraints,
+            this::handleMediaStream,
+            this::handleDataChannel
+        )
+        conState?.first?.subscribe { peerConnection ->
+            handleCreatedConnection(peerConnection)
+        }
+
+        conState?.second
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe { streamState ->
+                when (streamState) {
+                    is ConnectionState -> Unit
+                    is GatheringState -> {
+                        if (streamState.gatheringState == PeerConnection.IceGatheringState.COMPLETE) {
+                            onIceGatheringComplete()
+                        }
+                    }
+                }
+                reportStreamStateChange(streamState)
+            }
+    }
+
+    private fun handleCreatedConnection(peerConnection: PeerConnection) {
+        connection = peerConnection
         Timber.i("PeerConnection created")
         dataChannel = connection?.createDataChannel("data", DataChannel.Init())
         dataChannel?.registerObserver(dataChannelObserver)
         connection?.createOffer(
-                DefaultSdpObserver(
-                        onCreateSuccess = { sessionDescription ->
-                            connection?.setLocalDescription(
-                                    DefaultSdpObserver(),
-                                    sessionDescription
-                            )
-                        },
-                        onCreateFailure = {
-                            Timber.d("sdb observer create failure")
-                        },
-                        onSetFailure = {
-                            Timber.d("sdb set failure: $it")
-                        }
-                ),
-                constraints
+            DefaultSdpObserver(
+                onCreateSuccess = { sessionDescription ->
+                    connection?.setLocalDescription(
+                        DefaultSdpObserver(),
+                        sessionDescription
+                    )
+                },
+                onCreateFailure = {
+                    Timber.d("sdb observer create failure")
+                },
+                onSetFailure = {
+                    Timber.d("sdb set failure: $it")
+                }
+            ),
+            constraints
         )
     }
 
