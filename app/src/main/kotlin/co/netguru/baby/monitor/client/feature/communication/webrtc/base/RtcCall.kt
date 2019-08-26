@@ -124,6 +124,11 @@ abstract class RtcCall {
         }
     }
 
+    protected fun handleDataChannel(dataChannel: DataChannel?) {
+        this.dataChannel = dataChannel
+        dataChannel?.registerObserver(dataChannelObserver)
+    }
+
     protected fun createVideoTrack(isFacingFront: Boolean = false): VideoTrack? {
         capturer = createCapturer(isFacingFront)
         videoSource = factory?.createVideoSource(capturer)

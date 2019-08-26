@@ -11,7 +11,6 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 

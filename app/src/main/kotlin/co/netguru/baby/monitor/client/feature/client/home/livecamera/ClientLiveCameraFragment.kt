@@ -99,6 +99,9 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun handleStateChange(state: CallState) {
+        if (state == CallState.CONNECTED) {
+            streamProgressBar.visibility = View.GONE
+        }
         Timber.i(state.toString())
     }
 
