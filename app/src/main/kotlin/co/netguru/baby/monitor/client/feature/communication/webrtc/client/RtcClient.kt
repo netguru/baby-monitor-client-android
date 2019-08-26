@@ -55,17 +55,14 @@ class RtcClient(
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe { streamState ->
                 when (streamState) {
-                    is ConnectionState -> {
-
-                        reportStreamStateChange(streamState)
-                    }
+                    is ConnectionState -> Unit
                     is GatheringState -> {
                         if (streamState.gatheringState == PeerConnection.IceGatheringState.COMPLETE) {
                             onIceGatheringComplete()
                         }
-                        reportStreamStateChange(streamState)
                     }
                 }
+                reportStreamStateChange(streamState)
             }
     }
 
