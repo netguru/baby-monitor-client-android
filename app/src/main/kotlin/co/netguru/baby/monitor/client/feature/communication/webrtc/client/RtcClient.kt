@@ -3,6 +3,8 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 import android.content.Context
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
+import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.createPeerConnection
@@ -29,10 +31,12 @@ class RtcClient(
 
     internal fun startCall(
         context: Context,
-        listener: (state: CallState) -> Unit
+        callStateListener: (state: CallState) -> Unit,
+        streamStateListener: (streamState: StreamState) -> Unit
     ) = Completable.fromAction {
         initRtc(context)
-        this.listener = listener
+        this.callStateListener = callStateListener
+        this.streamStateListener = streamStateListener
         Timber.i("starting call to ${(commSocket as CustomWebSocketClient?)?.address}")
         createConnection()
     }
@@ -47,17 +51,22 @@ class RtcClient(
             handleCreatedConnection(peerConnection)
         }
 
-        conState?.second?.observeOn(AndroidSchedulers.mainThread())?.subscribe { streamState ->
-            when (streamState) {
-                StreamState.GATHERING_COMPLETE -> {
-                    onIceGatheringComplete()
-                    reportStateChange(CallState.CONNECTING)
-                }
-                StreamState.CONNECTED -> {
-                    reportStateChange(CallState.CONNECTED)
+        conState?.second
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe { streamState ->
+                when (streamState) {
+                    is ConnectionState -> {
+
+                        reportStreamStateChange(streamState)
+                    }
+                    is GatheringState -> {
+                        if (streamState.gatheringState == PeerConnection.IceGatheringState.COMPLETE) {
+                            onIceGatheringComplete()
+                        }
+                        reportStreamStateChange(streamState)
+                    }
                 }
             }
-        }
     }
 
     private fun handleCreatedConnection(peerConnection: PeerConnection) {

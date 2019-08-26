@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import io.reactivex.disposables.CompositeDisposable
@@ -28,15 +29,16 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(): ViewModel() {
     }
 
     fun startCall(
-            context: Context,
-            liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
-            client: CustomWebSocketClient,
-            listener: (state: CallState) -> Unit
+        context: Context,
+        liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
+        client: CustomWebSocketClient,
+        listener: (state: CallState) -> Unit,
+        streamStateListener: (streamState: StreamState) -> Unit
     ) {
         callInProgress.set(true)
         currentCall = RtcClient(client).apply {
 
-            startCall(context, listener)
+            startCall(context, listener, streamStateListener)
                     .subscribeOn(Schedulers.newThread())
                     .subscribeBy(
                             onComplete = {

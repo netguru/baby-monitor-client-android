@@ -18,9 +18,13 @@ import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
+import org.webrtc.PeerConnection
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -99,9 +103,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun handleStateChange(state: CallState) {
-        if (state == CallState.CONNECTED) {
-            streamProgressBar.visibility = View.GONE
-        }
         Timber.i(state.toString())
     }
 
@@ -128,8 +129,20 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
                     requireActivity().applicationContext,
                     liveCameraRemoteRenderer,
                     client,
-                    this@ClientLiveCameraFragment::handleStateChange
+                this@ClientLiveCameraFragment::handleStateChange,
+                this@ClientLiveCameraFragment::handleStreamStateChange
             )
+        }
+    }
+
+    private fun handleStreamStateChange(streamState: StreamState) {
+        when (streamState) {
+            is ConnectionState -> {
+                if (streamState.connectionState == PeerConnection.IceConnectionState.COMPLETED) {
+                    streamProgressBar.visibility = View.GONE
+                }
+            }
+            is GatheringState -> Unit
         }
     }
 

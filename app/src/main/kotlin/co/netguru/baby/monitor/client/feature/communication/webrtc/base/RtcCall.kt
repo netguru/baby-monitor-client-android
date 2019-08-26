@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,8 +36,10 @@ abstract class RtcCall {
 
     protected lateinit var constraints: MediaConstraints
 
-    protected var listener: (state: CallState) -> Unit = {}
+    protected var callStateListener: (state: CallState) -> Unit = {}
+    protected var streamStateListener: (streamState: StreamState) -> Unit = {}
     protected var state: CallState? = null
+    protected var streamState: StreamState? = null
     protected var commSocket: WebSocket? = null
 
     protected var factory: PeerConnectionFactory? = null
@@ -69,7 +72,7 @@ abstract class RtcCall {
             clearSocket: Boolean = true,
             disposeConnection: Boolean = false
     ) {
-        listener = {}
+        callStateListener = {}
         connection?.dispose()
 
         remoteView?.release()
@@ -103,7 +106,12 @@ abstract class RtcCall {
 
     protected fun reportStateChange(state: CallState) {
         this.state = state
-        listener(state)
+        callStateListener(state)
+    }
+
+    protected fun reportStreamStateChange(state: StreamState) {
+        this.streamState = state
+        streamStateListener(state)
     }
 
     protected fun handleMediaStream(mediaStream: MediaStream) {

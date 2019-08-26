@@ -3,8 +3,7 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import io.reactivex.subjects.SingleSubject
 import org.webrtc.*
 import timber.log.Timber
 
@@ -15,16 +14,12 @@ private class ConnectionObserver(
 ) : DefaultObserver() {
 
     override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
-        if (iceGatheringState == PeerConnection.IceGatheringState.COMPLETE) {
-            emitter.onNext(StreamState.GATHERING_COMPLETE)
-        }
+        emitter.onNext(GatheringState(iceGatheringState))
     }
 
     override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState?) {
         Timber.i("onIceConnectionChange ${iceConnectionState?.name}")
-        if (iceConnectionState == PeerConnection.IceConnectionState.CONNECTED) {
-            emitter.onNext(StreamState.CONNECTED)
-        }
+        emitter.onNext(ConnectionState(iceConnectionState))
     }
 
     override fun onAddStream(mediaStream: MediaStream) {
@@ -37,19 +32,15 @@ private class ConnectionObserver(
 
 }
 
-enum class StreamState {
-    GATHERING_COMPLETE, CONNECTED
-}
-
 fun PeerConnectionFactory.createPeerConnection(
     mediaConstraints: MediaConstraints,
     mediaStreamHandler: (MediaStream) -> Unit,
     dataChannelHandler: (DataChannel?) -> Unit
-): Pair<Subject<PeerConnection>, Observable<StreamState>> {
+): Pair<SingleSubject<PeerConnection>, Observable<StreamState>> {
 
-    val peerConnection: Subject<PeerConnection> = PublishSubject.create()
+    val peerConnection: SingleSubject<PeerConnection> = SingleSubject.create()
     val streamStateObservable: Observable<StreamState> = Observable.create {
-        peerConnection.onNext(
+        peerConnection.onSuccess(
             createPeerConnection(
                 emptyList(),
                 mediaConstraints,
