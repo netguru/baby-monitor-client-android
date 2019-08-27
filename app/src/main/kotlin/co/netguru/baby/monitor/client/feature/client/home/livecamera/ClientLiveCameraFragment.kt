@@ -10,7 +10,6 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
@@ -63,7 +62,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
-        findNavController().popBackStack()
         viewModel.showBackButton(false)
         childServiceBinder?.enableNotification()
         childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
