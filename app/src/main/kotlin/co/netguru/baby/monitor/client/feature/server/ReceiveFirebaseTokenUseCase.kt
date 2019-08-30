@@ -12,7 +12,7 @@ class ReceiveFirebaseTokenUseCase @Inject constructor(private val dataRepository
             .flatMapSingle { clientEntityList ->
                 Single.just(clientEntityList
                     .firstOrNull { clientEntity ->
-                        clientEntity.address == ipAddress
+                        clientEntity.address == ipAddress || clientEntity.firebaseKey == token
                     }
                     ?: ClientEntity(
                         address = ipAddress,
