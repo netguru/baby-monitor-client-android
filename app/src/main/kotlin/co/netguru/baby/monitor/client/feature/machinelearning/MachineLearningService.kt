@@ -9,6 +9,7 @@ import android.support.annotation.UiThread
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import dagger.android.AndroidInjection
@@ -29,6 +30,8 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
     @Inject
     internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
+    @Inject
+    internal lateinit var sharedPrefsWrapper: FirebaseSharedPreferencesWrapper
 
     override fun onCreate() {
         AndroidInjection.inject(this)
@@ -97,7 +100,10 @@ class MachineLearningService : IntentService("MachineLearningService") {
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
             notifyBabyCryingUseCase.notifyBabyCrying()
-            saveDataToFile(rawData)
+
+            // Save baby recordings for later upload only when we have a strict user's permission
+            if (sharedPrefsWrapper.isUploadEnablad())
+                saveDataToFile(rawData)
         }
     }
 
