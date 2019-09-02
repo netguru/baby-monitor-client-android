@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Intent
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
+import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
@@ -12,18 +13,21 @@ import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
 class ConfigurationViewModel @Inject constructor(
-        private val nsdServiceManager: NsdServiceManager,
-        private val dataRepository: DataRepository,
-        private val firebaseRepository: FirebaseRepository
+    private val nsdServiceManager: NsdServiceManager,
+    private val notificationHandler: NotificationHandler,
+    private val dataRepository: DataRepository,
+    private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
     internal val appSavedState = MutableLiveData<AppState>()
@@ -62,7 +66,12 @@ class ConfigurationViewModel @Inject constructor(
     }
 
     internal fun clearData(activity: Activity) {
-        dataRepository.deleteAllData()
+        Completable.merge(
+            listOf(
+                dataRepository.deleteAllData(),
+                notificationHandler::clearNotifications.toCompletable()
+            )
+        )
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {

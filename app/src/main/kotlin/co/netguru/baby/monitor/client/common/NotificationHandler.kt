@@ -58,6 +58,10 @@ class NotificationHandler(private val context: Context) {
                 .setValue(message)
     }
 
+    fun clearNotifications() {
+        NotificationManagerCompat.from(context).cancelAll()
+    }
+
     companion object {
         const val NOTIFICAITON_ID = 1
         const val FIREBASE_NOTIFICATIONS_DB_PATH = "notifications"
