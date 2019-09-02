@@ -1,14 +1,12 @@
 package co.netguru.baby.monitor.client.data.communication
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import io.reactivex.Flowable
 
 @Dao
 interface ClientDataDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertClient(data: ClientEntity)
 
     @Insert
