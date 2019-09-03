@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
@@ -49,5 +50,7 @@ class ServerSettingsFragment : BaseDaggerFragment() {
         sendRecordingsSw.setOnCheckedChangeListener { buttonView, isChecked ->
             viewModel.setUploadEnabled(isChecked)
         }
+
+        version.text = getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
     }
 }

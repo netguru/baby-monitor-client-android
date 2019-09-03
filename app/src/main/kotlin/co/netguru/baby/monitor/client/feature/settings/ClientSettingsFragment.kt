@@ -6,10 +6,10 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.*
@@ -89,6 +89,8 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                         settingsViewModel.hideKeyboard(view, requireContext())
                     }
                 }
+
+        version.text = getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
     }
 
     private fun getPictureWithEasyPicker() {
