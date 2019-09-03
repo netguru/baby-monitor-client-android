@@ -90,7 +90,7 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                     }
                 }
 
-        version.text = getString(R.string.version, BuildConfig.VERSION_NAME)
+        version.text = getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
     }
 
     private fun getPictureWithEasyPicker() {

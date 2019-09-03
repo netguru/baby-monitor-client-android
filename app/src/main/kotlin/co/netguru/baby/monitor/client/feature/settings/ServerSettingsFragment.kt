@@ -51,6 +51,6 @@ class ServerSettingsFragment : BaseDaggerFragment() {
             viewModel.setUploadEnabled(isChecked)
         }
 
-        version.text = getString(R.string.version, BuildConfig.VERSION_NAME)
+        version.text = getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
     }
 }

@@ -112,5 +112,5 @@
     <string name="message_video_preview_disabled_tap_to_enable">Video preview disabled to conserve energy. Tap to enable it.</string>
     <string name="message_disabling_video_preview_soon">Disabling video preview in %s</string>
 
-    <string name="version">Version %s</string>
+    <string name="version">Version %s (%d)</string>
 </resources>
