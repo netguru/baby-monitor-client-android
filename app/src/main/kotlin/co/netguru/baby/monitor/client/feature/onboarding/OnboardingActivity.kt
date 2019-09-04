@@ -23,8 +23,7 @@ class OnboardingActivity : AppCompatActivity() {
                 || controller == R.id.permissionMicrophone
                 || controller == R.id.setupInformation) {
             findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.connectWiFi, false)
-        } else if (controller == R.id.configurationFailed
-                || controller == R.id.allDone) {
+        } else if (controller == R.id.allDone) {
             findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.secondAppInfo, false)
         } else {
             super.onBackPressed()
