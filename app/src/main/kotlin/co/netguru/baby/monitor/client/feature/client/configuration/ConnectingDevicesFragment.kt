@@ -12,11 +12,10 @@ import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import io.reactivex.Completable
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_connecting_devices.*
+import io.reactivex.rxkotlin.addTo
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -31,10 +30,26 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
         ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
     }
 
+    private val disposables = CompositeDisposable()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.discoverNsdService(this)
         viewModel.appSavedState.observe(this, Observer(this::handleAppState))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Single.timer(2, TimeUnit.MINUTES)
+            .subscribe { _ ->
+                findNavController().navigate(R.id.configurationFailed)
+            }
+            .addTo(disposables)
+    }
+
+    override fun onStop() {
+        disposables.clear()
+        super.onStop()
     }
 
     override fun onDestroy() {
