@@ -87,6 +87,9 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                 View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
                     if (!hasFocus) {
                         settingsViewModel.hideKeyboard(view, requireContext())
+                        if (childNameEt.text.isNullOrBlank()) {
+                            childNameEt.text?.clear()
+                        }
                     }
                 }
 
