@@ -19,6 +19,8 @@ import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
+import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
+import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
@@ -53,9 +55,13 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     private var isFacingFront = false
     private val disposables = CompositeDisposable()
 
+    @Inject
+    internal lateinit var lowBatteryReceiver: LowBatteryReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         serverViewModel.saveConfiguration()
+        lowBatteryReceiver.register(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,6 +105,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         disposables.clear()
         requireContext().unbindService(this)
         machineLearningServiceBinder?.cleanup()
+        requireContext().unregisterReceiver(lowBatteryReceiver)
         super.onDestroy()
     }
 
@@ -126,6 +133,13 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 machineLearningServiceBinder = service
             }
         }
+    }
+
+    fun handleLowBattery() {
+        viewModel.notifyLowBattery(
+            title = getString(R.string.notification_low_battery_title),
+            text = getString(R.string.notification_low_battery_text)
+        )
     }
 
     private fun setupView() {
