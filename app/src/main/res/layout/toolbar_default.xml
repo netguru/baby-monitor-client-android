@@ -24,7 +24,6 @@
         android:ellipsize="end"
         android:fontFamily="@font/rubik_medium"
         android:gravity="center"
-        android:maxLength="14"
         android:singleLine="true"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_normal"
