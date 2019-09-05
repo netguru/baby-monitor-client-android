@@ -71,6 +71,8 @@
     <string name="notification_foreground_content_title">Secure monitoring</string>
     <string name="notification_foreground_content_text">Keeping an eye on your baby</string>
 
+    <string name="notification_low_battery_channel_id" translatable="false">low_battery</string>
+    <string name="notification_low_battery_channel_description">Low battery</string>
     <string name="notification_low_battery_title">Low battery</string>
     <string name="notification_low_battery_text">Monitor device battery is low. Make sure to plug in a charger soon!</string>
 

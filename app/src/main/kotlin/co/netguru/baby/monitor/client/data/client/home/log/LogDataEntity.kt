@@ -3,14 +3,13 @@ package co.netguru.baby.monitor.client.data.client.home.log
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import org.threeten.bp.LocalDateTime
 
 @Entity(tableName = "LOG_DATA")
 data class LogDataEntity(
-        @ColumnInfo(name = "action") val action: String,
-        @ColumnInfo(name = "time_stamp") val timeStamp: String,
-        @ColumnInfo(name = "image") val address: String? = null
+    @ColumnInfo(name = "action") val action: String,
+    @ColumnInfo(name = "time_stamp") val timeStamp: String = LocalDateTime.now().toString(),
+    @ColumnInfo(name = "image") val address: String? = null
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null
