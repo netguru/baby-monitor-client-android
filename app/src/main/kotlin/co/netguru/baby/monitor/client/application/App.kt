@@ -18,12 +18,16 @@ class App : DaggerApplication() {
     @Inject
     lateinit var firebaseRepository: FirebaseRepository
 
+    @Inject
+    lateinit var buildTypeModule: BuildTypeModule
+
     override fun onCreate() {
         super.onCreate()
         debugMetricsHelper.init(this)
         RxJavaPlugins.setErrorHandler(rxJavaErrorHandler)
         AndroidThreeTen.init(this)
         firebaseRepository.initializeApp(this)
+        buildTypeModule.initialize(this)
     }
 
     override fun applicationInjector(): AndroidInjector<App> =
