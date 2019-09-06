@@ -2,9 +2,12 @@ package co.netguru.baby.monitor.client.feature.onboarding
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.text.HtmlCompat
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import kotlinx.android.synthetic.main.onboarding_buttons.*
@@ -24,6 +27,13 @@ class FeaturePresentationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.findViewById<TextView>(R.id.tos)?.apply {
+            text = HtmlCompat.fromHtml(
+                getString(R.string.tos_confirmation),
+                HtmlCompat.FROM_HTML_MODE_COMPACT
+            )
+            movementMethod = LinkMovementMethod.getInstance()
+        }
         featureNextBtn.setOnClickListener {
             handleNextClicked()
         }

@@ -79,6 +79,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/horizontalTop2TextCGl" />
 
+    <TextView
+        android:id="@+id/tos"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xxsmall"
+        android:gravity="center_horizontal"
+        android:textColorLink="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/horizontalBottom2TextCGl"
+        tools:text="@string/tos_confirmation"
+        />
+
     <android.support.constraint.Guideline
         android:id="@+id/horizontalBottom2TextCGl"
         android:layout_width="wrap_content"
