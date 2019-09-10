@@ -1,13 +1,15 @@
 package co.netguru.baby.monitor.client.application
 
+import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Room
+import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import android.net.nsd.NsdManager
-import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import com.google.gson.Gson
@@ -50,7 +52,14 @@ class ApplicationModule {
                     context,
                     AppDatabase::class.java,
                     "baby-monitor-database"
-            ).build()
+            )
+                .addMigrations(object : Migration(1, 2) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("DELETE FROM CLIENT_DATA")
+                        database.execSQL("CREATE UNIQUE INDEX index_client_data_firebase_key ON CLIENT_DATA(firebase_key)")
+                    }
+                })
+                .build()
 
     @Provides
     @Reusable

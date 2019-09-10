@@ -6,6 +6,7 @@ import dagger.Lazy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ class ChildMonitorViewModel @Inject constructor(
 
     fun receiveFirebaseToken(ipAddress: String, token: String) {
         receiveFirebaseTokenUseCase.get().receiveToken(ipAddress = ipAddress, token = token)
+            .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
                     Timber.d("Firebase token saved for address $ipAddress.")
