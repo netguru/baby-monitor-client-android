@@ -11,7 +11,6 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.getColor
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
@@ -67,14 +66,10 @@ class ClientDashboardFragment : BaseDaggerFragment() {
             }
         })
         viewModel.selectedChildAvailability.observe(this, Observer { connectionStatus ->
-            when (connectionStatus) {
-                ConnectionStatus.CONNECTED -> {
-                    showClientConnected()
-                }
-                else -> {
-                    showClientDisconnected()
-                }
-            }
+            if (connectionStatus == true)
+                showClientConnected()
+            else
+                showClientDisconnected()
         })
     }
 

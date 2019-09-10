@@ -16,14 +16,18 @@ import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
+import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import co.netguru.baby.monitor.client.feature.settings.DefaultDrawerObserver
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.toolbar_child.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import timber.log.Timber
+import java.net.URI
 import javax.inject.Inject
 
 class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
@@ -51,8 +55,8 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         compositeDisposable.dispose()
         childServiceBinder?.let {
             childServiceBinder?.stopService()
-            unbindService(this)
         }
+        unbindService(this)
     }
 
     override fun onSupportNavigateUp() =
@@ -63,15 +67,41 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        if (service is ClientHandlerService.ChildServiceBinder) {
-            childServiceBinder = service
-
-            service.getChildConnectionStatusLivedata().observe(this, Observer { childEvent ->
-                val data = childEvent ?: return@Observer
-                homeViewModel.selectedChildAvailabilityPostValue(data.second)
-            })
-            homeViewModel.selectedChildAvailabilityPostValue(service.getConnectionStatus())
+//        if (service is ClientHandlerService.ChildServiceBinder) {
+//            childServiceBinder = service
+//
+//            service.getChildConnectionStatusLivedata().observe(this, Observer { childEvent ->
+//                val data = childEvent ?: return@Observer
+//                homeViewModel.selectedChildAvailabilityPostValue(data.second)
+//            })
+//            homeViewModel.selectedChildAvailabilityPostValue(service.getConnectionStatus())
+//        }
+        if (service is WebSocketClientService.Binder) {
+            handleWebSocketClientServiceBinder(service)
         }
+    }
+
+    private fun handleWebSocketClientServiceBinder(binder: WebSocketClientService.Binder) {
+        homeViewModel.selectedChild.observe(this, Observer { child ->
+            if (child != null) {
+                Timber.i("Opening socket to ${child.address}.")
+                binder.events(URI.create(child.address))
+                    .subscribeBy(
+                        onNext = { event ->
+                            Timber.i("Consuming event: $event.")
+                            if (event is RxWebSocketClient.Event.Open) {
+                                homeViewModel.selectedChildAvailability.postValue(true)
+                            }
+                            if (event is RxWebSocketClient.Event.Close) {
+                                homeViewModel.selectedChildAvailability.postValue(false)
+                            }
+                        },
+                        onError = { error ->
+                            Timber.i("Websocket error: $error.")
+                        }
+                    )
+            }
+        })
     }
 
     private fun setupView() {
@@ -117,12 +147,13 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun bindService() {
-        startService(Intent(this, ClientHandlerService::class.java))
-        bindService(
-                Intent(this, ClientHandlerService::class.java),
-                this,
-                Service.BIND_AUTO_CREATE
-        )
+//        startService(Intent(this, ClientHandlerService::class.java))
+//        bindService(
+//                Intent(this, ClientHandlerService::class.java),
+//                this,
+//                Service.BIND_AUTO_CREATE
+//        )
+        bindService(Intent(this, WebSocketClientService::class.java), this, Service.BIND_AUTO_CREATE)
     }
 
     private fun setSelectedChildName(name: String) {

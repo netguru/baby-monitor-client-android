@@ -15,7 +15,6 @@ import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
@@ -47,7 +46,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.selectedChildAvailability.observe(this, Observer(this::onAvailabilityChange))
+        viewModel.selectedChildAvailability.observe(this, Observer { it?.let(::onAvailabilityChange) })
         viewModel.showBackButton(true)
     }
 
@@ -104,15 +103,14 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         Timber.i(state.toString())
     }
 
-    private fun onAvailabilityChange(connectionStatus: ConnectionStatus?) {
+    private fun onAvailabilityChange(connectionStatus: Boolean) {
         Timber.e("AvailabilityChange $connectionStatus")
-        when (connectionStatus) {
-            ConnectionStatus.CONNECTED -> if (!fragmentViewModel.callInProgress.get() || errorOccurs) {
+        if (connectionStatus) {
+            if (!fragmentViewModel.callInProgress.get() || errorOccurs) {
                 startCall()
             }
-            else -> {
-                Timber.i("connection status: $connectionStatus")
-            }
+        } else {
+            Timber.i("connection status: $connectionStatus")
         }
     }
 
