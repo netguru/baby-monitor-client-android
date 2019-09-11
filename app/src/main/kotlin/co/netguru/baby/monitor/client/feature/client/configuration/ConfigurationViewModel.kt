@@ -46,13 +46,9 @@ class ConfigurationViewModel @Inject constructor(
             port: Int
     ) {
         val address = "ws://$address:$port"
-        dataRepository.getChildDataWithAddress(address)
+        dataRepository.listChildren().firstOrError()
                 .flatMapCompletable { list ->
-                    if (list.isNullOrEmpty()) {
-                        dataRepository.addChildData(ChildDataEntity(address))
-                    } else {
-                        dataRepository.updateChildData(list[0].copy(address = address))
-                    }
+                    dataRepository.putChildData(list.firstOrNull() ?: ChildDataEntity(address))
                 }
                 .andThen(addParingEventToDataBase(address))
                 .andThen(dataRepository.getSavedState())

@@ -29,7 +29,7 @@ class SettingsViewModel @Inject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     fun updateChildName(name: String, data: ChildDataEntity) {
-        dataRepository.updateChildData(data.apply { this.name = name })
+        dataRepository.putChildData(data.apply { this.name = name })
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {
@@ -50,7 +50,7 @@ class SettingsViewModel @Inject constructor(
             }
             file
         }.flatMapCompletable {
-            dataRepository.updateChildData(child.apply { image = it.path })
+            dataRepository.putChildData(child.apply { image = it.path })
         }.subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {

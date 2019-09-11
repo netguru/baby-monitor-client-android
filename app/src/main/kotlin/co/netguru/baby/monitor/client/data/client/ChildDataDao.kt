@@ -11,6 +11,9 @@ interface ChildDataDao {
     @Query("SELECT * FROM CHILD_DATA")
     fun getAllChildren(): LiveData<List<ChildDataEntity>>
 
+    @Query("SELECT * FROM CHILD_DATA")
+    fun listChildren(): Flowable<List<ChildDataEntity>>
+
     @Query("SELECT * FROM CHILD_DATA LIMIT 1")
     fun getFirstChild(): Flowable<ChildDataEntity>
 
