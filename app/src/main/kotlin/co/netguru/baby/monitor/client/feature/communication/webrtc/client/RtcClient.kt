@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.Def
 import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import org.java_websocket.client.WebSocketClient
 import org.json.JSONObject
 import org.webrtc.DataChannel
 import org.webrtc.MediaConstraints
@@ -21,7 +22,7 @@ import timber.log.Timber
 import java.nio.charset.Charset
 
 class RtcClient(
-    client: CustomWebSocketClient,
+    client: WebSocketClient,
     var enableVoice: Boolean = false
 ) : RtcCall() {
 
@@ -121,7 +122,7 @@ class RtcClient(
         }
     }
 
-    private fun sendOffer(client: CustomWebSocketClient) {
+    private fun sendOffer(client: WebSocketClient) {
         val jsonObject = JSONObject().apply {
             put(
                     P2P_OFFER,

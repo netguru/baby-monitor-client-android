@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.IBinder
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import org.java_websocket.client.WebSocketClient
 import timber.log.Timber
 import java.net.URI
@@ -14,14 +13,9 @@ import java.util.concurrent.TimeUnit
 class WebSocketClientService : Service() {
 
     private var client: RxWebSocketClient? = null
-    private val disposables = CompositeDisposable()
-
-    override fun onDestroy() {
-        disposables.clear()
-    }
 
     private fun requireClient(serverUri: URI): RxWebSocketClient =
-        client?.takeIf(WebSocketClient::isOpen)
+        client?.takeUnless(WebSocketClient::isFlushAndClose)
             ?: RxWebSocketClient(serverUri = serverUri)
                 .also { newClient -> client = newClient }
                 .also { client ->
@@ -31,6 +25,12 @@ class WebSocketClientService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? =
         Binder()
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        client?.close()
+        client = null
+        return super.onUnbind(intent)
+    }
 
     inner class Binder : android.os.Binder() {
         fun events(serverUri: URI): Observable<RxWebSocketClient.Event> =
@@ -53,5 +53,8 @@ class WebSocketClientService : Service() {
                     send(message)
                 }
             }
+
+        fun client(serverUri: URI) =
+            requireClient(serverUri = serverUri)
     }
 }

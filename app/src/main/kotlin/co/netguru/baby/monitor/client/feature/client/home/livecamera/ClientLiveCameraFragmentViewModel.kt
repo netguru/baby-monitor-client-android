@@ -6,11 +6,11 @@ import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient
-import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.java_websocket.client.WebSocketClient
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -31,7 +31,7 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(): ViewModel() {
     fun startCall(
         context: Context,
         liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
-        client: CustomWebSocketClient,
+        client: WebSocketClient,
         listener: (state: CallState) -> Unit,
         streamStateListener: (streamState: StreamState) -> Unit
     ) {

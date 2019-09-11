@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -21,9 +22,12 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringStat
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.webrtc.PeerConnection
 import timber.log.Timber
+import java.net.URI
 import javax.inject.Inject
 
 class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
@@ -41,6 +45,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private var childServiceBinder: ChildServiceBinder? = null
+    private var socketBinder: WebSocketClientService.Binder? = null
 
     private var errorOccurs = false
 
@@ -48,6 +53,13 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         super.onViewCreated(view, savedInstanceState)
         viewModel.selectedChildAvailability.observe(this, Observer { it?.let(::onAvailabilityChange) })
         viewModel.showBackButton(true)
+        requireContext().apply {
+            bindService(
+                Intent(this, WebSocketServerService::class.java),
+                this@ClientLiveCameraFragment,
+                Service.BIND_AUTO_CREATE
+            )
+        }
     }
 
     override fun onResume() {
@@ -80,15 +92,18 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         Timber.i("onServiceDisconnected")
     }
 
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
         when (service) {
             is ChildServiceBinder -> {
                 Timber.i("ClientHandlerService service connected")
                 childServiceBinder = service
             }
+            is WebSocketClientService.Binder -> {
+                socketBinder = service
+            }
         }
 
-        startCall()
+        maybeStartCall()
     }
 
     private fun bindServices() {
@@ -107,24 +122,31 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         Timber.e("AvailabilityChange $connectionStatus")
         if (connectionStatus) {
             if (!fragmentViewModel.callInProgress.get() || errorOccurs) {
-                startCall()
+                maybeStartCall()
             }
         } else {
             Timber.i("connection status: $connectionStatus")
         }
     }
 
-    private fun startCall() {
+    private fun maybeStartCall() {
+        val childServiceBinder = childServiceBinder ?: return
+        val socketBinder = socketBinder ?: return
+        startCall(childServiceBinder, socketBinder)
+    }
+
+    private fun startCall(
+        childServiceBinder: ChildServiceBinder,
+        socketBinder: WebSocketClientService.Binder
+    ) {
         errorOccurs = false
         with(childServiceBinder) {
-            this ?: return@with
             disableNotification()
             val address = viewModel.selectedChild.value?.address ?: return@with
-            val client = getChildClient(address) ?: return@with
             fragmentViewModel.startCall(
-                    requireActivity().applicationContext,
-                    liveCameraRemoteRenderer,
-                    client,
+                requireActivity().applicationContext,
+                liveCameraRemoteRenderer,
+                socketBinder.client(URI.create(address)),
                 this@ClientLiveCameraFragment::handleStateChange,
                 this@ClientLiveCameraFragment::handleStreamStateChange
             )
