@@ -26,11 +26,8 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.random.Random
 
-class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListener {
+class ClientHandlerService : LifecycleService() {
 
-    private val webSocketClientHandler by lazy {
-        ClientsHandler(babyNameObservable, this, notificationHandler, dataRepository)
-    }
     private val compositeDisposable = CompositeDisposable()
     private val childConnectionStatus = MutableLiveData<Pair<ChildDataEntity, ConnectionStatus>>()
 
@@ -42,7 +39,6 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
     @field:DataModule.BabyName
     internal lateinit var babyNameObservable: Flowable<String>
 
-    private var childList: List<ChildDataEntity>? = null
 
     override fun onCreate() {
         AndroidInjection.inject(this)
@@ -51,44 +47,11 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
             NotificationHandler.createNotificationChannel(applicationContext)
         }
         startForeground(Random.nextInt(), createNotification())
-
-        dataRepository.getChildData()
-                .observe(this, Observer { list ->
-                    addAllChildren(list ?: return@Observer)
-                })
     }
 
     override fun onBind(intent: Intent?): Binder {
         super.onBind(intent)
         return ChildServiceBinder()
-    }
-
-    override fun onConnectionStatusChange(client: CustomWebSocketClient) {
-        Timber.i("${client.address} ${client.connectionStatus}")
-        val foundChild = childList
-                ?.find { childData ->
-                    childData.address == client.address
-                } ?: return
-        if (!client.wasRetrying && client.connectionStatus == ConnectionStatus.DISCONNECTED) {
-            childConnectionStatus.postValue(
-                    foundChild to ConnectionStatus.DISCONNECTED
-            )
-        }
-        if (client.connectionStatus == ConnectionStatus.CONNECTED) {
-            childConnectionStatus.postValue(
-                    foundChild to ConnectionStatus.CONNECTED
-            )
-        }
-    }
-
-    fun getCurrentConnectionStatus(): ConnectionStatus {
-        val client = webSocketClientHandler.getClient("")
-        return when {
-            client == null -> ConnectionStatus.DISCONNECTED
-            (!client.wasRetrying && client.connectionStatus == ConnectionStatus.DISCONNECTED) -> ConnectionStatus.DISCONNECTED
-            (client.connectionStatus == ConnectionStatus.CONNECTED) -> ConnectionStatus.CONNECTED
-            else -> ConnectionStatus.DISCONNECTED
-        }
     }
 
     private fun createNotification(): Notification {
@@ -104,51 +67,16 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
                 .build()
     }
 
-    private fun addAllChildren(list: List<ChildDataEntity>?) {
-        childList = list
-        for (child in list ?: return) {
-            webSocketClientHandler.addClient(child.address)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeBy(
-                            onComplete = { Timber.i("Client added ${child.address}") },
-                            onError = Timber::e
-                    ).addTo(compositeDisposable)
-        }
-    }
-
     override fun onDestroy() {
-        webSocketClientHandler.onDestroy()
         compositeDisposable.dispose()
         super.onDestroy()
     }
 
     inner class ChildServiceBinder : Binder() {
-
-        fun getConnectionStatus(): ConnectionStatus {
-            return getCurrentConnectionStatus()
-        }
-
-        fun getChildConnectionStatusLivedata() = childConnectionStatus
-
-        fun refreshChildWebSocketConnection(address: String?) {
-            webSocketClientHandler.reconnectClient(address ?: return)
-        }
-
-        fun getChildClient(address: String) =
-                webSocketClientHandler.getClient(address)
-
         fun stopService() {
             if (childConnectionStatus.value?.second == ConnectionStatus.DISCONNECTED) {
                 stopSelf()
             }
-        }
-
-        fun disableNotification(){
-            webSocketClientHandler.notificationsEnabled(false)
-        }
-
-        fun enableNotification(){
-            webSocketClientHandler.notificationsEnabled(true)
         }
     }
 }

@@ -22,7 +22,9 @@ import co.netguru.baby.monitor.client.feature.settings.DefaultDrawerObserver
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.toolbar_child.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -34,6 +36,8 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
+    @Inject
+    internal lateinit var sendFirebaseTokenUseCase: SendFirebaseTokenUseCase
 
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
@@ -67,15 +71,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-//        if (service is ClientHandlerService.ChildServiceBinder) {
-//            childServiceBinder = service
-//
-//            service.getChildConnectionStatusLivedata().observe(this, Observer { childEvent ->
-//                val data = childEvent ?: return@Observer
-//                homeViewModel.selectedChildAvailabilityPostValue(data.second)
-//            })
-//            homeViewModel.selectedChildAvailabilityPostValue(service.getConnectionStatus())
-//        }
         if (service is WebSocketClientService.Binder) {
             handleWebSocketClientServiceBinder(service)
         }
@@ -85,12 +80,21 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         homeViewModel.selectedChild.observe(this, Observer { child ->
             if (child != null) {
                 Timber.i("Opening socket to ${child.address}.")
-                binder.events(URI.create(child.address))
+                binder.client().events(URI.create(child.address))
                     .subscribeBy(
                         onNext = { event ->
                             Timber.i("Consuming event: $event.")
                             if (event is RxWebSocketClient.Event.Open) {
                                 homeViewModel.selectedChildAvailability.postValue(true)
+                                sendFirebaseTokenUseCase.sendFirebaseToken(binder.client())
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribeBy(
+                                        onComplete = {
+                                            Timber.d("Firebase token sent successfully.")
+                                        }, onError = { error ->
+                                            Timber.w(error, "Error sending Firebase token.")
+                                        })
+                                    .addTo(compositeDisposable)
                             }
                             if (event is RxWebSocketClient.Event.Close) {
                                 homeViewModel.selectedChildAvailability.postValue(false)
@@ -100,6 +104,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                             Timber.i("Websocket error: $error.")
                         }
                     )
+                    .addTo(compositeDisposable)
             }
         })
     }
@@ -114,6 +119,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         backIbtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
+        homeViewModel.selectedChildAvailability.postValue(false)
     }
 
     private fun getData() {
@@ -147,12 +153,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun bindService() {
-//        startService(Intent(this, ClientHandlerService::class.java))
-//        bindService(
-//                Intent(this, ClientHandlerService::class.java),
-//                this,
-//                Service.BIND_AUTO_CREATE
-//        )
         bindService(Intent(this, WebSocketClientService::class.java), this, Service.BIND_AUTO_CREATE)
     }
 

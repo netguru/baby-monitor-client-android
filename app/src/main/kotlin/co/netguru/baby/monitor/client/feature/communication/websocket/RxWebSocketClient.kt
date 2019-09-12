@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
@@ -7,34 +8,75 @@ import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import timber.log.Timber
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
-class RxWebSocketClient(serverUri: URI) : WebSocketClient(serverUri) {
+class RxWebSocketClient {
 
-    private val events: Subject<Event> = PublishSubject.create()
+    private var client: RxWebSocketClient? = null
 
-    override fun onOpen(handshakedata: ServerHandshake) {
-        Timber.d("onOpen($handshakedata)")
-        events.onNext(Event.Open)
+    private fun requireActiveClient(serverUri: URI) =
+        client?.takeUnless(WebSocketClient::isFlushAndClose)
+            ?: RxWebSocketClient(serverUri = serverUri)
+                .also { newClient -> client = newClient }
+                .also { client ->
+                    Timber.i("Connecting client to ${client.uri}.")
+                    client.connect()
+                }
+
+    fun events(serverUri: URI): Observable<Event> =
+        requireActiveClient(serverUri = serverUri).events().flatMap { event ->
+            when (event) {
+                is Event.Close -> {
+                    Timber.i("Received close event, expect restart.")
+                    Observable.timer(3, TimeUnit.SECONDS)
+                        .flatMap { events(serverUri = serverUri) }
+                        .startWith(event)
+                }
+                else ->
+                    Observable.just(event)
+            }
+        }
+
+    fun send(message: String): Completable =
+        Completable.fromAction {
+            checkNotNull(client).run {
+                send(message)
+            }
+        }
+
+    fun dispose() {
+        client?.close()
+        client = null
     }
 
-    override fun onClose(code: Int, reason: String, remote: Boolean) {
-        Timber.d("onClose($code, $reason, $remote)")
-        events.onNext(Event.Close(code = code, reason = reason, remote = remote))
-        events.onComplete()
-    }
+    private class RxWebSocketClient(serverUri: URI) : WebSocketClient(serverUri) {
 
-    override fun onMessage(message: String) {
-        Timber.d("onMessage($message)")
-        events.onNext(Event.Message(message = message))
-    }
+        private val events: Subject<Event> = PublishSubject.create()
 
-    override fun onError(ex: Exception) {
-        Timber.d("onError($ex)")
-        events.onNext(Event.Error(error = ex))
-    }
+        override fun onOpen(handshakedata: ServerHandshake) {
+            Timber.d("onOpen($handshakedata)")
+            events.onNext(Event.Open)
+        }
 
-    fun events(): Observable<Event> =
-        events
+        override fun onClose(code: Int, reason: String, remote: Boolean) {
+            Timber.d("onClose($code, $reason, $remote)")
+            events.onNext(Event.Close(code = code, reason = reason, remote = remote))
+            events.onComplete()
+        }
+
+        override fun onMessage(message: String) {
+            Timber.d("onMessage($message)")
+            events.onNext(Event.Message(message = message))
+        }
+
+        override fun onError(ex: Exception) {
+            Timber.d("onError($ex)")
+            events.onNext(Event.Error(error = ex))
+        }
+
+        fun events(): Observable<Event> =
+            events
+    }
 
     sealed class Event {
         /**

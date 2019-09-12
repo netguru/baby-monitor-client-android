@@ -2,33 +2,28 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 
 import android.content.Context
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.webrtc.createPeerConnection
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
-import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketClient
+import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import org.java_websocket.client.WebSocketClient
 import org.json.JSONObject
 import org.webrtc.DataChannel
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import timber.log.Timber
-import java.nio.charset.Charset
+import java.net.URI
 
 class RtcClient(
-    client: WebSocketClient,
+    client: RxWebSocketClient,
+    private val serverUri: URI,
     var enableVoice: Boolean = false
-) : RtcCall() {
-
-    init {
-        commSocket = client
-    }
+) : RtcCall(client) {
 
     internal fun startCall(
         context: Context,
@@ -38,7 +33,6 @@ class RtcClient(
         initRtc(context)
         this.callStateListener = callStateListener
         this.streamStateListener = streamStateListener
-        Timber.i("starting call to ${(commSocket as CustomWebSocketClient?)?.address}")
         createConnection()
     }
 
@@ -104,25 +98,21 @@ class RtcClient(
     }
 
     private fun onIceGatheringComplete() {
-        with((commSocket as CustomWebSocketClient)) {
-            if (connectionStatus == ConnectionStatus.CONNECTED) {
-                sendOffer(this)
-            }
-
-            addMessageListener { client, message ->
-                val jsonObject = JSONObject(message)
-                if (jsonObject.has(P2P_ANSWER)) {
-                    if (state == CallState.CONNECTED) {
-                        connection?.close()
-                    }
-                    reportStateChange(CallState.CONNECTED)
-                    handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
+        sendOffer(client)
+        client.events(serverUri = serverUri).subscribe { event ->
+            if (event !is RxWebSocketClient.Event.Message) return@subscribe
+            val jsonObject = JSONObject(event.message)
+            if (jsonObject.has(P2P_ANSWER)) {
+                if (state == CallState.CONNECTED) {
+                    connection?.close()
                 }
+                reportStateChange(CallState.CONNECTED)
+                handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
+            }
             }
         }
-    }
 
-    private fun sendOffer(client: WebSocketClient) {
+    private fun sendOffer(client: RxWebSocketClient) {
         val jsonObject = JSONObject().apply {
             put(
                     P2P_OFFER,
@@ -132,7 +122,7 @@ class RtcClient(
                     }
             )
         }
-        client.send(jsonObject.toString().toByteArray(Charset.defaultCharset()))
+        client.send(jsonObject.toString()).blockingAwait()
         Timber.i("offer send: $jsonObject")
     }
 }

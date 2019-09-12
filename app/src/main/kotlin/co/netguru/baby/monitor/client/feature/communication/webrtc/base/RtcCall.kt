@@ -8,16 +8,16 @@ import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
+import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
-import org.java_websocket.WebSocket
 import org.json.JSONObject
 import org.webrtc.*
 import timber.log.Timber
 
-abstract class RtcCall {
+abstract class RtcCall(protected  val client: RxWebSocketClient) {
 
     var remoteView: CustomSurfaceViewRenderer? = null
     lateinit var offer: String
@@ -40,7 +40,6 @@ abstract class RtcCall {
     protected var streamStateListener: (streamState: StreamState) -> Unit = {}
     protected var state: CallState? = null
     protected var streamState: StreamState? = null
-    protected var commSocket: WebSocket? = null
 
     protected var factory: PeerConnectionFactory? = null
     protected var connection: PeerConnection? = null
@@ -88,9 +87,6 @@ abstract class RtcCall {
 
         videoTrack?.dispose()
 
-        if (clearSocket) {
-            commSocket?.close()
-        }
         compositeDisposable.dispose()
     }
 

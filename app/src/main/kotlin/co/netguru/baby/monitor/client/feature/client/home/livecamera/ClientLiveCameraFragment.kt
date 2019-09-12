@@ -74,8 +74,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.showBackButton(false)
-        childServiceBinder?.enableNotification()
-        childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         requireContext().unbindService(this)
     }
 
@@ -140,13 +138,14 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         socketBinder: WebSocketClientService.Binder
     ) {
         errorOccurs = false
+        val serverUri = URI.create(viewModel.selectedChild.value?.address ?: return)
         with(childServiceBinder) {
-            disableNotification()
             val address = viewModel.selectedChild.value?.address ?: return@with
             fragmentViewModel.startCall(
                 requireActivity().applicationContext,
                 liveCameraRemoteRenderer,
-                socketBinder.client(URI.create(address)),
+                serverUri,
+                socketBinder.client(),
                 this@ClientLiveCameraFragment::handleStateChange,
                 this@ClientLiveCameraFragment::handleStreamStateChange
             )
