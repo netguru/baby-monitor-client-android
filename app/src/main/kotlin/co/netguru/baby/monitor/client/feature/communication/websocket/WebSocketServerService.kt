@@ -36,7 +36,6 @@ class WebSocketServerService : Service() {
         AndroidInjection.inject(this)
         super.onCreate()
         serverHandler = WebSocketServerHandler { ws, msg ->
-            Timber.d("Got a message: ${msg?.substring(0, 20)}.")
             val message = try {
                 gson.fromJson(msg, Message::class.java)
             } catch (e: JsonParseException) {

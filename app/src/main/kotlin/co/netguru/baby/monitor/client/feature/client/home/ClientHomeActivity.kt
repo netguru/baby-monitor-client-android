@@ -20,6 +20,7 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocke
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import co.netguru.baby.monitor.client.feature.settings.DefaultDrawerObserver
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -38,6 +39,12 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     internal lateinit var factory: ViewModelProvider.Factory
     @Inject
     internal lateinit var sendFirebaseTokenUseCase: SendFirebaseTokenUseCase
+    @Inject
+    internal lateinit var sendBabyNameUseCase: SendBabyNameUseCase
+    @Inject
+    internal lateinit var gson: Gson
+
+    private val openSocketDisposables = CompositeDisposable()
 
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
@@ -85,19 +92,11 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                         onNext = { event ->
                             Timber.i("Consuming event: $event.")
                             if (event is RxWebSocketClient.Event.Open) {
-                                homeViewModel.selectedChildAvailability.postValue(true)
-                                sendFirebaseTokenUseCase.sendFirebaseToken(binder.client())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribeBy(
-                                        onComplete = {
-                                            Timber.d("Firebase token sent successfully.")
-                                        }, onError = { error ->
-                                            Timber.w(error, "Error sending Firebase token.")
-                                        })
-                                    .addTo(compositeDisposable)
+                                handleWebSocketOpen(binder.client())
                             }
                             if (event is RxWebSocketClient.Event.Close) {
                                 homeViewModel.selectedChildAvailability.postValue(false)
+                                openSocketDisposables.clear()
                             }
                         },
                         onError = { error ->
@@ -107,6 +106,29 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
                     .addTo(compositeDisposable)
             }
         })
+    }
+
+    fun handleWebSocketOpen(client: RxWebSocketClient) {
+        homeViewModel.selectedChildAvailability.postValue(true)
+        sendFirebaseTokenUseCase.sendFirebaseToken(client)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    Timber.d("Firebase token sent successfully.")
+                }, onError = { error ->
+                    Timber.w(error, "Error sending Firebase token.")
+                })
+            .addTo(openSocketDisposables)
+        sendBabyNameUseCase.streamBabyName(client)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    Timber.d("Baby name sent successfully.")
+                }, onError = { error ->
+                    Timber.w(error, "Error sending baby name.")
+                }
+            )
+            .addTo(openSocketDisposables)
     }
 
     private fun setupView() {
@@ -143,13 +165,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             }
         })
         client_drawer.isDrawerOpen(Gravity.END)
-
-        client_drawer.addDrawerListener(DefaultDrawerObserver(
-                onDrawerisClosing = {
-                    homeViewModel.saveChildNameRequired.postValue(true)
-                }
-        )
-        )
     }
 
     private fun bindService() {

@@ -26,7 +26,6 @@ class ClientHomeViewModel @Inject constructor(
     internal val childList = dataRepository.getChildData()
     internal val toolbarState = MutableLiveData<ToolbarState>()
     internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
-    internal val saveChildNameRequired = MutableLiveData<Boolean>()
     internal val backButtonShouldBeVisible = MutableLiveData<Boolean>()
 
     private val compositeDisposable = CompositeDisposable()

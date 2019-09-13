@@ -47,9 +47,6 @@ class ClientSettingsFragment : BaseDaggerFragment() {
         }
 
         closeIbtn.setOnClickListener {
-            clientViewModel.selectedChild.value?.let { child ->
-                settingsViewModel.updateChildName(childNameEt.trimmedText, child)
-            }
             clientViewModel.shouldDrawerBeOpen.postValue(false)
         }
 
@@ -75,13 +72,6 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                         R.color.alpha_accent, R.drawable.ic_select_photo_camera)
             }
         })
-        clientViewModel.saveChildNameRequired.observe(this, Observer { updateRequired ->
-            if (updateRequired == true) {
-                clientViewModel.selectedChild.value?.let { child ->
-                    settingsViewModel.updateChildName(childNameEt.trimmedText, child)
-                }
-            }
-        })
 
         childNameEt.onFocusChangeListener =
                 View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
@@ -90,6 +80,7 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                         if (childNameEt.text.isNullOrBlank()) {
                             childNameEt.text?.clear()
                         }
+                        settingsViewModel.updateChildName(childNameEt.text.toString())
                     }
                 }
 

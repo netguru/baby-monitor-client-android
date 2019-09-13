@@ -51,7 +51,7 @@ class DataRepository @Inject constructor(
         database.beginTransaction()
         try {
             database.childDataDao().apply {
-                deleteAll()
+                deleteChildData()
                 insertChildData(entity)
             }
             database.setTransactionSuccessful()

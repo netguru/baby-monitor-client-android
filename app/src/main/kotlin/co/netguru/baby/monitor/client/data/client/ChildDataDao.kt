@@ -20,11 +20,14 @@ interface ChildDataDao {
     @Query("SELECT * FROM CHILD_DATA WHERE address LIKE :address")
     fun getChildByAddress(address: String): Single<List<ChildDataEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     fun insertChildData(data: ChildDataEntity)
 
     @Update
     fun updateChildData(data: ChildDataEntity)
+
+    @Query("DELETE FROM CHILD_DATA")
+    fun deleteChildData()
 
     @Query("DELETE FROM LOG_DATA")
     fun deleteAll()
