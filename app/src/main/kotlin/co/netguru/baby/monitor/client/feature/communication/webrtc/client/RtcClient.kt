@@ -11,11 +11,10 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.Def
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
-import org.webrtc.DataChannel
-import org.webrtc.MediaConstraints
-import org.webrtc.MediaStream
-import org.webrtc.PeerConnection
+import org.webrtc.*
 import timber.log.Timber
 import java.net.URI
 
@@ -33,22 +32,22 @@ class RtcClient(
         initRtc(context)
         this.callStateListener = callStateListener
         this.streamStateListener = streamStateListener
-        createConnection()
+        createConnection(factory ?: return@fromAction)
     }
 
-    private fun createConnection() {
-        val conState = factory?.createPeerConnection(
+    private fun createConnection(factory: PeerConnectionFactory) {
+        val (peerConnection, stateStream) = factory.createPeerConnection(
             constraints,
             this::handleMediaStream,
             this::handleDataChannel
         )
-        conState?.first?.subscribe { peerConnection ->
-            handleCreatedConnection(peerConnection)
-        }
+        peerConnection
+            .subscribe(::handleCreatedConnection)
+            .addTo(compositeDisposable)
 
-        conState?.second
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe { streamState ->
+        stateStream
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { streamState ->
                 when (streamState) {
                     is ConnectionState -> Unit
                     is GatheringState -> {
@@ -59,6 +58,7 @@ class RtcClient(
                 }
                 reportStreamStateChange(streamState)
             }
+            .addTo(compositeDisposable)
     }
 
     private fun handleCreatedConnection(peerConnection: PeerConnection) {
@@ -99,18 +99,22 @@ class RtcClient(
 
     private fun onIceGatheringComplete() {
         sendOffer(client)
-        client.events(serverUri = serverUri).subscribe { event ->
-            if (event !is RxWebSocketClient.Event.Message) return@subscribe
-            val jsonObject = JSONObject(event.message)
-            if (jsonObject.has(P2P_ANSWER)) {
-                if (state == CallState.CONNECTED) {
-                    connection?.close()
+        client.events(serverUri = serverUri)
+            .subscribeOn(Schedulers.io())
+            .subscribe { event ->
+                Timber.d("WS Event: $event.")
+                if (event !is RxWebSocketClient.Event.Message) return@subscribe
+                val jsonObject = JSONObject(event.message)
+                if (jsonObject.has(P2P_ANSWER)) {
+                    if (state == CallState.CONNECTED) {
+                        connection?.close()
+                    }
+                    reportStateChange(CallState.CONNECTED)
+                    handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
                 }
-                reportStateChange(CallState.CONNECTED)
-                handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
             }
-            }
-        }
+            .addTo(compositeDisposable)
+    }
 
     private fun sendOffer(client: RxWebSocketClient) {
         val jsonObject = JSONObject().apply {

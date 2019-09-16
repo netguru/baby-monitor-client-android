@@ -74,8 +74,8 @@ class WebSocketServerHandler(
         server = null
     }
 
-    fun broadcast(byteArray: ByteArray) {
-        server?.broadcast(byteArray)
+    fun broadcast(text: String) {
+        server!!.broadcast(text)
     }
 
     private fun stopServer(shouldRestart: Boolean, server: CustomWebSocketServer) {

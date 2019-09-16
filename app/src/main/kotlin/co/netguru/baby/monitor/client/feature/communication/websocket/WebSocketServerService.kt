@@ -64,7 +64,7 @@ class WebSocketServerService : Service() {
     inner class Binder : android.os.Binder() {
         fun sendMessage(message: Message) {
             Timber.d("sendMessage($message)")
-            serverHandler.broadcast(message.let(gson::toJson).toByteArray())
+            serverHandler.broadcast(message.let(gson::toJson))
         }
 
         /**

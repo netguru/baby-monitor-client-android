@@ -20,10 +20,10 @@ import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
-import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.webrtc.PeerConnection
 import timber.log.Timber
@@ -46,6 +46,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     private var childServiceBinder: ChildServiceBinder? = null
     private var socketBinder: WebSocketClientService.Binder? = null
+    private var webRtcBinder: WebRtcService.Binder? = null
 
     private var errorOccurs = false
 
@@ -55,7 +56,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         viewModel.showBackButton(true)
         requireContext().apply {
             bindService(
-                Intent(this, WebSocketServerService::class.java),
+                Intent(this, WebSocketClientService::class.java),
                 this@ClientLiveCameraFragment,
                 Service.BIND_AUTO_CREATE
             )
@@ -99,6 +100,9 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
             is WebSocketClientService.Binder -> {
                 socketBinder = service
             }
+            is WebRtcService.Binder -> {
+                webRtcBinder = service
+            }
         }
 
         maybeStartCall()
@@ -128,28 +132,24 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun maybeStartCall() {
-        val childServiceBinder = childServiceBinder ?: return
-        val socketBinder = socketBinder ?: return
-        startCall(childServiceBinder, socketBinder)
+        childServiceBinder ?: return Timber.e("No child service binder.")
+        val socketBinder = socketBinder ?: return Timber.e("No socket binder.")
+        startCall(socketBinder)
     }
 
     private fun startCall(
-        childServiceBinder: ChildServiceBinder,
         socketBinder: WebSocketClientService.Binder
     ) {
         errorOccurs = false
         val serverUri = URI.create(viewModel.selectedChild.value?.address ?: return)
-        with(childServiceBinder) {
-            val address = viewModel.selectedChild.value?.address ?: return@with
-            fragmentViewModel.startCall(
-                requireActivity().applicationContext,
-                liveCameraRemoteRenderer,
-                serverUri,
-                socketBinder.client(),
-                this@ClientLiveCameraFragment::handleStateChange,
-                this@ClientLiveCameraFragment::handleStreamStateChange
-            )
-        }
+        fragmentViewModel.startCall(
+            requireActivity().applicationContext,
+            liveCameraRemoteRenderer,
+            serverUri,
+            socketBinder.client(),
+            this@ClientLiveCameraFragment::handleStateChange,
+            this@ClientLiveCameraFragment::handleStreamStateChange
+        )
     }
 
     private fun handleStreamStateChange(streamState: StreamState) {
