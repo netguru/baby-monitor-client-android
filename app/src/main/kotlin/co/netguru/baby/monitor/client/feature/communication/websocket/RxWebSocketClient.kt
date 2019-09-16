@@ -15,7 +15,7 @@ class RxWebSocketClient {
     private var client: RxWebSocketClient? = null
 
     private fun requireActiveClient(serverUri: URI) =
-        client?.takeUnless(WebSocketClient::isFlushAndClose)
+        client?.takeUnless { it.isClosing || it.isClosed }
             ?: RxWebSocketClient(serverUri = serverUri)
                 .also { newClient -> client = newClient }
                 .also { client ->
