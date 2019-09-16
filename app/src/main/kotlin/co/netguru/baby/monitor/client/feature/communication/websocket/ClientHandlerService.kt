@@ -1,21 +1,16 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
-import android.app.Notification
-import android.app.PendingIntent
 import android.arch.lifecycle.LifecycleService
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
-import android.support.v4.app.NotificationCompat
-import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.DataModule
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
-import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.AndroidInjection
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
@@ -24,7 +19,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.random.Random
 
 class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListener {
 
@@ -47,11 +41,6 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationHandler.createNotificationChannel(applicationContext)
-        }
-        startForeground(Random.nextInt(), createNotification())
-
         dataRepository.getChildData()
                 .observe(this, Observer { list ->
                     addAllChildren(list ?: return@Observer)
@@ -89,19 +78,6 @@ class ClientHandlerService : LifecycleService(), ClientsHandler.ConnectionListen
             (client.connectionStatus == ConnectionStatus.CONNECTED) -> ConnectionStatus.CONNECTED
             else -> ConnectionStatus.DISCONNECTED
         }
-    }
-
-    private fun createNotification(): Notification {
-        val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            R.drawable.top_monitoring_icon else R.mipmap.ic_launcher
-
-        return NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.notification_channel_id))
-                .setOngoing(true)
-                .setSmallIcon(drawableResId)
-                .setContentTitle(getString(R.string.notification_foreground_content_title))
-                .setContentText(getString(R.string.notification_foreground_content_text))
-                .setContentIntent(PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, ClientHomeActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT))
-                .build()
     }
 
     private fun addAllChildren(list: List<ChildDataEntity>?) {
