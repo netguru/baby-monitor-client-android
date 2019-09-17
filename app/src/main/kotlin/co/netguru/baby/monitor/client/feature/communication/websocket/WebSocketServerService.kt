@@ -36,7 +36,6 @@ class WebSocketServerService : Service() {
         AndroidInjection.inject(this)
         super.onCreate()
         serverHandler = WebSocketServerHandler { ws, msg ->
-            Timber.d("Got a message: ${msg?.substring(0, 20)}.")
             val message = try {
                 gson.fromJson(msg, Message::class.java)
             } catch (e: JsonParseException) {
@@ -65,7 +64,7 @@ class WebSocketServerService : Service() {
     inner class Binder : android.os.Binder() {
         fun sendMessage(message: Message) {
             Timber.d("sendMessage($message)")
-            serverHandler.broadcast(message.let(gson::toJson).toByteArray())
+            serverHandler.broadcast(message.let(gson::toJson))
         }
 
         /**

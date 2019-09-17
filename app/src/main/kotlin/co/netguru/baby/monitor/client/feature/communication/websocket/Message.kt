@@ -6,7 +6,7 @@ data class Message(
     @SerializedName("action") private val action: String? = null,
     @SerializedName("value") private val value: String? = null,
     @SerializedName("offerSDP") val sdpOffer: SdpData? = null,
-    @SerializedName("answerSDP") private val sdpAnswer: SdpData? = null,
+    @SerializedName("answerSDP") val sdpAnswer: SdpData? = null,
     @SerializedName("baby_name") val babyName: String? = null
 ) {
     fun action() =

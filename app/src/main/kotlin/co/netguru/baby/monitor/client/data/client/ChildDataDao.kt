@@ -11,17 +11,23 @@ interface ChildDataDao {
     @Query("SELECT * FROM CHILD_DATA")
     fun getAllChildren(): LiveData<List<ChildDataEntity>>
 
+    @Query("SELECT * FROM CHILD_DATA")
+    fun listChildren(): Flowable<List<ChildDataEntity>>
+
     @Query("SELECT * FROM CHILD_DATA LIMIT 1")
     fun getFirstChild(): Flowable<ChildDataEntity>
 
     @Query("SELECT * FROM CHILD_DATA WHERE address LIKE :address")
     fun getChildByAddress(address: String): Single<List<ChildDataEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     fun insertChildData(data: ChildDataEntity)
 
     @Update
     fun updateChildData(data: ChildDataEntity)
+
+    @Query("DELETE FROM CHILD_DATA")
+    fun deleteChildData()
 
     @Query("DELETE FROM LOG_DATA")
     fun deleteAll()

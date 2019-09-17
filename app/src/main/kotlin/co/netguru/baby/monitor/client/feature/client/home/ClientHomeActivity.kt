@@ -15,27 +15,39 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
-import co.netguru.baby.monitor.client.feature.settings.DefaultDrawerObserver
+import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.toolbar_child.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import timber.log.Timber
+import java.net.URI
 import javax.inject.Inject
 
 class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
+    @Inject
+    internal lateinit var sendFirebaseTokenUseCase: SendFirebaseTokenUseCase
+    @Inject
+    internal lateinit var sendBabyNameUseCase: SendBabyNameUseCase
+    @Inject
+    internal lateinit var gson: Gson
+
+    private val openSocketDisposables = CompositeDisposable()
 
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
     private val compositeDisposable = CompositeDisposable()
-    private var childServiceBinder: ClientHandlerService.ChildServiceBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +61,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
-        childServiceBinder?.let {
-            childServiceBinder?.stopService()
-            unbindService(this)
-        }
+        unbindService(this)
     }
 
     override fun onSupportNavigateUp() =
@@ -63,15 +72,56 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        if (service is ClientHandlerService.ChildServiceBinder) {
-            childServiceBinder = service
-
-            service.getChildConnectionStatusLivedata().observe(this, Observer { childEvent ->
-                val data = childEvent ?: return@Observer
-                homeViewModel.selectedChildAvailabilityPostValue(data.second)
-            })
-            homeViewModel.selectedChildAvailabilityPostValue(service.getConnectionStatus())
+        if (service is WebSocketClientService.Binder) {
+            handleWebSocketClientServiceBinder(service)
         }
+    }
+
+    private fun handleWebSocketClientServiceBinder(binder: WebSocketClientService.Binder) {
+        homeViewModel.selectedChild.observe(this, Observer { child ->
+            if (child == null) return@Observer
+            Timber.i("Opening socket to ${child.address}.")
+            binder.client().events(URI.create(child.address))
+                .subscribeBy(
+                    onNext = { event ->
+                        Timber.i("Consuming event: $event.")
+                        if (event is RxWebSocketClient.Event.Open) {
+                            handleWebSocketOpen(binder.client())
+                        }
+                        if (event is RxWebSocketClient.Event.Close) {
+                            homeViewModel.selectedChildAvailability.postValue(false)
+                            openSocketDisposables.clear()
+                        }
+                    },
+                    onError = { error ->
+                        Timber.i("Websocket error: $error.")
+                    }
+                )
+                .addTo(compositeDisposable)
+        })
+    }
+
+    fun handleWebSocketOpen(client: RxWebSocketClient) {
+        homeViewModel.selectedChildAvailability.postValue(true)
+        sendFirebaseTokenUseCase.sendFirebaseToken(client)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    Timber.d("Firebase token sent successfully.")
+                }, onError = { error ->
+                    Timber.w(error, "Error sending Firebase token.")
+                })
+            .addTo(openSocketDisposables)
+        sendBabyNameUseCase.streamBabyName(client)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    Timber.d("Baby name sent successfully.")
+                }, onError = { error ->
+                    Timber.w(error, "Error sending baby name.")
+                }
+            )
+            .addTo(openSocketDisposables)
     }
 
     private fun setupView() {
@@ -84,6 +134,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         backIbtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
+        homeViewModel.selectedChildAvailability.postValue(false)
     }
 
     private fun getData() {
@@ -107,22 +158,10 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             }
         })
         client_drawer.isDrawerOpen(Gravity.END)
-
-        client_drawer.addDrawerListener(DefaultDrawerObserver(
-                onDrawerisClosing = {
-                    homeViewModel.saveChildNameRequired.postValue(true)
-                }
-        )
-        )
     }
 
     private fun bindService() {
-        startService(Intent(this, ClientHandlerService::class.java))
-        bindService(
-                Intent(this, ClientHandlerService::class.java),
-                this,
-                Service.BIND_AUTO_CREATE
-        )
+        bindService(Intent(this, WebSocketClientService::class.java), this, Service.BIND_AUTO_CREATE)
     }
 
     private fun setSelectedChildName(name: String) {

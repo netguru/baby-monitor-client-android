@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import io.reactivex.Single
@@ -17,9 +19,6 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-import android.support.v4.content.ContextCompat.getSystemService
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 
 
 class SettingsViewModel @Inject constructor(
@@ -28,8 +27,25 @@ class SettingsViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
+    fun updateChildName(name: String) {
+        dataRepository.getFirstChild().firstOrError()
+            .map { child ->
+                child.copy(name = name)
+            }
+            .flatMapCompletable(dataRepository::putChildData)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    Timber.d("Child name updated to $name.")
+                },
+                onError = { error ->
+                    Timber.w(error, "Couldn't update child name $name.")
+                })
+            .addTo(compositeDisposable)
+    }
+
     fun updateChildName(name: String, data: ChildDataEntity) {
-        dataRepository.updateChildData(data.apply { this.name = name })
+        dataRepository.putChildData(data.apply { this.name = name })
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {
@@ -50,7 +66,7 @@ class SettingsViewModel @Inject constructor(
             }
             file
         }.flatMapCompletable {
-            dataRepository.updateChildData(child.apply { image = it.path })
+            dataRepository.putChildData(child.apply { image = it.path })
         }.subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {

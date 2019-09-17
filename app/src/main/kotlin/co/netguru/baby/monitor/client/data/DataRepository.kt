@@ -7,6 +7,7 @@ import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.data.splash.AppStateHandler
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -40,19 +41,24 @@ class DataRepository @Inject constructor(
         appStateHandler.appState = state
     }
 
-    fun addChildData(data: ChildDataEntity) = Completable.fromAction {
-        database.childDataDao().insertChildData(data)
-    }
-
-    fun updateChildData(data: ChildDataEntity) = Completable.fromAction {
-        database.childDataDao().updateChildData(data)
-    }
-
     fun getChildData() = database.childDataDao().getAllChildren()
+
+    fun listChildren(): Flowable<List<ChildDataEntity>> = database.childDataDao().listChildren()
 
     fun getFirstChild() = database.childDataDao().getFirstChild()
 
-    fun getChildDataWithAddress(address: String) = database.childDataDao().getChildByAddress(address)
+    fun putChildData(entity: ChildDataEntity): Completable = Completable.fromAction {
+        database.beginTransaction()
+        try {
+            database.childDataDao().apply {
+                deleteChildData()
+                insertChildData(entity)
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
 
     fun deleteAllData() = Completable.fromAction {
         database.childDataDao().deleteAll()

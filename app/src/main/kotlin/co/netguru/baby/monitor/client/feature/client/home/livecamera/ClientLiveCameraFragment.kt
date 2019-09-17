@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -13,18 +14,17 @@ import android.view.View
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.webrtc.PeerConnection
 import timber.log.Timber
+import java.net.URI
 import javax.inject.Inject
 
 class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
@@ -41,96 +41,83 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         ViewModelProviders.of(this, factory)[ClientLiveCameraFragmentViewModel::class.java]
     }
 
-    private var childServiceBinder: ChildServiceBinder? = null
+    private var socketBinder: WebSocketClientService.Binder? = null
+    private var webRtcBinder: WebRtcService.Binder? = null
 
     private var errorOccurs = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.selectedChildAvailability.observe(this, Observer(this::onAvailabilityChange))
+        viewModel.selectedChildAvailability.observe(this, Observer { it?.let(::onAvailabilityChange) })
         viewModel.showBackButton(true)
+        requireContext().apply {
+            bindService(
+                Intent(this, WebSocketClientService::class.java),
+                this@ClientLiveCameraFragment,
+                Service.BIND_AUTO_CREATE
+            )
+        }
     }
 
     override fun onResume() {
         super.onResume()
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
-        } else {
-            bindServices()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.showBackButton(false)
-        childServiceBinder?.enableNotification()
-        childServiceBinder?.refreshChildWebSocketConnection(viewModel.selectedChild.value?.address)
         requireContext().unbindService(this)
-    }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requireContext().allPermissionsGranted(Companion.permissions)) {
-            bindServices()
-        }
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
         Timber.i("onServiceDisconnected")
     }
 
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
         when (service) {
-            is ChildServiceBinder -> {
-                Timber.i("ClientHandlerService service connected")
-                childServiceBinder = service
+            is WebSocketClientService.Binder -> {
+                socketBinder = service
+            }
+            is WebRtcService.Binder -> {
+                webRtcBinder = service
             }
         }
 
-        startCall()
-    }
-
-    private fun bindServices() {
-        bindService(
-                ClientHandlerService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
-        )
+        maybeStartCall()
     }
 
     private fun handleStateChange(state: CallState) {
         Timber.i(state.toString())
     }
 
-    private fun onAvailabilityChange(connectionStatus: ConnectionStatus?) {
-        Timber.e("AvailabilityChange $connectionStatus")
-        when (connectionStatus) {
-            ConnectionStatus.CONNECTED -> if (!fragmentViewModel.callInProgress.get() || errorOccurs) {
-                startCall()
-            }
-            else -> {
-                Timber.i("connection status: $connectionStatus")
-            }
+    private fun onAvailabilityChange(connectionAvailable: Boolean) {
+        Timber.d("onAvailabilityChange($connectionAvailable)")
+        if (connectionAvailable && !fragmentViewModel.callInProgress.get() || errorOccurs) {
+            maybeStartCall()
         }
     }
 
-    private fun startCall() {
+    private fun maybeStartCall() {
+        val socketBinder = socketBinder ?: return Timber.e("No socket binder.")
+        startCall(socketBinder)
+    }
+
+    private fun startCall(
+        socketBinder: WebSocketClientService.Binder
+    ) {
         errorOccurs = false
-        with(childServiceBinder) {
-            this ?: return@with
-            disableNotification()
-            val address = viewModel.selectedChild.value?.address ?: return@with
-            val client = getChildClient(address) ?: return@with
-            fragmentViewModel.startCall(
-                    requireActivity().applicationContext,
-                    liveCameraRemoteRenderer,
-                    client,
-                this@ClientLiveCameraFragment::handleStateChange,
-                this@ClientLiveCameraFragment::handleStreamStateChange
-            )
-        }
+        val serverUri = URI.create(viewModel.selectedChild.value?.address ?: return)
+        fragmentViewModel.startCall(
+            requireActivity().applicationContext,
+            liveCameraRemoteRenderer,
+            serverUri,
+            socketBinder.client(),
+            this@ClientLiveCameraFragment::handleStateChange,
+            this@ClientLiveCameraFragment::handleStreamStateChange
+        )
     }
 
     private fun handleStreamStateChange(streamState: StreamState) {

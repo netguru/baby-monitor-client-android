@@ -8,7 +8,6 @@ import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
-import co.netguru.baby.monitor.client.data.communication.websocket.ConnectionStatus
 import co.netguru.baby.monitor.client.data.splash.AppState
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -23,11 +22,10 @@ class ClientHomeViewModel @Inject constructor(
 
     internal val logData = MutableLiveData<List<LogData>>()
     internal val selectedChild = MutableLiveData<ChildDataEntity>()
-    internal val selectedChildAvailability = MutableLiveData<ConnectionStatus>()
+    internal val selectedChildAvailability = MutableLiveData<Boolean>()
     internal val childList = dataRepository.getChildData()
     internal val toolbarState = MutableLiveData<ToolbarState>()
     internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
-    internal val saveChildNameRequired = MutableLiveData<Boolean>()
     internal val backButtonShouldBeVisible = MutableLiveData<Boolean>()
 
     private val compositeDisposable = CompositeDisposable()
@@ -45,10 +43,6 @@ class ClientHomeViewModel @Inject constructor(
                         onNext = this::handleNextLogDataList,
                         onError = Timber::e
                 ).addTo(compositeDisposable)
-    }
-
-    fun selectedChildAvailabilityPostValue(status: ConnectionStatus) {
-            selectedChildAvailability.postValue(status)
     }
 
     fun saveConfiguration() {
