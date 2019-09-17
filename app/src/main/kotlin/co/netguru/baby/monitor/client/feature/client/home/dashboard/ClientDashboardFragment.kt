@@ -65,8 +65,8 @@ class ClientDashboardFragment : BaseDaggerFragment() {
                         .into(clientHomeBabyIv)
             }
         })
-        viewModel.selectedChildAvailability.observe(this, Observer { connectionStatus ->
-            if (connectionStatus == true)
+        viewModel.selectedChildAvailability.observe(this, Observer { childAvailable ->
+            if (childAvailable == true)
                 showClientConnected()
             else
                 showClientDisconnected()
