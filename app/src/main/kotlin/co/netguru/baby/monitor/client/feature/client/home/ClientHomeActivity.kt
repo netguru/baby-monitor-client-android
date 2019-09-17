@@ -18,7 +18,6 @@ import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
-import co.netguru.baby.monitor.client.feature.settings.DefaultDrawerObserver
 import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
@@ -85,26 +84,25 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     private fun handleWebSocketClientServiceBinder(binder: WebSocketClientService.Binder) {
         homeViewModel.selectedChild.observe(this, Observer { child ->
-            if (child != null) {
-                Timber.i("Opening socket to ${child.address}.")
-                binder.client().events(URI.create(child.address))
-                    .subscribeBy(
-                        onNext = { event ->
-                            Timber.i("Consuming event: $event.")
-                            if (event is RxWebSocketClient.Event.Open) {
-                                handleWebSocketOpen(binder.client())
-                            }
-                            if (event is RxWebSocketClient.Event.Close) {
-                                homeViewModel.selectedChildAvailability.postValue(false)
-                                openSocketDisposables.clear()
-                            }
-                        },
-                        onError = { error ->
-                            Timber.i("Websocket error: $error.")
+            if (child == null) return@Observer
+            Timber.i("Opening socket to ${child.address}.")
+            binder.client().events(URI.create(child.address))
+                .subscribeBy(
+                    onNext = { event ->
+                        Timber.i("Consuming event: $event.")
+                        if (event is RxWebSocketClient.Event.Open) {
+                            handleWebSocketOpen(binder.client())
                         }
-                    )
-                    .addTo(compositeDisposable)
-            }
+                        if (event is RxWebSocketClient.Event.Close) {
+                            homeViewModel.selectedChildAvailability.postValue(false)
+                            openSocketDisposables.clear()
+                        }
+                    },
+                    onError = { error ->
+                        Timber.i("Websocket error: $error.")
+                    }
+                )
+                .addTo(compositeDisposable)
         })
     }
 
