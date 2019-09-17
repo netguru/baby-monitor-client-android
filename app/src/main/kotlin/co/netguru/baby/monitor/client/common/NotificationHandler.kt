@@ -1,9 +1,6 @@
 package co.netguru.baby.monitor.client.common
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -12,10 +9,28 @@ import android.support.v4.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.data.communication.firebase.FirebasePushMessage
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
+import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import com.google.firebase.database.FirebaseDatabase
 import org.jetbrains.anko.singleTop
 
 class NotificationHandler(private val context: Context) {
+
+    fun showForegroundNotification(service: Service) {
+        val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            R.drawable.top_monitoring_icon else R.mipmap.ic_launcher
+
+        val notification = NotificationCompat.Builder(service, context.getString(R.string.notification_channel_id))
+            .setOngoing(true)
+            .setSmallIcon(drawableResId)
+            .setContentTitle(service.getString(R.string.notification_foreground_content_title))
+            .setContentText(service.getString(R.string.notification_foreground_content_text))
+            .setContentIntent(PendingIntent.getActivity(service, 0, Intent(service, ServerActivity::class.java).singleTop(), PendingIntent.FLAG_UPDATE_CURRENT))
+            .build()
+
+        createNotificationChannel(service)
+
+        service.startForeground(ONGOING_NOTIFICATION_ID, notification)
+    }
 
     fun showBabyIsCryingNotification() {
         createNotificationChannel(context)
@@ -63,6 +78,7 @@ class NotificationHandler(private val context: Context) {
     }
 
     companion object {
+        private const val ONGOING_NOTIFICATION_ID = 1_001
         const val NOTIFICAITON_ID = 1
         const val FIREBASE_NOTIFICATIONS_DB_PATH = "notifications"
 
