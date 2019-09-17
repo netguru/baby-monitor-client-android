@@ -14,15 +14,12 @@ import android.view.View
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService.ChildServiceBinder
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.webrtc.PeerConnection
@@ -44,7 +41,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         ViewModelProviders.of(this, factory)[ClientLiveCameraFragmentViewModel::class.java]
     }
 
-    private var childServiceBinder: ChildServiceBinder? = null
     private var socketBinder: WebSocketClientService.Binder? = null
     private var webRtcBinder: WebRtcService.Binder? = null
 
@@ -67,8 +63,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         super.onResume()
         if (!requireContext().allPermissionsGranted(permissions)) {
             requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
-        } else {
-            bindServices()
         }
     }
 
@@ -78,25 +72,12 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         requireContext().unbindService(this)
     }
 
-    override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requireContext().allPermissionsGranted(Companion.permissions)) {
-            bindServices()
-        }
-    }
-
     override fun onServiceDisconnected(name: ComponentName?) {
         Timber.i("onServiceDisconnected")
     }
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
         when (service) {
-            is ChildServiceBinder -> {
-                Timber.i("ClientHandlerService service connected")
-                childServiceBinder = service
-            }
             is WebSocketClientService.Binder -> {
                 socketBinder = service
             }
@@ -106,14 +87,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         }
 
         maybeStartCall()
-    }
-
-    private fun bindServices() {
-        bindService(
-                ClientHandlerService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
-        )
     }
 
     private fun handleStateChange(state: CallState) {
@@ -128,7 +101,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun maybeStartCall() {
-        childServiceBinder ?: return Timber.e("No child service binder.")
         val socketBinder = socketBinder ?: return Timber.e("No socket binder.")
         startCall(socketBinder)
     }

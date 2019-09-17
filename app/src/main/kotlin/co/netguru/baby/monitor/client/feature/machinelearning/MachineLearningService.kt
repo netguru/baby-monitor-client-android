@@ -1,12 +1,9 @@
 package co.netguru.baby.monitor.client.feature.machinelearning
 
 import android.app.IntentService
-import android.app.Notification
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.support.annotation.UiThread
-import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
@@ -20,7 +17,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.random.Random
 
 class MachineLearningService : IntentService("MachineLearningService") {
 
@@ -32,14 +28,13 @@ class MachineLearningService : IntentService("MachineLearningService") {
     internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
     @Inject
     internal lateinit var sharedPrefsWrapper: FirebaseSharedPreferencesWrapper
+    @Inject
+    internal lateinit var notificationHandler: NotificationHandler
 
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationHandler.createNotificationChannel(applicationContext)
-        }
-        startForeground(Random.nextInt(), createNotification())
+        notificationHandler.showForegroundNotification(this)
         startRecording()
         notifyBabyCryingUseCase.subscribe(
             title = getString(R.string.notification_baby_is_crying_title),
@@ -53,6 +48,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
     override fun onDestroy() {
         compositeDisposable.dispose()
+        stopForeground(true)
         super.onDestroy()
     }
 
@@ -71,18 +67,6 @@ class MachineLearningService : IntentService("MachineLearningService") {
                         onComplete = { Timber.i("Complete") },
                         onError = Timber::e
                 )?.addTo(compositeDisposable)
-    }
-
-    private fun createNotification(): Notification {
-        val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            R.drawable.top_monitoring_icon else R.mipmap.ic_launcher
-
-        return NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.notification_channel_id))
-                .setOngoing(true)
-                .setSmallIcon(drawableResId)
-                .setContentTitle(getString(R.string.notification_foreground_content_title))
-                .setContentText(getString(R.string.notification_foreground_content_text))
-                .build()
     }
 
     private fun handleRecordingData(dataPair: Pair<ByteArray, ShortArray>) {

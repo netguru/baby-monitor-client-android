@@ -15,7 +15,6 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
-import co.netguru.baby.monitor.client.feature.communication.websocket.ClientHandlerService
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import com.bumptech.glide.request.RequestOptions
@@ -49,7 +48,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
     private val compositeDisposable = CompositeDisposable()
-    private var childServiceBinder: ClientHandlerService.ChildServiceBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +61,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
-        childServiceBinder?.let {
-            childServiceBinder?.stopService()
-        }
         unbindService(this)
     }
 

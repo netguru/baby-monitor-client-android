@@ -18,7 +18,9 @@ class NsdServiceManager @Inject constructor(
     private var discoveryStatus = DiscoveryStatus.STOPPED
     private var onServiceConnectedListener: OnServiceConnectedListener? = null
 
-    private val nsdServiceListener = object : NsdManager.RegistrationListener {
+    private var nsdRegistrationListener: NsdManager.RegistrationListener? = null
+
+    private fun createNsdRegistrationListener() = object : NsdManager.RegistrationListener {
         override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
                 Timber.e("Baby Monitor Service unregistration failed")
 
@@ -78,11 +80,13 @@ class NsdServiceManager @Inject constructor(
             port = SERVER_PORT
         }
         onServiceConnectedListener = listener
-        nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdServiceListener)
+        nsdRegistrationListener = createNsdRegistrationListener()
+        nsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, nsdRegistrationListener)
     }
 
     internal fun unregisterService() {
-        nsdManager.unregisterService(nsdServiceListener)
+        nsdManager.unregisterService(nsdRegistrationListener)
+        nsdRegistrationListener = null
         onServiceConnectedListener = null
     }
 
