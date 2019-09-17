@@ -121,13 +121,9 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun onAvailabilityChange(connectionAvailable: Boolean) {
-        Timber.e("AvailabilityChange $connectionAvailable")
-        if (connectionAvailable) {
-            if (!fragmentViewModel.callInProgress.get() || errorOccurs) {
-                maybeStartCall()
-            }
-        } else {
-            Timber.i("connection status: $connectionAvailable")
+        Timber.d("onAvailabilityChange($connectionAvailable)")
+        if (connectionAvailable && !fragmentViewModel.callInProgress.get() || errorOccurs) {
+            maybeStartCall()
         }
     }
 
