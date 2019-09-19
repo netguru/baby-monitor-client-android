@@ -81,7 +81,6 @@ end
 unless isEnvBlank(ENV["APK_PATH"])
     apkanalyzer.apk_file = ENV["APK_PATH"]
     apkanalyzer.file_size
-    apkanalyzer.permissions
     apkanalyzer.method_references
 end
 
