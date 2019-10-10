@@ -110,3 +110,9 @@ public static ** valueOf(java.lang.String);
 
 #Firebase Database
 -keep class co.netguru.baby.monitor.client.data.communication.firebase.** { *; }
+
+
+#Crashlytics: https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
