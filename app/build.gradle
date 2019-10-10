@@ -254,6 +254,10 @@ dependencies {
 
     implementation libs.okHttp
 
+    //TODO delete after AndroidX Migration (added because of fatal lint version conflict)
+    implementation libs.mediaCompat
+    implementation libs.supportV4
+
     //Unit testing
     testImplementation test.junit
     testImplementation test.mockito
