@@ -25,14 +25,22 @@ buildscript {
 }
 
 plugins {
-    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC6-4"
+    id "io.gitlab.arturbosch.detekt" version "1.0.1"
 }
 
-detekt {
-    profile("main") {
-        input = "$projectDir/app/src/main/kotlin"
-        config = "$projectDir/default-detekt-config.yml"
-        filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
+tasks.register('detektAll', io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Runs detekt analysis over whole code base without the starting overhead for each module."
+    parallel = true
+    config = files("$rootDir/default-detekt-config.yml")
+    setSource(files(projectDir))
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+    reports {
+        xml.enabled = true
+        html.enabled = false
+        txt.enabled = false
     }
 }
 
