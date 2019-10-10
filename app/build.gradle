@@ -23,7 +23,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
     defaultConfig {
-        applicationId "co.netguru.baby.monitor"
+        applicationId "com.netguru.babyguard"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
@@ -253,6 +253,10 @@ dependencies {
     implementation libs.firebaseMessaging
 
     implementation libs.okHttp
+
+    //TODO delete after AndroidX Migration (added because of fatal lint version conflict)
+    implementation libs.mediaCompat
+    implementation libs.supportV4
 
     //Unit testing
     testImplementation test.junit

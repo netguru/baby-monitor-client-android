@@ -55,6 +55,9 @@ ext {
             firebaseDatabase    : 'com.google.firebase:firebase-database:16.0.5',
             firebaseMessaging   : 'com.google.firebase:firebase-messaging:17.4.0',
             okHttp              : 'com.squareup.okhttp3:okhttp:3.14.2',
+            //TODO delete after AndroidX Migration (added because of fatal lint version conflict)
+            mediaCompat         : 'com.android.support:support-media-compat:28.0.0',
+            supportV4           : 'com.android.support:support-v4:28.0.0'
     ]
 
     proc = [
