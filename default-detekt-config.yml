@@ -43,6 +43,8 @@ comments:
     searchInInnerInterface: true
   UndocumentedPublicFunction:
     active: false
+  UndocumentedPublicProperty:
+    active: false
 
 complexity:
   active: true
@@ -145,6 +147,7 @@ exceptions:
     active: true
   ReturnFromFinally:
     active: false
+    ignoreLabeled: false
   SwallowedException:
     active: true
     ignoredExceptionTypes: 'InterruptedException,NumberFormatException,ParseException,MalformedURLException'
@@ -180,7 +183,7 @@ exceptions:
 
 formatting:
   active: true
-  android: false
+  android: true
   autoCorrect: true
   AnnotationOnSeparateLine:
     active: false
@@ -205,7 +208,7 @@ formatting:
     indentSize: 4
     continuationIndentSize: 4
   MaximumLineLength:
-    active: true
+    active: false # duplicate of MaxLineLength + wrong line reports
     maxLineLength: 120
   ModifierOrdering:
     active: true
@@ -244,7 +247,8 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: true
+    active: false
+    autoCorrect: false
   PackageName:
     active: true
     autoCorrect: true
@@ -375,6 +379,8 @@ performance:
 
 potential-bugs:
   active: true
+  Deprecation:
+    active: true
   DuplicateCaseInWhenExpression:
     active: true
   EqualsAlwaysReturnsTrueOrFalse:
@@ -382,6 +388,8 @@ potential-bugs:
   EqualsWithHashCodeExist:
     active: true
   ExplicitGarbageCollectionCall:
+    active: true
+  HasPlatformType:
     active: true
   InvalidRange:
     active: true
@@ -432,9 +440,11 @@ style:
   ForbiddenComment:
     active: true
     values: 'TODO,FIXME,STOPSHIP'
+    allowedPatterns: ""
   ForbiddenImport:
     active: false
     imports: ''
+    forbiddenPatterns: ""
   ForbiddenVoid:
     active: true
     ignoreOverridden: false
@@ -443,6 +453,7 @@ style:
     active: true
     ignoreOverridableFunction: true
     excludedFunctions: 'describeContents'
+    excludeAnnotatedFunction: "dagger.Provides"
   LibraryCodeMustSpecifyReturnType:
     active: false
   LoopWithTooManyJumpStatements:
@@ -475,7 +486,7 @@ style:
   NestedClassesVisibility:
     active: false
   NewLineAtEndOfFile:
-    active: true
+    active: false # duplicate of FinalNewline
   NoTabs:
     active: true
   OptionalAbstractKeyword:
@@ -488,6 +499,8 @@ style:
     active: false
   ProtectedMemberInFinalClass:
     active: true
+  RedundantExplicitType:
+    active: false
   RedundantVisibilityModifierRule:
     active: true
   ReturnCount:
@@ -496,6 +509,7 @@ style:
     excludedFunctions: "equals"
     excludeLabeled: false
     excludeReturnFromLambda: true
+    excludeGuardClauses: true
   SafeCast:
     active: true
   SerialVersionUIDInSerializableClass:
@@ -530,11 +544,16 @@ style:
   UnusedPrivateMember:
     active: true
     allowedNames: "(_|ignored|expected|serialVersionUID)"
+  UseArrayLiteralsInAnnotations:
+    active: true
   UseCheckOrError:
     active: false
   UseDataClass:
-    active: false
+    active: true
     excludeAnnotatedClasses: ""
+    allowVars: false
+  UseIfInsteadOfWhen:
+    active: true
   UseRequire:
     active: true
   UselessCallOnNotNull:
