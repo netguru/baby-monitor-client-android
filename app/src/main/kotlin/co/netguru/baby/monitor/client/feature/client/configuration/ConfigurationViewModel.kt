@@ -79,7 +79,6 @@ class ConfigurationViewModel @Inject constructor(
                 },
                 onError = Timber::e
             ).addTo(compositeDisposable)
-
     }
 
     internal fun discoverNsdService(onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener) {

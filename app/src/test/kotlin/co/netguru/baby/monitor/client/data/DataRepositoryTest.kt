@@ -26,7 +26,6 @@ class DataRepositoryTest {
     private val logDataDao = mock<LogDataDao>()
     private val appStateHandler = mock<AppStateHandler>()
 
-
     @Before
     fun setup() {
         whenever(database.childDataDao()).thenReturn(childDataDao)
