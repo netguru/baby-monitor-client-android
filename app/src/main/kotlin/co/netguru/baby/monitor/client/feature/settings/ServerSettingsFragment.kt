@@ -10,7 +10,6 @@ import android.view.View
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import kotlinx.android.synthetic.main.fragment_server_settings.*
 import javax.inject.Inject
@@ -44,7 +43,7 @@ class ServerSettingsFragment : BaseDaggerFragment() {
         }
 
         settingsLogoutBtn.setOnClickListener {
-            viewModel.clearData(requireActivity())
+            viewModel.resetApp(requireActivity())
         }
 
         sendRecordingsSw.setOnCheckedChangeListener { buttonView, isChecked ->

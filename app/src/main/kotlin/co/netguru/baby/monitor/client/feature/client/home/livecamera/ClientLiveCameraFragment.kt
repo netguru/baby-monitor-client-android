@@ -44,11 +44,12 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     private var socketBinder: WebSocketClientService.Binder? = null
     private var webRtcBinder: WebRtcService.Binder? = null
 
-    private var errorOccurs = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.selectedChildAvailability.observe(this, Observer { it?.let(::onAvailabilityChange) })
+        viewModel.selectedChildAvailability.observe(
+            this,
+            Observer { it?.let(::onAvailabilityChange) })
         viewModel.showBackButton(true)
         requireContext().apply {
             bindService(
@@ -95,7 +96,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun onAvailabilityChange(connectionAvailable: Boolean) {
         Timber.d("onAvailabilityChange($connectionAvailable)")
-        if (connectionAvailable && !fragmentViewModel.callInProgress.get() || errorOccurs) {
+        if (connectionAvailable && !fragmentViewModel.callInProgress.get()) {
             maybeStartCall()
         }
     }
@@ -108,7 +109,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     private fun startCall(
         socketBinder: WebSocketClientService.Binder
     ) {
-        errorOccurs = false
         val serverUri = URI.create(viewModel.selectedChild.value?.address ?: return)
         fragmentViewModel.startCall(
             requireActivity().applicationContext,
@@ -135,7 +135,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         private const val PERMISSIONS_REQUEST_CODE = 125
 
         private val permissions = arrayOf(
-                Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA
+            Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA
         )
     }
 }

@@ -11,6 +11,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.getColor
+import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
@@ -44,10 +45,7 @@ class ClientDashboardFragment : BaseDaggerFragment() {
     }
 
     private fun getData() {
-        //showClientDisconnected()
-        viewModel.selectedChild.observe(this, Observer { child ->
-            child ?: return@Observer
-
+        viewModel.selectedChild.observeNonNull(this, { child ->
             clientHomeBabyNameTv.apply {
                 if (child.name.isNullOrBlank()) {
                     text = getString(R.string.your_baby_name)
@@ -60,9 +58,9 @@ class ClientDashboardFragment : BaseDaggerFragment() {
 
             if (!child.image.isNullOrEmpty()) {
                 GlideApp.with(requireContext())
-                        .load(child.image)
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(clientHomeBabyIv)
+                    .load(child.image)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(clientHomeBabyIv)
             }
         })
         viewModel.selectedChildAvailability.observe(this, Observer { childAvailable ->
@@ -85,7 +83,11 @@ class ClientDashboardFragment : BaseDaggerFragment() {
         clientConnectionStatusTv.text = getString(R.string.devices_disconnected)
         clientConnectionStatusPv.stop()
         clientHomeLiveCameraIbtn.setOnClickListener {
-            Toast.makeText(requireContext(), getString(R.string.child_not_available), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.child_not_available),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }
