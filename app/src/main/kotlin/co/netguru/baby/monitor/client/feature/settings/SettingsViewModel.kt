@@ -80,6 +80,7 @@ class SettingsViewModel @Inject constructor(
         try {
             activity.startActivity(goToMarket)
         } catch (e: ActivityNotFoundException) {
+            Timber.e(e)
             activity.startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
