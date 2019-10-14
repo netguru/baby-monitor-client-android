@@ -13,7 +13,6 @@ import dagger.android.support.AndroidSupportInjectionModule
         AndroidInjectionModule::class,
         AndroidSupportInjectionModule::class,
         ApplicationModule::class,
-        DataModule::class,
         ViewModelModule::class,
         FragmentBindingsModule::class,
         ActivityBindingsModule::class,

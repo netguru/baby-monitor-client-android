@@ -22,17 +22,13 @@ import javax.inject.Inject
 
 
 class SettingsViewModel @Inject constructor(
-        private val dataRepository: DataRepository
+    private val dataRepository: DataRepository
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
     fun updateChildName(name: String) {
-        dataRepository.getFirstChild().firstOrError()
-            .map { child ->
-                child.copy(name = name)
-            }
-            .flatMapCompletable(dataRepository::putChildData)
+        dataRepository.updateChildName(name)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
@@ -42,18 +38,6 @@ class SettingsViewModel @Inject constructor(
                     Timber.w(error, "Couldn't update child name $name.")
                 })
             .addTo(compositeDisposable)
-    }
-
-    fun updateChildName(name: String, data: ChildDataEntity) {
-        dataRepository.putChildData(data.apply { this.name = name })
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = {
-                            Timber.i("data updated")
-                        },
-                        onError = Timber::e
-                )
-                .addTo(compositeDisposable)
     }
 
     fun saveImage(context: Context, cache: File, child: ChildDataEntity) {
@@ -68,19 +52,18 @@ class SettingsViewModel @Inject constructor(
         }.flatMapCompletable {
             dataRepository.putChildData(child.apply { image = it.path })
         }.subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = {
-                            Timber.i("data updated")
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+            .subscribeBy(
+                onComplete = {
+                    Timber.i("data updated")
+                },
+                onError = Timber::e
+            ).addTo(compositeDisposable)
     }
 
     override fun onCleared() {
         compositeDisposable.dispose()
         super.onCleared()
     }
-
 
     fun openMarket(activity: Activity) {
         val uri = Uri.parse("market://details?id=" + activity.packageName)
@@ -97,13 +80,19 @@ class SettingsViewModel @Inject constructor(
         try {
             activity.startActivity(goToMarket)
         } catch (e: ActivityNotFoundException) {
-            activity.startActivity(Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + activity.packageName)))
+            Timber.e(e)
+            activity.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + activity.packageName)
+                )
+            )
         }
     }
 
     fun hideKeyboard(view: View, context: Context) {
-        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
+        val inputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(view.getWindowToken(), 0)
     }
 }

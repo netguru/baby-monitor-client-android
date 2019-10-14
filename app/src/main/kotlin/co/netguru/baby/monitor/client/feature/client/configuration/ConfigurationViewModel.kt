@@ -42,23 +42,27 @@ class ConfigurationViewModel @Inject constructor(
     }
 
     private fun handleNewService(
-            address: String,
-            port: Int
+        address: String,
+        port: Int
     ) {
         val address = "ws://$address:$port"
-        dataRepository.listChildren().firstOrError()
-                .flatMapCompletable { list ->
-                    dataRepository.putChildData(list.firstOrNull()?.copy(address = address) ?: ChildDataEntity(address))
+        dataRepository.doesChildDataExists(address)
+            .flatMapCompletable { exists ->
+                if (exists) {
+                    Completable.complete()
+                } else {
+                    dataRepository.putChildData(ChildDataEntity(address))
                 }
-                .andThen(addParingEventToDataBase(address))
-                .andThen(dataRepository.getSavedState())
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onSuccess = { state ->
-                            appSavedState.postValue(state)
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+            }
+            .andThen(addParingEventToDataBase(address))
+            .andThen(dataRepository.getSavedState())
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onSuccess = { state ->
+                    appSavedState.postValue(state)
+                },
+                onError = Timber::e
+            ).addTo(compositeDisposable)
     }
 
     internal fun clearData(activity: Activity) {
@@ -68,14 +72,13 @@ class ConfigurationViewModel @Inject constructor(
                 notificationHandler::clearNotifications.toCompletable()
             )
         )
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = {
-                            handleDataCleared(activity)
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
-
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    handleDataCleared(activity)
+                },
+                onError = Timber::e
+            ).addTo(compositeDisposable)
     }
 
     internal fun discoverNsdService(onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener) {
@@ -101,20 +104,20 @@ class ConfigurationViewModel @Inject constructor(
     @RunsInBackground
     private fun handleDataCleared(activity: Activity) {
         activity.startActivity(
-                Intent(activity, OnboardingActivity::class.java)
+            Intent(activity, OnboardingActivity::class.java)
         )
         activity.finish()
     }
 
     @RunsInBackground
     private fun addParingEventToDataBase(address: String) =
-            dataRepository.insertLogToDatabase(
-                    LogDataEntity(
-                            DEVICES_PAIRED,
-                            LocalDateTime.now().toString(),
-                            address
-                    )
+        dataRepository.insertLogToDatabase(
+            LogDataEntity(
+                DEVICES_PAIRED,
+                LocalDateTime.now().toString(),
+                address
             )
+        )
 
     companion object {
         private const val DEVICES_PAIRED = "Devices were paired correctly"

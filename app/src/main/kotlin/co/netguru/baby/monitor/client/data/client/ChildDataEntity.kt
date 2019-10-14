@@ -5,10 +5,9 @@ import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "CHILD_DATA")
 data class ChildDataEntity(
-        val address: String,
-        var image: String? = null,
-        var name: String? = null
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Long? = null
-}
+    val address: String,
+    var image: String? = null,
+    var name: String? = null,
+    // Right now we are supporting only one child
+    @PrimaryKey val id: Int = 0
+)
