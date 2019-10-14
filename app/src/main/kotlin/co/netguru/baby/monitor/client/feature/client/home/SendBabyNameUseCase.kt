@@ -12,7 +12,7 @@ class SendBabyNameUseCase @Inject constructor(
     private val gson: Gson
 ) {
     fun streamBabyName(client: RxWebSocketClient) =
-        repo.getFirstChild()
+        repo.getChildData()
             .map { it.name.orEmpty() }
             .flatMapCompletable { name ->
                 sendBabyName(client, name)

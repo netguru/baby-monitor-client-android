@@ -1,34 +1,30 @@
 package co.netguru.baby.monitor.client.data.client
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.*
-import io.reactivex.Flowable
-import io.reactivex.Single
+import android.arch.persistence.room.Dao
+import android.arch.persistence.room.Insert
+import android.arch.persistence.room.OnConflictStrategy
+import android.arch.persistence.room.Query
+import io.reactivex.Maybe
 
 @Dao
 interface ChildDataDao {
 
-    @Query("SELECT * FROM CHILD_DATA")
-    fun getAllChildren(): LiveData<List<ChildDataEntity>>
-
-    @Query("SELECT * FROM CHILD_DATA")
-    fun listChildren(): Flowable<List<ChildDataEntity>>
+    @Query("SELECT * FROM CHILD_DATA LIMIT 1")
+    fun getChildData(): Maybe<ChildDataEntity>
 
     @Query("SELECT * FROM CHILD_DATA LIMIT 1")
-    fun getFirstChild(): Flowable<ChildDataEntity>
+    fun getChildLiveData(): LiveData<ChildDataEntity>
 
-    @Query("SELECT * FROM CHILD_DATA WHERE address LIKE :address")
-    fun getChildByAddress(address: String): Single<List<ChildDataEntity>>
+    @Query("SELECT COUNT(id) FROM CHILD_DATA WHERE address LIKE :address")
+    fun getCount(address: String): Int
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertChildData(data: ChildDataEntity)
 
-    @Update
-    fun updateChildData(data: ChildDataEntity)
+    @Query("UPDATE CHILD_DATA SET name = :name WHERE id = 0")
+    fun updateChildName(name: String): Int
 
     @Query("DELETE FROM CHILD_DATA")
-    fun deleteChildData()
-
-    @Query("DELETE FROM LOG_DATA")
     fun deleteAll()
 }
