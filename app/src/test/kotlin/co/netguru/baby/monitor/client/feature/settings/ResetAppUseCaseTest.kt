@@ -31,7 +31,6 @@ class ResetAppUseCaseTest {
             ResetAppUseCase(notificationHandler, firebaseInstanceManager, dataRepository)
     }
 
-
     @Test
     fun `should clear data and notifications on app reset`() {
         resetAppUseCase.resetApp().subscribe()
