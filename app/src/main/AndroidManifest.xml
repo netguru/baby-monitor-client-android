@@ -62,6 +62,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service android:name=".feature.babycrynotification.CryingActionIntentService" />
 
         <meta-data
             android:name="net.hockeyapp.android.appIdentifier"

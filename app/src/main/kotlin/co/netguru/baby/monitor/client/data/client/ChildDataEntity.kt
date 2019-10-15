@@ -8,6 +8,7 @@ data class ChildDataEntity(
     val address: String,
     var image: String? = null,
     var name: String? = null,
+    var snoozeTimeStamp: Long? = null,
     // Right now we are supporting only one child
     @PrimaryKey val id: Int = 0
 )

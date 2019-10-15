@@ -43,23 +43,29 @@ class ApplicationModule {
 
     @AppScope
     @Provides
-    fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) = FirebaseRepository(preferencesWrapper, context)
+    fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) =
+        FirebaseRepository(preferencesWrapper, context)
 
     @AppScope
     @Provides
     fun applicationDatabse(context: Context) =
-            Room.databaseBuilder(
-                    context,
-                    AppDatabase::class.java,
-                    "baby-monitor-database"
-            )
-                .addMigrations(object : Migration(1, 2) {
+        Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "baby-monitor-database"
+        )
+            .addMigrations(object : Migration(1, 2) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("DELETE FROM CLIENT_DATA")
+                    database.execSQL("CREATE UNIQUE INDEX index_client_data_firebase_key ON CLIENT_DATA(firebase_key)")
+                }
+            },
+                object : Migration(2, 3) {
                     override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("DELETE FROM CLIENT_DATA")
-                        database.execSQL("CREATE UNIQUE INDEX index_client_data_firebase_key ON CLIENT_DATA(firebase_key)")
+                        database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN snoozeTimeStamp INTEGER")
                     }
                 })
-                .build()
+            .build()
 
     @Provides
     @Reusable

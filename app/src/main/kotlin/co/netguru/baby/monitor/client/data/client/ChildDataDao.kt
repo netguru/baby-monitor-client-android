@@ -25,6 +25,9 @@ interface ChildDataDao {
     @Query("UPDATE CHILD_DATA SET name = :name WHERE id = 0")
     fun updateChildName(name: String): Int
 
+    @Query("UPDATE CHILD_DATA SET snoozeTimeStamp = :notificationSnoozeTimeStamp WHERE id = 0")
+    fun updateNotificationSnoozeTimeStamp(notificationSnoozeTimeStamp: Long): Int
+
     @Query("DELETE FROM CHILD_DATA")
     fun deleteAll()
 }

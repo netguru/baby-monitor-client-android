@@ -15,7 +15,7 @@ import co.netguru.baby.monitor.client.data.communication.ClientEntity
             ClientEntity::class,
             ChildDataEntity::class
         ],
-        version = 2
+        version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun logDataDao(): LogDataDao

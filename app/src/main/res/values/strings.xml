@@ -119,4 +119,7 @@
 
     <string name="version">Version %s (%d)</string>
     <string name="tos_confirmation">By clicking next, you agree to our &lt;a href="https://www.netguru.com/tos">Terms of Service&lt;/a>.</string>
+
+    <string name="notification_show_camera">Show camera</string>
+    <string name="notification_5_minutes_snooze">Snooze for 5 minutes</string>
 </resources>
