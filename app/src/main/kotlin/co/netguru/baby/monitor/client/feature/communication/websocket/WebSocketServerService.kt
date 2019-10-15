@@ -7,7 +7,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import dagger.android.AndroidInjection
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import org.java_websocket.WebSocket
 import timber.log.Timber
@@ -24,8 +23,6 @@ class WebSocketServerService : Service() {
     @Inject
     internal lateinit var dataRepo: DataRepository
 
-    private val disposables = CompositeDisposable()
-
     override fun onBind(intent: Intent) =
         Binder()
 
@@ -40,8 +37,9 @@ class WebSocketServerService : Service() {
                 null
             }
             Timber.d("Serialized message: $message.")
-            if (ws != null && message != null)
+            if (ws != null && message != null) {
                 messages.onNext(ws to message)
+            }
         }
             .apply { startServer() }
     }

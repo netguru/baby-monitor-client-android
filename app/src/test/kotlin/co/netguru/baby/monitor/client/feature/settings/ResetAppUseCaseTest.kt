@@ -29,7 +29,6 @@ class ResetAppUseCaseTest {
         whenever(dataRepository.getSavedState()).doReturn(Single.just(AppState.UNDEFINED))
         resetAppUseCase =
             ResetAppUseCase(notificationHandler, firebaseInstanceManager, dataRepository)
-
     }
 
 

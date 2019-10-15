@@ -27,9 +27,10 @@ class ResetAppUseCase @Inject constructor(
     private fun handleAppState(): Completable {
         return dataRepository.getSavedState()
             .flatMapCompletable { appState ->
-                when (appState) {
-                    AppState.CLIENT -> this::invalidateFirebaseToken.toCompletable()
-                    else -> Completable.complete()
+                if (appState == AppState.CLIENT) {
+                    this::invalidateFirebaseToken.toCompletable()
+                } else {
+                    Completable.complete()
                 }
             }
     }

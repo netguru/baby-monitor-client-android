@@ -138,7 +138,6 @@ class ClientSettingsFragment : BaseDaggerFragment() {
             })
     }
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -171,5 +170,4 @@ class ClientSettingsFragment : BaseDaggerFragment() {
         )
         private const val PERMISSIONS_REQUEST_CODE = 123
     }
-
 }

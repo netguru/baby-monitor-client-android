@@ -44,20 +44,18 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     private var socketBinder: WebSocketClientService.Binder? = null
     private var webRtcBinder: WebRtcService.Binder? = null
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.selectedChildAvailability.observe(
             this,
             Observer { it?.let(::onAvailabilityChange) })
         viewModel.showBackButton(true)
-        requireContext().apply {
-            bindService(
-                Intent(this, WebSocketClientService::class.java),
-                this@ClientLiveCameraFragment,
-                Service.BIND_AUTO_CREATE
-            )
-        }
+
+        requireContext().bindService(
+            Intent(requireContext(), WebSocketClientService::class.java),
+            this,
+            Service.BIND_AUTO_CREATE
+        )
     }
 
     override fun onResume() {
