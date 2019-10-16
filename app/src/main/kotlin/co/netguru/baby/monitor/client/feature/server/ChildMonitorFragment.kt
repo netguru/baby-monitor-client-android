@@ -252,7 +252,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
-        if (key == RtcCall.ADD_FIREBASE_TOKEN) {
+        if (key == RtcCall.PUSH_NOTIFICATIONS_KEY) {
             viewModel.receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
         } else {
             Timber.w("Unhandled web socket action: '$key', '$value'.")
