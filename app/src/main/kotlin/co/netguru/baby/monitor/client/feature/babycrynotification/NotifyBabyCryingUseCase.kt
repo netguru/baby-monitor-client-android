@@ -7,7 +7,6 @@ import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-
 @Reusable
 class NotifyBabyCryingUseCase @Inject constructor(
     private val notificationSender: FirebaseNotificationSender

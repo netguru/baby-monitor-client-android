@@ -45,7 +45,8 @@ class ApplicationModule {
 
     @AppScope
     @Provides
-    fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) = FirebaseRepository(preferencesWrapper, context)
+    fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) =
+        FirebaseRepository(preferencesWrapper, context)
 
     @AppScope
     @Provides
@@ -53,19 +54,14 @@ class ApplicationModule {
 
     @AppScope
     @Provides
-    fun applicationDatabase(context: Context) =
-            Room.databaseBuilder(
-                    context,
-                    AppDatabase::class.java,
-                    "baby-monitor-database"
-            )
-                .addMigrations(object : Migration(1, 2) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("DELETE FROM CLIENT_DATA")
-                        database.execSQL("CREATE UNIQUE INDEX index_client_data_firebase_key ON CLIENT_DATA(firebase_key)")
-                    }
-                })
-                .build()
+    fun applicationDatabse(context: Context) =
+        Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "baby-monitor-database"
+        )
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .build()
 
     @Provides
     @Reusable
@@ -77,4 +73,19 @@ class ApplicationModule {
     fun provideOkHttp() =
         OkHttpClient.Builder()
             .build()
+
+    @Suppress("MagicNumber")
+    companion object {
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("DELETE FROM CLIENT_DATA")
+                database.execSQL("CREATE UNIQUE INDEX index_client_data_firebase_key ON CLIENT_DATA(firebase_key)")
+            }
+        }
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN snoozeTimeStamp INTEGER")
+            }
+        }
+    }
 }

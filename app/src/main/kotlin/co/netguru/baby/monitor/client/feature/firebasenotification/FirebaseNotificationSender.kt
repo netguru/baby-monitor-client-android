@@ -5,7 +5,11 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import io.reactivex.Completable
 import io.reactivex.Single
-import okhttp3.*
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
@@ -23,15 +27,16 @@ class FirebaseNotificationSender @Inject constructor(
             .firstOrError()
             .map { clients -> clients.map(ClientEntity::firebaseKey) }
             .flatMapCompletable { firebaseTokens ->
-                if (firebaseTokens.isNotEmpty())
+                if (firebaseTokens.isNotEmpty()) {
                     postNotificationToFcm(firebaseTokens, title, text)
                         .doOnSuccess { response ->
                             Timber.d("Posting notification succeeded: $response.")
                             Timber.d(response.body()?.string().toString())
                         }
                         .ignoreElement()
-                else
+                } else {
                     Completable.complete()
+                }
             }
 
     private fun postNotificationToFcm(
@@ -42,16 +47,16 @@ class FirebaseNotificationSender @Inject constructor(
         Single.fromCallable {
             httpClient.newCall(
                 Request.Builder()
-                    .url("https://fcm.googleapis.com/fcm/send")
+                    .url(FCM_URL)
                     .header(
-                        "Authorization",
+                        AUTHORIZATION_HEADER,
                         "key=${BuildConfig.FIREBASE_CLOUD_MESSAGING_SERVER_KEY}"
                     )
                     .post(JSONObject().apply {
                         put("registration_ids", JSONArray(to))
-                        put("notification", JSONObject().apply {
-                            put("title", title)
-                            put("text", text)
+                        put(NOTIFICATION_DATA, JSONObject().apply {
+                            put(NOTIFICATION_TITLE, title)
+                            put(NOTIFICATION_TEXT, text)
                         })
                     }.toString().let { body ->
                         RequestBody.create(MediaType.get("application/json"), body)
@@ -60,4 +65,11 @@ class FirebaseNotificationSender @Inject constructor(
             ).execute()
         }
 
+    companion object {
+        private const val FCM_URL = "https://fcm.googleapis.com/fcm/send"
+        private const val AUTHORIZATION_HEADER = "Authorization"
+        private const val NOTIFICATION_DATA = "data"
+        const val NOTIFICATION_TEXT = "text"
+        const val NOTIFICATION_TITLE = "title"
+    }
 }

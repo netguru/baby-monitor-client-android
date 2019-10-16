@@ -5,7 +5,10 @@ import android.support.v4.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
+import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender.Companion.NOTIFICATION_TEXT
+import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender.Companion.NOTIFICATION_TITLE
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.android.AndroidInjection
@@ -35,19 +38,38 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Timber.i("Received a message: $message.")
-        message.notification?.let(::handleRemoteNotification)
+        database.getChildData()
+            .subscribeBy(
+                onSuccess = { childDataEntity ->
+                    if (isFiveMinutesSnoozeEnabled(childDataEntity)) {
+                        Timber.i("Snooozed notification")
+                    } else {
+                        handleRemoteNotification(message.data)
+                    }
+                }
+            )
     }
 
-    private fun handleRemoteNotification(remoteNotification: RemoteMessage.Notification) {
-        val title = remoteNotification.title.orEmpty()
-        val body = remoteNotification.body.orEmpty()
-        val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            R.drawable.white_logo else R.mipmap.ic_launcher
+    private fun isFiveMinutesSnoozeEnabled(childDataEntity: ChildDataEntity) =
+        System.currentTimeMillis() < childDataEntity.snoozeTimeStamp ?: 0
+
+    private fun handleRemoteNotification(data: Map<String, String>) {
+        val title = data[NOTIFICATION_TITLE].orEmpty()
+        val text = data[NOTIFICATION_TEXT].orEmpty()
+        val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            R.drawable.white_logo
+        } else {
+            R.mipmap.ic_launcher
+        }
         NotificationHandler.createNotificationChannel(this)
 
         NotificationManagerCompat.from(this).notify(
-            0,
-            notificationHandler.createNotification(title = title, content = body, iconResId = drawableResId)
+            CRYING_NOTIFICATION_ID,
+            notificationHandler.createNotification(
+                title = title,
+                content = text,
+                iconResId = drawableResId
+            )
         )
 
         database.insertLogToDatabase(LogDataEntity(title))
@@ -65,5 +87,9 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
     override fun onDestroy() {
         disposables.clear()
         super.onDestroy()
+    }
+
+    companion object {
+        const val CRYING_NOTIFICATION_ID = 321
     }
 }

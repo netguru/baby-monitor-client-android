@@ -58,6 +58,10 @@ class DataRepository @Inject constructor(
         database.childDataDao().updateChildName(name)
     }
 
+    fun updateChildSnoozeTimestamp(timestamp: Long): Completable = Completable.fromAction {
+        database.childDataDao().updateNotificationSnoozeTimeStamp(timestamp)
+    }
+
     fun deleteAllData(): Completable = Completable.fromAction {
         database.childDataDao().deleteAll()
         database.clientDao().deleteAll()

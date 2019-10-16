@@ -24,18 +24,18 @@ class RxWebSocketClient {
                 }
 
     fun events(serverUri: URI): Observable<Event> =
-        requireActiveClient(serverUri = serverUri).events().flatMap { event ->
-            when (event) {
-                is Event.Close -> {
+        requireActiveClient(serverUri = serverUri)
+            .events()
+            .flatMap { event ->
+                if (event is Event.Close) {
                     Timber.i("Received close event, expect restart.")
-                    Observable.timer(3, TimeUnit.SECONDS)
+                    Observable.timer(CLOSE_EVENT_RESTART_DELAY, TimeUnit.SECONDS)
                         .flatMap { events(serverUri = serverUri) }
                         .startWith(event)
-                }
-                else ->
+                } else {
                     Observable.just(event)
+                }
             }
-        }
 
     fun send(message: String): Completable =
         Completable.fromAction {
@@ -44,9 +44,15 @@ class RxWebSocketClient {
             }
         }
 
+    fun isOpen() = client?.isOpen == true
+
     fun dispose() {
         client?.close()
         client = null
+    }
+
+    companion object {
+        private const val CLOSE_EVENT_RESTART_DELAY = 3L
     }
 
     private class RxWebSocketClient(serverUri: URI) : WebSocketClient(serverUri) {

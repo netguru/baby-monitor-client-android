@@ -98,19 +98,26 @@ class RtcClient(
     }
 
     private fun onIceGatheringComplete() {
-        sendOffer(client)
+        if (client.isOpen()) sendOffer(client)
         client.events(serverUri = serverUri)
             .subscribeOn(Schedulers.io())
             .subscribe { event ->
                 Timber.d("WS Event: $event.")
-                if (event !is RxWebSocketClient.Event.Message) return@subscribe
-                val jsonObject = JSONObject(event.message)
-                if (jsonObject.has(P2P_ANSWER)) {
-                    if (state == CallState.CONNECTED) {
-                        connection?.close()
+                when (event) {
+                    is RxWebSocketClient.Event.Open -> {
+                        Timber.i("socket open -> send offer")
+                        sendOffer(client)
                     }
-                    reportStateChange(CallState.CONNECTED)
-                    handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
+                    is RxWebSocketClient.Event.Message -> {
+                        val jsonObject = JSONObject(event.message)
+                        if (jsonObject.has(P2P_ANSWER)) {
+                            if (state == CallState.CONNECTED) {
+                                connection?.close()
+                            }
+                            reportStateChange(CallState.CONNECTED)
+                            handleAnswer(jsonObject.getJSONObject(P2P_ANSWER).getString("sdp"))
+                        }
+                    }
                 }
             }
             .addTo(compositeDisposable)
