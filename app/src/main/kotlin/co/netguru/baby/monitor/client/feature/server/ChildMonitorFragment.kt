@@ -20,7 +20,6 @@ import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
-import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
@@ -253,11 +252,10 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
-        when (key) {
-            RtcCall.PUSH_NOTIFICATIONS_KEY ->
-               viewModel.receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
-            else ->
-                Timber.w("Unhandled web socket action: '$key', '$value'.")
+        if (key == RtcCall.PUSH_NOTIFICATIONS_KEY) {
+            viewModel.receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
+        } else {
+            Timber.w("Unhandled web socket action: '$key', '$value'.")
         }
     }
 

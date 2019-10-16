@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.common.base
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.application.scope.AppScope
-import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
+import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragmentViewModel
 import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabiesViewModel

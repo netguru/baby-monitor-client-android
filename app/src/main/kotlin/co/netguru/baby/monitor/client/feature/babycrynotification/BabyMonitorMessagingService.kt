@@ -31,6 +31,11 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
         super.onCreate()
     }
 
+    override fun onNewToken(token: String?) {
+        super.onNewToken(token)
+        Timber.i("Firebase token received $token")
+    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         Timber.i("Received a message: $message.")
         database.getChildData()

@@ -11,7 +11,9 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -45,6 +47,10 @@ class ApplicationModule {
     @Provides
     fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) =
         FirebaseRepository(preferencesWrapper, context)
+
+    @AppScope
+    @Provides
+    fun firebaseInstanceManager() = FirebaseInstanceManager(FirebaseInstanceId.getInstance())
 
     @AppScope
     @Provides
