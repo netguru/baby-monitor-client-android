@@ -28,10 +28,8 @@
     <string name="feature_d_text_2">Voice recordings are only used for\ndevelopment purposes and never without\nyour permission.</string>
     <string name="feature_next_btn">Next</string>
     <string name="feature_skip_btn">Skip</string>
-    <string name="feature_maybe_later_btn">Maybe later</string>
     <string name="feature_lets_start">Let\'s start!</string>
 
-    <string name="back"><u>Back</u></string>
     <string name="connecting_description">Get started by \nconnecting\nBabyGuard to \nWi-Fi</string>
     <string name="connect_to_wi_fi">Connect to Wi-Fi</string>
     <string name="connect_wifi_connected">Next</string>
@@ -50,14 +48,8 @@
     <string name="connecting_setup_information">Put this device next\nto your baby\'s bed, so\nthat you can see him\nor her in a real time\nview</string>
     <string name="start_monitoring">Start monitoring</string>
 
-    <string name="isntall_app_title">Hello!</string>
-    <string name="install_app_description">It’s time to install BabyGuard\non your second device</string>
-    <string name="done">Done</string>
-    <string name="back_underlined"><u>Back</u></string>
     <string name="connecting">Connecting</string>
     <string name="try_again">Try again</string>
-    <string name="done_exclamation">Done!</string>
-    <string name="continue_text">Continue</string>
     <string name="all_done_title">All done!</string>
     <string name="all_done_description">You can now start using BabyGuard!</string>
     <string name="get_started">Get started</string>
@@ -66,17 +58,13 @@
     <string name="notification_channel_name">BabyGuard channel</string>
     <string name="notification_channel_description">Notifications for BabyGuard</string>
     <string name="notification_channel_id">baby-monitor-channel</string>
-    <string name="notification_title_sound_processing">Sound processing</string>
 
     <string name="notification_foreground_content_title">Secure monitoring</string>
     <string name="notification_foreground_content_text">Keeping an eye on your baby</string>
 
-    <string name="notification_low_battery_channel_id" translatable="false">low_battery</string>
-    <string name="notification_low_battery_channel_description">Low battery</string>
     <string name="notification_low_battery_title">Low battery</string>
     <string name="notification_low_battery_text">Monitor device battery is low. Make sure to plug in a charger soon!</string>
 
-    <string name="child_monitoring">Child monitoring</string>
     <string name="child_not_available">Child not available</string>
     <string name="dialog_title_choose_source">Choose source</string>
 
@@ -100,7 +88,10 @@
 
     <string name="date_today">Today, %1$s</string>
     <string name="date_yesterday">Yesterday, %1$s</string>
-    <string name="minutes_ago">%1$d minutes ago</string>
+    <plurals name="minutes_ago">
+        <item quantity="one">%d minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
 
     <string name="hello">Hello!</string>
 

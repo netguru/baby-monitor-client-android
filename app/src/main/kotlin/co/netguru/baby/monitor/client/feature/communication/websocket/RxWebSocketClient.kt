@@ -27,15 +27,13 @@ class RxWebSocketClient {
         requireActiveClient(serverUri = serverUri)
             .events()
             .flatMap { event ->
-                when (event) {
-                    is Event.Close -> {
-                        Timber.i("Received close event, expect restart.")
-                        Observable.timer(3, TimeUnit.SECONDS)
-                            .flatMap { events(serverUri = serverUri) }
-                            .startWith(event)
-                    }
-                    else ->
-                        Observable.just(event)
+                if (event is Event.Close) {
+                    Timber.i("Received close event, expect restart.")
+                    Observable.timer(CLOSE_EVENT_RESTART_DELAY, TimeUnit.SECONDS)
+                        .flatMap { events(serverUri = serverUri) }
+                        .startWith(event)
+                } else {
+                    Observable.just(event)
                 }
             }
 
@@ -51,6 +49,10 @@ class RxWebSocketClient {
     fun dispose() {
         client?.close()
         client = null
+    }
+
+    companion object {
+        private const val CLOSE_EVENT_RESTART_DELAY = 3L
     }
 
     private class RxWebSocketClient(serverUri: URI) : WebSocketClient(serverUri) {

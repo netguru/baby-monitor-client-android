@@ -98,7 +98,7 @@ class RtcClient(
     }
 
     private fun onIceGatheringComplete() {
-        if(client.isOpen()) sendOffer(client)
+        if (client.isOpen()) sendOffer(client)
         client.events(serverUri = serverUri)
             .subscribeOn(Schedulers.io())
             .subscribe { event ->
