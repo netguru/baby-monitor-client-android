@@ -9,6 +9,7 @@ import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import com.crashlytics.android.Crashlytics
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -94,6 +95,7 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
         streamStateListener(state)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     protected fun handleMediaStream(mediaStream: MediaStream) {
         Handler(Looper.getMainLooper()).post {
             remoteView?.let { view ->
@@ -106,7 +108,7 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
                         mediaStream.videoTracks[0].addSink(view)
                     }
                 } catch (e: Exception) {
-                    Timber.e(e)
+                    Crashlytics.logException(e)
                 }
             }
         }
@@ -145,14 +147,25 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
     private fun createCapturer(isFacingFront: Boolean = false): CameraVideoCapturer? {
         val enumerator = Camera1Enumerator()
         for (name in enumerator.deviceNames) {
-            if (isFacingFront && enumerator.isFrontFacing(name)) {
-                return enumerator.createCapturer(name, null)
-            } else if (!isFacingFront && enumerator.isBackFacing(name)) {
+            if (isFront(isFacingFront, enumerator, name) || isBack(isFacingFront, enumerator, name)
+            ) {
                 return enumerator.createCapturer(name, null)
             }
         }
         return null
     }
+
+    private fun isBack(
+        isFacingFront: Boolean,
+        enumerator: Camera1Enumerator,
+        name: String?
+    ) = !isFacingFront && enumerator.isBackFacing(name)
+
+    private fun isFront(
+        isFacingFront: Boolean,
+        enumerator: Camera1Enumerator,
+        name: String?
+    ) = isFacingFront && enumerator.isFrontFacing(name)
 
     private fun handleMessage(jsonObject: JSONObject) {
         if (jsonObject.has(STATE_CHANGE_MESSAGE)) {
