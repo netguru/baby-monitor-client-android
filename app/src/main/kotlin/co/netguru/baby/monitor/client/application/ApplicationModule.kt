@@ -11,7 +11,9 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -47,7 +49,11 @@ class ApplicationModule {
 
     @AppScope
     @Provides
-    fun applicationDatabse(context: Context) =
+    fun firebaseInstanceManager() = FirebaseInstanceManager(FirebaseInstanceId.getInstance())
+
+    @AppScope
+    @Provides
+    fun applicationDatabase(context: Context) =
             Room.databaseBuilder(
                     context,
                     AppDatabase::class.java,

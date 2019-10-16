@@ -1,11 +1,10 @@
-package co.netguru.baby.monitor.client.feature.client.configuration
+package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Intent
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
-import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
@@ -17,7 +16,6 @@ import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.LocalDateTime
 import timber.log.Timber
@@ -25,7 +23,7 @@ import javax.inject.Inject
 
 class ConfigurationViewModel @Inject constructor(
     private val nsdServiceManager: NsdServiceManager,
-    private val notificationHandler: NotificationHandler,
+    private val resetAppUseCase: ResetAppUseCase,
     private val dataRepository: DataRepository,
     private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
@@ -65,17 +63,12 @@ class ConfigurationViewModel @Inject constructor(
             ).addTo(compositeDisposable)
     }
 
-    internal fun clearData(activity: Activity) {
-        Completable.merge(
-            listOf(
-                dataRepository.deleteAllData(),
-                notificationHandler::clearNotifications.toCompletable()
-            )
-        )
+    fun resetApp(activity: Activity) {
+        resetAppUseCase.resetApp()
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
-                    handleDataCleared(activity)
+                    handleAppReset(activity)
                 },
                 onError = Timber::e
             ).addTo(compositeDisposable)
@@ -102,7 +95,7 @@ class ConfigurationViewModel @Inject constructor(
     }
 
     @RunsInBackground
-    private fun handleDataCleared(activity: Activity) {
+    private fun handleAppReset(activity: Activity) {
         activity.startActivity(
             Intent(activity, OnboardingActivity::class.java)
         )

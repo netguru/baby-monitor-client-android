@@ -13,6 +13,7 @@ import android.view.Gravity
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
+import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
@@ -65,7 +66,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     override fun onSupportNavigateUp() =
-            findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
+        findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
 
     override fun onServiceDisconnected(name: ComponentName?) {
         Timber.i("service disconnected $name")
@@ -78,19 +79,15 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun handleWebSocketClientServiceBinder(binder: WebSocketClientService.Binder) {
-        homeViewModel.selectedChild.observe(this, Observer { child ->
-            if (child == null) return@Observer
+        homeViewModel.selectedChild.observeNonNull(this, { child ->
             Timber.i("Opening socket to ${child.address}.")
             binder.client().events(URI.create(child.address))
                 .subscribeBy(
                     onNext = { event ->
                         Timber.i("Consuming event: $event.")
-                        if (event is RxWebSocketClient.Event.Open) {
-                            handleWebSocketOpen(binder.client())
-                        }
-                        if (event is RxWebSocketClient.Event.Close) {
-                            homeViewModel.selectedChildAvailability.postValue(false)
-                            openSocketDisposables.clear()
+                        when (event) {
+                            is RxWebSocketClient.Event.Open -> handleWebSocketOpen(binder.client())
+                            is RxWebSocketClient.Event.Close -> handleWebSocketClose()
                         }
                     },
                     onError = { error ->
@@ -101,7 +98,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
         })
     }
 
-    fun handleWebSocketOpen(client: RxWebSocketClient) {
+    private fun handleWebSocketOpen(client: RxWebSocketClient) {
         homeViewModel.selectedChildAvailability.postValue(true)
         sendFirebaseTokenUseCase.sendFirebaseToken(client)
             .subscribeOn(Schedulers.io())
@@ -124,6 +121,11 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
             .addTo(openSocketDisposables)
     }
 
+    private fun handleWebSocketClose() {
+        homeViewModel.selectedChildAvailability.postValue(false)
+        openSocketDisposables.clear()
+    }
+
     private fun setupView() {
         toolbarSettingsIbtn.setOnClickListener {
             homeViewModel.shouldDrawerBeOpen.postValue(true)
@@ -139,17 +141,18 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
 
     private fun getData() {
         homeViewModel.fetchLogData()
-        homeViewModel.selectedChild.observe(this, Observer {
-            it ?: return@Observer
-            setSelectedChildName(it.name ?: "")
+        homeViewModel.selectedChild.observeNonNull(this, { child ->
+            setSelectedChildName(child.name ?: "")
             GlideApp.with(this)
-                    .load(it.image)
-                    .placeholder(R.drawable.child)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(toolbarChildMiniatureIv)
+                .load(child.image)
+                .placeholder(R.drawable.child)
+                .apply(RequestOptions.circleCropTransform())
+                .into(toolbarChildMiniatureIv)
         })
         homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
-        homeViewModel.backButtonShouldBeVisible.observe(this, Observer { backIbtn.setVisible(it == true) })
+        homeViewModel.backButtonShouldBeVisible.observe(
+            this,
+            Observer { backIbtn.setVisible(it == true) })
         homeViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
             if (shouldClose == true) {
                 client_drawer.openDrawer(Gravity.END)
@@ -161,7 +164,11 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection {
     }
 
     private fun bindService() {
-        bindService(Intent(this, WebSocketClientService::class.java), this, Service.BIND_AUTO_CREATE)
+        bindService(
+            Intent(this, WebSocketClientService::class.java),
+            this,
+            Service.BIND_AUTO_CREATE
+        )
     }
 
     private fun setSelectedChildName(name: String) {

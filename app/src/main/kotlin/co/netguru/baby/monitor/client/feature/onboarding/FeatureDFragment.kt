@@ -7,8 +7,7 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.feature.client.configuration.ConfigurationViewModel
+import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import kotlinx.android.synthetic.main.fragment_feature_d.*
 import javax.inject.Inject
 
