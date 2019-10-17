@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.babycrynotification
 
 import android.os.Build
+import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler
@@ -9,6 +10,8 @@ import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender.Companion.NOTIFICATION_TEXT
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender.Companion.NOTIFICATION_TITLE
+import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender.Companion.NOTIFICATION_TYPE
+import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.android.AndroidInjection
@@ -38,13 +41,50 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Timber.i("Received a message: $message.")
+        val notificationType = message.data[NOTIFICATION_TYPE] ?: NotificationType.DEFAULT.name
+        when (NotificationType.valueOf(notificationType)) {
+            NotificationType.CRY_NOTIFICATION -> handleCryNotification(message.data)
+            NotificationType.LOW_BATTERY_NOTIFICATION -> handleLowBatteryNotification(message.data)
+            else -> {
+                message.notification?.let {
+                    handleRemoteNotification(
+                        it.title.orEmpty(),
+                        it.body.orEmpty()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun handleLowBatteryNotification(data: MutableMap<String, String>) {
+        handleRemoteNotification(
+            data[NOTIFICATION_TITLE].orEmpty(),
+            data[NOTIFICATION_TEXT].orEmpty()
+        )
+    }
+
+    private fun handleCryNotification(data: MutableMap<String, String>) {
         database.getChildData()
             .subscribeBy(
                 onSuccess = { childDataEntity ->
                     if (isFiveMinutesSnoozeEnabled(childDataEntity)) {
                         Timber.i("Snooozed notification")
                     } else {
-                        handleRemoteNotification(message.data)
+                        val actions = listOf(
+                            NotificationHandler.createNotificationAction(
+                                NotificationHandler.SHOW_CAMERA_ACTION,
+                                this
+                            ),
+                            NotificationHandler.createNotificationAction(
+                                NotificationHandler.SNOOZE_ACTION,
+                                this
+                            )
+                        )
+                        handleRemoteNotification(
+                            data[NOTIFICATION_TITLE].orEmpty(),
+                            data[NOTIFICATION_TEXT].orEmpty(),
+                            actions
+                        )
                     }
                 }
             )
@@ -53,9 +93,11 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
     private fun isFiveMinutesSnoozeEnabled(childDataEntity: ChildDataEntity) =
         System.currentTimeMillis() < childDataEntity.snoozeTimeStamp ?: 0
 
-    private fun handleRemoteNotification(data: Map<String, String>) {
-        val title = data[NOTIFICATION_TITLE].orEmpty()
-        val text = data[NOTIFICATION_TEXT].orEmpty()
+    private fun handleRemoteNotification(
+        title: String,
+        text: String,
+        actions: List<NotificationCompat.Action>? = null
+    ) {
         val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             R.drawable.white_logo
         } else {
@@ -68,10 +110,15 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
             notificationHandler.createNotification(
                 title = title,
                 content = text,
-                iconResId = drawableResId
+                iconResId = drawableResId,
+                actions = actions
             )
         )
 
+        logToDatabase(title)
+    }
+
+    private fun logToDatabase(title: String) {
         database.insertLogToDatabase(LogDataEntity(title))
             .subscribeOn(Schedulers.io())
             .subscribeBy(

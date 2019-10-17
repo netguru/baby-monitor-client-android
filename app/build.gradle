@@ -267,6 +267,7 @@ dependencies {
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
+    testImplementation test.lifecycleExtensions
 
     //Instrumented tests
     androidTestImplementation test.supportAnnotations

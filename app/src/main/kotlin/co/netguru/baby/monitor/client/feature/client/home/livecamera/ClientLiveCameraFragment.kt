@@ -15,6 +15,8 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
+import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
+import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
@@ -49,14 +51,21 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         viewModel.selectedChildAvailability.observe(
             this,
             Observer { it?.let(::onAvailabilityChange) })
-        viewModel.showBackButton(true)
-
+        viewModel.setBackButtonState(
+            BackButtonState(
+                true,
+                shouldShowSnoozeDialogOnBack()
+            )
+        )
         requireContext().bindService(
             Intent(requireContext(), WebSocketClientService::class.java),
             this,
             Service.BIND_AUTO_CREATE
         )
     }
+
+    private fun shouldShowSnoozeDialogOnBack() =
+        arguments?.getBoolean(CryingActionIntentService.SHOULD_SHOW_SNOOZE_DIALOG) == true
 
     override fun onResume() {
         super.onResume()
@@ -67,7 +76,12 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.showBackButton(false)
+        viewModel.setBackButtonState(
+            BackButtonState(
+                shouldBeVisible = false,
+                shouldShowSnoozeDialog = false
+            )
+        )
         requireContext().unbindService(this)
     }
 
