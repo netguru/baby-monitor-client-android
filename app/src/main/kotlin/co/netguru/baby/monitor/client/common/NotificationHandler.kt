@@ -11,6 +11,7 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.extensions.addActions
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
@@ -46,7 +47,12 @@ class NotificationHandler(private val context: Context) {
         service.startForeground(ONGOING_NOTIFICATION_ID, notification)
     }
 
-    fun createNotification(title: String, content: String, iconResId: Int? = null): Notification {
+    fun createNotification(
+        title: String,
+        content: String,
+        iconResId: Int? = null,
+        actions: List<NotificationCompat.Action>? = null
+    ): Notification {
         val resultIntent = Intent(context, ClientHomeActivity::class.java).singleTop()
         val resultPendingIntent =
             PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -63,36 +69,8 @@ class NotificationHandler(private val context: Context) {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(resultPendingIntent)
             .setAutoCancel(true)
-            .addAction(createNotificationAction(CAMERA_REQUEST_CODE, SHOW_CAMERA_ACTION))
-            .addAction(createNotificationAction(SNOOZE_REQUEST_CODE, SNOOZE_ACTION))
+            .addActions(actions)
             .build()
-    }
-
-    private fun getActionPendingIntent(requestCode: Int, action: String): PendingIntent {
-        return PendingIntent.getService(
-            context,
-            requestCode,
-            Intent(context, CryingActionIntentService::class.java).apply {
-                this.action = action
-            },
-            0
-        )
-    }
-
-    private fun createNotificationAction(
-        requestCode: Int,
-        action: String
-    ): NotificationCompat.Action {
-        val title = when (action) {
-            SHOW_CAMERA_ACTION -> context.resources.getString(R.string.notification_show_camera)
-            SNOOZE_ACTION -> context.resources.getString(R.string.notification_5_minutes_snooze)
-            else -> ""
-        }
-        return NotificationCompat.Action(
-            0,
-            title,
-            getActionPendingIntent(requestCode, action)
-        )
     }
 
     fun clearNotifications() {
@@ -105,6 +83,7 @@ class NotificationHandler(private val context: Context) {
         const val SHOW_CAMERA_ACTION = "SHOW_CAMERA_ACTION"
         private const val SNOOZE_REQUEST_CODE = 456
         private const val CAMERA_REQUEST_CODE = 789
+        private const val DEFAULT_REQUEST_CODE = 123
 
         fun createNotificationChannel(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -124,6 +103,42 @@ class NotificationHandler(private val context: Context) {
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.createNotificationChannel(channel)
             }
+        }
+
+        fun createNotificationAction(
+            action: String,
+            context: Context
+        ): NotificationCompat.Action {
+            val title = when (action) {
+                SHOW_CAMERA_ACTION -> context.resources.getString(R.string.notification_show_camera)
+                SNOOZE_ACTION -> context.resources.getString(R.string.notification_5_minutes_snooze)
+                else -> action
+            }
+            val requestCode = when (action) {
+                SHOW_CAMERA_ACTION -> CAMERA_REQUEST_CODE
+                SNOOZE_ACTION -> SNOOZE_REQUEST_CODE
+                else -> DEFAULT_REQUEST_CODE
+            }
+            return NotificationCompat.Action(
+                0,
+                title,
+                getActionPendingIntent(requestCode, action, context)
+            )
+        }
+
+        private fun getActionPendingIntent(
+            requestCode: Int,
+            action: String,
+            context: Context
+        ): PendingIntent {
+            return PendingIntent.getService(
+                context,
+                requestCode,
+                Intent(context, CryingActionIntentService::class.java).apply {
+                    this.action = action
+                },
+                0
+            )
         }
     }
 }
