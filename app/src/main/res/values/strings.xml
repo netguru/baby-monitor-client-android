@@ -113,4 +113,9 @@
 
     <string name="notification_show_camera">Show camera</string>
     <string name="notification_5_minutes_snooze">Snooze for 5 minutes</string>
+
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_snooze_title">Notification snooze</string>
+    <string name="dialog_snooze_message">Do you want to snooze notification for 5 minutes?</string>
 </resources>
