@@ -41,6 +41,5 @@ class DebugMetricsHelper @Inject constructor() {
 
         //Timber
         Timber.plant(Timber.DebugTree())
-        CrashManager.register(context)
     }
 }
