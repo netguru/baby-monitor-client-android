@@ -15,6 +15,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -82,6 +83,8 @@ class ClientHomeViewModelTest {
 
     @Test
     fun `should snooze notifications`() {
+        val disposable = mock<Disposable>()
+        whenever(snoozeNotificationUseCase.snoozeNotifications()).thenReturn(disposable)
         clientHomeViewModel.snoozeNotifications()
 
         verify(snoozeNotificationUseCase).snoozeNotifications()

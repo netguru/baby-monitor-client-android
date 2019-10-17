@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import org.jetbrains.anko.bundleOf
 import javax.inject.Inject
 
 class CryingActionIntentService : IntentService(NAME) {
@@ -51,10 +52,9 @@ class CryingActionIntentService : IntentService(NAME) {
     }
 
     private fun showSnoozeDialogArg(): Bundle {
-        return Bundle()
-            .apply {
-                putBoolean(SHOULD_SHOW_SNOOZE_DIALOG, true)
-            }
+        return bundleOf(
+            SHOULD_SHOW_SNOOZE_DIALOG to true
+        )
     }
 
     override fun onDestroy() {

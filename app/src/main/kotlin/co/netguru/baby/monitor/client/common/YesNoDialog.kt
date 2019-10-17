@@ -11,32 +11,6 @@ import org.jetbrains.anko.bundleOf
 
 class YesNoDialog : DialogFragment() {
 
-    companion object {
-        private const val KEY_TITLE = "key:title"
-        private const val KEY_MESSAGE = "key:message"
-        private const val KEY_POSITIVE = "key:positive"
-        private const val KEY_REQUEST_CODE = "key:request_code"
-
-        fun newInstance(
-            @StringRes title: Int,
-            message: String,
-            @StringRes positiveButton: Int = R.string.dialog_yes,
-            requestCode: Int = -1,
-            params: Bundle? = null
-        ) = YesNoDialog().apply {
-            arguments = bundleOf(
-                KEY_TITLE to title,
-                KEY_MESSAGE to message,
-                KEY_POSITIVE to positiveButton,
-                KEY_REQUEST_CODE to requestCode
-            ).also {
-                if (params != null) {
-                    it.putAll(params)
-                }
-            }
-        }
-    }
-
     private val title by lazy { requireArguments().getInt(KEY_TITLE) }
     private val message by lazy { requireArguments().getString(KEY_MESSAGE) }
     private val positiveButton by lazy { requireArguments().getInt(KEY_POSITIVE) }
@@ -66,5 +40,31 @@ class YesNoDialog : DialogFragment() {
     interface YesNoDialogClickListener {
         fun onYesClick(requestCode: Int, params: Bundle)
         fun onDismiss(requestCode: Int) = Unit
+    }
+
+    companion object {
+        private const val KEY_TITLE = "key:title"
+        private const val KEY_MESSAGE = "key:message"
+        private const val KEY_POSITIVE = "key:positive"
+        private const val KEY_REQUEST_CODE = "key:request_code"
+
+        fun newInstance(
+            @StringRes title: Int,
+            message: String,
+            @StringRes positiveButton: Int = R.string.dialog_yes,
+            requestCode: Int = -1,
+            params: Bundle? = null
+        ) = YesNoDialog().apply {
+            arguments = bundleOf(
+                KEY_TITLE to title,
+                KEY_MESSAGE to message,
+                KEY_POSITIVE to positiveButton,
+                KEY_REQUEST_CODE to requestCode
+            ).also {
+                if (params != null) {
+                    it.putAll(params)
+                }
+            }
+        }
     }
 }
