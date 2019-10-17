@@ -10,6 +10,7 @@ import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
+@Suppress("MagicNumber")
 object WavFileGenerator {
 
     internal const val DIRECTORY_NAME = "recordings"
@@ -20,18 +21,18 @@ object WavFileGenerator {
     private const val AVAILABLE_SPACE = AVAILABLE_MEGABYTES_FOR_APPLICATION * BYTES_IN_MEGABYTE
 
     fun saveAudio(
-            context: Context,
-            rawData: ByteArray,
-            bitsPerSample: Byte,
-            channels: Int,
-            sampleRate: Int,
-            byteRate: Int
+        context: Context,
+        rawData: ByteArray,
+        bitsPerSample: Byte,
+        channels: Int,
+        sampleRate: Int,
+        byteRate: Int
     ) = Single.fromCallable {
         checkAvailableSpace(context)
         val formatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
         val file = File(
-                context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE),
-                "crying_${LocalDateTime.now().format(formatter)}.wav"
+            context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE),
+            "crying_${LocalDateTime.now().format(formatter)}.wav"
         )
 
         DataOutputStream(FileOutputStream(file)).use { output ->
@@ -51,10 +52,10 @@ object WavFileGenerator {
 
         FileOutputStream(file).use { steam ->
             steam.write(
-                    getHeader(
-                            rawData, bitsPerSample,
-                            channels, sampleRate, byteRate
-                    ).toByteArray()
+                getHeader(
+                    rawData, bitsPerSample,
+                    channels, sampleRate, byteRate
+                ).toByteArray()
             )
             steam.write(rawData)
         }
@@ -86,56 +87,56 @@ object WavFileGenerator {
      * see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
      */
     private fun getHeader(
-            rawData: ByteArray,
-            bitsPerSample: Byte,
-            channels: Int,
-            sampleRate: Int,
-            byteRate: Int
+        rawData: ByteArray,
+        bitsPerSample: Byte,
+        channels: Int,
+        sampleRate: Int,
+        byteRate: Int
     ) = arrayOf(
-            'R'.toByte(),
-            'I'.toByte(),
-            'F'.toByte(),
-            'F'.toByte(),
-            (rawData.size + 36 and 0xff).toByte(),
-            (rawData.size + 36 shr 8 and 0xff).toByte(),
-            (rawData.size + 36 shr 16 and 0xff).toByte(),
-            (rawData.size + 36 shr 24 and 0xff).toByte(),
-            'W'.toByte(),
-            'A'.toByte(),
-            'V'.toByte(),
-            'E'.toByte(),
-            'f'.toByte(),
-            'm'.toByte(),
-            't'.toByte(),
-            ' '.toByte(),
-            16,
-            0,
-            0,
-            0,
-            1,
-            0,
-            channels.toByte(),
-            0,
-            (sampleRate and 0xff).toByte(),
-            (sampleRate shr 8 and 0xff).toByte(),
-            (sampleRate shr 16 and 0xff).toByte(),
-            (sampleRate shr 24 and 0xff).toByte(),
-            (byteRate and 0xff).toByte(),
-            (byteRate shr 8 and 0xff).toByte(),
-            (byteRate shr 16 and 0xff).toByte(),
-            (byteRate shr 24 and 0xff).toByte(),
-            (2 * 16 / 8).toByte(),
-            0,
-            bitsPerSample,
-            0,
-            'd'.toByte(),
-            'a'.toByte(),
-            't'.toByte(),
-            'a'.toByte(),
-            (rawData.size and 0xff).toByte(),
-            (rawData.size shr 8 and 0xff).toByte(),
-            (rawData.size shr 16 and 0xff).toByte(),
-            (rawData.size shr 24 and 0xff).toByte()
+        'R'.toByte(),
+        'I'.toByte(),
+        'F'.toByte(),
+        'F'.toByte(),
+        (rawData.size + 36 and 0xff).toByte(),
+        (rawData.size + 36 shr 8 and 0xff).toByte(),
+        (rawData.size + 36 shr 16 and 0xff).toByte(),
+        (rawData.size + 36 shr 24 and 0xff).toByte(),
+        'W'.toByte(),
+        'A'.toByte(),
+        'V'.toByte(),
+        'E'.toByte(),
+        'f'.toByte(),
+        'm'.toByte(),
+        't'.toByte(),
+        ' '.toByte(),
+        16,
+        0,
+        0,
+        0,
+        1,
+        0,
+        channels.toByte(),
+        0,
+        (sampleRate and 0xff).toByte(),
+        (sampleRate shr 8 and 0xff).toByte(),
+        (sampleRate shr 16 and 0xff).toByte(),
+        (sampleRate shr 24 and 0xff).toByte(),
+        (byteRate and 0xff).toByte(),
+        (byteRate shr 8 and 0xff).toByte(),
+        (byteRate shr 16 and 0xff).toByte(),
+        (byteRate shr 24 and 0xff).toByte(),
+        (2 * 16 / 8).toByte(),
+        0,
+        bitsPerSample,
+        0,
+        'd'.toByte(),
+        'a'.toByte(),
+        't'.toByte(),
+        'a'.toByte(),
+        (rawData.size and 0xff).toByte(),
+        (rawData.size shr 8 and 0xff).toByte(),
+        (rawData.size shr 16 and 0xff).toByte(),
+        (rawData.size shr 24 and 0xff).toByte()
     )
 
     private fun checkAvailableSpace(context: Context) {
@@ -147,14 +148,10 @@ object WavFileGenerator {
 
         if (size > AVAILABLE_SPACE) {
             directory
-                    .listFiles()
-                    .sortedBy { file -> file.lastModified() }
-                    .firstOrNull()?.delete()
+                .listFiles()
+                .sortedBy { file -> file.lastModified() }
+                .firstOrNull()?.delete()
             checkAvailableSpace(context)
         }
-    }
-
-    fun isExternalStorageWritable(): Boolean {
-        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
     }
 }

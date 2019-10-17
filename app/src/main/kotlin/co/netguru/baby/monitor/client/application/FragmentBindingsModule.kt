@@ -6,7 +6,6 @@ import co.netguru.baby.monitor.client.feature.client.configuration.SecondAppInfo
 import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
 import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
-import co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment
 import co.netguru.baby.monitor.client.feature.onboarding.FeatureDFragment
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragmentModule
@@ -42,10 +41,6 @@ internal abstract class FragmentBindingsModule {
     @FragmentScope
     @ContributesAndroidInjector
     internal abstract fun splashFragmentInjector(): SplashFragment
-
-    @FragmentScope
-    @ContributesAndroidInjector
-    internal abstract fun clientLullabiesFragmentInjector(): ClientLullabiesFragment
 
     @FragmentScope
     @ContributesAndroidInjector

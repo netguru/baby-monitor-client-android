@@ -6,7 +6,6 @@ import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragmentViewModel
-import co.netguru.baby.monitor.client.feature.client.home.lullabies.LullabiesViewModel
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import co.netguru.baby.monitor.client.feature.settings.SettingsViewModel
@@ -22,14 +21,14 @@ import kotlin.reflect.KClass
 @Suppress("UNCHECKED_CAST")
 @AppScope
 class ViewModelFactory @Inject constructor(
-        private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>
+    private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            viewModels[modelClass]?.get() as T
+        viewModels[modelClass]?.get() as T
 }
 
 @Target(
-        AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER
+    AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER
 )
 @Retention(AnnotationRetention.RUNTIME)
 @MapKey
@@ -46,7 +45,8 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(ClientLiveCameraFragmentViewModel::class)
-    abstract fun bindClientLiveCameraFragmentViewModel(clientHomeViewModel: ClientLiveCameraFragmentViewModel): ViewModel
+    abstract fun bindClientLiveCameraFragmentViewModel(clientHomeViewModel: ClientLiveCameraFragmentViewModel):
+            ViewModel
 
     @Binds
     @IntoMap
@@ -57,12 +57,6 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ServerViewModel::class)
     abstract fun bindServerViewModel(serverViewModel: ServerViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(LullabiesViewModel::class)
-    abstract fun bindLullabiesViewModel(lullabiesViewModel: LullabiesViewModel): ViewModel
-
 
     @Binds
     @IntoMap

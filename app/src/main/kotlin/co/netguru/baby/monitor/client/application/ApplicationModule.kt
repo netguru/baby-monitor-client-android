@@ -12,7 +12,6 @@ import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
-import co.netguru.baby.monitor.client.feature.server.player.LullabyPlayer
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import dagger.Module
@@ -36,9 +35,6 @@ class ApplicationModule {
 
     @Provides
     fun nsdServiceManager(nsdManager: NsdManager) = NsdServiceManager(nsdManager)
-
-    @Provides
-    fun lullabyPlayer(app: App) = LullabyPlayer(app)
 
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)
