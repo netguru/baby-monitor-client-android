@@ -33,12 +33,6 @@
         tools:layout="@layout/fragment_client_dashboard" />
 
     <fragment
-        android:id="@+id/clientLullabies"
-        android:name="co.netguru.baby.monitor.client.feature.client.home.lullabies.ClientLullabiesFragment"
-        android:label="Lullabies"
-        tools:layout="@layout/fragment_client_lullabies" />
-
-    <fragment
         android:id="@+id/clientSettings"
         android:name="co.netguru.baby.monitor.client.feature.settings.ServerSettingsFragment"
         android:label="Settings"

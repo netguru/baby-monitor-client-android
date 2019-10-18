@@ -103,8 +103,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/dashboardBabyTvBottomGl"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dashboardBabyTvTopGl"
-        app:met_floatingLabel="none" />
+        app:layout_constraintTop_toTopOf="@+id/dashboardBabyTvTopGl"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/dashboardBabyTvBottomGl"
