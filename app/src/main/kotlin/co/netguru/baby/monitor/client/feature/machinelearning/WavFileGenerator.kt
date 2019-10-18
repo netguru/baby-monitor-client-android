@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.machinelearning
 
 import android.content.Context
-import android.os.Environment
 import io.reactivex.Single
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter

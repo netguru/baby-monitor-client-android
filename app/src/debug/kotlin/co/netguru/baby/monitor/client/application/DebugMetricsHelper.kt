@@ -22,7 +22,6 @@ import javax.inject.Inject
 class DebugMetricsHelper @Inject constructor() {
 
     internal fun init(context: Context) {
-        //Timber
         Timber.plant(Timber.DebugTree())
     }
 }
