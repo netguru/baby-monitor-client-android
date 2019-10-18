@@ -5,6 +5,7 @@ import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationT
 import dagger.Reusable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -31,6 +32,8 @@ class NotifyBabyCryingUseCase @Inject constructor(
                     type = NotificationType.CRY_NOTIFICATION
                 )
             }
+            .doOnError { Timber.w(it) }
+            .retry()
             .subscribe()
 
     fun notifyBabyCrying() =
