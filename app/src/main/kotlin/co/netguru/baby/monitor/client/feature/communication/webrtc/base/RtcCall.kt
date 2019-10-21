@@ -37,12 +37,8 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
     protected var connection: PeerConnection? = null
 
     protected var capturer: CameraVideoCapturer? = null
-    protected var upStream: MediaStream? = null
     protected var dataChannel: DataChannel? = null
     protected var videoTrack: VideoTrack? = null
-    protected var audioSource: AudioSource? = null
-    private var videoSource: VideoSource? = null
-    protected var audio: AudioTrack? = null
 
     val dataChannelObserver = object : DataChannel.Observer {
         override fun onMessage(buffer: DataChannel.Buffer?) {
@@ -57,8 +53,6 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
         override fun onStateChange() = Unit
     }
 
-    abstract fun createStream(): MediaStream?
-
     fun cleanup() {
         callStateListener = {}
         connection?.dispose()
@@ -66,7 +60,6 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
         remoteView?.release()
         remoteView = null
 
-        audioSource?.dispose()
         capturer?.stopCapture()
         capturer?.dispose()
 
@@ -119,12 +112,6 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
         dataChannel?.registerObserver(dataChannelObserver)
     }
 
-    protected fun createVideoTrack(isFacingFront: Boolean = false): VideoTrack? {
-        capturer = createCapturer(isFacingFront)
-        videoSource = factory?.createVideoSource(capturer)
-        return factory?.createVideoTrack(VIDEO_TRACK_ID, videoSource)
-    }
-
     protected fun initRtc(context: Context) {
         Timber.i("initializing")
         PeerConnectionFactory.initialize(
@@ -134,38 +121,18 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
                 .createInitializationOptions()
         )
         Timber.i("initialized")
-        factory = PeerConnectionFactory(PeerConnectionFactory.Options())
-        factory?.setVideoHwAccelerationOptions(sharedContext, sharedContext)
+        factory = PeerConnectionFactory.builder()
+            .createPeerConnectionFactory()
+            .apply {
+                setVideoHwAccelerationOptions(sharedContext, sharedContext)
+            }
         Timber.i("created")
         constraints = MediaConstraints().apply {
-            optional.add(MediaConstraints.KeyValuePair(HANDSHAKE_AUDIO_OFFER, "true"))
-            optional.add(MediaConstraints.KeyValuePair(HANDSHAKE_VIDEO_OFFER, "true"))
-            optional.add(MediaConstraints.KeyValuePair(HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT, "true"))
+            mandatory.add(MediaConstraints.KeyValuePair(HANDSHAKE_AUDIO_OFFER, "true"))
+            mandatory.add(MediaConstraints.KeyValuePair(HANDSHAKE_VIDEO_OFFER, "true"))
+            mandatory.add(MediaConstraints.KeyValuePair(HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT, "true"))
         }
     }
-
-    private fun createCapturer(isFacingFront: Boolean = false): CameraVideoCapturer? {
-        val enumerator = Camera1Enumerator()
-        for (name in enumerator.deviceNames) {
-            if (isFront(isFacingFront, enumerator, name) || isBack(isFacingFront, enumerator, name)
-            ) {
-                return enumerator.createCapturer(name, null)
-            }
-        }
-        return null
-    }
-
-    private fun isBack(
-        isFacingFront: Boolean,
-        enumerator: Camera1Enumerator,
-        name: String?
-    ) = !isFacingFront && enumerator.isBackFacing(name)
-
-    private fun isFront(
-        isFacingFront: Boolean,
-        enumerator: Camera1Enumerator,
-        name: String?
-    ) = isFacingFront && enumerator.isFrontFacing(name)
 
     private fun handleMessage(jsonObject: JSONObject) {
         if (jsonObject.has(STATE_CHANGE_MESSAGE)) {
@@ -193,13 +160,5 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
 
         private const val HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT = "DtlsSrtpKeyAgreement"
         private const val STATE_CHANGE_MESSAGE = "StateChange"
-
-        const val LOCAL_MEDIA_STREAM_LABEL = "stream1"
-        const val AUDIO_TRACK_ID = "audio1"
-        const val VIDEO_TRACK_ID = "video1"
-
-        const val VIDEO_WIDTH = 500
-        const val VIDEO_HEIGHT = 500
-        const val VIDEO_FPS = 30
     }
 }

@@ -55,28 +55,28 @@ class MachineLearningService : IntentService("MachineLearningService") {
     private fun startRecording() {
         aacRecorder = AacRecorder()
         aacRecorder?.startRecording()
-                ?.subscribeOn(Schedulers.computation())
-                ?.subscribeBy(
-                        onComplete = { Timber.i("Recording completed") },
-                        onError = Timber::e
-                )?.addTo(compositeDisposable)
+            ?.subscribeOn(Schedulers.computation())
+            ?.subscribeBy(
+                onComplete = { Timber.i("Recording completed") },
+                onError = Timber::e
+            )?.addTo(compositeDisposable)
         aacRecorder?.data
-                ?.subscribeOn(Schedulers.newThread())
-                ?.subscribeBy(
-                        onNext = this::handleRecordingData,
-                        onComplete = { Timber.i("Complete") },
-                        onError = Timber::e
-                )?.addTo(compositeDisposable)
+            ?.subscribeOn(Schedulers.newThread())
+            ?.subscribeBy(
+                onNext = this::handleRecordingData,
+                onComplete = { Timber.i("Complete") },
+                onError = Timber::e
+            )?.addTo(compositeDisposable)
     }
 
     private fun handleRecordingData(dataPair: Pair<ByteArray, ShortArray>) {
         machineLearning.processData(dataPair.second)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { map -> handleMachineLearningData(map, dataPair.first) },
-                        onError = { error -> complain("ML model error", error) }
-                ).addTo(compositeDisposable)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { map -> handleMachineLearningData(map, dataPair.first) },
+                onError = { error -> complain("ML model error", error) }
+            ).addTo(compositeDisposable)
     }
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
@@ -86,24 +86,25 @@ class MachineLearningService : IntentService("MachineLearningService") {
             notifyBabyCryingUseCase.notifyBabyCrying()
 
             // Save baby recordings for later upload only when we have a strict user's permission
-            if (sharedPrefsWrapper.isUploadEnablad())
+            if (sharedPrefsWrapper.isUploadEnablad()) {
                 saveDataToFile(rawData)
+            }
         }
     }
 
     private fun saveDataToFile(rawData: ByteArray) {
         WavFileGenerator.saveAudio(
-                applicationContext,
-                rawData,
-                AacRecorder.BIT_RATE.toByte(),
-                AacRecorder.CHANELS,
-                AacRecorder.SAMPLING_RATE,
-                AacRecorder.BIT_RATE
+            applicationContext,
+            rawData,
+            AacRecorder.BIT_RATE.toByte(),
+            AacRecorder.CHANNELS,
+            AacRecorder.SAMPLING_RATE,
+            AacRecorder.BIT_RATE
         ).subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onSuccess = { succeed -> Timber.i("File saved $succeed") },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+            .subscribeBy(
+                onSuccess = { succeed -> Timber.i("File saved $succeed") },
+                onError = Timber::e
+            ).addTo(compositeDisposable)
     }
 
     @UiThread
@@ -114,12 +115,15 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
     inner class MachineLearningBinder : Binder() {
         fun startRecording() {
+            Timber.i("Start recording")
             this@MachineLearningService.startRecording()
         }
 
         fun stopRecording() {
+            Timber.i("Stop recording")
             aacRecorder?.release()
             aacRecorder = null
+            compositeDisposable.clear()
         }
 
         fun cleanup() {

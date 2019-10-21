@@ -1,8 +1,10 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc
 
 import android.content.Context
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.server.RtcServerConnectionObserver
+import co.netguru.baby.monitor.client.feature.server.RtcServerConnectionState
+import io.reactivex.Observable
 import org.webrtc.*
 import timber.log.Timber
 
@@ -19,6 +21,7 @@ class WebRtcManager constructor(
     private lateinit var audioTrack: AudioTrack
 
     private lateinit var peerConnection: PeerConnection
+    private lateinit var rtcServerConnectionObserver: RtcServerConnectionObserver
 
     private val eglBase: EglBase by lazy { EglBase.create() }
     private val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
@@ -27,8 +30,11 @@ class WebRtcManager constructor(
         cameraEnumerator.deviceNames.asSequence()
             // prefer back-facing cameras
             .sortedBy { deviceName ->
-                if (cameraEnumerator.isBackFacing(deviceName)) 1
-                else 2
+                if (cameraEnumerator.isBackFacing(deviceName)) {
+                    1
+                } else {
+                    2
+                }
             }
             .mapNotNull { deviceName ->
                 cameraEnumerator.createCapturer(deviceName, null)
@@ -54,10 +60,11 @@ class WebRtcManager constructor(
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
         videoCapturer.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FRAMERATE)
+        rtcServerConnectionObserver = RtcServerConnectionObserver()
 
         peerConnection = peerConnectionFactory.createPeerConnection(
             emptyList(),
-            DefaultObserver()
+            rtcServerConnectionObserver
         )
 
         val stream = peerConnectionFactory.createLocalMediaStream("stream")
@@ -77,6 +84,7 @@ class WebRtcManager constructor(
 
     fun acceptOffer(offer: String) {
         Timber.i("acceptOffer($offer)")
+        rtcServerConnectionObserver.onAcceptOffer()
         peerConnection
             .setRemoteDescription(SessionDescription(SessionDescription.Type.OFFER, offer))
             .doOnComplete { Timber.d("Offer set as a remote description.") }
@@ -101,6 +109,9 @@ class WebRtcManager constructor(
         surfaceViewRenderer.init(sharedContext, null)
         videoTrack.addSink(surfaceViewRenderer)
     }
+
+    fun getConnectionObservable(): Observable<RtcServerConnectionState> =
+        rtcServerConnectionObserver.rtcConnectionObservable
 
     companion object {
         private const val VIDEO_HEIGHT = 480

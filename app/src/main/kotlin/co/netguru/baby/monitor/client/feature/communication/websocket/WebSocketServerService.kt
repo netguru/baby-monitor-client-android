@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.communication.websocket
 import android.app.Service
 import android.content.Intent
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import dagger.android.AndroidInjection
@@ -61,7 +62,7 @@ class WebSocketServerService : Service() {
         fun messages(): Observable<Pair<WebSocket, Message>> =
             messages
 
-        fun clientConnectionStatus() =
-            serverHandler.clientConnectionStatus()
+        fun clientConnectionStatus(): Observable<ClientConnectionStatus> =
+            serverHandler.clientConnectionStatus
     }
 }

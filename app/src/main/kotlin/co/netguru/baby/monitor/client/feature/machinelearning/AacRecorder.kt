@@ -21,21 +21,25 @@ class AacRecorder {
 
     fun startRecording(): Completable = Completable.fromAction {
         Timber.i("starting recording")
-        bufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2
+        bufferSize = AudioRecord.getMinBufferSize(
+            SAMPLING_RATE,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT
+        ) * 2
         if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
             bufferSize = SAMPLING_RATE * 2
         }
         audioRecord = AudioRecord(
-                MediaRecorder.AudioSource.MIC,
-                SAMPLING_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                bufferSize
+            MediaRecorder.AudioSource.MIC,
+            SAMPLING_RATE,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT,
+            bufferSize
         )
-        audioRecord?.startRecording()
         Timber.i("recording started")
         val buffer = ByteArray(bufferSize)
         while (!shouldStopRecording) {
+            if (audioRecord?.recordingState == AudioRecord.RECORDSTATE_STOPPED) audioRecord?.startRecording()
             audioRecord?.read(buffer, 0, buffer.size)
             addData(buffer)
         }
@@ -69,7 +73,7 @@ class AacRecorder {
 
     companion object {
         internal const val SAMPLING_RATE = 44_100
-        internal const val CHANELS = 1
+        internal const val CHANNELS = 1
         internal const val BIT_RATE = 16
     }
 }
