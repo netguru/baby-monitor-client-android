@@ -63,7 +63,7 @@ class WebSocketServerHandler(
 
     private fun restartServer() {
         stopServer()
-        Completable.timer(5, TimeUnit.SECONDS)
+        Completable.timer(SERVER_RESTART_DELAY, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
@@ -101,5 +101,9 @@ class WebSocketServerHandler(
                     stopServer(shouldRestart)
                 }
             ).addTo(compositeDisposable)
+    }
+
+    companion object {
+        private const val SERVER_RESTART_DELAY = 5L
     }
 }

@@ -92,7 +92,7 @@ class ServerViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { mutableRtcConnectionStatus.postValue(it) },
-                onError = { mutableRtcConnectionStatus.postValue(RtcServerConnectionState.Error)}
+                onError = { mutableRtcConnectionStatus.postValue(RtcServerConnectionState.Error) }
             )
     }
 
