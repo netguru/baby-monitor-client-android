@@ -16,25 +16,21 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
+import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
-import org.java_websocket.WebSocket
 import timber.log.Timber
 import javax.inject.Inject
 
-
+@Suppress("TooManyFunctions")
 class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override val layoutResource = R.layout.fragment_child_monitor
@@ -66,6 +62,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
+        setupObservers()
         webRtcServiceBinder?.addSurfaceView(surfaceView)
     }
 
@@ -109,7 +106,9 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requireContext().allPermissionsGranted(Companion.permissions)) {
@@ -126,7 +125,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             is WebRtcService.Binder ->
                 handleWebRtcBinder(service)
             is WebSocketServerService.Binder ->
-                handleWebSocketServerBinder(service)
+                viewModel.handleWebSocketServerBinder(service)
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
                 machineLearningServiceBinder = service
@@ -161,19 +160,60 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         }
         logo.setOnClickListener { startVideoPreview() }
         message_video_disabled_energy_saver.setOnClickListener { startVideoPreview() }
+    }
+
+    private fun setupObservers() {
+        serverViewModelObservers()
+        childMonitorObservables()
+    }
+
+    private fun childMonitorObservables() {
+        viewModel.babyNameStatus.observeNonNull(this, { name ->
+            baby_name.text = name
+            baby_name.visibility =
+                if (name.isBlank()) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+        })
+
+        viewModel.pulsatingViewStatus.observe(this, Observer { status ->
+            Timber.d("Client status: $status.")
+            when (status) {
+                ClientConnectionStatus.CLIENT_CONNECTED ->
+                    pulsatingView.start()
+                ClientConnectionStatus.EMPTY ->
+                    pulsatingView.stop()
+            }
+        })
+    }
+
+    private fun serverViewModelObservers() {
         serverViewModel.previewingVideo().observe(this, Observer { previewing ->
-            if (previewing == true)
+            if (previewing == true) {
                 startVideoPreview()
-            else
+            } else {
                 stopVideoPreview()
+            }
         })
         serverViewModel.timer().observe(this, Observer { secondsLeft ->
-            timer.text = if (secondsLeft != null && secondsLeft < 60)
+            timer.text = if (secondsLeft != null && secondsLeft < VIDEO_PREVIEW_MAX_TIME) {
                 getString(
                     R.string.message_disabling_video_preview_soon,
                     "0:%02d".format(secondsLeft)
                 )
-            else ""
+            } else {
+                ""
+            }
+        })
+
+        serverViewModel.rtcConnectionStatus.observeNonNull(this, { connectionState ->
+            when (connectionState) {
+                RtcServerConnectionState.ConnectionOffer -> machineLearningServiceBinder?.stopRecording()
+                RtcServerConnectionState.Disconnected -> machineLearningServiceBinder?.startRecording()
+                else -> Unit
+            }
         })
     }
 
@@ -196,9 +236,9 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun bindServices() {
         bindService(
-                MachineLearningService::class.java,
-                this,
-                Service.BIND_AUTO_CREATE
+            MachineLearningService::class.java,
+            this,
+            Service.BIND_AUTO_CREATE
         )
         requireContext().run {
             bindService(
@@ -217,53 +257,17 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun handleWebRtcBinder(service: WebRtcService.Binder) {
         Timber.d("handleWebRtcBinder($service)")
+        serverViewModel.handleRtcServerConnectionState(service.getConnectionObservable())
         webRtcServiceBinder = service
         service.addSurfaceView(surfaceView)
     }
 
-    private fun handleWebSocketServerBinder(binder: WebSocketServerService.Binder) {
-        Timber.d("handleWebSocketServerBinder($binder)")
-        binder.clientConnectionStatus().observe(this, Observer { status ->
-            Timber.d("Client status: $status.")
-            when (status) {
-                ClientConnectionStatus.CLIENT_CONNECTED ->
-                    pulsatingView.start()
-                ClientConnectionStatus.EMPTY ->
-                    pulsatingView.stop()
-            }
-        })
-        binder.messages()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { (ws, msg) ->
-                msg.action()?.let { (key, value) ->
-                    handleWebSocketAction(ws, key, value)
-                }
-                msg.babyName?.let { name ->
-                    baby_name.text = name
-                    baby_name.visibility =
-                        if (name.isBlank())
-                            View.GONE
-                        else
-                            View.VISIBLE
-                }
-            }
-            .addTo(disposables)
-    }
-
-    private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
-        if (key == RtcCall.PUSH_NOTIFICATIONS_KEY) {
-            viewModel.receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
-        } else {
-            Timber.w("Unhandled web socket action: '$key', '$value'.")
-        }
-    }
-
     companion object {
         private const val PERMISSIONS_REQUEST_CODE = 125
+        private const val VIDEO_PREVIEW_MAX_TIME = 60
 
         private val permissions = arrayOf(
-                RECORD_AUDIO, CAMERA
+            RECORD_AUDIO, CAMERA
         )
     }
 }

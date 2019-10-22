@@ -1,6 +1,5 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
-import android.Manifest
 import android.app.Service
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
@@ -13,7 +12,6 @@ import android.os.IBinder
 import android.view.View
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
@@ -21,7 +19,6 @@ import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import org.webrtc.PeerConnection
@@ -44,7 +41,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private var socketBinder: WebSocketClientService.Binder? = null
-    private var webRtcBinder: WebRtcService.Binder? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,13 +63,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     private fun shouldShowSnoozeDialogOnBack() =
         arguments?.getBoolean(CryingActionIntentService.SHOULD_SHOW_SNOOZE_DIALOG) == true
 
-    override fun onResume() {
-        super.onResume()
-        if (!requireContext().allPermissionsGranted(permissions)) {
-            requestPermissions(permissions, PERMISSIONS_REQUEST_CODE)
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         viewModel.setBackButtonState(
@@ -94,11 +83,7 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
             is WebSocketClientService.Binder -> {
                 socketBinder = service
             }
-            is WebRtcService.Binder -> {
-                webRtcBinder = service
-            }
         }
-
         maybeStartCall()
     }
 
@@ -141,13 +126,5 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
             }
             is GatheringState -> Unit
         }
-    }
-
-    companion object {
-        private const val PERMISSIONS_REQUEST_CODE = 125
-
-        private val permissions = arrayOf(
-            Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA
-        )
     }
 }

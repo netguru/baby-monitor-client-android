@@ -1,12 +1,20 @@
 package co.netguru.baby.monitor.client.feature.server
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
+import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import dagger.Lazy
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.java_websocket.WebSocket
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -16,8 +24,12 @@ class ChildMonitorViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
+    private val mutableBabyNameStatus = MutableLiveData<String>()
+    val babyNameStatus: LiveData<String> = mutableBabyNameStatus
+    private val mutablePulsatingViewStatus = MutableLiveData<ClientConnectionStatus>()
+    val pulsatingViewStatus: LiveData<ClientConnectionStatus> = mutablePulsatingViewStatus
 
-    fun receiveFirebaseToken(ipAddress: String, token: String) {
+    private fun receiveFirebaseToken(ipAddress: String, token: String) {
         receiveFirebaseTokenUseCase.get().receiveToken(ipAddress = ipAddress, token = token)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
@@ -42,6 +54,40 @@ class ChildMonitorViewModel @Inject constructor(
                 }
             )
             .addTo(disposables)
+    }
+
+    fun handleWebSocketServerBinder(binder: WebSocketServerService.Binder) {
+        Timber.d("handleWebSocketServerBinder($binder)")
+
+        disposables += binder.clientConnectionStatus().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { connectionStatus ->
+                    mutablePulsatingViewStatus.postValue(connectionStatus)
+                },
+                onError = { Timber.e(it) }
+            )
+
+        disposables += binder.messages()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { (ws, msg) ->
+                msg.action()?.let { (key, value) ->
+                    handleWebSocketAction(ws, key, value)
+                }
+
+                msg.babyName?.let { name ->
+                    mutableBabyNameStatus.postValue(name)
+                }
+            }
+    }
+
+    private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
+        if (key == RtcCall.PUSH_NOTIFICATIONS_KEY) {
+            receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
+        } else {
+            Timber.w("Unhandled web socket action: '$key', '$value'.")
+        }
     }
 
     override fun onCleared() {

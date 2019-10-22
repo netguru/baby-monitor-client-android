@@ -20,8 +20,7 @@ import java.net.URI
 
 class RtcClient(
     client: RxWebSocketClient,
-    private val serverUri: URI,
-    var enableVoice: Boolean = false
+    private val serverUri: URI
 ) : RtcCall(client) {
 
     internal fun startCall(
@@ -83,18 +82,6 @@ class RtcClient(
             ),
             constraints
         )
-    }
-
-    override fun createStream(): MediaStream? {
-        upStream = factory?.createLocalMediaStream(LOCAL_MEDIA_STREAM_LABEL)
-        audioSource = factory?.createAudioSource(MediaConstraints())
-        audio = factory?.createAudioTrack(AUDIO_TRACK_ID, audioSource)
-        upStream?.addTrack(audio)
-        videoTrack = createVideoTrack()
-        upStream?.addTrack(videoTrack)
-        capturer?.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS)
-        audio?.setEnabled(enableVoice)
-        return upStream
     }
 
     private fun onIceGatheringComplete() {

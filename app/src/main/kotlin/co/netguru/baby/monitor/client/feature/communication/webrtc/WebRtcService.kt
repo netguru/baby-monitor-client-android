@@ -36,8 +36,7 @@ class WebRtcService : Service() {
             }
         }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-        }
+        override fun onServiceDisconnected(name: ComponentName) {}
     }
 
     override fun onBind(intent: Intent) =
@@ -81,5 +80,6 @@ class WebRtcService : Service() {
         fun addSurfaceView(surfaceView: SurfaceViewRenderer) {
             webRtcManager.addSurfaceView(surfaceView)
         }
+        fun getConnectionObservable() = webRtcManager.getConnectionObservable()
     }
 }
