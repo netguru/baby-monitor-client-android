@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.common.view
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import kotlinx.android.extensions.LayoutContainer
 

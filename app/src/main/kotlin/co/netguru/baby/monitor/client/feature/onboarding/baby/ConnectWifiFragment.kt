@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.onboarding.baby
 
 import android.Manifest
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings

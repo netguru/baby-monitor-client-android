@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import android.content.Intent
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.RunsInBackground

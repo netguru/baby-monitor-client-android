@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,14 +7,14 @@
     android:focusableInTouchMode="false"
     tools:background="@color/background">
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardShapesTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.068" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardShapesStartGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,28 +31,28 @@
         app:layout_constraintTop_toTopOf="@+id/dashboardShapesTopGl"
         app:srcCompat="@drawable/shapes" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardShapesBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.518" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardShapesEndGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.85" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardBabyIvTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.141" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardBabyIvStartGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,28 +70,28 @@
         app:layout_constraintStart_toStartOf="@+id/dashboardBabyIvStartGl"
         app:layout_constraintTop_toTopOf="@+id/dashboardBabyIvTopGl" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardBabyIvBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.42" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardBabyIvEndGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.717" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardBabyTvTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.579" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/clientHomeBabyNameTv"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -105,21 +105,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/dashboardBabyTvTopGl"/>
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardBabyTvBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.65" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardConnectionTvTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.662" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/clientConnectionStatusTv"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -133,7 +133,7 @@
         app:layout_constraintTop_toTopOf="@+id/dashboardConnectionTvTopGl"
         tools:text="Devices disconnected" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardConnectionTvBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
         app:layout_constraintStart_toEndOf="@+id/clientConnectionStatusTv"
         app:layout_constraintTop_toTopOf="@+id/clientConnectionStatusTv" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardButtonsTopGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -175,14 +175,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/dashboardButtonsTopGl" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardLiveCameraEndGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.459" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardActivityLogStartGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -205,7 +205,7 @@
         app:layout_constraintStart_toStartOf="@+id/dashboardActivityLogStartGl"
         app:layout_constraintTop_toTopOf="@+id/dashboardButtonsTopGl" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/dashboardButtonsBottomGl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -223,4 +223,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

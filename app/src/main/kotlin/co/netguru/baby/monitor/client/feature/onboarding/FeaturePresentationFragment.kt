@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.onboarding
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.text.HtmlCompat
+import androidx.fragment.app.Fragment
+import androidx.core.text.HtmlCompat
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import kotlinx.android.synthetic.main.onboarding_buttons.*
 
-class FeaturePresentationFragment : Fragment() {
+class FeaturePresentationFragment : androidx.fragment.app.Fragment() {
 
     private var layoutResource = R.layout.fragment_feature_a
 

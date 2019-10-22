@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall

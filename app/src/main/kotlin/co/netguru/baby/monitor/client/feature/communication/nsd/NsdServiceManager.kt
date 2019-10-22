@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.nsd
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import co.netguru.baby.monitor.client.data.communication.nsd.DiscoveryStatus

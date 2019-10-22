@@ -118,4 +118,5 @@
     <string name="dialog_no">No</string>
     <string name="dialog_snooze_title">Notification snooze</string>
     <string name="dialog_snooze_message">Do you want to snooze notification for 5 minutes?</string>
+    <string name="specify_this_device">Specify this device</string>
 </resources>

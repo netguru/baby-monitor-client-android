@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.View

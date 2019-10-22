@@ -9,8 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase

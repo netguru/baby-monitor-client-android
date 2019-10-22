@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -19,7 +19,6 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-
 
 class SettingsViewModel @Inject constructor(
     private val dataRepository: DataRepository

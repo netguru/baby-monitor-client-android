@@ -1,23 +1,26 @@
 package co.netguru.baby.monitor.client.feature.settings
 
-
 import android.Manifest
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.common.extensions.*
+import co.netguru.baby.monitor.client.common.extensions.BITMAP_AUTO_SIZE
+import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.common.extensions.babyProfileImage
+import co.netguru.baby.monitor.client.common.extensions.observeNonNull
+import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.common.extensions.startAppSettings
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import kotlinx.android.synthetic.main.fragment_client_settings.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
 import javax.inject.Inject
-
 
 class ClientSettingsFragment : BaseDaggerFragment() {
     override val layoutResource = R.layout.fragment_client_settings

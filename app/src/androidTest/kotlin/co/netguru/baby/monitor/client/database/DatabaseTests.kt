@@ -1,9 +1,9 @@
 package co.netguru.baby.monitor.client.database
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.arch.persistence.room.Room
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import org.junit.After
@@ -12,7 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4ClassRunner::class)
 class DatabaseTests {
 
     @Rule
@@ -24,7 +24,7 @@ class DatabaseTests {
     @Before
     fun createDb() {
         appDatabase = Room.inMemoryDatabaseBuilder(
-                InstrumentationRegistry.getContext(),
+                InstrumentationRegistry.getInstrumentation().context,
                 AppDatabase::class.java
         ).allowMainThreadQueries()
                 .build()

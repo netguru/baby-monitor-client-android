@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.splash
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
 import io.reactivex.Single

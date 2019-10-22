@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.feature.machinelearning
 import android.app.IntentService
 import android.content.Intent
 import android.os.Binder
-import android.support.annotation.UiThread
+import androidx.annotation.UiThread
 import android.widget.Toast
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper

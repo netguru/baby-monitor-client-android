@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.data.communication
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import io.reactivex.Flowable
 
 @Dao

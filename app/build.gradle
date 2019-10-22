@@ -26,7 +26,7 @@ android {
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.1.0'
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
@@ -152,6 +152,15 @@ dependencies {
     implementation libs.kotlin
     implementation libs.constraintLayout
 
+    //Navigation Components
+    implementation libs.navigationFragment
+    implementation libs.navigationUiKtx
+
+    //Ktx
+    implementation ktx.core
+    implementation ktx.fragment
+    implementation ktx.liveData
+
     //Anko Commons
     implementation libs.ankoCommons
 
@@ -214,10 +223,6 @@ dependencies {
     //EasyImage
     implementation libs.easyImage
 
-    //Navigation Components
-    implementation libs.navigationFragment
-    implementation libs.navigationUiKtx
-
     //Tensor Flow
     implementation libs.tensorFlow
 
@@ -240,10 +245,6 @@ dependencies {
     //Firebase Analytics
     implementation libs.firebaseAnalytics
     implementation libs.crashlytics
-
-    //TODO delete after AndroidX Migration (added because of fatal lint version conflict)
-    implementation libs.mediaCompat
-    implementation libs.supportV4
 
     //Unit testing
     testImplementation test.junit

@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.onboarding.baby
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent

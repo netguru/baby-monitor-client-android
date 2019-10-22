@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import android.content.Context
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState

@@ -2,14 +2,12 @@ package co.netguru.baby.monitor.client.common
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.extensions.requireArguments
 import org.jetbrains.anko.bundleOf
 
-class YesNoDialog : DialogFragment() {
+class YesNoDialog : androidx.fragment.app.DialogFragment() {
 
     private val title by lazy { requireArguments().getInt(KEY_TITLE) }
     private val message by lazy { requireArguments().getString(KEY_MESSAGE) }
