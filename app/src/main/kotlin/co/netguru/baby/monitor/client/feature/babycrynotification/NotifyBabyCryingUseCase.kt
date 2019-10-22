@@ -24,7 +24,7 @@ class NotifyBabyCryingUseCase @Inject constructor(
 
     fun subscribe(title: String, text: String): Disposable =
         babyCryingEvents
-            .throttleFirst(1, TimeUnit.MINUTES)
+            .throttleFirst(CRYING_EVENTS_THROTTLING_TIME, TimeUnit.MINUTES)
             .flatMapCompletable {
                 fetchClientsAndPostNotification(
                     title = title,
@@ -40,4 +40,8 @@ class NotifyBabyCryingUseCase @Inject constructor(
         babyCryingEvents.onNext(BabyCrying)
 
     private object BabyCrying
+
+    companion object {
+        private const val CRYING_EVENTS_THROTTLING_TIME = 3L
+    }
 }
