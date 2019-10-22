@@ -23,8 +23,8 @@ android {
         applicationId "com.netguru.babyguard"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
-        versionName '0.1.0'
+        versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 2
+        versionName '0.2.0'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
