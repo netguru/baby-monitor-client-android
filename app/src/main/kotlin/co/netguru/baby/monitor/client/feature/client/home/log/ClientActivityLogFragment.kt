@@ -1,12 +1,12 @@
 package co.netguru.baby.monitor.client.feature.client.home.log
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
@@ -34,8 +34,7 @@ class ClientActivityLogFragment : BaseDaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
-        viewModel.logData.observe(this, Observer { activities ->
-            activities ?: return@Observer
+        viewModel.logData.observeNonNull(this, { activities ->
             if (activities.isNotEmpty()) {
                 logAdapter.setupList(activities)
             }

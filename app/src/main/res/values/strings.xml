@@ -7,7 +7,6 @@
     <string name="system_is_busy_error">The system is to busy to process the request</string>
     <string name="p2p_unsupported_on_device_error">Wi-Fi P2P isn\'t supported on the device running the app</string>
     <string name="no_name">Your baby name</string>
-    <string name="add_another_baby">Add another baby</string>
     <string name="settings">Settings</string>
     <string name="specify_this_device_title">Specify this\ndevice</string>
     <string name="start_by_defining_this_device_description">Let’s start by defining this device</string>
@@ -103,7 +102,6 @@
 
     <string name="connecting_devices_failed_text_1">Ups! Something\nwent wrong :(</string>
     <string name="connecting_devices_failed_text_2">Make sure that you are connected\nto the same Wi-Fi network</string>
-    <string name="camera_error">Unfortunatelly, there was an unexpected problem with your camera preview. Please Try again</string>
 
     <string name="message_video_preview_disabled_tap_to_enable">Video preview disabled to conserve energy. Tap to enable it.</string>
     <string name="message_disabling_video_preview_soon">Disabling video preview in %s</string>
@@ -118,4 +116,5 @@
     <string name="dialog_no">No</string>
     <string name="dialog_snooze_title">Notification snooze</string>
     <string name="dialog_snooze_message">Do you want to snooze notification for 5 minutes?</string>
+    <string name="specify_this_device">Specify this device</string>
 </resources>

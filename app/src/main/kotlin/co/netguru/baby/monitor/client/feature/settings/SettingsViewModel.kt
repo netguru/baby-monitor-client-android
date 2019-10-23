@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -19,7 +19,6 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-
 
 class SettingsViewModel @Inject constructor(
     private val dataRepository: DataRepository
@@ -70,7 +69,7 @@ class SettingsViewModel @Inject constructor(
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
 
         var flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        flags = if (Build.VERSION.SDK_INT >= 21) {
+        flags = if (Build.VERSION.SDK_INT >= SDK_21) {
             flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
         } else {
             flags or Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET
@@ -94,5 +93,9 @@ class SettingsViewModel @Inject constructor(
         val inputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(view.getWindowToken(), 0)
+    }
+
+    companion object {
+        private const val SDK_21 = 21
     }
 }

@@ -9,8 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
@@ -72,8 +72,9 @@ class DebugNotificationManager @Inject constructor(
 
     private inner class DebugNotificationReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action != ACTION_DEBUG_NOTIFICATION)
-                throw RuntimeException("Unhandled action: {intent.action}.")
+            if (intent.action != ACTION_DEBUG_NOTIFICATION) {
+                throw IllegalArgumentException("Unhandled action: {intent.action}.")
+            }
 
             when (intent.getSerializableExtra(KEY_DEBUG_NOTIFICATION_EXTRA) as DebugNotificationAction) {
                 DebugNotificationAction.BABY_CRYING -> {

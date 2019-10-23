@@ -2,10 +2,10 @@ package co.netguru.baby.monitor.client.common.extensions
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.annotation.AttrRes
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.v4.content.ContextCompat
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import android.util.TypedValue
 import io.reactivex.Single
 import java.io.File

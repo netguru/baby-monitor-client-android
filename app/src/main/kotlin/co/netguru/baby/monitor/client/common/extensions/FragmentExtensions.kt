@@ -4,12 +4,11 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.Resources
 import android.net.Uri
-import android.os.Bundle
 import android.provider.Settings
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.content.res.ResourcesCompat
+import androidx.annotation.StringRes
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 
 fun Fragment.showSnackbarMessage(
     @StringRes resId: Int,
@@ -44,6 +43,3 @@ fun Fragment.getColor(resource: Int, theme: Resources.Theme? = null) = Resources
     resource,
     theme
 )
-
-fun Fragment.requireArguments(): Bundle =
-    arguments ?: throw IllegalStateException("Fragment $this doesn't have arguments.")

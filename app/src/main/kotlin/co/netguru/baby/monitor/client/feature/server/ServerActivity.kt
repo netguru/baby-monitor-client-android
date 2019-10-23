@@ -1,10 +1,10 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.view.Gravity
+import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import dagger.android.support.DaggerAppCompatActivity
@@ -25,11 +25,10 @@ class ServerActivity : DaggerAppCompatActivity() {
 
     private fun observeCloseButtonFromDrawer() {
         viewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
-            shouldClose ?: return@Observer
             if (shouldClose) {
-                server_drawer.openDrawer(Gravity.END)
+                server_drawer.openDrawer(GravityCompat.END)
             } else {
-                server_drawer.closeDrawer(Gravity.END)
+                server_drawer.closeDrawer(GravityCompat.END)
             }
         })
     }

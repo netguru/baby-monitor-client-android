@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.nsd
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import co.netguru.baby.monitor.client.data.communication.nsd.DiscoveryStatus
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @Reusable
 class NsdServiceManager @Inject constructor(
-        private val nsdManager: NsdManager
+    private val nsdManager: NsdManager
 ) {
     internal val serviceInfoData = MutableLiveData<List<NsdServiceInfo>>()
     private val serviceInfoList = mutableListOf<NsdServiceInfo>()
@@ -22,10 +22,10 @@ class NsdServiceManager @Inject constructor(
 
     private fun createNsdRegistrationListener() = object : NsdManager.RegistrationListener {
         override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) =
-                Timber.e("Baby Monitor Service unregistration failed")
+            Timber.e("Baby Monitor Service unregistration failed")
 
         override fun onServiceUnregistered(serviceInfo: NsdServiceInfo?) =
-                Timber.i("Baby Monitor service unregistered")
+            Timber.i("Baby Monitor service unregistered")
 
         override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
             Timber.e("Baby Monitor Service registration failed")
@@ -33,7 +33,7 @@ class NsdServiceManager @Inject constructor(
         }
 
         override fun onServiceRegistered(serviceInfo: NsdServiceInfo?) =
-                Timber.d("Baby Monitor Service registered")
+            Timber.d("Baby Monitor Service registered")
     }
 
     private val nsdDiscoveryListener = object : NsdManager.DiscoveryListener {
@@ -65,12 +65,12 @@ class NsdServiceManager @Inject constructor(
         }
 
         override fun onDiscoveryStarted(serviceType: String?) =
-                Timber.d("Baby Monitor Service discovery started")
+            Timber.d("Baby Monitor Service discovery started")
 
         override fun onDiscoveryStopped(serviceType: String?) = Unit
 
         override fun onServiceLost(serviceInfo: NsdServiceInfo?) =
-                Timber.e("Baby Monitor Service failed lost")
+            Timber.e("Baby Monitor Service failed lost")
     }
 
     internal fun registerService(listener: OnServiceConnectedListener) {
@@ -93,7 +93,11 @@ class NsdServiceManager @Inject constructor(
     internal fun discoverService(onServiceConnectedListener: OnServiceConnectedListener) {
         if (discoveryStatus == DiscoveryStatus.STOPPED) {
             this.onServiceConnectedListener = onServiceConnectedListener
-            nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, nsdDiscoveryListener)
+            nsdManager.discoverServices(
+                SERVICE_TYPE,
+                NsdManager.PROTOCOL_DNS_SD,
+                nsdDiscoveryListener
+            )
             discoveryStatus = DiscoveryStatus.STARTED
         }
     }

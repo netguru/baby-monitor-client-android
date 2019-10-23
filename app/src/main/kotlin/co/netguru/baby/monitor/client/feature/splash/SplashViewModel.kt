@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.splash
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
 import io.reactivex.Single
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
-        private val dataRepository: DataRepository
+    private val dataRepository: DataRepository
 ) : ViewModel() {
     internal val appState = MutableLiveData<AppState>()
 
@@ -23,14 +23,14 @@ class SplashViewModel @Inject constructor(
 
     internal fun getSavedState() {
         Single.timer(DELAY_MILLISECONDS, TimeUnit.MILLISECONDS)
-                .zipWith(dataRepository.getSavedState())
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onSuccess = {
-                            appState.postValue(it.second)
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+            .zipWith(dataRepository.getSavedState())
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onSuccess = {
+                    appState.postValue(it.second)
+                },
+                onError = Timber::e
+            ).addTo(compositeDisposable)
     }
 
     override fun onCleared() {

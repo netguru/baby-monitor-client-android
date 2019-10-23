@@ -1,15 +1,15 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
 import android.app.Service
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.view.Gravity
+import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
@@ -107,12 +107,12 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection,
             })
         homeViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
             if (shouldClose == true) {
-                client_drawer.openDrawer(Gravity.END)
+                client_drawer.openDrawer(GravityCompat.END)
             } else {
-                client_drawer.closeDrawer(Gravity.END)
+                client_drawer.closeDrawer(GravityCompat.END)
             }
         })
-        client_drawer.isDrawerOpen(Gravity.END)
+        client_drawer.isDrawerOpen(GravityCompat.END)
     }
 
     private fun setBackButtonClick(shouldShowSnoozeDialog: Boolean) {

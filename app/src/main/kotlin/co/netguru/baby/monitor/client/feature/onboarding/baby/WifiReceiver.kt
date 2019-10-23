@@ -1,14 +1,13 @@
 package co.netguru.baby.monitor.client.feature.onboarding.baby
 
-import android.arch.lifecycle.MutableLiveData
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.NetworkInfo
 import android.net.wifi.WifiManager
+import androidx.lifecycle.MutableLiveData
 import co.netguru.baby.monitor.client.data.communication.SingleEvent
-
 
 class WifiReceiver : BroadcastReceiver() {
 

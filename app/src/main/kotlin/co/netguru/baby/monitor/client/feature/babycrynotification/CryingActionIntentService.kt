@@ -3,7 +3,7 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavDeepLinkBuilder
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.NotificationHandler

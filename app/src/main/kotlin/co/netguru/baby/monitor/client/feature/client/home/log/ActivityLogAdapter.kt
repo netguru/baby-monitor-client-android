@@ -1,15 +1,19 @@
 package co.netguru.baby.monitor.client.feature.client.home.log
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.DateProvider
 import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
-import co.netguru.baby.monitor.client.data.client.home.log.LogData.*
-import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.*
+import co.netguru.baby.monitor.client.data.client.home.log.LogData.Data
+import co.netguru.baby.monitor.client.data.client.home.log.LogData.EndText
+import co.netguru.baby.monitor.client.data.client.home.log.LogData.LogHeader
+import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.DataLogsViewHolder
+import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.EndTextHolder
+import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.HeaderViewHolder
 import org.threeten.bp.LocalDateTime
 
 class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderInterface {
@@ -67,7 +71,6 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
             } else {
                 map[activityList[itemPosition].timeStamp.toLocalDate().toString()] ?: 0
             }
-
 
     override fun bindHeaderData(header: View, headerPosition: Int) {
         val textView = header.findViewById(R.id.itemActivityLogHeaderTv) as TextView

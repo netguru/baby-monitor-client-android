@@ -4,11 +4,10 @@ import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
 import co.netguru.baby.monitor.client.R
 
 class PulsatingView(context: Context, attrs: AttributeSet?) : View(context, attrs) {

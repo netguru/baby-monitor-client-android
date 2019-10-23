@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.data
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity

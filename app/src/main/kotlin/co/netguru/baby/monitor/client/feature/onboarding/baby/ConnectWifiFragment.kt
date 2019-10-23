@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.onboarding.baby
 
 import android.Manifest
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -22,11 +22,13 @@ class ConnectWifiFragment : BaseFragment() {
         connectionConnectWiFiCtrl.setOnClickListener {
             if (wifiReceiver.isWifiConnected.value?.fetchData() == true) {
                 findNavController().navigate(
-                        when {
-                            requireContext().allPermissionsGranted(allPermissions) -> R.id.connectWiFiToSetupInformation
-                            requireContext().allPermissionsGranted(cameraPermission) -> R.id.connectWiFiToPermissionMicrophone
-                            else -> R.id.connectWiFiToPermissionCamera
-                        }
+                    when {
+                        requireContext().allPermissionsGranted(allPermissions)
+                        -> R.id.connectWiFiToSetupInformation
+                        requireContext().allPermissionsGranted(cameraPermission)
+                        -> R.id.connectWiFiToPermissionMicrophone
+                        else -> R.id.connectWiFiToPermissionCamera
+                    }
                 )
             } else {
                 startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
