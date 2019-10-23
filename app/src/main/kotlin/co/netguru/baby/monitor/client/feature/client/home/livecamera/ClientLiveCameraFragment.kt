@@ -17,7 +17,6 @@ import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIn
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
-import co.netguru.baby.monitor.client.feature.communication.webrtc.GatheringState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
@@ -60,6 +59,16 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
         )
     }
 
+    override fun onStart() {
+        super.onStart()
+        maybeStartCall()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        fragmentViewModel.endCall()
+    }
+
     private fun shouldShowSnoozeDialogOnBack() =
         arguments?.getBoolean(CryingActionIntentService.SHOULD_SHOW_SNOOZE_DIALOG) == true
 
@@ -93,14 +102,14 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun onAvailabilityChange(connectionAvailable: Boolean) {
         Timber.d("onAvailabilityChange($connectionAvailable)")
-        if (connectionAvailable && !fragmentViewModel.callInProgress.get()) {
+        if (connectionAvailable) {
             maybeStartCall()
         }
     }
 
     private fun maybeStartCall() {
         val socketBinder = socketBinder ?: return Timber.e("No socket binder.")
-        startCall(socketBinder)
+        if (!fragmentViewModel.callInProgress.get()) startCall(socketBinder)
     }
 
     private fun startCall(
@@ -118,13 +127,11 @@ class ClientLiveCameraFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun handleStreamStateChange(streamState: StreamState) {
-        when (streamState) {
-            is ConnectionState -> {
-                if (streamState.connectionState == PeerConnection.IceConnectionState.COMPLETED) {
-                    streamProgressBar.visibility = View.GONE
-                }
-            }
-            is GatheringState -> Unit
+        when ((streamState as? ConnectionState)?.connectionState) {
+            PeerConnection.IceConnectionState.COMPLETED -> streamProgressBar.visibility = View.GONE
+            PeerConnection.IceConnectionState.CHECKING -> streamProgressBar.visibility =
+                View.VISIBLE
+            else -> Unit
         }
     }
 }
