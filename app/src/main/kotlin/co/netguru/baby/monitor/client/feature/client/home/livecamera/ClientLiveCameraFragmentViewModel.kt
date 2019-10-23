@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
-import androidx.lifecycle.ViewModel
 import android.content.Context
+import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
@@ -49,7 +49,6 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(): ViewModel() {
                             onError = {
                                 callCleanup(this)
                                 Timber.e(it, "Error during startCall")
-
                             }
                     ).addTo(compositeDisposable)
             remoteView = liveCameraRemoteRenderer

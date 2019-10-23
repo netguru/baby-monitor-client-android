@@ -41,7 +41,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
 
     override fun onStart() {
         super.onStart()
-        Single.timer(2, TimeUnit.MINUTES)
+        Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
             .subscribe { _ ->
                 findNavController().navigate(R.id.configurationFailed)
             }
@@ -95,5 +95,9 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
                 findNavController().navigate(R.id.configurationToAllDone)
             }
         }
+    }
+
+    companion object {
+        private const val SEARCH_TIME_TILL_FAIL = 2L
     }
 }

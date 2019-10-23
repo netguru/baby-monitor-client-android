@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
-        private val dataRepository: DataRepository
+    private val dataRepository: DataRepository
 ) : ViewModel() {
     internal val appState = MutableLiveData<AppState>()
 
@@ -23,14 +23,14 @@ class SplashViewModel @Inject constructor(
 
     internal fun getSavedState() {
         Single.timer(DELAY_MILLISECONDS, TimeUnit.MILLISECONDS)
-                .zipWith(dataRepository.getSavedState())
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onSuccess = {
-                            appState.postValue(it.second)
-                        },
-                        onError = Timber::e
-                ).addTo(compositeDisposable)
+            .zipWith(dataRepository.getSavedState())
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onSuccess = {
+                    appState.postValue(it.second)
+                },
+                onError = Timber::e
+            ).addTo(compositeDisposable)
     }
 
     override fun onCleared() {

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 class StickyHeaderDecorator(
-        private val listener: StickyHeaderInterface
+    private val listener: StickyHeaderInterface
 ) : RecyclerView.ItemDecoration() {
 
     private var stickyHeaderHeight = 0
@@ -27,14 +27,18 @@ class StickyHeaderDecorator(
         val contactPoint = currentHeader.bottom
         val childInContact = getChildInContact(parent, contactPoint, headerPos)
 
-        if (childInContact != null && listener.isHeader(parent.getChildAdapterPosition(childInContact))) {
+        if (childInContact != null && listener.isHeader(
+                parent.getChildAdapterPosition(
+                    childInContact
+                )
+            )
+        ) {
             moveHeader(canvas, currentHeader, childInContact)
             return
         }
 
         moveHeader(canvas, currentHeader)
     }
-
 
     private fun getHeaderViewForItem(headerPosition: Int, parent: RecyclerView): View {
         val layoutResId = listener.getHeaderLayout(headerPosition)
@@ -50,15 +54,20 @@ class StickyHeaderDecorator(
         canvas.restore()
     }
 
-    private fun getChildInContact(parent: RecyclerView, contactPoint: Int, currentHeaderPos: Int): View? {
+    private fun getChildInContact(
+        parent: RecyclerView,
+        contactPoint: Int,
+        currentHeaderPos: Int
+    ): View? {
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
 
-            val heightTolerance = if (currentHeaderPos != i && listener.isHeader(parent.getChildAdapterPosition(child))) {
-                stickyHeaderHeight - child.height
-            } else {
-                0
-            }
+            val heightTolerance =
+                if (currentHeaderPos != i && listener.isHeader(parent.getChildAdapterPosition(child))) {
+                    stickyHeaderHeight - child.height
+                } else {
+                    0
+                }
 
             val childBottomPosition = if (child.top > 0) {
                 child.bottom + heightTolerance
@@ -81,15 +90,23 @@ class StickyHeaderDecorator(
 
         // Specs for parent (RecyclerView)
         val widthSpec = View.MeasureSpec.makeMeasureSpec(parent.width, View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(parent.height, View.MeasureSpec.UNSPECIFIED)
+        val heightSpec =
+            View.MeasureSpec.makeMeasureSpec(parent.height, View.MeasureSpec.UNSPECIFIED)
 
         // Specs for children (headers)
-        val childWidthSpec = ViewGroup.getChildMeasureSpec(widthSpec, parent.paddingLeft + parent.paddingRight, view.layoutParams.width)
-        val childHeightSpec = ViewGroup.getChildMeasureSpec(heightSpec, parent.paddingTop + parent.paddingBottom, view.layoutParams.height)
+        val childWidthSpec = ViewGroup.getChildMeasureSpec(
+            widthSpec,
+            parent.paddingLeft + parent.paddingRight,
+            view.layoutParams.width
+        )
+        val childHeightSpec = ViewGroup.getChildMeasureSpec(
+            heightSpec,
+            parent.paddingTop + parent.paddingBottom,
+            view.layoutParams.height
+        )
 
         view.measure(childWidthSpec, childHeightSpec)
         stickyHeaderHeight = view.measuredHeight
         view.layout(0, 0, view.measuredWidth, stickyHeaderHeight)
     }
-
 }

@@ -22,11 +22,13 @@ class ConnectWifiFragment : BaseFragment() {
         connectionConnectWiFiCtrl.setOnClickListener {
             if (wifiReceiver.isWifiConnected.value?.fetchData() == true) {
                 findNavController().navigate(
-                        when {
-                            requireContext().allPermissionsGranted(allPermissions) -> R.id.connectWiFiToSetupInformation
-                            requireContext().allPermissionsGranted(cameraPermission) -> R.id.connectWiFiToPermissionMicrophone
-                            else -> R.id.connectWiFiToPermissionCamera
-                        }
+                    when {
+                        requireContext().allPermissionsGranted(allPermissions)
+                        -> R.id.connectWiFiToSetupInformation
+                        requireContext().allPermissionsGranted(cameraPermission)
+                        -> R.id.connectWiFiToPermissionMicrophone
+                        else -> R.id.connectWiFiToPermissionCamera
+                    }
                 )
             } else {
                 startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))

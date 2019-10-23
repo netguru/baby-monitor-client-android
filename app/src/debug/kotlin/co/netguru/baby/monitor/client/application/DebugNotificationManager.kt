@@ -72,8 +72,9 @@ class DebugNotificationManager @Inject constructor(
 
     private inner class DebugNotificationReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action != ACTION_DEBUG_NOTIFICATION)
-                throw RuntimeException("Unhandled action: {intent.action}.")
+            if (intent.action != ACTION_DEBUG_NOTIFICATION) {
+                throw IllegalArgumentException("Unhandled action: {intent.action}.")
+            }
 
             when (intent.getSerializableExtra(KEY_DEBUG_NOTIFICATION_EXTRA) as DebugNotificationAction) {
                 DebugNotificationAction.BABY_CRYING -> {
