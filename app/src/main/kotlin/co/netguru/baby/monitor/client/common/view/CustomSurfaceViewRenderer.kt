@@ -16,4 +16,9 @@ class CustomSurfaceViewRenderer(context: Context, attrs: AttributeSet?) : Surfac
         super.init(sharedContext, rendererEvents)
         initialized = true
     }
+
+    override fun release() {
+        super.release()
+        initialized = false
+    }
 }
