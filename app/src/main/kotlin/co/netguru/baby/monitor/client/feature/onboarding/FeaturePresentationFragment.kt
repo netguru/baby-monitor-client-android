@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import kotlinx.android.synthetic.main.onboarding_buttons.*
 
-class FeaturePresentationFragment : androidx.fragment.app.Fragment() {
+class FeaturePresentationFragment : Fragment() {
 
     private var layoutResource = R.layout.fragment_feature_a
 

@@ -27,12 +27,7 @@ class StickyHeaderDecorator(
         val contactPoint = currentHeader.bottom
         val childInContact = getChildInContact(parent, contactPoint, headerPos)
 
-        if (childInContact != null && listener.isHeader(
-                parent.getChildAdapterPosition(
-                    childInContact
-                )
-            )
-        ) {
+        if (childInContact != null && isHeader(parent, childInContact)) {
             moveHeader(canvas, currentHeader, childInContact)
             return
         }
@@ -63,7 +58,7 @@ class StickyHeaderDecorator(
             val child = parent.getChildAt(i)
 
             val heightTolerance =
-                if (currentHeaderPos != i && listener.isHeader(parent.getChildAdapterPosition(child))) {
+                if (currentHeaderPos != i && isHeader(parent, child)) {
                     stickyHeaderHeight - child.height
                 } else {
                     0
@@ -81,6 +76,13 @@ class StickyHeaderDecorator(
         }
         return null
     }
+
+    private fun isHeader(
+        parent: RecyclerView,
+        childInContact: View
+    ) = listener.isHeader(
+        parent.getChildAdapterPosition(childInContact)
+    )
 
     /**
      * Properly measures and layouts the top sticky header.
