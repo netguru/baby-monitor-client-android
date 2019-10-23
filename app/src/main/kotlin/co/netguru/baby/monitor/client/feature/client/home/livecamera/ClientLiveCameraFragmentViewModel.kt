@@ -16,7 +16,7 @@ import java.net.URI
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-class ClientLiveCameraFragmentViewModel @Inject constructor(): ViewModel() {
+class ClientLiveCameraFragmentViewModel @Inject constructor() : ViewModel() {
 
     private var currentCall: RtcClient? = null
     val callInProgress = AtomicBoolean(false)
@@ -24,9 +24,7 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(): ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        compositeDisposable.clear()
-        currentCall?.let(this::callCleanup)
-        callInProgress.set(false)
+        endCall()
     }
 
     fun startCall(
@@ -41,23 +39,25 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(): ViewModel() {
         currentCall = RtcClient(client = client, serverUri = serverUri).apply {
 
             startCall(context, listener, streamStateListener)
-                    .subscribeOn(Schedulers.newThread())
-                    .subscribeBy(
-                            onComplete = {
-                                Timber.i("Call started")
-                            },
-                            onError = {
-                                callCleanup(this)
-                                Timber.e(it, "Error during startCall")
-
-                            }
-                    ).addTo(compositeDisposable)
+                .subscribeOn(Schedulers.newThread())
+                .subscribeBy(
+                    onComplete = {
+                        Timber.i("Call started")
+                    },
+                    onError = {
+                        cleanup()
+                        callInProgress.set(false)
+                        Timber.e(it, "Error during startCall")
+                    }
+                ).addTo(compositeDisposable)
             remoteView = liveCameraRemoteRenderer
         }
     }
 
-    private fun callCleanup(rtcClient: RtcClient) {
-            rtcClient.cleanup()
-            callInProgress.set(false)
+    fun endCall() {
+        compositeDisposable.clear()
+        currentCall?.cleanup()
+        currentCall = null
+        callInProgress.set(false)
     }
 }
