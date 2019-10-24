@@ -1,11 +1,10 @@
 package co.netguru.baby.monitor.client.feature.client.home.dashboard
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
@@ -33,19 +32,14 @@ class ClientDashboardFragment : BaseDaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getData()
+        setupObservers()
         clientHomeActivityLogIbtn.setOnClickListener {
             findNavController().navigate(R.id.actionDashboardToLogs)
         }
     }
 
-    override fun onDestroyView() {
-        clientConnectionStatusPv.stop()
-        super.onDestroyView()
-    }
-
-    private fun getData() {
-        viewModel.selectedChild.observeNonNull(this, { child ->
+    private fun setupObservers() {
+        viewModel.selectedChild.observeNonNull(viewLifecycleOwner, { child ->
             clientHomeBabyNameTv.apply {
                 if (child.name.isNullOrBlank()) {
                     text = getString(R.string.your_baby_name)
@@ -63,8 +57,8 @@ class ClientDashboardFragment : BaseDaggerFragment() {
                     .into(clientHomeBabyIv)
             }
         })
-        viewModel.selectedChildAvailability.observe(this, Observer { childAvailable ->
-            if (childAvailable == true) {
+        viewModel.selectedChildAvailability.observeNonNull(viewLifecycleOwner, { childAvailable ->
+            if (childAvailable) {
                 showClientConnected()
             } else {
                 showClientDisconnected()
