@@ -148,8 +148,6 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
         internal const val P2P_OFFER = "offerSDP"
         internal const val P2P_ANSWER = "answerSDP"
 
-        internal const val PUSH_NOTIFICATIONS_KEY = "PUSH_NOTIFICATIONS_KEY"
-
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"
 

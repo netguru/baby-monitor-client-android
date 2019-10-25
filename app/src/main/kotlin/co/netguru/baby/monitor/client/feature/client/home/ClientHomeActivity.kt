@@ -1,11 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import android.app.Service
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,10 +13,8 @@ import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
-import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketClientService
 import com.bumptech.glide.request.RequestOptions
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.toolbar_child.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -29,7 +22,7 @@ import timber.log.Timber
 import java.net.URI
 import javax.inject.Inject
 
-class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection,
+class ClientHomeActivity : DaggerAppCompatActivity(),
     YesNoDialog.YesNoDialogClickListener {
 
     @Inject
@@ -37,7 +30,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection,
     private val homeViewModel by lazy {
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
-    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,36 +37,16 @@ class ClientHomeActivity : DaggerAppCompatActivity(), ServiceConnection,
 
         setupView()
         getData()
-        bindService(
-            Intent(this, WebSocketClientService::class.java),
-            this,
-            Service.BIND_AUTO_CREATE
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.dispose()
-        unbindService(this)
+        initWebSocketConnection()
     }
 
     override fun onSupportNavigateUp() =
         findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
 
-    override fun onServiceDisconnected(name: ComponentName?) {
-        Timber.i("service disconnected $name")
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        if (service is WebSocketClientService.Binder) {
-            handleWebSocketClientServiceBinder(service)
-        }
-    }
-
-    private fun handleWebSocketClientServiceBinder(binder: WebSocketClientService.Binder) {
+    private fun initWebSocketConnection() {
         homeViewModel.selectedChild.observeNonNull(this, { child ->
             Timber.i("Opening socket to ${child.address}.")
-            homeViewModel.openSocketConnection(binder.client(), URI.create(child.address))
+            homeViewModel.openSocketConnection(URI.create(child.address))
         })
     }
 

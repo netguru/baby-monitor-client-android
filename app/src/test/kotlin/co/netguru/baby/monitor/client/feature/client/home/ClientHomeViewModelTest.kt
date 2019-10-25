@@ -9,11 +9,11 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
-import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import com.nhaarman.mockito_kotlin.whenever
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.junit.Before
@@ -41,13 +41,18 @@ class ClientHomeViewModelTest {
 
     @Before
     fun setUp() {
-        whenever(dataRepository.getChildLiveData()).doReturn(childLiveData)
+        whenever(dataRepository.getChildLiveData()).thenReturn(childLiveData)
         clientHomeViewModel = ClientHomeViewModel(
             dataRepository,
             sendFirebaseTokenUseCase,
             sendBabyNameUseCase,
-            snoozeNotificationUseCase
+            snoozeNotificationUseCase,
+            rxWebSocketClient
         )
+        whenever(sendFirebaseTokenUseCase.sendFirebaseToken(rxWebSocketClient)).thenReturn(
+            Completable.complete())
+        whenever(sendBabyNameUseCase.streamBabyName(rxWebSocketClient)).thenReturn(
+            Completable.complete())
     }
 
     @Test
@@ -59,9 +64,10 @@ class ClientHomeViewModelTest {
             selectedChildAvailabilityObserver
         )
 
-        clientHomeViewModel.openSocketConnection(rxWebSocketClient, uri)
+        clientHomeViewModel.openSocketConnection(uri)
 
         verify(selectedChildAvailabilityObserver).onChanged(true)
+        verify(sendBabyNameUseCase).streamBabyName(rxWebSocketClient)
         verify(sendFirebaseTokenUseCase).sendFirebaseToken(rxWebSocketClient)
     }
 
@@ -75,7 +81,7 @@ class ClientHomeViewModelTest {
             selectedChildAvailabilityObserver
         )
 
-        clientHomeViewModel.openSocketConnection(rxWebSocketClient, uri)
+        clientHomeViewModel.openSocketConnection(uri)
 
         verify(selectedChildAvailabilityObserver).onChanged(false)
         verifyZeroInteractions(sendFirebaseTokenUseCase)
