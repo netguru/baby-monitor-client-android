@@ -28,17 +28,15 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
 
     protected lateinit var constraints: MediaConstraints
 
-    protected var callStateListener: (state: CallState) -> Unit = {}
-    protected var streamStateListener: (streamState: StreamState) -> Unit = {}
+    protected var callStateListener: ((state: CallState) -> Unit)? = null
+    protected var streamStateListener: ((streamState: StreamState) -> Unit)? = null
     protected var state: CallState? = null
     private var streamState: StreamState? = null
 
     protected var factory: PeerConnectionFactory? = null
     protected var connection: PeerConnection? = null
 
-    protected var capturer: CameraVideoCapturer? = null
     protected var dataChannel: DataChannel? = null
-    protected var videoTrack: VideoTrack? = null
 
     val dataChannelObserver = object : DataChannel.Observer {
         override fun onMessage(buffer: DataChannel.Buffer?) {
@@ -54,16 +52,13 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
     }
 
     fun cleanup() {
-        callStateListener = {}
+        callStateListener = null
+        streamStateListener = null
         connection?.dispose()
+        dataChannel?.unregisterObserver()
 
         remoteView?.release()
         remoteView = null
-
-        capturer?.stopCapture()
-        capturer?.dispose()
-
-        videoTrack?.dispose()
 
         compositeDisposable.dispose()
     }
@@ -80,12 +75,12 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
 
     protected fun reportStateChange(state: CallState) {
         this.state = state
-        callStateListener(state)
+        callStateListener?.invoke(state)
     }
 
     protected fun reportStreamStateChange(state: StreamState) {
         this.streamState = state
-        streamStateListener(state)
+        streamStateListener?.invoke(state)
     }
 
     @Suppress("TooGenericExceptionCaught")
