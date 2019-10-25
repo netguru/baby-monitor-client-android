@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
-import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcCall
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
+import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager.Companion.PUSH_NOTIFICATIONS_KEY
 import dagger.Lazy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -83,7 +83,7 @@ class ChildMonitorViewModel @Inject constructor(
     }
 
     private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
-        if (key == RtcCall.PUSH_NOTIFICATIONS_KEY) {
+        if (key == PUSH_NOTIFICATIONS_KEY) {
             receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
         } else {
             Timber.w("Unhandled web socket action: '$key', '$value'.")

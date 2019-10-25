@@ -21,4 +21,8 @@ class FirebaseInstanceManager @Inject constructor(
     fun invalidateFirebaseToken() {
         firebaseInstanceId.deleteInstanceId()
     }
+
+    companion object {
+        internal const val PUSH_NOTIFICATIONS_KEY = "PUSH_NOTIFICATIONS_KEY"
+    }
 }

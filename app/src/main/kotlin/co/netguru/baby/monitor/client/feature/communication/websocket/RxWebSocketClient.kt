@@ -9,8 +9,9 @@ import org.java_websocket.handshake.ServerHandshake
 import timber.log.Timber
 import java.net.URI
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class RxWebSocketClient {
+class RxWebSocketClient @Inject constructor() {
 
     private var client: RxWebSocketClient? = null
 
@@ -19,8 +20,10 @@ class RxWebSocketClient {
             ?: RxWebSocketClient(serverUri = serverUri)
                 .also { newClient -> client = newClient }
                 .also { client ->
-                    Timber.i("Connecting client to ${client.uri}.")
-                    client.connect()
+                    if (client.uri != serverUri || !client.isOpen) {
+                        Timber.i("Connecting client to ${client.uri}.")
+                        client.connect()
+                    }
                 }
 
     fun events(serverUri: URI): Observable<Event> =

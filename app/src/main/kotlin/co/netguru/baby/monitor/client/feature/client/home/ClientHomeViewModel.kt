@@ -22,7 +22,8 @@ class ClientHomeViewModel @Inject constructor(
     private val dataRepository: DataRepository,
     private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase,
     private val sendBabyNameUseCase: SendBabyNameUseCase,
-    private val snoozeNotificationUseCase: SnoozeNotificationUseCase
+    private val snoozeNotificationUseCase: SnoozeNotificationUseCase,
+    internal val rxWebSocketClient: RxWebSocketClient
 ) : ViewModel() {
 
     private val openSocketDisposables = CompositeDisposable()
@@ -55,6 +56,7 @@ class ClientHomeViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        rxWebSocketClient.dispose()
         compositeDisposable.dispose()
     }
 
@@ -69,13 +71,13 @@ class ClientHomeViewModel @Inject constructor(
         this.backButtonState.postValue(backButtonState)
     }
 
-    fun openSocketConnection(client: RxWebSocketClient, address: URI) {
-        client.events(address)
+    fun openSocketConnection(address: URI) {
+        rxWebSocketClient.events(address)
             .subscribeBy(
                 onNext = { event ->
                     Timber.i("Consuming event: $event.")
                     when (event) {
-                        is RxWebSocketClient.Event.Open -> handleWebSocketOpen(client)
+                        is RxWebSocketClient.Event.Open -> handleWebSocketOpen(rxWebSocketClient)
                         is RxWebSocketClient.Event.Close -> handleWebSocketClose()
                     }
                 },
