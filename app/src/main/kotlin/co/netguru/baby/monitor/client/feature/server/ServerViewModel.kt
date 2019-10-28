@@ -1,55 +1,65 @@
 package co.netguru.baby.monitor.client.feature.server
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.server.CameraState
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ServerViewModel @Inject constructor(
     private val nsdServiceManager: NsdServiceManager,
-    private val dataRepository: DataRepository
+    private val dataRepository: DataRepository,
+    private val schedulersProvider: ISchedulersProvider
 ) : ViewModel() {
 
-    internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
-    private val previewingVideo = MutableLiveData<Boolean>()
-    private val timer = MutableLiveData<Long>()
+    private val mutableShouldDrawerBeOpen = MutableLiveData<Boolean>()
+    internal val shouldDrawerBeOpen: LiveData<Boolean> = mutableShouldDrawerBeOpen
+    private val mutableTimer = MutableLiveData<Long>()
     private var timerDisposable: Disposable? = null
     private val compositeDisposable = CompositeDisposable()
     private val mutableRtcConnectionStatus = MutableLiveData<RtcServerConnectionState>()
+    private val mutableCameraState = MutableLiveData(
+        CameraState(
+            previewEnabled = true,
+            streamingEnabled = false
+        )
+    )
+    internal val cameraState: LiveData<CameraState> = mutableCameraState
     val rtcConnectionStatus: LiveData<RtcServerConnectionState> = mutableRtcConnectionStatus
 
-    internal fun previewingVideo(): LiveData<Boolean> =
-        previewingVideo
+    internal val previewingVideo = Transformations.map(cameraState) { it.previewEnabled }
+        .distinctUntilChanged()
 
-    internal fun timer(): LiveData<Long> =
-        timer
+    internal val timer: LiveData<Long> =
+        mutableTimer
 
     internal fun resetTimer() {
         timerDisposable?.dispose()
-        Observable.intervalRange(0, VIDEO_PREVIEW_TOTAL_TIME, 0, 1, TimeUnit.SECONDS)
+        timerDisposable = Observable.intervalRange(1, VIDEO_PREVIEW_TOTAL_TIME, 0, 1, TimeUnit.SECONDS,
+            schedulersProvider.computation())
+            .observeOn(schedulersProvider.mainThread())
             .subscribeBy(
                 onNext = { elapsedSeconds ->
                     val secondsLeft = VIDEO_PREVIEW_TOTAL_TIME - elapsedSeconds
-                    timer.postValue(secondsLeft)
+                    mutableTimer.postValue(secondsLeft)
                 },
                 onComplete = {
-                    previewingVideo.postValue(false)
+                    mutableTimer.postValue(null)
+                    toggleVideoPreview(false)
                 }
             )
-            .let(::timerDisposable::set)
     }
 
     internal fun registerNsdService(
@@ -75,7 +85,7 @@ class ServerViewModel @Inject constructor(
 
     internal fun saveConfiguration() {
         dataRepository.saveConfiguration(AppState.SERVER)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulersProvider.io())
             .subscribeBy(
                 onComplete = { Timber.i("state saved") },
                 onError = Timber::e
@@ -87,16 +97,43 @@ class ServerViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun handleRtcServerConnectionState(connectionObservable: Observable<RtcServerConnectionState>) {
-        compositeDisposable += connectionObservable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    fun handleRtcServerConnectionState(webRtcServiceBinder: WebRtcService.Binder) {
+        compositeDisposable += webRtcServiceBinder.getConnectionObservable()
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.mainThread())
             .subscribeBy(
-                onNext = { mutableRtcConnectionStatus.postValue(it) },
+                onNext = {
+                    handleStreamState(it)
+                    mutableRtcConnectionStatus.postValue(it)
+                },
                 onError = { mutableRtcConnectionStatus.postValue(RtcServerConnectionState.Error) }
             )
     }
 
+    fun toggleDrawer(shouldBeOpened: Boolean) {
+        mutableShouldDrawerBeOpen.postValue(shouldBeOpened)
+    }
+
+    fun toggleVideoPreview(shouldShowPreview: Boolean) {
+        handleCameraState(previewEnabled = shouldShowPreview)
+        if (!shouldShowPreview && timerDisposable?.isDisposed == false) timerDisposable?.dispose()
+    }
+
+    private fun handleCameraState(
+        previewEnabled: Boolean = mutableCameraState.value?.previewEnabled == true,
+        streamingEnabled: Boolean = mutableCameraState.value?.streamingEnabled == true
+    ) {
+        mutableCameraState.postValue(CameraState(previewEnabled, streamingEnabled))
+    }
+
+    private fun handleStreamState(it: RtcServerConnectionState?) {
+        when (it) {
+            RtcServerConnectionState.Connected -> handleCameraState(streamingEnabled = true)
+            RtcServerConnectionState.Disconnected -> handleCameraState(streamingEnabled = false)
+        }
+    }
+
     companion object {
-        private const val VIDEO_PREVIEW_TOTAL_TIME = 65L
+        const val VIDEO_PREVIEW_TOTAL_TIME = 65L
     }
 }

@@ -1,6 +1,5 @@
-package co.netguru.baby.monitor.client.feature.server
+package co.netguru.baby.monitor.client.feature.communication.webrtc.observers
 
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultObserver
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import org.webrtc.PeerConnection

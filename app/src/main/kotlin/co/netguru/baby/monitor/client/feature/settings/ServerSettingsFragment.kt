@@ -52,14 +52,14 @@ class ServerSettingsFragment : BaseDaggerFragment() {
         }
 
         closeIbtn.setOnClickListener {
-            serverViewModel.shouldDrawerBeOpen.postValue(false)
+            serverViewModel.toggleDrawer(false)
         }
 
         settingsLogoutBtn.setOnClickListener {
             viewModel.resetApp(requireActivity())
         }
 
-        sendRecordingsSw.setOnCheckedChangeListener { buttonView, isChecked ->
+        sendRecordingsSw.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setUploadEnabled(isChecked)
         }
 

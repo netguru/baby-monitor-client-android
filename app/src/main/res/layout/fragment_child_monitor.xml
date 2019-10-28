@@ -1,181 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:keepScreenOn="true">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary_dark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
 
         <TextView
-            android:id="@+id/baby_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/spacing_small"
-            android:fontFamily="@font/rubik_medium"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_normal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/pulsatingView"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Baby name"
-            />
+                android:id="@+id/babyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:fontFamily="@font/rubik_medium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/pulsatingView"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Baby name"
+                />
 
         <co.netguru.baby.monitor.client.common.view.PulsatingView
-            android:id="@+id/pulsatingView"
-            android:layout_width="@dimen/spacing_xxxmedium"
-            android:layout_height="@dimen/spacing_xxxmedium"
-            app:activeColor="@color/active_pulsating"
-            app:circleSize="@dimen/spacing_small"
-            app:inactiveColor="@color/inactive_pulsating"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/baby_name"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+                android:id="@+id/pulsatingView"
+                android:layout_width="@dimen/spacing_xxxmedium"
+                android:layout_height="@dimen/spacing_xxxmedium"
+                app:activeColor="@color/active_pulsating"
+                app:circleSize="@dimen/spacing_small"
+                app:inactiveColor="@color/inactive_pulsating"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/babyName"
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
         <ImageButton
-            android:id="@+id/settingsIbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:backgroundTint="@color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_gear_wheel" />
+                android:id="@+id/settingsIbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:backgroundTint="@color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_gear_wheel"
+                />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:src="@drawable/logo"
-        app:layout_constraintBottom_toTopOf="@id/message_video_disabled_energy_saver"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:ignore="ContentDescription"
-        />
+            android:id="@+id/videoPreviewButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:src="@drawable/logo"
+            app:layout_constraintBottom_toTopOf="@id/messageVideoDisabledEnergySaver"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:ignore="ContentDescription"
+            />
 
     <TextView
-        android:id="@+id/message_video_disabled_energy_saver"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/spacing_xxsmall"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:gravity="center_horizontal"
-        android:text="@string/message_video_preview_disabled_tap_to_enable"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo"
-        />
+            android:id="@+id/messageVideoDisabledEnergySaver"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/spacing_xxsmall"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:gravity="center_horizontal"
+            android:text="@string/message_video_preview_disabled_tap_to_enable"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/videoPreviewButton"
+            />
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/video_preview_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="surfaceView,timer"
-        />
+            android:id="@+id/videoPreviewTogglingGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="messageVideoDisabledEnergySaver,videoPreviewButton"
+            />
+
+    <androidx.constraintlayout.widget.Group
+            android:id="@+id/videoPreviewGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="surfaceView,timer"
+            />
 
     <org.webrtc.SurfaceViewRenderer
-        android:id="@+id/surfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        />
+            android:id="@+id/surfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            />
 
     <TextView
-        android:id="@+id/timer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:shadowColor="@android:color/black"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="2"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/surfaceView"
-        app:layout_constraintStart_toStartOf="@+id/surfaceView"
-        app:layout_constraintTop_toTopOf="@+id/surfaceView"
-        tools:text="4:59"
-        />
+            android:id="@+id/timer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="4"
+            android:shadowDy="4"
+            android:shadowRadius="2"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/surfaceView"
+            app:layout_constraintStart_toStartOf="@+id/surfaceView"
+            app:layout_constraintTop_toTopOf="@+id/surfaceView"
+            tools:text="4:59"
+            />
 
     <ImageButton
-        android:id="@+id/cameraSwapBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/spacing_xxxmedium"
-        android:layout_marginBottom="@dimen/spacing_normal"
-        android:background="@drawable/button_rounded_ripple"
-        android:padding="@dimen/spacing_xmedium"
-        app:elevation="@dimen/spacing_small"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/nightModeToggleBtn"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1"
-        app:srcCompat="@drawable/ic_camera_swap" />
-
-    <ImageButton
-        android:id="@+id/nightModeToggleBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_normal"
-        android:background="@drawable/button_rounded_ripple"
-        android:padding="@dimen/spacing_xmedium"
-        app:elevation="@dimen/spacing_small"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cameraSwapBtn"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1"
-        app:srcCompat="@drawable/ic_night_mode" />
+            android:id="@+id/nightModeToggleBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_normal"
+            android:background="@drawable/button_rounded_ripple"
+            android:padding="@dimen/spacing_xmedium"
+            app:elevation="@dimen/spacing_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:srcCompat="@drawable/ic_night_mode"
+            />
 
     <View
-        android:id="@+id/nightCoverV"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black_a82"
-        android:visibility="gone" />
+            android:id="@+id/nightCoverV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_a82"
+            />
+
+    <androidx.constraintlayout.widget.Group
+            android:id="@+id/nightModeGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="nightModeActiveIv,nightCoverV"
+            android:visibility="gone"
+            />
 
     <!-- Allows to set proper height for NavigationDrawer -->
     <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:visibility="gone"
-        />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="gone"
+            />
 
     <ImageView
-        android:id="@+id/nightModeActiveIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/nightModeToggleBtn"
-        app:layout_constraintEnd_toEndOf="@+id/nightModeToggleBtn"
-        app:layout_constraintStart_toStartOf="@+id/nightModeToggleBtn"
-        app:layout_constraintTop_toTopOf="@+id/nightModeToggleBtn"
-        app:srcCompat="@drawable/ic_night_mode_active" />
+            android:id="@+id/nightModeActiveIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/nightModeToggleBtn"
+            app:layout_constraintEnd_toEndOf="@+id/nightModeToggleBtn"
+            app:layout_constraintStart_toStartOf="@+id/nightModeToggleBtn"
+            app:layout_constraintTop_toTopOf="@+id/nightModeToggleBtn"
+            app:srcCompat="@drawable/ic_night_mode_active"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
