@@ -11,6 +11,7 @@ class CheckInternetConnectionUseCase @Inject constructor() {
 
     fun hasInternetConnection(): Single<Boolean> {
         return Single.fromCallable {
+            var isConnected = false
             try {
                 val socket = Socket()
                 val socketAddress = InetSocketAddress(GOOGLE_DNS_IP, PORT)
@@ -18,11 +19,11 @@ class CheckInternetConnectionUseCase @Inject constructor() {
                 socket.connect(socketAddress, TIMEOUT_MS)
                 socket.close()
 
-                true
+                isConnected = true
             } catch (e: IOException) {
                 Timber.i(e)
-                false
             }
+            isConnected
         }
     }
     companion object {
