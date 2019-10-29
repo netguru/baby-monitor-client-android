@@ -9,9 +9,8 @@ class FirebaseInstanceManager @Inject constructor(
 ) {
     fun getFirebaseToken(): Single<String> = Single.create { emitter ->
         firebaseInstanceId.instanceId.addOnCompleteListener { task ->
-            val result = task.result
-            if (result != null) {
-                emitter.onSuccess(result.token)
+            if (task.isSuccessful) {
+                task.result?.let { emitter.onSuccess(it.token) }
             } else {
                 emitter.onError(task.exception ?: Throwable())
             }
