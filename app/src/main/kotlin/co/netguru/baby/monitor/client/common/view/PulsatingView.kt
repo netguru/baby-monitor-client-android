@@ -109,14 +109,15 @@ class PulsatingView(context: Context, attrs: AttributeSet?) : View(context, attr
         stop()
     }
 
+    @Suppress("MagicNumber")
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
         canvas.drawCircle(width / 2f, height / 2f, circleSize / 2f, circlePaint)
-        canvas.drawCircle(width / 2f, height / 2f, (height / 2f) * firstPulseSize, firstPulsePaint)
+        canvas.drawCircle(width / 2f, height / 2f, height / 2f * firstPulseSize, firstPulsePaint)
         canvas.drawCircle(
             width / 2f,
             height / 2f,
-            (height / 2f) * secondPulseSize,
+            height / 2f * secondPulseSize,
             secondPulsePaint
         )
     }
