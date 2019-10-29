@@ -14,6 +14,7 @@ import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_client_home.*
 import kotlinx.android.synthetic.main.toolbar_child.*
@@ -38,6 +39,14 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         setupView()
         getData()
         initWebSocketConnection()
+        checkInternetConnection()
+    }
+
+    private fun checkInternetConnection() {
+        homeViewModel.checkInternetConnection()
+        homeViewModel.internetConnectionAvailability.observe(this, Observer { isConnected ->
+            if (!isConnected) showNoInternetSnackbar()
+        })
     }
 
     override fun onSupportNavigateUp() =
@@ -84,6 +93,14 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
             }
         })
         client_drawer.isDrawerOpen(GravityCompat.END)
+    }
+
+    private fun showNoInternetSnackbar() {
+        Snackbar.make(coordinator, R.string.no_internet_message, Snackbar.LENGTH_INDEFINITE)
+            .setAction(getString(R.string.restart)) {
+                homeViewModel.restartApp(this)
+            }
+            .show()
     }
 
     private fun setBackButtonClick(shouldShowSnoozeDialog: Boolean) {
