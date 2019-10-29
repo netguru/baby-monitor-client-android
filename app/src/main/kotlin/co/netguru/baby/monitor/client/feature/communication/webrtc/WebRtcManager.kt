@@ -2,8 +2,8 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc
 
 import android.content.Context
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
-import co.netguru.baby.monitor.client.feature.server.RtcServerConnectionObserver
-import co.netguru.baby.monitor.client.feature.server.RtcServerConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionObserver
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
 import io.reactivex.Observable
 import org.webrtc.*
 import timber.log.Timber
@@ -14,7 +14,7 @@ class WebRtcManager constructor(
 
     private lateinit var peerConnectionFactory: PeerConnectionFactory
 
-    private lateinit var videoCapturer: VideoCapturer
+    private var cameraVideoCapturer: CameraVideoCapturer? = null
     private lateinit var videoSource: VideoSource
     private lateinit var videoTrack: VideoTrack
     private lateinit var audioSource: AudioSource
@@ -25,6 +25,11 @@ class WebRtcManager constructor(
 
     private val eglBase: EglBase by lazy { EglBase.create() }
     private val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
+    var cameraEnabled = true
+        set(isEnabled) {
+            field = isEnabled
+                cameraVideoCapturer?.let { enableVideo(isEnabled, it) }
+        }
 
     private fun createCameraCapturer(cameraEnumerator: CameraEnumerator) =
         cameraEnumerator.deviceNames.asSequence()
@@ -41,6 +46,16 @@ class WebRtcManager constructor(
             }
             .first()
 
+    private fun enableVideo(isEnabled: Boolean, videoCapturer: CameraVideoCapturer) {
+        if (isEnabled) {
+            Timber.i("enableVideo")
+            videoCapturer.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FRAMERATE)
+        } else {
+            Timber.i("disableVideo")
+            videoCapturer.stopCapture()
+        }
+    }
+
     fun beginCapturing(context: Context) {
         Timber.d("beginCapturing()")
 
@@ -54,12 +69,12 @@ class WebRtcManager constructor(
             .apply {
                 setVideoHwAccelerationOptions(sharedContext, sharedContext)
             }
-        videoCapturer = createCameraCapturer(Camera2Enumerator(context))
-        videoSource = peerConnectionFactory.createVideoSource(videoCapturer)
+        cameraVideoCapturer = createCameraCapturer(Camera2Enumerator(context))
+        videoSource = peerConnectionFactory.createVideoSource(cameraVideoCapturer)
         videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
-        videoCapturer.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FRAMERATE)
+        cameraVideoCapturer?.let { enableVideo(true, it) }
         rtcServerConnectionObserver = RtcServerConnectionObserver()
 
         peerConnection = peerConnectionFactory.createPeerConnection(
@@ -77,7 +92,7 @@ class WebRtcManager constructor(
         Timber.d("stopCapturing()")
         audioSource.dispose()
         videoSource.dispose()
-        videoCapturer.dispose()
+        cameraVideoCapturer?.dispose()
         peerConnection.dispose()
         peerConnectionFactory.dispose()
     }

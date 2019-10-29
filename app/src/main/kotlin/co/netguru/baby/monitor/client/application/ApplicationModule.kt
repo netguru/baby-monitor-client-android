@@ -8,7 +8,9 @@ import android.net.nsd.NsdManager
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.application.scope.AppScope
+import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
@@ -35,6 +37,9 @@ class ApplicationModule {
 
     @Provides
     fun nsdServiceManager(nsdManager: NsdManager) = NsdServiceManager(nsdManager)
+
+    @Provides
+    fun schedulersProvider(): ISchedulersProvider = SchedulersProvider()
 
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)

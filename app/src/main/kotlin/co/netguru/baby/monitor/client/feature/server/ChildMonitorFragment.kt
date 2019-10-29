@@ -3,29 +3,29 @@ package co.netguru.baby.monitor.client.feature.server
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.RECORD_AUDIO
 import android.app.Service
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
-import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,9 +46,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     internal lateinit var factory: ViewModelProvider.Factory
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var webRtcServiceBinder: WebRtcService.Binder? = null
-    private var isNightModeEnabled = false
-    private var isFacingFront = false
-    private val disposables = CompositeDisposable()
 
     @Inject
     internal lateinit var lowBatteryReceiver: LowBatteryReceiver
@@ -66,11 +63,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         webRtcServiceBinder?.addSurfaceView(surfaceView)
     }
 
-    override fun onStart() {
-        super.onStart()
-        startVideoPreview()
-    }
-
     override fun onResume() {
         super.onResume()
         registerNsdService()
@@ -82,14 +74,9 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     override fun onPause() {
-        disposables.clear()
         serverViewModel.unregisterNsdService()
+        serverViewModel.toggleVideoPreview(false)
         super.onPause()
-    }
-
-    override fun onStop() {
-        stopVideoPreview()
-        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -98,7 +85,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     override fun onDestroy() {
-        disposables.clear()
         requireContext().unbindService(this)
         machineLearningServiceBinder?.cleanup()
         requireContext().unregisterReceiver(lowBatteryReceiver)
@@ -142,24 +128,12 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     private fun setupView() {
         nightModeToggleBtn.setOnClickListener {
-            if (isNightModeEnabled) {
-                nightCoverV.setVisible(false)
-                nightModeActiveIv.setVisible(false)
-            } else {
-                nightCoverV.setVisible(true)
-                nightModeActiveIv.setVisible(true)
-            }
-            isNightModeEnabled = !isNightModeEnabled
-        }
-        cameraSwapBtn.setOnClickListener {
-            cameraSwapBtn.isEnabled = false
-            isFacingFront = !isFacingFront
+            viewModel.switchNightMode()
         }
         settingsIbtn.setOnClickListener {
-            serverViewModel.shouldDrawerBeOpen.postValue(true)
+            serverViewModel.toggleDrawer(true)
         }
-        logo.setOnClickListener { startVideoPreview() }
-        message_video_disabled_energy_saver.setOnClickListener { startVideoPreview() }
+        videoPreviewButton.setOnClickListener { serverViewModel.toggleVideoPreview(true) }
     }
 
     private fun setupObservers() {
@@ -168,17 +142,20 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun childMonitorObservables() {
-        viewModel.babyNameStatus.observeNonNull(this, { name ->
-            baby_name.text = name
-            baby_name.visibility =
+        viewModel.babyNameStatus.observeNonNull(viewLifecycleOwner, { name ->
+            babyName.text = name
+            babyName.visibility =
                 if (name.isBlank()) {
                     View.GONE
                 } else {
                     View.VISIBLE
                 }
         })
+        viewModel.nightModeStatus.observe(viewLifecycleOwner, Observer { isNightModeEnabled ->
+            nightModeGroup.isVisible = isNightModeEnabled
+        })
 
-        viewModel.pulsatingViewStatus.observe(this, Observer { status ->
+        viewModel.pulsatingViewStatus.observe(viewLifecycleOwner, Observer { status ->
             Timber.d("Client status: $status.")
             when (status) {
                 ClientConnectionStatus.CLIENT_CONNECTED ->
@@ -190,14 +167,14 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun serverViewModelObservers() {
-        serverViewModel.previewingVideo().observe(this, Observer { previewing ->
-            if (previewing == true) {
-                startVideoPreview()
+        serverViewModel.previewingVideo.observeNonNull(viewLifecycleOwner, { previewing ->
+            if (previewing) {
+                showVideoPreview()
             } else {
-                stopVideoPreview()
+                hideVideoPreview()
             }
         })
-        serverViewModel.timer().observe(this, Observer { secondsLeft ->
+        serverViewModel.timer.observe(viewLifecycleOwner, Observer { secondsLeft ->
             timer.text = if (secondsLeft != null && secondsLeft < VIDEO_PREVIEW_MAX_TIME) {
                 getString(
                     R.string.message_disabling_video_preview_soon,
@@ -208,23 +185,33 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             }
         })
 
-        serverViewModel.rtcConnectionStatus.observeNonNull(this, { connectionState ->
+        serverViewModel.rtcConnectionStatus.observeNonNull(viewLifecycleOwner, { connectionState ->
             when (connectionState) {
                 RtcServerConnectionState.ConnectionOffer -> machineLearningServiceBinder?.stopRecording()
                 RtcServerConnectionState.Disconnected -> machineLearningServiceBinder?.startRecording()
                 else -> Unit
             }
         })
+        serverViewModel.cameraState.observe(viewLifecycleOwner, Observer { cameraState ->
+            webRtcServiceBinder?.enableCamera(
+                cameraState.previewEnabled ||
+                        cameraState.streamingEnabled
+            )
+        })
     }
 
-    private fun startVideoPreview() {
-        video_preview_group.visibility = View.VISIBLE
+    private fun showVideoPreview() {
+        Timber.i("showVideoPreview")
+        videoPreviewGroup.isVisible = true
+        videoPreviewTogglingGroup.isVisible = false
         serverViewModel.resetTimer()
         surfaceView.disableFpsReduction()
     }
 
-    private fun stopVideoPreview() {
-        video_preview_group.visibility = View.GONE
+    private fun hideVideoPreview() {
+        Timber.i("hideVideoPreview")
+        videoPreviewGroup.isVisible = false
+        videoPreviewTogglingGroup.isVisible = true
         surfaceView.pauseVideo()
     }
 
@@ -251,15 +238,14 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 this@ChildMonitorFragment,
                 Service.BIND_AUTO_CREATE
             )
-            startVideoPreview()
         }
     }
 
-    private fun handleWebRtcBinder(service: WebRtcService.Binder) {
-        Timber.d("handleWebRtcBinder($service)")
-        serverViewModel.handleRtcServerConnectionState(service.getConnectionObservable())
-        webRtcServiceBinder = service
-        service.addSurfaceView(surfaceView)
+    private fun handleWebRtcBinder(webRtcServiceBinder: WebRtcService.Binder) {
+        serverViewModel.handleRtcServerConnectionState(webRtcServiceBinder)
+        this.webRtcServiceBinder = webRtcServiceBinder
+        serverViewModel.toggleVideoPreview(true)
+        webRtcServiceBinder.addSurfaceView(surfaceView)
     }
 
     companion object {

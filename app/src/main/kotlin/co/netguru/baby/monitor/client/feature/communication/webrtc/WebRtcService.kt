@@ -80,6 +80,9 @@ class WebRtcService : Service() {
         fun addSurfaceView(surfaceView: SurfaceViewRenderer) {
             webRtcManager.addSurfaceView(surfaceView)
         }
+        fun enableCamera(enableCamera: Boolean) {
+            webRtcManager.cameraEnabled = enableCamera
+        }
         fun getConnectionObservable() = webRtcManager.getConnectionObservable()
     }
 }

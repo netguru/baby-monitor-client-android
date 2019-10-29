@@ -28,6 +28,8 @@ class ChildMonitorViewModel @Inject constructor(
     val babyNameStatus: LiveData<String> = mutableBabyNameStatus
     private val mutablePulsatingViewStatus = MutableLiveData<ClientConnectionStatus>()
     val pulsatingViewStatus: LiveData<ClientConnectionStatus> = mutablePulsatingViewStatus
+    private val mutableNightModeStatus = MutableLiveData<Boolean>()
+    internal val nightModeStatus: LiveData<Boolean> = mutableNightModeStatus
 
     private fun receiveFirebaseToken(ipAddress: String, token: String) {
         receiveFirebaseTokenUseCase.get().receiveToken(ipAddress = ipAddress, token = token)
@@ -80,6 +82,11 @@ class ChildMonitorViewModel @Inject constructor(
                     mutableBabyNameStatus.postValue(name)
                 }
             }
+    }
+
+    fun switchNightMode() {
+        val currentStatus = mutableNightModeStatus.value == true
+        mutableNightModeStatus.postValue(!currentStatus)
     }
 
     private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
