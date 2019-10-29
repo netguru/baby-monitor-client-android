@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
@@ -29,7 +30,9 @@ class ClientHomeViewModel @Inject constructor(
     private val openSocketDisposables = CompositeDisposable()
     internal val logData = MutableLiveData<List<LogData>>()
     internal val selectedChild = dataRepository.getChildLiveData()
-    internal val selectedChildAvailability = MutableLiveData<Boolean>()
+    private val mutableSelectedChildAvailability = MutableLiveData(false)
+    internal val selectedChildAvailability =
+        Transformations.distinctUntilChanged(mutableSelectedChildAvailability)
     internal val toolbarState = MutableLiveData<ToolbarState>()
     internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
     internal val backButtonState = MutableLiveData<BackButtonState>()
@@ -89,7 +92,7 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     private fun handleWebSocketOpen(client: RxWebSocketClient) {
-        selectedChildAvailability.postValue(true)
+        mutableSelectedChildAvailability.postValue(true)
         sendFirebaseTokenUseCase.sendFirebaseToken(client)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
@@ -112,7 +115,7 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     private fun handleWebSocketClose() {
-        selectedChildAvailability.postValue(false)
+        mutableSelectedChildAvailability.postValue(false)
         openSocketDisposables.clear()
     }
 

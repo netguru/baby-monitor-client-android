@@ -12,19 +12,19 @@ import co.netguru.baby.monitor.client.R
 
 class PulsatingView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
-    private val paint = Paint().apply {
+    private val firstPulsePaint = Paint().apply {
         strokeWidth = STROKE_WIDTH
         style = Paint.Style.STROKE
     }
-    private var animator: ValueAnimator? = null
-    private var size = MIN_SIZE
+    private var firstPulseAnimator: ValueAnimator? = null
+    private var firstPulseSize = MIN_SIZE
 
-    private val paint2 = Paint().apply {
+    private val secondPulsePaint = Paint().apply {
         strokeWidth = STROKE_WIDTH
         style = Paint.Style.STROKE
     }
-    private var animator2: ValueAnimator? = null
-    private var size2 = MIN_SIZE
+    private var secondPulseAnimator: ValueAnimator? = null
+    private var secondPulseSize = MIN_SIZE
 
     private var circleSize = 0
     private var circlePaint = Paint()
@@ -34,22 +34,22 @@ class PulsatingView(context: Context, attrs: AttributeSet?) : View(context, attr
 
     init {
         context.obtainStyledAttributes(
-                attrs,
-                R.styleable.PulsatingView
+            attrs,
+            R.styleable.PulsatingView
         ).run {
             try {
                 circleSize = getDimensionPixelSize(R.styleable.PulsatingView_circleSize, 0)
                 activeColor = getColor(
-                        R.styleable.PulsatingView_activeColor,
-                        ContextCompat.getColor(context, R.color.active_pulsating)
+                    R.styleable.PulsatingView_activeColor,
+                    ContextCompat.getColor(context, R.color.active_pulsating)
                 )
                 inactiveColor = getColor(
-                        R.styleable.PulsatingView_inactiveColor,
-                        ContextCompat.getColor(context, R.color.inactive_pulsating)
+                    R.styleable.PulsatingView_inactiveColor,
+                    ContextCompat.getColor(context, R.color.inactive_pulsating)
                 )
 
-                paint.color = activeColor
-                paint2.color = activeColor
+                firstPulsePaint.color = activeColor
+                secondPulsePaint.color = activeColor
             } finally {
                 recycle()
             }
@@ -62,27 +62,27 @@ class PulsatingView(context: Context, attrs: AttributeSet?) : View(context, attr
         val propertyRadius = PropertyValuesHolder.ofFloat(PROPERTY_SIZE, MIN_SIZE, MAX_SIZE)
         val propertyRotate = PropertyValuesHolder.ofInt(PROPERTY_OPACITY, MAX_ALPHA, MIN_ALPHA)
 
-        animator = ValueAnimator().apply {
+        firstPulseAnimator = ValueAnimator().apply {
             setValues(propertyRadius, propertyRotate)
             duration = ANIMATION_DURATION
             repeatMode = ValueAnimator.RESTART
             repeatCount = ValueAnimator.INFINITE
             addUpdateListener { valueAnimator ->
-                size = valueAnimator.animatedValue as Float
-                paint.alpha = valueAnimator.getAnimatedValue(PROPERTY_OPACITY) as Int
+                firstPulseSize = valueAnimator.animatedValue as Float
+                firstPulsePaint.alpha = valueAnimator.getAnimatedValue(PROPERTY_OPACITY) as Int
                 invalidate()
             }
             start()
         }
-        animator2 = ValueAnimator().apply {
+        secondPulseAnimator = ValueAnimator().apply {
             setValues(propertyRadius, propertyRotate)
             startDelay = NEXT_ANIMATION_DELAY
             duration = ANIMATION_DURATION
             repeatMode = ValueAnimator.RESTART
             repeatCount = ValueAnimator.INFINITE
             addUpdateListener { valueAnimator ->
-                size2 = valueAnimator.getAnimatedValue(PROPERTY_SIZE) as Float
-                paint2.alpha = valueAnimator.getAnimatedValue(PROPERTY_OPACITY) as Int
+                secondPulseSize = valueAnimator.getAnimatedValue(PROPERTY_SIZE) as Float
+                secondPulsePaint.alpha = valueAnimator.getAnimatedValue(PROPERTY_OPACITY) as Int
                 invalidate()
             }
             start()
@@ -91,16 +91,35 @@ class PulsatingView(context: Context, attrs: AttributeSet?) : View(context, attr
 
     fun stop() {
         circlePaint.color = inactiveColor
-        animator?.end()
-        animator2?.end()
+        stopAnimators(listOf(firstPulseAnimator, secondPulseAnimator))
         invalidate()
     }
 
+    private fun stopAnimators(animators: List<ValueAnimator?>) {
+        animators.forEach {
+            it?.run {
+                end()
+                removeAllUpdateListeners()
+            }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stop()
+    }
+
+    @Suppress("MagicNumber")
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
         canvas.drawCircle(width / 2f, height / 2f, circleSize / 2f, circlePaint)
-        canvas.drawCircle(width / 2f, height / 2f, (height / 2f) * size, paint)
-        canvas.drawCircle(width / 2f, height / 2f, (height / 2f) * size2, paint2)
+        canvas.drawCircle(width / 2f, height / 2f, height / 2f * firstPulseSize, firstPulsePaint)
+        canvas.drawCircle(
+            width / 2f,
+            height / 2f,
+            height / 2f * secondPulseSize,
+            secondPulsePaint
+        )
     }
 
     companion object {

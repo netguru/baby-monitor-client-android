@@ -57,7 +57,6 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         toolbarBackBtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
-        homeViewModel.selectedChildAvailability.postValue(false)
     }
 
     private fun getData() {
