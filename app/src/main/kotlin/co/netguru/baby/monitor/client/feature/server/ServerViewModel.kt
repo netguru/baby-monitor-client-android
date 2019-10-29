@@ -100,7 +100,6 @@ class ServerViewModel @Inject constructor(
     fun handleRtcServerConnectionState(webRtcServiceBinder: WebRtcService.Binder) {
         compositeDisposable += webRtcServiceBinder.getConnectionObservable()
             .subscribeOn(schedulersProvider.io())
-            .observeOn(schedulersProvider.mainThread())
             .subscribeBy(
                 onNext = {
                     handleStreamState(it)
