@@ -22,8 +22,8 @@
                 />
 
         <action
-                android:id="@+id/splashToConfiguration"
-                app:destination="@+id/configuration"
+                android:id="@+id/splashToClientHome"
+                app:destination="@+id/clientHomeActivity"
                 app:popUpTo="@+id/splash_nav_graph"
                 app:popUpToInclusive="true"
                 />
@@ -188,36 +188,36 @@
             >
 
         <action
-                android:id="@+id/secondAppInfoToConfiguration"
-                app:destination="@+id/configuration"
+                android:id="@+id/secondAppInfoToConnectingDevices"
+                app:destination="@+id/connectingDevices"
                 />
     </fragment>
 
     <fragment
-            android:id="@+id/configuration"
+            android:id="@+id/connectingDevices"
             android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFragment"
             android:label="Configuration"
             tools:layout="@layout/fragment_connecting_devices"
             >
 
         <action
-                android:id="@+id/configurationToAllDone"
+                android:id="@+id/connectingDevicesToAllDone"
                 app:destination="@+id/allDone"
                 />
 
         <action
-                android:id="@+id/configurationToClientHome"
-                app:destination="@+id/clientHomeActivity"
+                android:id="@+id/connectingDevicesToConnectionFailed"
+                app:destination="@+id/connectionFailed"
                 />
 
         <action
-                android:id="@+id/configurationToConfigurationFailed"
-                app:destination="@+id/configurationFailed"
+                android:id="@+id/cancelConnecting"
+                app:destination="@id/specifyDevice"
                 />
     </fragment>
 
     <fragment
-            android:id="@+id/configurationFailed"
+            android:id="@+id/connectionFailed"
             android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFailedFragment"
             android:label="Configuration Failed"
             tools:layout="@layout/fragment_failed_devices_connecting"

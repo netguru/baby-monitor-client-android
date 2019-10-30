@@ -6,17 +6,18 @@ import androidx.lifecycle.ViewModelProviders
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.fragment_connecting_devices.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -35,27 +36,35 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.discoverNsdService(this)
-        viewModel.appSavedState.observe(this, Observer(this::handleAppState))
+        viewModel.connectionCompletedState.observe(viewLifecycleOwner, Observer { onConnectionCompleted(it) })
+        cancelSearchingButton.setOnClickListener {
+            goBackToSpecifyDevice()
+        }
+    }
+
+    private fun goBackToSpecifyDevice() {
+        findNavController()
+            .navigate(R.id.cancelConnecting, null,
+                NavOptions.Builder()
+                    .setPopUpTo(R.id.specifyDevice, true)
+                    .build()
+            )
     }
 
     override fun onStart() {
         super.onStart()
+        viewModel.discoverNsdService(this)
         Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
             .subscribe { _ ->
-                findNavController().navigate(R.id.configurationFailed)
+                findNavController().navigate(R.id.connectionFailed)
             }
             .addTo(disposables)
     }
 
     override fun onStop() {
         disposables.clear()
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
         viewModel.stopNsdServiceDiscovery()
+        super.onStop()
     }
 
     override fun onDestroyView() {
@@ -85,15 +94,11 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
         showSnackbarMessage(R.string.discovery_start_failed)
     }
 
-    private fun handleAppState(state: AppState?) {
-        when (state) {
-            AppState.CLIENT -> {
-                findNavController().navigate(R.id.configurationToClientHome)
-                requireActivity().finish()
-            }
-            else -> {
-                findNavController().navigate(R.id.configurationToAllDone)
-            }
+    private fun onConnectionCompleted(connectionCompleted: Boolean) {
+        if (connectionCompleted) {
+            findNavController().navigate(R.id.connectingDevicesToAllDone)
+        } else {
+            findNavController().navigate(R.id.connectionFailed)
         }
     }
 

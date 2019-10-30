@@ -41,7 +41,7 @@ class ServerSettingsFragment : BaseDaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sendRecordingsSw.isChecked = viewModel.isUploadEnablad()
+        sendRecordingsSw.isChecked = viewModel.isUploadEnabled()
 
         rateUsBtn.setOnClickListener {
             settingsViewModel.openMarket(requireActivity())

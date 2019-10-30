@@ -13,7 +13,7 @@ class SecondAppInfo : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         secondAppButtonCtrl.setOnClickListener {
-            findNavController().navigate(R.id.secondAppInfoToConfiguration)
+            findNavController().navigate(R.id.secondAppInfoToConnectingDevices)
         }
 
         secondAppInfoBackIv.setOnClickListener {
