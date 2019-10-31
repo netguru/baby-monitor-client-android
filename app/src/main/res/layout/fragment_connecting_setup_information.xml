@@ -1,143 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@color/background">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@color/background"
+        >
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationDefaultStartGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.064" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationDefaultEndGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.936" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationHeadlineTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.156" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_bold"
-        android:text="@string/setup_information"
-        android:textColor="@color/accent"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/connectingInformationHeadlineBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/connectingInformationDefaultEndGl"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="@+id/connectingInformationDefaultStartGl"
-        app:layout_constraintTop_toTopOf="@+id/connectingInformationHeadlineTopGl" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationHeadlineBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.19" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationDescriptionTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.202" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_medium"
-        android:text="@string/connecting_setup_information"
-        android:textColor="@color/white"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/connectingInformationDescriptionBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/connectingInformationDefaultEndGl"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="@+id/connectingInformationDefaultStartGl"
-        app:layout_constraintTop_toTopOf="@+id/connectingInformationDescriptionTopGl" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationDescriptionBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.43" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationImageTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.486" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/connectingInformationLogoIv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/connectingInformationImageBottomGl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/connectingInformationImageTopGl"
-        app:srcCompat="@drawable/monitoring" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationImageBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.606" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationButtonTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.844" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/connectionInformationMbtn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/button_shadow"
-        app:layout_constraintBottom_toBottomOf="@+id/connectingInformationButtonBottomGl"
-        app:layout_constraintEnd_toEndOf="@id/connectingInformationDefaultEndGl"
-        app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.12"
-        app:layout_constraintStart_toStartOf="@+id/connectingInformationDefaultStartGl"
-        app:layout_constraintTop_toTopOf="@+id/connectingInformationButtonTopGl"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.93">
-
-        <TextView
+            android:id="@+id/connectingInformationDefaultStartGl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/rubik_bold"
-            android:text="@string/start_monitoring"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_medium"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.064"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingInformationButtonBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.928" />
+            android:id="@+id/connectingInformationDefaultEndGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.936"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationHeadlineTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.156"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/setup_information"
+            android:textColor="@color/accent"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingInformationHeadlineBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingInformationDefaultEndGl"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/connectingInformationDefaultStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingInformationHeadlineTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationHeadlineBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.19"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationDescriptionTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.202"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text="@string/connecting_setup_information"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingInformationDescriptionBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingInformationDefaultEndGl"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@+id/connectingInformationDefaultStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingInformationDescriptionTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationDescriptionBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.43"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationImageTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.486"
+            />
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/connectingInformationLogoIv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingInformationImageBottomGl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/connectingInformationImageTopGl"
+            app:srcCompat="@drawable/monitoring"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationImageBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.606"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationButtonTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/setup_buttons_top_guideline"
+            />
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/connectionInformationMbtn"
+            style="@style/MainButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@string/start_monitoring"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingInformationButtonBottomGl"
+            app:layout_constraintEnd_toEndOf="@id/connectingInformationDefaultEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingInformationDefaultStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingInformationButtonTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingInformationButtonBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/setup_buttons_bottom_guideline"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
