@@ -1,234 +1,244 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@color/background">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@color/background"
+        >
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppBaseStartGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.064" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppBaseEndGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.936" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppBackIvTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.057" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppBackIvStartGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.043" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/secondAppInfoBackIv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/secondAppBackIvBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBackIvEndGl"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBackIvStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondAppBackIvTopGl"
-        app:srcCompat="@drawable/ic_arrow_back" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppBackIvBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.093" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppBackIvEndGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.107" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp1TextTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.156" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_bold"
-        android:text="@string/connecting"
-        android:textColor="@color/accent"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/secondApp1TextBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondApp1TextTopGl" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp1TextBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.19" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp2TextTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.202" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_medium"
-        android:text="@string/hello"
-        android:textColor="@color/white"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/secondApp2TextBottomGL"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondApp2TextTopGl" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp2TextBottomGL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.262" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp3TextTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.282" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_regular"
-        android:text="@string/second_app_info_text_3"
-        android:textColor="@color/accent"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/secondApp3TextBottomGL"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondApp3TextTopGl" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp3TextBottomGL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.328" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp4TextTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.352" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_regular"
-        android:text="@string/second_app_info_text_4"
-        android:textColor="@color/white"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/secondApp4TextBottomGL"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondApp4TextTopGl" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondApp4TextBottomGL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.398" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppImageTopGL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.486" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/secondAppImageBottomGL"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondAppImageTopGL"
-        app:srcCompat="@drawable/download" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppImageBottomGL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.606" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppButtonTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.844" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/secondAppButtonCtrl"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="@drawable/button_shadow"
-        app:layout_constraintBottom_toBottomOf="@+id/secondAppButtonBottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
-        app:layout_constraintHeight_percent="0.12"
-        app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/secondAppButtonTopGl"
-        app:layout_constraintWidth_percent="0.93">
-
-        <TextView
+            android:id="@+id/secondAppBaseStartGl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/rubik_bold"
-            android:text="@string/second_app_info_text_button"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_medium"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.064"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/secondAppButtonBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.928" />
+            android:id="@+id/secondAppBaseEndGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.936"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppBackIvTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.057"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppBackIvStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.043"
+            />
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/secondAppInfoBackIv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/secondAppBackIvBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBackIvEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBackIvStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondAppBackIvTopGl"
+            app:srcCompat="@drawable/ic_arrow_back"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppBackIvBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.093"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppBackIvEndGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.107"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp1TextTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.156"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/connecting"
+            android:textColor="@color/accent"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/secondApp1TextBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondApp1TextTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp1TextBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.19"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp2TextTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.202"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text="@string/hello"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/secondApp2TextBottomGL"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondApp2TextTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp2TextBottomGL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.262"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp3TextTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.282"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_regular"
+            android:text="@string/second_app_info_text_3"
+            android:textColor="@color/accent"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/secondApp3TextBottomGL"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondApp3TextTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp3TextBottomGL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.328"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp4TextTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.352"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_regular"
+            android:text="@string/second_app_info_text_4"
+            android:textColor="@color/white"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/secondApp4TextBottomGL"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondApp4TextTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondApp4TextBottomGL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.398"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppImageTopGL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.486"
+            />
+
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/secondAppImageBottomGL"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondAppImageTopGL"
+            app:srcCompat="@drawable/download"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppImageBottomGL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.606"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppButtonTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/setup_buttons_top_guideline"
+            />
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/secondAppButtonCtrl"
+            style="@style/MainButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@string/second_app_info_text_button"
+            app:layout_constraintBottom_toBottomOf="@+id/secondAppButtonBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/secondAppBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/secondAppBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/secondAppButtonTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondAppButtonBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/setup_buttons_bottom_guideline"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
