@@ -31,7 +31,6 @@ ext {
             strictmodeNotifier  : "com.nshmura:strictmode-notifier:0.9.3",
             blockCanary         : "com.github.markzhai:blockcanary-android:1.5.0",
             leakCanary          : "com.squareup.leakcanary:leakcanary-android:2.0-beta-3",
-            hockeyApp           : "net.hockeyapp.android:HockeySDK:5.1.0",
             lifecycleExtensions : 'androidx.lifecycle:lifecycle-extensions:2.0.0',
             materialEditText    : "com.rengwuxian.materialedittext:library:2.1.4",
             threeTen            : "com.jakewharton.threetenabp:threetenabp:1.1.0",

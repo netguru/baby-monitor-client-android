@@ -2,7 +2,6 @@ package co.netguru.baby.monitor.client.application
 
 import android.content.Context
 import co.netguru.baby.monitor.client.application.scope.AppScope
-import net.hockeyapp.android.CrashManager
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,7 +22,6 @@ import javax.inject.Inject
 class DebugMetricsHelper @Inject constructor() {
 
     internal fun init(context: Context) {
-        CrashManager.register(context)
         Timber.plant(Timber.DebugTree())
     }
 }
