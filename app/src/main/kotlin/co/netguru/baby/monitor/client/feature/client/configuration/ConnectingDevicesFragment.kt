@@ -95,11 +95,13 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
     }
 
     private fun onConnectionCompleted(connectionCompleted: Boolean) {
-        if (connectionCompleted) {
-            findNavController().navigate(R.id.connectingDevicesToAllDone)
-        } else {
-            findNavController().navigate(R.id.connectionFailed)
-        }
+        findNavController().navigate(
+            if (connectionCompleted) {
+                R.id.connectingDevicesToAllDone
+            } else {
+                R.id.connectionFailed
+            }
+        )
     }
 
     companion object {
