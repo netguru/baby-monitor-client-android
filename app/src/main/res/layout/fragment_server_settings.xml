@@ -1,303 +1,346 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary_dark">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/primary_dark"
+        >
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/clientSettingsTitleTv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_medium"
-        android:text="@string/settings"
-        android:textColor="@color/white"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/clientSettingsTitleTvGLBottom"
-        app:layout_constraintEnd_toStartOf="@+id/closeIbtn"
-        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
-        app:layout_constraintTop_toBottomOf="@+id/clientSettingsTitleTvGLTop" />
+            android:id="@+id/clientSettingsTitleTv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text="@string/settings"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@+id/clientSettingsTitleTvGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/closeIbtn"
+            app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@+id/clientSettingsTitleTvGLTop"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/switchSendRecordingsTitleTv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_medium"
-        android:text="@string/allow_to_send_recordings"
-        android:textColor="@color/white"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintEnd_toStartOf="@+id/switchSendRecordingsTitleTvGLRight"
-        app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
-        app:layout_constraintTop_toBottomOf="@+id/switchSendRecordingsTitleTvBtnGLTop"
-        app:layout_constraintBottom_toTopOf="@+id/switchSendRecordingsTitleTvBtnGLBottom"/>
+            android:id="@+id/switchSendRecordingsTitleTv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text="@string/allow_to_send_recordings"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@+id/switchSendRecordingsTitleTvBtnGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/switchSendRecordingsTitleTvGLRight"
+            app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@+id/switchSendRecordingsTitleTvBtnGLTop"
+            />
 
     <Switch
-        android:id="@+id/sendRecordingsSw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-        app:layout_constraintTop_toTopOf="@+id/switchSendRecordingsTitleTvBtnGLTop" />
+            android:id="@+id/sendRecordingsSw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintTop_toTopOf="@+id/switchSendRecordingsTitleTvBtnGLTop"
+            />
 
     <ImageView
-        android:id="@+id/infoIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:backgroundTint="@color/transparent"
-        app:layout_constraintBottom_toTopOf="@+id/infoIvGLBottom"
-        app:layout_constraintStart_toEndOf="@+id/infoIvGLStart"
-        app:layout_constraintTop_toBottomOf="@+id/infoIvGLTop"
-        app:layout_constraintDimensionRatio="1:1"
-        app:srcCompat="@drawable/ic_info" />
+            android:id="@+id/infoIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@color/transparent"
+            app:layout_constraintBottom_toTopOf="@+id/infoIvGLBottom"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toEndOf="@+id/infoIvGLStart"
+            app:layout_constraintTop_toBottomOf="@+id/infoIvGLTop"
+            app:srcCompat="@drawable/ic_info"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/switchSendRecordingsInfoTv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_regular"
-        android:text="@string/send_recordings_info"
-        android:textColor="@color/inactive_pulsating"
-        app:autoSizeTextType="uniform"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"
-        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-        app:layout_constraintStart_toStartOf="@+id/switchSendRecordingsInfoTvGLStart"
-        app:layout_constraintTop_toBottomOf="@+id/switchSendRecordingsInfoTvGLTop"
-        app:layout_constraintBottom_toTopOf="@+id/switchSendRecordingsInfoTvGLBottom"/>
+            android:id="@+id/switchSendRecordingsInfoTv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_regular"
+            android:text="@string/send_recordings_info"
+            android:textColor="@color/inactive_pulsating"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@+id/switchSendRecordingsInfoTvGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintStart_toStartOf="@+id/switchSendRecordingsInfoTvGLStart"
+            app:layout_constraintTop_toBottomOf="@+id/switchSendRecordingsInfoTvGLTop"
+            />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/closeIbtn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:backgroundTint="@color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/closeIbtnGLBottom"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-        app:layout_constraintTop_toBottomOf="@+id/closeIbtnGLTop"
-        app:srcCompat="@drawable/ic_close" />
+            android:id="@+id/closeIbtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:backgroundTint="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="@+id/closeIbtnGLBottom"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintTop_toBottomOf="@+id/closeIbtnGLTop"
+            app:srcCompat="@drawable/ic_close"
+            />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/rateUsBtn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/button_purple_rounded"
-        android:enabled="true"
-        android:fontFamily="@font/rubik_bold"
-        android:text="@string/rate_us"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/rateUsBtnGLBottom"
-        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
-        app:layout_constraintTop_toBottomOf="@id/rateUsBtnGLTop"
-        app:layout_constraintVertical_chainStyle="packed" />
+            android:id="@+id/rateUsBtn"
+            style="@style/MainButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:enabled="true"
+            android:text="@string/rate_us"
+            app:layout_constraintBottom_toTopOf="@+id/rateUsBtnGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@id/rateUsBtnGLTop"
+            app:layout_constraintVertical_chainStyle="packed"
+            />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/settingsLogoutBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button_purple_outline_to_purple_rounded"
-        android:enabled="true"
-        android:fontFamily="@font/rubik_bold"
-        android:text="@string/reset_the_app"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtnGLBottom"
-        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
-        app:layout_constraintTop_toBottomOf="@+id/settingsLogoutBtnGLTop" />
+            android:id="@+id/settingsLogoutBtn"
+            style="@style/MainButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/button_purple_outline_to_purple_rounded"
+            android:enabled="true"
+            android:text="@string/reset_the_app"
+            app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtnGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@+id/settingsLogoutBtnGLTop"
+            />
 
+    <ProgressBar
+            android:id="@+id/logoutProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:indeterminate="true"
+            android:padding="@dimen/spacing_tiny"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtnGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@+id/settingsLogoutBtnGLTop"
+            />
 
     <TextView
-        android:id="@+id/firstPartTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/rubik_light"
-        android:text="@string/splash_crafted_with"
-        android:textColor="@color/primary"
-        app:layout_constraintBottom_toTopOf="@+id/footerGLBottom"
-        app:layout_constraintEnd_toStartOf="@+id/middleHeartIv"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
-        app:layout_constraintTop_toBottomOf="@+id/footerGLTop" />
+            android:id="@+id/firstPartTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_light"
+            android:text="@string/splash_crafted_with"
+            android:textColor="@color/primary"
+            app:layout_constraintBottom_toTopOf="@+id/footerGLBottom"
+            app:layout_constraintEnd_toStartOf="@+id/middleHeartIv"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@+id/footerGLTop"
+            />
 
     <ImageView
-        android:id="@+id/middleHeartIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_small"
-        android:src="@drawable/heart"
-        android:tint="@color/accent"
-        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
-        app:layout_constraintEnd_toStartOf="@+id/secondPartTv"
-        app:layout_constraintStart_toEndOf="@+id/firstPartTv"
-        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
+            android:id="@+id/middleHeartIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/spacing_small"
+            android:src="@drawable/heart"
+            android:tint="@color/accent"
+            app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
+            app:layout_constraintEnd_toStartOf="@+id/secondPartTv"
+            app:layout_constraintStart_toEndOf="@+id/firstPartTv"
+            app:layout_constraintTop_toTopOf="@+id/firstPartTv"
+            />
 
     <TextView
-        android:id="@+id/secondPartTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/rubik_regular"
-        android:text="@string/splash_by_netguru"
-        android:textColor="@color/accent"
-        android:textSize="@dimen/text_size_medium"
-        app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
-        app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-        app:layout_constraintStart_toEndOf="@+id/middleHeartIv"
-        app:layout_constraintTop_toTopOf="@+id/firstPartTv" />
+            android:id="@+id/secondPartTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:text="@string/splash_by_netguru"
+            android:textColor="@color/accent"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="@+id/firstPartTv"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintStart_toEndOf="@+id/middleHeartIv"
+            app:layout_constraintTop_toTopOf="@+id/firstPartTv"
+            />
 
     <TextView
-        android:id="@+id/version"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xxsmall"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firstPartTv"
-        tools:text="1.0"
-        />
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xxsmall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/firstPartTv"
+            tools:text="1.0"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/clientSettingsGLBegin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.083" />
+            android:id="@+id/clientSettingsGLBegin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.083"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/clientSettingsGLEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.917" />
+            android:id="@+id/clientSettingsGLEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.917"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/clientSettingsTitleTvGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.054" />
+            android:id="@+id/clientSettingsTitleTvGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.054"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/clientSettingsTitleTvGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.087" />
+            android:id="@+id/clientSettingsTitleTvGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.087"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/closeIbtnGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.055" />
+            android:id="@+id/closeIbtnGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.055"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/closeIbtnGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.085" />
+            android:id="@+id/closeIbtnGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.085"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/rateUsBtnGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.69" />
+            android:id="@+id/rateUsBtnGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.69357044"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/rateUsBtnGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.762" />
+            android:id="@+id/rateUsBtnGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.762"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/settingsLogoutBtnGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.786" />
+            android:id="@+id/settingsLogoutBtnGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.786"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/settingsLogoutBtnGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.858" />
+            android:id="@+id/settingsLogoutBtnGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.858"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/infoIvGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.24" />
+            android:id="@+id/infoIvGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.24"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/infoIvGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.264" />
+            android:id="@+id/infoIvGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.264"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/infoIvGLStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.084" />
+            android:id="@+id/infoIvGLStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.084"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/switchSendRecordingsTitleTvBtnGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.164" />
+            android:id="@+id/switchSendRecordingsTitleTvBtnGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.164"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/switchSendRecordingsTitleTvBtnGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.219" />
+            android:id="@+id/switchSendRecordingsTitleTvBtnGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.219"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/switchSendRecordingsTitleTvGLRight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.678" />
+            android:id="@+id/switchSendRecordingsTitleTvGLRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.678"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/footerGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.901" />
+            android:id="@+id/footerGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.901"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/footerGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.922" />
+            android:id="@+id/footerGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.922"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/switchSendRecordingsInfoTvGLTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.237" />
+            android:id="@+id/switchSendRecordingsInfoTvGLTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.237"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/switchSendRecordingsInfoTvGLBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.426" />
+            android:id="@+id/switchSendRecordingsInfoTvGLBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.426"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/switchSendRecordingsInfoTvGLStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.156" />
+            android:id="@+id/switchSendRecordingsInfoTvGLStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.156"
+            />
 </androidx.constraintlayout.widget.ConstraintLayout>

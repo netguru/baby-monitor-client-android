@@ -19,7 +19,7 @@ class ConnectWifiFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        connectionConnectWiFiCtrl.setOnClickListener {
+        wifiConnectionButton.setOnClickListener {
             if (wifiReceiver.isWifiConnected.value?.fetchData() == true) {
                 findNavController().navigate(
                     when {
@@ -35,7 +35,7 @@ class ConnectWifiFragment : BaseFragment() {
             }
         }
         wifiReceiver.isWifiConnected.observe(this, Observer { isConnected ->
-            connectionConnectWiFiTv.text = if (isConnected?.fetchData() == true) {
+            wifiConnectionButton.text = if (isConnected?.fetchData() == true) {
                 getString(R.string.connect_wifi_connected)
             } else {
                 getString(R.string.connect_to_wi_fi)

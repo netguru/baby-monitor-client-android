@@ -5,17 +5,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.common.extensions.BITMAP_AUTO_SIZE
-import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
-import co.netguru.baby.monitor.client.common.extensions.babyProfileImage
-import co.netguru.baby.monitor.client.common.extensions.observeNonNull
-import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.common.extensions.startAppSettings
+import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import kotlinx.android.synthetic.main.fragment_client_settings.*
 import pl.aprilapps.easyphotopicker.EasyImage
@@ -77,18 +74,7 @@ class ClientSettingsFragment : BaseDaggerFragment() {
             R.drawable.ic_select_photo_camera
         )
 
-        clientViewModel.selectedChild.observeNonNull(this, { child ->
-
-            if (!child.name.isNullOrEmpty()) {
-                childNameEt.setText(child.name)
-            }
-            if (!child.image.isNullOrEmpty()) {
-                childPhotoIv.babyProfileImage(
-                    child.image, -1f,
-                    R.color.alpha_accent, R.drawable.ic_select_photo_camera
-                )
-            }
-        })
+        setupObservers()
 
         childNameEt.onFocusChangeListener =
             View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
@@ -103,6 +89,27 @@ class ClientSettingsFragment : BaseDaggerFragment() {
 
         version.text =
             getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+    }
+
+    private fun setupObservers() {
+        clientViewModel.selectedChild.observeNonNull(viewLifecycleOwner, { child ->
+            if (!child.name.isNullOrEmpty()) {
+                childNameEt.setText(child.name)
+            }
+            if (!child.image.isNullOrEmpty()) {
+                childPhotoIv.babyProfileImage(
+                    child.image, -1f,
+                    R.color.alpha_accent, R.drawable.ic_select_photo_camera
+                )
+            }
+        })
+        viewModel.resetInProgress.observe(viewLifecycleOwner, Observer { resetInProgress ->
+            settingsLogoutBtn.apply {
+                isClickable = !resetInProgress
+                text = if (resetInProgress) "" else resources.getString(R.string.reset_the_app)
+            }
+            logoutProgressBar.isVisible = resetInProgress
+        })
     }
 
     private fun getPictureWithEasyPicker() {

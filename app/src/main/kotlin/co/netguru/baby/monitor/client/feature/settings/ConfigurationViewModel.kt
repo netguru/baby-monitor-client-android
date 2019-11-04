@@ -1,9 +1,10 @@
 package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
-import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import android.content.Intent
+import androidx.lifecycle.LiveData
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
 import co.netguru.baby.monitor.client.common.RunsInBackground
@@ -29,6 +30,8 @@ class ConfigurationViewModel @Inject constructor(
 
     internal val connectionCompletedState = MutableLiveData<Boolean>()
     private val compositeDisposable = CompositeDisposable()
+    private val mutableResetInProgress = MutableLiveData<Boolean>()
+    val resetInProgress: LiveData<Boolean> = mutableResetInProgress
 
     init {
         nsdServiceManager.serviceInfoData.observeForever { list ->
@@ -54,12 +57,16 @@ class ConfigurationViewModel @Inject constructor(
 
     fun resetApp(activity: Activity) {
         resetAppUseCase.resetApp()
+            .doOnSubscribe { mutableResetInProgress.postValue(true) }
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
                     handleAppReset(activity)
                 },
-                onError = Timber::e
+                onError = {
+                    mutableResetInProgress.postValue(false)
+                    Timber.w(it)
+                }
             ).addTo(compositeDisposable)
     }
 

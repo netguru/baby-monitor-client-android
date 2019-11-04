@@ -1,11 +1,13 @@
 package co.netguru.baby.monitor.client.feature.settings
 
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
@@ -65,5 +67,13 @@ class ServerSettingsFragment : BaseDaggerFragment() {
 
         version.text =
             getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+
+        viewModel.resetInProgress.observe(viewLifecycleOwner, Observer { resetInProgress ->
+            settingsLogoutBtn.apply {
+                isClickable = !resetInProgress
+                text = if (resetInProgress) "" else resources.getString(R.string.reset_the_app)
+            }
+            logoutProgressBar.isVisible = resetInProgress
+        })
     }
 }
