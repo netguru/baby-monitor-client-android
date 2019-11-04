@@ -6,19 +6,17 @@ import androidx.lifecycle.ViewModel
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
+import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
 import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
-import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
-import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -26,10 +24,11 @@ class ConfigurationViewModel @Inject constructor(
     private val nsdServiceManager: NsdServiceManager,
     private val resetAppUseCase: ResetAppUseCase,
     private val dataRepository: DataRepository,
-    private val firebaseRepository: FirebaseRepository
+    private val firebaseRepository: FirebaseRepository,
+    private val localDateTimeProvider: LocalDateTimeProvider
 ) : ViewModel() {
 
-    internal val appSavedState = MutableLiveData<AppState>()
+    internal val connectionCompletedState = MutableLiveData<Boolean>()
     private val compositeDisposable = CompositeDisposable()
     private val mutableResetInProgress = MutableLiveData<Boolean>()
     val resetInProgress: LiveData<Boolean> = mutableResetInProgress
@@ -47,22 +46,12 @@ class ConfigurationViewModel @Inject constructor(
         port: Int
     ) {
         val address = "ws://$address:$port"
-        dataRepository.doesChildDataExists(address)
-            .flatMapCompletable { exists ->
-                if (exists) {
-                    Completable.complete()
-                } else {
-                    dataRepository.putChildData(ChildDataEntity(address))
-                }
-            }
-            .andThen(addParingEventToDataBase(address))
-            .andThen(dataRepository.getSavedState())
+        dataRepository.putChildData(ChildDataEntity(address))
+            .andThen(addPairingEventToDataBase(address))
             .subscribeOn(Schedulers.io())
             .subscribeBy(
-                onSuccess = { state ->
-                    appSavedState.postValue(state)
-                },
-                onError = Timber::e
+                onComplete = { connectionCompletedState.postValue(true) },
+                onError = { connectionCompletedState.postValue(false) }
             ).addTo(compositeDisposable)
     }
 
@@ -89,7 +78,7 @@ class ConfigurationViewModel @Inject constructor(
         nsdServiceManager.stopServiceDiscovery()
     }
 
-    internal fun isUploadEnablad() = firebaseRepository.isUploadEnablad()
+    internal fun isUploadEnabled() = firebaseRepository.isUploadEnablad()
 
     internal fun setUploadEnabled(enabled: Boolean) {
         firebaseRepository.setUploadEnabled(enabled)
@@ -110,11 +99,11 @@ class ConfigurationViewModel @Inject constructor(
     }
 
     @RunsInBackground
-    private fun addParingEventToDataBase(address: String) =
+    private fun addPairingEventToDataBase(address: String) =
         dataRepository.insertLogToDatabase(
             LogDataEntity(
                 DEVICES_PAIRED,
-                LocalDateTime.now().toString(),
+                localDateTimeProvider.now().toString(),
                 address
             )
         )

@@ -1,102 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@color/background">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@color/background"
+        >
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesBaseStartGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.064" />
+            android:id="@+id/connectingDevicesBaseStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.064" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesBaseEndGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.936" />
+            android:id="@+id/connectingDevicesBaseEndGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.936"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesText1TopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.156" />
+            android:id="@+id/connectingDevicesText1TopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.156"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_bold"
-        android:text="@string/connecting"
-        android:textColor="@color/accent"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesText1BottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/connectingDevicesText1TopGl" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/connecting"
+            android:textColor="@color/accent"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesText1BottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingDevicesText1TopGl"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesText1BottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.19" />
+            android:id="@+id/connectingDevicesText1BottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.19"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesText2TopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.202" />
+            android:id="@+id/connectingDevicesText2TopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.202"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_medium"
-        android:text="@string/connecting_devices_description_text"
-        android:textColor="@color/white"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@id/connectingDevicesText2BottomGl"
-        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/connectingDevicesText2TopGl" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_medium"
+            android:text="@string/connecting_devices_description_text"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@id/connectingDevicesText2BottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingDevicesText2TopGl"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesText2BottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.299" />
+            android:id="@+id/connectingDevicesText2BottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.299"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesProgressBarTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.486" />
+            android:id="@+id/connectingDevicesProgressBarTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.486"
+            />
 
     <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/all_circle_white_bg"
-        android:indeterminate="true"
-        android:padding="@dimen/spacing_xmedium"
-        app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesProgressBarBottomGl"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
-        app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
-        app:layout_constraintTop_toTopOf="@+id/connectingDevicesProgressBarTopGl" />
+            android:id="@+id/progressBar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/all_circle_white_bg"
+            android:indeterminate="true"
+            android:padding="@dimen/spacing_xmedium"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesProgressBarBottomGl"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingDevicesProgressBarTopGl"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/connectingDevicesProgressBarBottomGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.606" />
+            android:id="@+id/connectingDevicesProgressBarBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.606"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesCancelTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.844"
+            />
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancelSearchingButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/button_purple_outline_to_purple_rounded"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesCancelBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingDevicesCancelTopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesCancelBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.928"
+            />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
