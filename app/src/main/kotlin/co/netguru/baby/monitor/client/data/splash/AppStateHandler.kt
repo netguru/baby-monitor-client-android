@@ -6,11 +6,11 @@ import co.netguru.baby.monitor.client.common.extensions.edit
 import javax.inject.Inject
 
 class AppStateHandler @Inject constructor(
-        @ConfigurationPreferencesQualifier private val prefs: SharedPreferences
+    @ConfigurationPreferencesQualifier private val prefs: SharedPreferences
 ) {
     internal var appState: AppState
         get() = AppState.valueOf(
-                prefs.getString(APP_STATE_KEY, null) ?: AppState.UNDEFINED.toString()
+            prefs.getString(APP_STATE_KEY, null) ?: AppState.UNDEFINED.toString()
         )
         set(value) {
             prefs.edit {
