@@ -92,9 +92,7 @@ class FirebaseRepository(
         storageRef = storage.reference
         val fileUri = Uri.fromFile(file)
         val lastPathSegment = fileUri.lastPathSegment
-        return if (lastPathSegment == null) {
-            null
-        } else {
+        return lastPathSegment?.let {
             storageRef?.child(lastPathSegment)?.putFile(fileUri)
         }
     }
