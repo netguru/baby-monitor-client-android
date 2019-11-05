@@ -1,6 +1,5 @@
 package co.netguru.baby.monitor.client.application
 
-import android.content.Context
 import co.netguru.baby.monitor.client.application.scope.AppScope
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,7 +20,7 @@ import javax.inject.Inject
 @AppScope
 class DebugMetricsHelper @Inject constructor() {
 
-    internal fun init(context: Context) {
+    internal fun init() {
         Timber.plant(Timber.DebugTree())
     }
 }
