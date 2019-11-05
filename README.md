@@ -9,21 +9,23 @@
     6. Include this file on ALL branches.
 -->
 
+[![Build Status]( https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master)](https://app.bitrise.io/app/f771060e296f1f5e#)
+
 <!-- Put your project's name -->
 # Baby monitor client android
 
 <!-- METADATA -->
 <!-- Add links to JIRA, Google Drive, mailing list and other relevant resources -->
 <!-- Add links to CI configs with build status and deployment environment, e.g.: -->
-| environment | deployment            | status             |
-|-------------|-----------------------|--------------------|
-| mockRelease        | https://rink.hockeyapp.net/manage/apps/821156| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
-| productionRelease  | https://rink.hockeyapp.net/manage/apps/821318| https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master |
+| environment | deployment            | 
+|-------------|-----------------------|
+| Release     | https://appcenter.ms/orgs/office-4dmm/apps/Baby-Monitor-Client|
+| Preprod     | https://appcenter.ms/orgs/office-4dmm/apps/Baby-Monitor-Preprod|
 <!--- If applies, add link to app on Google Play -->
 
 ## Synopsis
 <!-- Describe the project in few sentences -->
-
+Baby Guard is a free, offline, and cross-platform application that replaces electronic baby monitors. The app will notify you on your smartphone whenever your baby starts crying.
 ## Development
 
 ### Integrations
@@ -42,34 +44,25 @@
 
 ### Build types
 <!-- List and describe build types -->
+ 1. Debug - for development
+ 2. ReleasePreprod - for testing
+ 3. Release - app releases to the store
+ 
 #### debug
  - debuggable
  - disabled ProGuard
- - uses built-in shrinking (no obfuscation)
  
 #### release
  - uses full ProGuard configuration
  - enables zipAlign, shrinkResources
  - non-debuggable
 
-### Product flavors
-<!-- List and describe product flavors, purposes and dedicated deployment channels -->
- 
-#### mock
- - preview API, functional testing
- 
-#### production
- - production API, release
-
 ### Build properties
 <!-- List all build properties that have to be supplied, including secrets. Describe the method of supplying them, both on local builds and CI -->
 
 | Property         | External property name | Environment variable |
 |------------------|------------------------|----------------------|
-| HockeyApp App ID mock | HockeyAppIdMock            | HOCKEY_APP_ID_MOCK|
-| HockeyApp App Secret mock | HockeyAppSecretMock            | HOCKEY_APP_SECRET_MOCK|
-| HockeyApp App ID production | HockeyAppIdProduction           | HOCKEY_APP_ID_PRODUCTION|
-| HockeyApp App Secret production | HockeyAppSecretProduction           | HOCKEY_APP_Secret_PRODUCTION|
+| Firebase Cloud Messaging Server Key | FirebaseCloudMessagingServerKey | FIREBASE_CLOUD_MESSAGING_SERVER_KEY |
 
 #### Secrets
 Follow [this guide](https://netguru.atlassian.net/wiki/pages/viewpage.action?pageId=33030753) 

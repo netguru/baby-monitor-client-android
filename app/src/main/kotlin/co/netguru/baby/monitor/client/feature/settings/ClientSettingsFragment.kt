@@ -159,7 +159,7 @@ class ClientSettingsFragment : BaseDaggerFragment() {
         ) {
             getPictureWithEasyPicker()
         } else {
-            showSnackbarMessage(R.string.hockeyapp_error_no_external_storage_permission) {
+            showSnackbarMessage(R.string.no_external_storage_permission) {
                 setAction(R.string.settings) { startAppSettings() }
             }
         }

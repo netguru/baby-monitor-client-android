@@ -43,6 +43,7 @@
     <string name="permission_denied_are_you_sure">Are you sure you want to deny\npermissions?</string>
     <string name="permission_denied_retry_button">Re-try</string>
     <string name="permission_denied_sure_button">I\'m sure</string>
+    <string name="no_external_storage_permission">The permission to access the external storage is not set. Please contact the developer.</string>
 
     <string name="setup_information">Setup information</string>
     <string name="connecting_setup_information">Put this device next\nto your baby\'s bed, so\nthat you can see him\nor her in a real time\nview</string>

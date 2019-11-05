@@ -10,9 +10,7 @@ apply plugin: 'io.fabric'
 ext {
 
     secrets = [
-            firebaseCloudMessagingServerKey: keyProperty("FIREBASE_CLOUD_MESSAGING_SERVER_KEY"),
-            hockeyAppIdPreProd             : keyProperty("HOCKEY_APP_ID_PREPROD"),
-            hockeyAppIdProduction          : keyProperty("HOCKEY_APP_ID_PRODUCTION")
+            firebaseCloudMessagingServerKey: keyProperty("FIREBASE_CLOUD_MESSAGING_SERVER_KEY")
     ]
 }
 
@@ -42,7 +40,6 @@ android {
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: keyProperty("HOCKEY_APP_ID_DEBUG")]
         }
         releasePreprod {
             signingConfig signingConfigs.debug
@@ -55,7 +52,6 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release-preprod.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: secrets.hockeyAppIdPreProd]
         }
         release {
             debuggable false
@@ -65,7 +61,6 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
-            manifestPlaceholders = [HOCKEY_APP_ID: secrets.hockeyAppIdProduction]
         }
     }
 
@@ -206,9 +201,6 @@ dependencies {
 
     // StrictMode
     debugImplementation libs.strictmodeNotifier
-
-    // HockeyApp
-    implementation libs.hockeyApp
 
     //Glide
     implementation libs.glide

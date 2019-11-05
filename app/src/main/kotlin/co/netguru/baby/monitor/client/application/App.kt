@@ -23,7 +23,7 @@ class App : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        debugMetricsHelper.init(this)
+        debugMetricsHelper.init()
         RxJavaPlugins.setErrorHandler(rxJavaErrorHandler)
         AndroidThreeTen.init(this)
         firebaseRepository.initializeApp(this)
