@@ -20,11 +20,11 @@ import timber.log.Timber
 import java.io.File
 
 class FirebaseRepository(
-        private val preferencesWrapper: FirebaseSharedPreferencesWrapper,
-        private val context: Context
+    private val preferencesWrapper: FirebaseSharedPreferencesWrapper,
+    private val context: Context
 ) {
-    internal var storageRef: StorageReference? = null
-    internal val directory = context.getDir(WavFileGenerator.DIRECTORY_NAME, Context.MODE_PRIVATE)
+    private var storageRef: StorageReference? = null
+    private val directory = context.getDir(WavFileGenerator.DIRECTORY_NAME, Context.MODE_PRIVATE)
     internal val compositeDisposable = CompositeDisposable()
 
     fun initializeApp(app: App) {
@@ -36,19 +36,19 @@ class FirebaseRepository(
         compositeDisposable.dispose()
     }
 
-    internal fun uploadAllRecordingsToFirebaseStorage() {
+    private fun uploadAllRecordingsToFirebaseStorage() {
         addListeners(uploadFirstRecording())
     }
 
-    internal fun addListeners(uploadTask: UploadTask?) {
+    private fun addListeners(uploadTask: UploadTask?) {
         uploadTask?.addOnSuccessListener { taskSnapshot ->
             removeUploadedFile(taskSnapshot)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeBy(
-                            onComplete = { uploadAllRecordingsToFirebaseStorage() },
-                            onError = Timber::e
-                    )
-                    .addTo(compositeDisposable)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                    onComplete = { uploadAllRecordingsToFirebaseStorage() },
+                    onError = Timber::e
+                )
+                .addTo(compositeDisposable)
         }?.addOnProgressListener { taskSnapshot ->
             preferencesWrapper.saveSessionDataIfNeeded(taskSnapshot, directory)
         }
@@ -72,24 +72,29 @@ class FirebaseRepository(
         }
 
         if (storageRef == null) {
-            val storage = FirebaseStorage.getInstance("gs://" + context.getString(R.string.google_storage_bucket))
+            val storage =
+                FirebaseStorage.getInstance(GOOGLE_STORAGE + context.getString(R.string.google_storage_bucket))
             storageRef = storage.reference
         }
-        addListeners(storageRef?.putFile(preferencesWrapper.getFileUri(),
-                StorageMetadata.Builder().build(), preferencesWrapper.getSessionUri()))
+        addListeners(
+            storageRef?.putFile(
+                preferencesWrapper.getFileUri(),
+                StorageMetadata.Builder().build(), preferencesWrapper.getSessionUri()
+            )
+        )
     }
 
     @RunsInBackground
     internal fun uploadFirstRecording(): UploadTask? {
-        val file = directory.listFiles().firstOrNull()
-        if (file == null) {
-            return null
-        }
-        val storage = FirebaseStorage.getInstance("gs://" + context.getString(R.string.google_storage_bucket))
+        val file = directory?.listFiles()?.firstOrNull() ?: return null
+        val storage =
+            FirebaseStorage.getInstance(GOOGLE_STORAGE + context.getString(R.string.google_storage_bucket))
         storageRef = storage.reference
         val fileUri = Uri.fromFile(file)
-        val riversRef = storageRef?.child(fileUri.lastPathSegment)
-        return riversRef?.putFile(fileUri)
+        val lastPathSegment = fileUri.lastPathSegment
+        return lastPathSegment?.let {
+            storageRef?.child(lastPathSegment)?.putFile(fileUri)
+        }
     }
 
     private fun removeUploadedFile(taskSnapshot: UploadTask.TaskSnapshot) = Completable.fromAction {
@@ -99,4 +104,7 @@ class FirebaseRepository(
         preferencesWrapper.clearUploadSessionData()
     }
 
+    companion object {
+        private const val GOOGLE_STORAGE = "gs://"
+    }
 }
