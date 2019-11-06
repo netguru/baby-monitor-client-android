@@ -1,9 +1,11 @@
 package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.content.Intent
+import android.net.wifi.WifiManager
 import androidx.lifecycle.LiveData
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
@@ -31,6 +33,7 @@ class ConfigurationViewModel @Inject constructor(
     internal val connectionCompletedState = MutableLiveData<Boolean>()
     private val compositeDisposable = CompositeDisposable()
     private val mutableResetInProgress = MutableLiveData<Boolean>()
+    private var multicastLock: WifiManager.MulticastLock? = null
     val resetInProgress: LiveData<Boolean> = mutableResetInProgress
 
     init {
@@ -70,12 +73,30 @@ class ConfigurationViewModel @Inject constructor(
             ).addTo(compositeDisposable)
     }
 
-    internal fun discoverNsdService(onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener) {
+    internal fun discoverNsdService(
+        onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener,
+        context: Context
+    ) {
+        acquireMulticastLock(context)
         nsdServiceManager.discoverService(onServiceConnectedListener)
     }
 
+    private fun acquireMulticastLock(context: Context) {
+        // Pixel workaround for discovering services
+        val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        multicastLock = wifi.createMulticastLock(MUTLICAST_LOCK_TAG)
+        multicastLock?.setReferenceCounted(true)
+        multicastLock?.acquire()
+    }
+
     internal fun stopNsdServiceDiscovery() {
+        releaseMulticastLock()
         nsdServiceManager.stopServiceDiscovery()
+    }
+
+    private fun releaseMulticastLock() {
+        multicastLock?.release()
+        multicastLock = null
     }
 
     internal fun isUploadEnabled() = firebaseRepository.isUploadEnablad()
@@ -110,5 +131,6 @@ class ConfigurationViewModel @Inject constructor(
 
     companion object {
         private const val DEVICES_PAIRED = "Devices were paired correctly"
+        internal const val MUTLICAST_LOCK_TAG = "multicastLock"
     }
 }

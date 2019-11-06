@@ -1,11 +1,11 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
@@ -21,7 +21,8 @@ import kotlinx.android.synthetic.main.fragment_connecting_devices.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServiceConnectedListener {
+class ConnectingDevicesFragment : BaseDaggerFragment(),
+    NsdServiceManager.OnServiceConnectedListener {
     override val layoutResource = R.layout.fragment_connecting_devices
 
     @Inject
@@ -36,7 +37,8 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.connectionCompletedState.observe(viewLifecycleOwner, Observer { onConnectionCompleted(it) })
+        viewModel.connectionCompletedState.observe(viewLifecycleOwner,
+            Observer { onConnectionCompleted(it) })
         cancelSearchingButton.setOnClickListener {
             goBackToSpecifyDevice()
         }
@@ -44,7 +46,8 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
 
     private fun goBackToSpecifyDevice() {
         findNavController()
-            .navigate(R.id.cancelConnecting, null,
+            .navigate(
+                R.id.cancelConnecting, null,
                 NavOptions.Builder()
                     .setPopUpTo(R.id.specifyDevice, true)
                     .build()
@@ -53,7 +56,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment(), NsdServiceManager.OnServ
 
     override fun onStart() {
         super.onStart()
-        viewModel.discoverNsdService(this)
+        viewModel.discoverNsdService(this, requireContext())
         Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
             .subscribe { _ ->
                 findNavController().navigate(R.id.connectionFailed)
