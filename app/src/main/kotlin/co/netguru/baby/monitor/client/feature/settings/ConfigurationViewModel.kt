@@ -1,12 +1,11 @@
 package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import android.content.Intent
 import android.net.wifi.WifiManager
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
 import co.netguru.baby.monitor.client.common.RunsInBackground
@@ -75,16 +74,15 @@ class ConfigurationViewModel @Inject constructor(
 
     internal fun discoverNsdService(
         onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener,
-        context: Context
+        wifiManager: WifiManager
     ) {
-        acquireMulticastLock(context)
+        acquireMulticastLock(wifiManager)
         nsdServiceManager.discoverService(onServiceConnectedListener)
     }
 
-    private fun acquireMulticastLock(context: Context) {
+    private fun acquireMulticastLock(wifiManager: WifiManager) {
         // Pixel workaround for discovering services
-        val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        multicastLock = wifi.createMulticastLock(MUTLICAST_LOCK_TAG)
+        multicastLock = wifiManager.createMulticastLock(MUTLICAST_LOCK_TAG)
         multicastLock?.setReferenceCounted(true)
         multicastLock?.acquire()
     }

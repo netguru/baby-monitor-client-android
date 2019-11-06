@@ -1,5 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
+import android.content.Context
+import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.View
@@ -56,12 +58,18 @@ class ConnectingDevicesFragment : BaseDaggerFragment(),
 
     override fun onStart() {
         super.onStart()
-        viewModel.discoverNsdService(this, requireContext())
+        discoverNsdService()
         Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
             .subscribe { _ ->
                 findNavController().navigate(R.id.connectionFailed)
             }
             .addTo(disposables)
+    }
+
+    private fun discoverNsdService() {
+        val wifiManager =
+            requireContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        viewModel.discoverNsdService(this, wifiManager)
     }
 
     override fun onStop() {
