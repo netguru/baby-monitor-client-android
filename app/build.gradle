@@ -193,14 +193,8 @@ dependencies {
     // Timber
     implementation libs.timber
 
-    // Stetho
-    debugImplementation libs.stetho
-
     // LeakCanary
     debugImplementation libs.leakCanary
-
-    // StrictMode
-    debugImplementation libs.strictmodeNotifier
 
     //Glide
     implementation libs.glide
