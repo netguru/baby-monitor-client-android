@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
 import android.net.nsd.NsdServiceInfo
+import android.net.wifi.WifiManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -40,6 +41,12 @@ class ConfigurationViewModelTest {
     private val localDateTimeProvider: LocalDateTimeProvider = mock {
         val localDateTime: LocalDateTime = mock()
         on { now() }.doReturn(localDateTime)
+    }
+    private val multicastLock: WifiManager.MulticastLock = mock()
+    private val wifiManager: WifiManager = mock {
+        on { createMulticastLock(ConfigurationViewModel.MUTLICAST_LOCK_TAG) }.doReturn(
+            multicastLock
+        )
     }
 
     @Before
@@ -97,13 +104,26 @@ class ConfigurationViewModelTest {
     @Test
     fun `should start and stop nsdService`() {
         val serviceConnectedListener: NsdServiceManager.OnServiceConnectedListener = mock()
-        configurationViewModel.discoverNsdService(serviceConnectedListener)
+        configurationViewModel.discoverNsdService(serviceConnectedListener, wifiManager)
 
         verify(nsdServiceManager).discoverService(serviceConnectedListener)
 
         configurationViewModel.stopNsdServiceDiscovery()
 
         verify(nsdServiceManager).stopServiceDiscovery()
+    }
+
+    @Test
+    fun `should handle Wifi MulticastLock while starting and stopping searching`() {
+        val serviceConnectedListener: NsdServiceManager.OnServiceConnectedListener = mock()
+        configurationViewModel.discoverNsdService(serviceConnectedListener, wifiManager)
+
+        verify(multicastLock).acquire()
+        verify(multicastLock).setReferenceCounted(true)
+
+        configurationViewModel.stopNsdServiceDiscovery()
+
+        verify(multicastLock).release()
     }
 
     @Test
