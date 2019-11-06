@@ -27,7 +27,7 @@ ext {
             timber              : "com.jakewharton.timber:timber:4.7.1",
             glide               : "com.github.bumptech.glide:glide:$glideVersion",
             leakCanary          : "com.squareup.leakcanary:leakcanary-android:2.0-beta-3",
-            lifecycleExtensions : 'androidx.lifecycle:lifecycle-extensions:2.0.0',
+            lifecycleExtensions : 'androidx.lifecycle:lifecycle-extensions:2.1.0',
             threeTen            : "com.jakewharton.threetenabp:threetenabp:1.1.0",
             easyImage           : "com.github.jkwiecien:EasyImage:1.3.1",
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:$navigationVersion",
