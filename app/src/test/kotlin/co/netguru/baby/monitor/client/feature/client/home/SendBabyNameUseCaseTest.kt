@@ -35,7 +35,8 @@ class SendBabyNameUseCaseTest {
     fun `should send baby name message`() {
         sendBabyNameUseCase
             .streamBabyName(rxWebSocketClient)
-            .subscribe()
+            .test()
+            .assertComplete()
 
         verify(gson).toJson(check<Message> {
             assertEquals(childDataEntity.name, it.babyName)
