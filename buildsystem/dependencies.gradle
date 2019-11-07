@@ -46,11 +46,11 @@ ext {
             bubblePagerIndicator: 'com.shuhart.bubblepagerindicator:bubblepagerindicator:1.1.2',
             room                : "androidx.room:room-runtime:$roomVersion",
             roomRx              : "androidx.room:room-rxjava2:$roomVersion",
-            firebaseStorage     : 'com.google.firebase:firebase-storage:16.0.5',
-            firebaseAuth        : 'com.google.firebase:firebase-auth:16.1.0',
-            firebaseDatabase    : 'com.google.firebase:firebase-database:16.0.5',
+            firebaseStorage     : 'com.google.firebase:firebase-storage:19.1.0',
+            firebaseAuth        : 'com.google.firebase:firebase-auth:19.1.0',
+            firebaseDatabase    : 'com.google.firebase:firebase-database:19.2.0',
             firebaseMessaging   : 'com.google.firebase:firebase-messaging:20.0.0',
-            firebaseAnalytics   : 'com.google.firebase:firebase-analytics:16.4.0',
+            firebaseAnalytics   : 'com.google.firebase:firebase-analytics:17.2.1',
             crashlytics         : 'com.crashlytics.sdk.android:crashlytics:2.10.1',
             okHttp              : 'com.squareup.okhttp3:okhttp:3.14.2'
     ]
