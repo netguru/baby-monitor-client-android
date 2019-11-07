@@ -102,7 +102,7 @@
 
     <string name="connecting_devices_description_text">Searching for\nsecond device</string>
 
-    <string name="connecting_devices_failed_text_1">Ups! Something\nwent wrong :(</string>
+    <string name="connecting_devices_failed_text_1">Oops! Something\nwent wrong :(</string>
     <string name="connecting_devices_failed_text_2">Make sure that you are connected\nto the same Wi-Fi network</string>
 
     <string name="message_video_preview_disabled_tap_to_enable">Video preview disabled to conserve energy. Tap to enable it.</string>
