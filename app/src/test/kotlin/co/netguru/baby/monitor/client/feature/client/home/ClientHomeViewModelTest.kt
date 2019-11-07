@@ -11,62 +11,57 @@ import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase
 import co.netguru.baby.monitor.client.feature.communication.internet.CheckInternetConnectionUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyZeroInteractions
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
 
 class ClientHomeViewModelTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
-    @Rule
-    @JvmField
+    @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private val dataRepository: DataRepository = mock()
+    private val childLiveData: LiveData<ChildDataEntity> = MutableLiveData()
+    private val dataRepository: DataRepository = mock {
+        on { getChildLiveData() }.doReturn(childLiveData)
+    }
     private val rxWebSocketClient: RxWebSocketClient = mock()
-    private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase = mock()
-    private val sendBabyNameUseCase: SendBabyNameUseCase = mock()
+    private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase = mock {
+        on { sendFirebaseToken(rxWebSocketClient) }.doReturn(Completable.complete())
+    }
+    private val sendBabyNameUseCase: SendBabyNameUseCase = mock {
+        on { streamBabyName(rxWebSocketClient) }.doReturn(Completable.complete())
+    }
     private val snoozeNotificationUseCase: SnoozeNotificationUseCase = mock()
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase = mock()
     private val restartAppUseCase: RestartAppUseCase = mock()
-    private val childLiveData: LiveData<ChildDataEntity> = MutableLiveData()
-    private lateinit var clientHomeViewModel: ClientHomeViewModel
 
-    @Before
-    fun setUp() {
-        whenever(dataRepository.getChildLiveData()).thenReturn(childLiveData)
-        clientHomeViewModel = ClientHomeViewModel(
-            dataRepository,
-            sendFirebaseTokenUseCase,
-            sendBabyNameUseCase,
-            snoozeNotificationUseCase,
-            checkInternetConnectionUseCase,
-            restartAppUseCase,
-            rxWebSocketClient
-        )
-        whenever(sendFirebaseTokenUseCase.sendFirebaseToken(rxWebSocketClient)).thenReturn(
-            Completable.complete())
-        whenever(sendBabyNameUseCase.streamBabyName(rxWebSocketClient)).thenReturn(
-            Completable.complete())
-    }
+    private val clientHomeViewModel = ClientHomeViewModel(
+        dataRepository,
+        sendFirebaseTokenUseCase,
+        sendBabyNameUseCase,
+        snoozeNotificationUseCase,
+        checkInternetConnectionUseCase,
+        restartAppUseCase,
+        rxWebSocketClient
+    )
 
     @Test
     fun `should handle web socket open connection`() {
         val uri: URI = mock()
         val selectedChildAvailabilityObserver: Observer<Boolean> = mock()
-        whenever(rxWebSocketClient.events(uri)).thenReturn(Observable.just(RxWebSocketClient.Event.Open))
+        whenever(rxWebSocketClient.events(uri)).doReturn(
+            Observable.just<RxWebSocketClient.Event>(
+                RxWebSocketClient.Event.Open
+            )
+        )
         clientHomeViewModel.selectedChildAvailability.observeForever(
             selectedChildAvailabilityObserver
         )
@@ -83,7 +78,11 @@ class ClientHomeViewModelTest {
         val uri: URI = mock()
         val selectedChildAvailabilityObserver: Observer<Boolean> = mock()
         val closeEvent: RxWebSocketClient.Event.Close = mock()
-        whenever(rxWebSocketClient.events(uri)).thenReturn(Observable.just(closeEvent))
+        whenever(rxWebSocketClient.events(uri)).doReturn(
+            Observable.just<RxWebSocketClient.Event>(
+                closeEvent
+            )
+        )
         clientHomeViewModel.selectedChildAvailability.observeForever(
             selectedChildAvailabilityObserver
         )
@@ -97,7 +96,7 @@ class ClientHomeViewModelTest {
     @Test
     fun `should snooze notifications`() {
         val disposable = mock<Disposable>()
-        whenever(snoozeNotificationUseCase.snoozeNotifications()).thenReturn(disposable)
+        whenever(snoozeNotificationUseCase.snoozeNotifications()).doReturn(disposable)
         clientHomeViewModel.snoozeNotifications()
 
         verify(snoozeNotificationUseCase).snoozeNotifications()
@@ -106,7 +105,7 @@ class ClientHomeViewModelTest {
     @Test
     fun `should check internet connection status`() {
         val internetConnectionObserver: Observer<Boolean> = mock()
-        whenever(checkInternetConnectionUseCase.hasInternetConnection()).thenReturn(Single.just(true))
+        whenever(checkInternetConnectionUseCase.hasInternetConnection()).doReturn(Single.just(true))
         clientHomeViewModel.internetConnectionAvailability.observeForever(internetConnectionObserver)
 
         clientHomeViewModel.checkInternetConnection()
@@ -118,7 +117,7 @@ class ClientHomeViewModelTest {
     @Test
     fun `should restart app`() {
         val activity: AppCompatActivity = mock()
-        whenever(restartAppUseCase.restartApp(activity)).thenReturn(Completable.complete())
+        whenever(restartAppUseCase.restartApp(activity)).doReturn(Completable.complete())
 
         clientHomeViewModel.restartApp(activity)
 

@@ -2,10 +2,7 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.data.DataRepository
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import org.junit.Rule
 import org.junit.Test
@@ -20,7 +17,7 @@ class SnoozeNotificationUseCaseTest {
 
     @Test
     fun `should update snoozeTimestamp on snoozeNotifications`() {
-        whenever(dataRepository.updateChildSnoozeTimestamp(any())).thenReturn(Completable.complete())
+        whenever(dataRepository.updateChildSnoozeTimestamp(any())).doReturn(Completable.complete())
 
         snoozeNotificationUseCase.snoozeNotifications()
 
