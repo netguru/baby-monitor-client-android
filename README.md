@@ -10,6 +10,7 @@
 -->
 
 [![Build Status]( https://app.bitrise.io/app/f771060e296f1f5e/status.svg?token=UkluW_9d1sfVP2c5lklYWg&branch=master)](https://app.bitrise.io/app/f771060e296f1f5e#)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=netguru/baby-monitor-client-android)](https://dependabot.com)
 
 <!-- Put your project's name -->
 # Baby monitor client android
