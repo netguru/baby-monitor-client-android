@@ -6,7 +6,7 @@ ext {
     glideVersion = '4.10.0'
     ankoVersion = '0.10.5'
     lifecycleVersion = '2.1.0'
-    roomVersion = '2.1.0'
+    roomVersion = '2.2.1'
     navigationVersion = '2.1.0'
 
     libs = [
