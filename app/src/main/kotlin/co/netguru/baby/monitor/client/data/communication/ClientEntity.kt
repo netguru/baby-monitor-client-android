@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["firebase_key"], unique = true)]
 )
 data class ClientEntity(
-        @ColumnInfo(name = "address") val address: String,
-        @ColumnInfo(name = "firebase_key") var firebaseKey: String
+    @ColumnInfo(name = "address") val address: String,
+    @ColumnInfo(name = "firebase_key") var firebaseKey: String
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null

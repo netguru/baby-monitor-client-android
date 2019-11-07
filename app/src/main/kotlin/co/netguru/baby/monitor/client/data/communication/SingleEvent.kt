@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.data.communication
 
 data class SingleEvent<T>(
-        private val event: T,
-        private var dispatched: Boolean = false
+    private val event: T,
+    private var dispatched: Boolean = false
 ) {
     var data: T? = event
         get() = if (dispatched) {

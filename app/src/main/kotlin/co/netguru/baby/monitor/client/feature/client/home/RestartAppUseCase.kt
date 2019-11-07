@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class RestartAppUseCase @Inject constructor() {
 
-    fun restartApp(activity: AppCompatActivity) = Completable.fromAction {
+    fun restartApp(activity: AppCompatActivity): Completable = Completable.fromAction {
         val intent =
             activity.baseContext.packageManager.getLaunchIntentForPackage(activity.baseContext.packageName)
                 ?.apply {
