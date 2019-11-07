@@ -5,23 +5,16 @@ import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotif
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class NotifyBabyCryingUseCaseTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
     private val notificationSender: FirebaseNotificationSender = mock()
-    private lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
-
-    @Before
-    fun setUp() {
-        notifyBabyCryingUseCase = NotifyBabyCryingUseCase(notificationSender)
-    }
+    private val notifyBabyCryingUseCase = NotifyBabyCryingUseCase(notificationSender)
 
     @Test
     fun `should send crying notification on notifyBabyCrying`() {

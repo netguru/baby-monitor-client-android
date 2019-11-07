@@ -10,14 +10,12 @@ import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class SendBabyNameUseCaseTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
     private val childDataEntity = ChildDataEntity("", name = "name")
@@ -31,12 +29,7 @@ class SendBabyNameUseCaseTest {
     private val rxWebSocketClient: RxWebSocketClient = mock {
         on { send(any()) }.doReturn(Completable.complete())
     }
-    private lateinit var sendBabyNameUseCase: SendBabyNameUseCase
-
-    @Before
-    fun setUp() {
-        sendBabyNameUseCase = SendBabyNameUseCase(dataRepository, gson)
-    }
+    private val sendBabyNameUseCase = SendBabyNameUseCase(dataRepository, gson)
 
     @Test
     fun `should send baby name message`() {

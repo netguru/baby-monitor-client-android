@@ -13,8 +13,7 @@ import org.junit.Test
 
 class RestartAppUseCaseTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
     private val restartAppUseCase: RestartAppUseCase = RestartAppUseCase()

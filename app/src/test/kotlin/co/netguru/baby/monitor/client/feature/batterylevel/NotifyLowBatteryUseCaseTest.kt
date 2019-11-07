@@ -5,23 +5,16 @@ import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotif
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class NotifyLowBatteryUseCaseTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
     private val notificationSender: FirebaseNotificationSender = mock()
-    private lateinit var notifyLowBatteryUseCase: NotifyLowBatteryUseCase
-
-    @Before
-    fun setUp() {
-        notifyLowBatteryUseCase = NotifyLowBatteryUseCase(notificationSender)
-    }
+    private val notifyLowBatteryUseCase = NotifyLowBatteryUseCase(notificationSender)
 
     @Test
     fun `should send low battery notification on notifyLowBattery`() {
@@ -29,6 +22,10 @@ class NotifyLowBatteryUseCaseTest {
         val text = "text"
         notifyLowBatteryUseCase.notifyLowBattery(title, text)
 
-        verify(notificationSender).broadcastNotificationToFcm(title, text, NotificationType.LOW_BATTERY_NOTIFICATION)
+        verify(notificationSender).broadcastNotificationToFcm(
+            title,
+            text,
+            NotificationType.LOW_BATTERY_NOTIFICATION
+        )
     }
 }

@@ -7,23 +7,16 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Completable
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class SnoozeNotificationUseCaseTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
     private val dataRepository: DataRepository = mock()
-    lateinit var snoozeNotificationUseCase: SnoozeNotificationUseCase
-
-    @Before
-    fun setUp() {
-        snoozeNotificationUseCase = SnoozeNotificationUseCase(dataRepository)
-    }
+    private val snoozeNotificationUseCase = SnoozeNotificationUseCase(dataRepository)
 
     @Test
     fun `should update snoozeTimestamp on snoozeNotifications`() {

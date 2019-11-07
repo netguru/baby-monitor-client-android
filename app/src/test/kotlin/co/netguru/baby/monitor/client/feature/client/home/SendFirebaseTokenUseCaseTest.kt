@@ -5,7 +5,6 @@ import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInsta
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Completable
 import io.reactivex.Single
-import org.junit.Before
 import org.junit.Test
 
 class SendFirebaseTokenUseCaseTest {
@@ -17,12 +16,7 @@ class SendFirebaseTokenUseCaseTest {
     private val rxWebSocketClient: RxWebSocketClient = mock {
         on { send(any()) }.doReturn(Completable.complete())
     }
-    private lateinit var sendFirebaseTokenUseCase: SendFirebaseTokenUseCase
-
-    @Before
-    fun setUp() {
-        sendFirebaseTokenUseCase = SendFirebaseTokenUseCase(firebaseInstanceManager)
-    }
+    private val sendFirebaseTokenUseCase = SendFirebaseTokenUseCase(firebaseInstanceManager)
 
     @Test
     fun sendFirebaseToken() {
