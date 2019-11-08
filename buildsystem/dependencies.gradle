@@ -43,7 +43,7 @@ ext {
             firebaseMessaging   : 'com.google.firebase:firebase-messaging:20.0.0',
             firebaseAnalytics   : 'com.google.firebase:firebase-analytics:17.2.1',
             crashlytics         : 'com.crashlytics.sdk.android:crashlytics:2.10.1',
-            okHttp              : 'com.squareup.okhttp3:okhttp:3.14.2'
+            okHttp              : 'com.squareup.okhttp3:okhttp:4.2.2'
     ]
 
     ktx = [
