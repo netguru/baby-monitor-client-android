@@ -1,6 +1,6 @@
 ext {
     // Versions
-    daggerVersion = '2.19'
+    daggerVersion = '2.25.2'
     okHttpVersion = '3.11.0'
     retrofitVersion = '2.4.0'
     glideVersion = '4.10.0'
