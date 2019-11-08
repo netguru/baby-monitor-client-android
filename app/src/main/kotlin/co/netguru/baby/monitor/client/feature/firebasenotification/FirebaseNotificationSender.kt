@@ -5,10 +5,10 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import io.reactivex.Completable
 import io.reactivex.Single
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
@@ -35,7 +35,7 @@ class FirebaseNotificationSender @Inject constructor(
                     postNotificationToFcm(firebaseTokens, title, text, notificationType)
                         .doOnSuccess { response ->
                             Timber.d("Posting notification succeeded: $response.")
-                            Timber.d(response.body()?.string().toString())
+                            Timber.d(response.body?.string().toString())
                         }
                         .ignoreElement()
                 } else {
@@ -57,16 +57,17 @@ class FirebaseNotificationSender @Inject constructor(
                         AUTHORIZATION_HEADER,
                         "key=${BuildConfig.FIREBASE_CLOUD_MESSAGING_SERVER_KEY}"
                     )
-                    .post(JSONObject().apply {
-                        put("registration_ids", JSONArray(to))
-                        put(NOTIFICATION_DATA, JSONObject().apply {
-                            put(NOTIFICATION_TITLE, title)
-                            put(NOTIFICATION_TEXT, text)
-                            put(NOTIFICATION_TYPE, notificationType.name)
-                        })
-                    }.toString().let { body ->
-                        RequestBody.create(MediaType.get("application/json"), body)
-                    })
+                    .post(
+                        JSONObject().apply {
+                            put("registration_ids", JSONArray(to))
+                            put(NOTIFICATION_DATA, JSONObject().apply {
+                                put(NOTIFICATION_TITLE, title)
+                                put(NOTIFICATION_TEXT, text)
+                                put(NOTIFICATION_TYPE, notificationType.name)
+                            })
+                        }.toString()
+                            .toRequestBody("application/json".toMediaType())
+                    )
                     .build()
             ).execute()
         }
