@@ -37,7 +37,6 @@ android {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
         }
@@ -49,7 +48,6 @@ android {
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
-            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release-preprod.pro'
         }
@@ -58,7 +56,6 @@ android {
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
-            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
         }
