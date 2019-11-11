@@ -63,7 +63,7 @@ ext {
 
     test = [
             lifecycleExtensions: "androidx.arch.core:core-testing:$lifecycleVersion",
-            mockito            : "org.mockito:mockito-core:2.21.0",
+            mockito            : "org.mockito:mockito-core:3.1.0",
             mockitoKotlin      : "com.nhaarman:mockito-kotlin-kt1.1:1.6.0",
             junit              : "junit:junit:4.12",
             mockWebServer      : "com.squareup.okhttp3:mockwebserver:$okHttpVersion",
