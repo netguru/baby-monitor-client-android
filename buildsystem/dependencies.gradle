@@ -34,7 +34,7 @@ ext {
             navigationUiKtx     : "androidx.navigation:navigation-ui-ktx:$navigationVersion",
             tensorFlow          : "org.tensorflow:tensorflow-android:1.11.0",
             javaWebSocket       : "org.java-websocket:Java-WebSocket:1.3.9",
-            googleWebRtc        : 'org.webrtc:google-webrtc:1.0.22512',
+            googleWebRtc        : 'org.webrtc:google-webrtc:1.0.28513',
             room                : "androidx.room:room-runtime:$roomVersion",
             roomRx              : "androidx.room:room-rxjava2:$roomVersion",
             firebaseStorage     : 'com.google.firebase:firebase-storage:19.1.0',
