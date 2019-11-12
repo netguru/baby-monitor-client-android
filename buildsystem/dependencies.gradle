@@ -23,7 +23,7 @@ ext {
             dagger              : "com.google.dagger:dagger:$daggerVersion",
             daggerAndroid       : "com.google.dagger:dagger-android:$daggerVersion",
             daggerAndroidSupport: "com.google.dagger:dagger-android-support:$daggerVersion",
-            gson                : "com.google.code.gson:gson:2.8.0",
+            gson                : "com.google.code.gson:gson:2.8.6",
             timber              : "com.jakewharton.timber:timber:4.7.1",
             glide               : "com.github.bumptech.glide:glide:$glideVersion",
             leakCanary          : "com.squareup.leakcanary:leakcanary-android:2.0-beta-3",
