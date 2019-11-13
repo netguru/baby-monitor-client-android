@@ -4,7 +4,10 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.Def
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.subjects.SingleSubject
-import org.webrtc.*
+import org.webrtc.DataChannel
+import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
+import org.webrtc.PeerConnectionFactory
 import timber.log.Timber
 
 private class ConnectionObserver(
@@ -29,28 +32,24 @@ private class ConnectionObserver(
     override fun onDataChannel(dataChannel: DataChannel?) {
         dataChannelHandler(dataChannel)
     }
-
 }
 
 fun PeerConnectionFactory.createPeerConnection(
-    mediaConstraints: MediaConstraints,
     mediaStreamHandler: (MediaStream) -> Unit,
     dataChannelHandler: (DataChannel?) -> Unit
 ): Pair<SingleSubject<PeerConnection>, Observable<StreamState>> {
 
-    val peerConnection: SingleSubject<PeerConnection> = SingleSubject.create()
-    val streamStateObservable: Observable<StreamState> = Observable.create {
-        peerConnection.onSuccess(
-            createPeerConnection(
-                emptyList(),
-                mediaConstraints,
-                ConnectionObserver(it, mediaStreamHandler, dataChannelHandler)
-            )
+    val peerConnectionSubject: SingleSubject<PeerConnection> = SingleSubject.create()
+    val streamStateObservable: Observable<StreamState> = Observable.create { streamState ->
+        val peerConnection = createPeerConnection(
+            emptyList(),
+            ConnectionObserver(streamState, mediaStreamHandler, dataChannelHandler)
         )
-
-
+        peerConnection?.let {
+            peerConnectionSubject.onSuccess(
+                it
+            )
+        }
     }
-
-    return peerConnection to streamStateObservable
-
+    return peerConnectionSubject to streamStateObservable
 }

@@ -36,7 +36,6 @@ class RtcClient(
 
     private fun createConnection(factory: PeerConnectionFactory) {
         val (peerConnection, stateStream) = factory.createPeerConnection(
-            constraints,
             this::handleMediaStream,
             this::handleDataChannel
         )
