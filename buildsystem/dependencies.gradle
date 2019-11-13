@@ -32,7 +32,7 @@ ext {
             easyImage           : "com.github.jkwiecien:EasyImage:1.3.1",
             navigationFragment  : "androidx.navigation:navigation-fragment-ktx:$navigationVersion",
             navigationUiKtx     : "androidx.navigation:navigation-ui-ktx:$navigationVersion",
-            tensorFlow          : "org.tensorflow:tensorflow-android:1.11.0",
+            tensorFlow          : "org.tensorflow:tensorflow-android:1.13.1",
             javaWebSocket       : "org.java-websocket:Java-WebSocket:1.4.0",
             googleWebRtc        : 'org.webrtc:google-webrtc:1.0.22512',
             room                : "androidx.room:room-runtime:$roomVersion",
