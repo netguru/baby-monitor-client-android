@@ -5,6 +5,7 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionObserver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import org.webrtc.*
 import timber.log.Timber
 
@@ -20,7 +21,8 @@ class WebRtcManager constructor(
     private lateinit var audioSource: AudioSource
     private lateinit var audioTrack: AudioTrack
 
-    private lateinit var peerConnection: PeerConnection
+    private var peerConnection: PeerConnection? = null
+    private var peerConnectionDisposable: Disposable? = null
     private lateinit var rtcServerConnectionObserver: RtcServerConnectionObserver
 
     private val eglBase: EglBase by lazy { EglBase.create() }
@@ -28,7 +30,7 @@ class WebRtcManager constructor(
     var cameraEnabled = true
         set(isEnabled) {
             field = isEnabled
-                cameraVideoCapturer?.let { enableVideo(isEnabled, it) }
+            cameraVideoCapturer?.let { enableVideo(isEnabled, it) }
         }
 
     private fun createCameraCapturer(cameraEnumerator: CameraEnumerator) =
@@ -64,13 +66,21 @@ class WebRtcManager constructor(
                 .setEnableInternalTracer(false)
                 .createInitializationOptions()
         )
+
+        val encoderFactory = DefaultVideoEncoderFactory(sharedContext, true, false)
+        val decoderFactory = DefaultVideoDecoderFactory(sharedContext)
         peerConnectionFactory = PeerConnectionFactory.builder()
+            .setVideoDecoderFactory(decoderFactory)
+            .setVideoEncoderFactory(encoderFactory)
             .createPeerConnectionFactory()
-            .apply {
-                setVideoHwAccelerationOptions(sharedContext, sharedContext)
-            }
+
+        val surfaceTextureHelper = SurfaceTextureHelper.create(SURFACE_TEXTURE_HELPER_THREAD, sharedContext)
+        videoSource = peerConnectionFactory.createVideoSource(true)
         cameraVideoCapturer = createCameraCapturer(Camera2Enumerator(context))
-        videoSource = peerConnectionFactory.createVideoSource(cameraVideoCapturer)
+            .apply {
+                initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
+            }
+        
         videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
@@ -85,39 +95,41 @@ class WebRtcManager constructor(
         val stream = peerConnectionFactory.createLocalMediaStream("stream")
         stream.addTrack(audioTrack)
         stream.addTrack(videoTrack)
-        peerConnection.addStream(stream)
+        peerConnection?.addStream(stream)
     }
 
     fun stopCapturing() {
         Timber.d("stopCapturing()")
+        peerConnectionDisposable?.dispose()
         audioSource.dispose()
         videoSource.dispose()
         cameraVideoCapturer?.dispose()
-        peerConnection.dispose()
+        peerConnection?.dispose()
         peerConnectionFactory.dispose()
     }
 
     fun acceptOffer(offer: String) {
         Timber.i("acceptOffer($offer)")
         rtcServerConnectionObserver.onAcceptOffer()
-        peerConnection
-            .setRemoteDescription(SessionDescription(SessionDescription.Type.OFFER, offer))
-            .doOnComplete { Timber.d("Offer set as a remote description.") }
-            .andThen(peerConnection.createAnswer())
-            .doOnSuccess { Timber.d("Answer created.") }
-            .flatMapCompletable { answer: SessionDescription ->
-                sendMessage(
-                    Message(
-                        sdpAnswer = Message.SdpData(
-                            sdp = answer.description,
-                            type = answer.type.canonicalForm()
+        peerConnectionDisposable = peerConnection?.run {
+            setRemoteDescription(SessionDescription(SessionDescription.Type.OFFER, offer))
+                .doOnComplete { Timber.d("Offer set as a remote description.") }
+                .andThen(createAnswer())
+                .doOnSuccess { Timber.d("Answer created.") }
+                .flatMapCompletable { answer: SessionDescription ->
+                    sendMessage(
+                        Message(
+                            sdpAnswer = Message.SdpData(
+                                sdp = answer.description,
+                                type = answer.type.canonicalForm()
+                            )
                         )
                     )
-                )
-                peerConnection.setLocalDescription(answer)
-            }
-            .doOnComplete { Timber.d("Answer set as a local description.") }
-            .subscribe()
+                    peerConnection?.setLocalDescription(answer)
+                }
+                .doOnComplete { Timber.d("Answer set as a local description.") }
+                .subscribe()
+        }
     }
 
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
@@ -132,5 +144,6 @@ class WebRtcManager constructor(
         private const val VIDEO_HEIGHT = 480
         private const val VIDEO_WIDTH = 320
         private const val VIDEO_FRAMERATE = 30
+        private const val SURFACE_TEXTURE_HELPER_THREAD = "SURFACE_TEXTURE_HELPER_THREAD"
     }
 }
