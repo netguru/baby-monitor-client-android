@@ -1,9 +1,9 @@
 package co.netguru.baby.monitor.client.feature.server
 
 import co.netguru.baby.monitor.client.data.DataRepository
-import com.nhaarman.mockito_kotlin.check
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockitokotlin2.check
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
