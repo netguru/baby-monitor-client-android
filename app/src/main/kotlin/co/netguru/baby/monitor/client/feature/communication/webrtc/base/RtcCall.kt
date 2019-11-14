@@ -112,15 +112,15 @@ abstract class RtcCall(protected val client: RxWebSocketClient) {
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(context)
                 .setEnableInternalTracer(false)
+                .setEnableVideoHwAcceleration(true)
                 .createInitializationOptions()
         )
-
-        val encoderFactory = DefaultVideoEncoderFactory(sharedContext, true, false)
-        val decoderFactory = DefaultVideoDecoderFactory(sharedContext)
+        Timber.i("initialized")
         factory = PeerConnectionFactory.builder()
-            .setVideoEncoderFactory(encoderFactory)
-            .setVideoDecoderFactory(decoderFactory)
             .createPeerConnectionFactory()
+            .apply {
+                setVideoHwAccelerationOptions(sharedContext, sharedContext)
+            }
         Timber.i("created")
         constraints = MediaConstraints().apply {
             mandatory.add(MediaConstraints.KeyValuePair(HANDSHAKE_AUDIO_OFFER, "true"))
