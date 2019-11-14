@@ -10,39 +10,30 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManage
 import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel.Companion.VIDEO_PREVIEW_TOTAL_TIME
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
 class ServerViewModelTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var serverViewModel: ServerViewModel
+    private val timerTestScheduler = TestScheduler()
     private val nsdServiceManager: NsdServiceManager = mock()
     private val dataRepository: DataRepository = mock()
     private val schedulersProvider: ISchedulersProvider = mock {
         on { io() } doReturn Schedulers.trampoline()
         on { mainThread() } doReturn Schedulers.trampoline()
-        on { computation() } doReturn Schedulers.trampoline()
+        on { computation() } doReturn timerTestScheduler
     }
-    private val timerTestScheduler = TestScheduler()
-
-    @Before
-    fun setup() {
-        serverViewModel = ServerViewModel(nsdServiceManager, dataRepository, schedulersProvider)
-        whenever(schedulersProvider.mainThread()).doReturn(Schedulers.trampoline())
-        whenever(schedulersProvider.io()).doReturn(Schedulers.trampoline())
-        whenever(schedulersProvider.computation()).doReturn(timerTestScheduler)
-    }
+    private val serverViewModel =
+        ServerViewModel(nsdServiceManager, dataRepository, schedulersProvider)
 
     @Test
     fun `should disable preview after VIDEO_PREVIEW_TOTAL_TIME`() {
@@ -84,7 +75,7 @@ class ServerViewModelTest {
 
     @Test
     fun `should save configuration to dataRepository`() {
-        whenever(dataRepository.saveConfiguration(AppState.SERVER)).thenReturn(Completable.complete())
+        whenever(dataRepository.saveConfiguration(AppState.SERVER)).doReturn(Completable.complete())
 
         serverViewModel.saveConfiguration()
 
@@ -96,8 +87,8 @@ class ServerViewModelTest {
         val cameraStateObserver: Observer<CameraState> = mock()
         val rtcConnectionStateObserver: Observer<RtcServerConnectionState> = mock()
         val webRtcServiceBinder: WebRtcService.Binder = mock()
-        whenever(webRtcServiceBinder.getConnectionObservable()).thenReturn(
-            Observable.just(
+        whenever(webRtcServiceBinder.getConnectionObservable()).doReturn(
+            Observable.just<RtcServerConnectionState>(
                 RtcServerConnectionState.Connected
             )
         )
@@ -117,8 +108,8 @@ class ServerViewModelTest {
         val cameraStateObserver: Observer<CameraState> = mock()
         val rtcConnectionStateObserver: Observer<RtcServerConnectionState> = mock()
         val webRtcServiceBinder: WebRtcService.Binder = mock()
-        whenever(webRtcServiceBinder.getConnectionObservable()).thenReturn(
-            Observable.just(
+        whenever(webRtcServiceBinder.getConnectionObservable()).doReturn(
+            Observable.just<RtcServerConnectionState>(
                 RtcServerConnectionState.Disconnected
             )
         )

@@ -6,7 +6,7 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import com.google.gson.Gson
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import org.junit.Assert.assertEquals

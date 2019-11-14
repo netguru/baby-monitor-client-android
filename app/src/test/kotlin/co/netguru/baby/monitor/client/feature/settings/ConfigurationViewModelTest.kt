@@ -11,7 +11,7 @@ import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.junit.Before
@@ -22,12 +22,10 @@ import java.net.InetAddress
 
 class ConfigurationViewModelTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     val schedulersRule = RxSchedulersOverrideRule()
 
-    @Rule
-    @JvmField
+    @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private val resetAppUseCase: ResetAppUseCase = mock()
@@ -64,8 +62,8 @@ class ConfigurationViewModelTest {
     fun `should properly handle new service`() {
         val configCompletedObserver: Observer<Boolean> = mock()
         val serviceList = prepareServicesList()
-        whenever(dataRepository.putChildData(any())).thenReturn(Completable.complete())
-        whenever(dataRepository.insertLogToDatabase(any())).thenReturn(Completable.complete())
+        whenever(dataRepository.putChildData(any())).doReturn(Completable.complete())
+        whenever(dataRepository.insertLogToDatabase(any())).doReturn(Completable.complete())
         configurationViewModel.connectionCompletedState.observeForever(configCompletedObserver)
 
         serviceInfoData.postValue(serviceList)
@@ -79,9 +77,9 @@ class ConfigurationViewModelTest {
     fun `should return false on config fail`() {
         val configCompletedObserver: Observer<Boolean> = mock()
         val serviceList = prepareServicesList()
-        whenever(dataRepository.doesChildDataExists(any())).thenReturn(Single.error(Throwable()))
-        whenever(dataRepository.putChildData(any())).thenReturn(Completable.error(Throwable()))
-        whenever(dataRepository.insertLogToDatabase(any())).thenReturn(Completable.error(Throwable()))
+        whenever(dataRepository.doesChildDataExists(any())).doReturn(Single.error(Throwable()))
+        whenever(dataRepository.putChildData(any())).doReturn(Completable.error(Throwable()))
+        whenever(dataRepository.insertLogToDatabase(any())).doReturn(Completable.error(Throwable()))
         configurationViewModel.connectionCompletedState.observeForever(configCompletedObserver)
 
         serviceInfoData.postValue(serviceList)
@@ -92,7 +90,7 @@ class ConfigurationViewModelTest {
     @Test
     fun `should handle app reset`() {
         val activity: Activity = mock()
-        whenever(resetAppUseCase.resetApp()).thenReturn(Completable.complete())
+        whenever(resetAppUseCase.resetApp()).doReturn(Completable.complete())
 
         configurationViewModel.resetApp(activity)
 
