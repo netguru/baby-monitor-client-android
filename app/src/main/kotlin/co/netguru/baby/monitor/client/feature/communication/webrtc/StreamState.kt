@@ -14,7 +14,6 @@ sealed class IceCandidateState
 data class OnIceCandidateAdded(val iceCandidate: IceCandidate) : IceCandidateState()
 data class OnIceCandidatesRemoved(val iceCandidates: Array<out IceCandidate>?) : IceCandidateState()
 
-
 sealed class RtcConnectionState {
     object ConnectionOffer : RtcConnectionState()
     object Completed : RtcConnectionState()

@@ -31,8 +31,7 @@ class RtcClientMessageController(
         if (rxWebSocketClient.isOpen()) sendOffer(sessionDescription)
         compositeDisposable += rxWebSocketClient.events(serverUri = serverUri)
             .doOnNext {
-                if (it is RxWebSocketClient.Event.Open)
-                    sendOffer(sessionDescription)
+                if (it is RxWebSocketClient.Event.Open) sendOffer(sessionDescription)
             }
             .ofType(RxWebSocketClient.Event.Message::class.java)
             .subscribe { event: RxWebSocketClient.Event.Message ->
@@ -45,12 +44,7 @@ class RtcClientMessageController(
     }
 
     fun handleIceCandidateChange(iceCandidateState: IceCandidateState) {
-        when (iceCandidateState) {
-            is OnIceCandidateAdded -> {
-                sendIceCandidate(iceCandidateState.iceCandidate)
-            }
-            else -> Unit
-        }
+        if (iceCandidateState is OnIceCandidateAdded) sendIceCandidate(iceCandidateState.iceCandidate)
     }
 
     private fun sendIceCandidate(iceCandidate: IceCandidate) {
@@ -97,8 +91,8 @@ class RtcClientMessageController(
 
     private fun sendMessage(message: Message) {
         compositeDisposable += rxWebSocketClient.send(message.let(gson::toJson))
-            .subscribeBy(onComplete = { Timber.i("message sent: $message") }
-                , onError = { Timber.e(it) })
-
+            .subscribeBy(
+                onComplete = { Timber.i("message sent: $message") },
+                onError = { Timber.e(it) })
     }
 }

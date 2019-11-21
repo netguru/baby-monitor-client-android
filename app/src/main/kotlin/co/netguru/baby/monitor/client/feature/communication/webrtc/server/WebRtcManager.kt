@@ -107,11 +107,10 @@ class WebRtcManager constructor(
             .subscribeOn(Schedulers.io())
             .ofType(OnIceCandidatesChange::class.java)
             .subscribeBy(onNext = { iceCandidateChange ->
-                when (iceCandidateChange.iceCandidateState) {
-                    is OnIceCandidateAdded -> {
-                        handleIceCandidate(iceCandidateChange.iceCandidateState.iceCandidate)
-                    }
-                    else -> Unit
+                if (iceCandidateChange.iceCandidateState is OnIceCandidateAdded) {
+                    handleIceCandidate(
+                        iceCandidateChange.iceCandidateState.iceCandidate
+                    )
                 }
             }, onError = { throwable -> throwable.printStackTrace() })
             .addTo(compositeDisposable)
