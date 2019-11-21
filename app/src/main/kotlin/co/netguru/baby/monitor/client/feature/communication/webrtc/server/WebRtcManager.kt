@@ -1,11 +1,14 @@
-package co.netguru.baby.monitor.client.feature.communication.webrtc
+package co.netguru.baby.monitor.client.feature.communication.webrtc.server
 
 import android.content.Context
+import co.netguru.baby.monitor.client.feature.communication.webrtc.*
+import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.ConnectionObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionObserver
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import org.webrtc.*
 import timber.log.Timber
 
@@ -22,8 +25,8 @@ class WebRtcManager constructor(
     private lateinit var audioTrack: AudioTrack
 
     private var peerConnection: PeerConnection? = null
-    private var peerConnectionDisposable: Disposable? = null
-    private lateinit var rtcServerConnectionObserver: RtcServerConnectionObserver
+    private var compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private lateinit var connectionObserver: ConnectionObserver
 
     private val eglBase: EglBase by lazy { EglBase.create() }
     private val sharedContext: EglBase.Context by lazy { eglBase.eglBaseContext }
@@ -51,7 +54,11 @@ class WebRtcManager constructor(
     private fun enableVideo(isEnabled: Boolean, videoCapturer: CameraVideoCapturer) {
         if (isEnabled) {
             Timber.i("enableVideo")
-            videoCapturer.startCapture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FRAMERATE)
+            videoCapturer.startCapture(
+                VIDEO_WIDTH,
+                VIDEO_HEIGHT,
+                VIDEO_FRAMERATE
+            )
         } else {
             Timber.i("disableVideo")
             videoCapturer.stopCapture()
@@ -77,22 +84,54 @@ class WebRtcManager constructor(
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
         cameraVideoCapturer?.let { enableVideo(true, it) }
-        rtcServerConnectionObserver = RtcServerConnectionObserver()
+        createConnection()
+    }
+
+    private fun createConnection() {
+        connectionObserver = ConnectionObserver()
 
         peerConnection = peerConnectionFactory.createPeerConnection(
             emptyList(),
-            rtcServerConnectionObserver
+            connectionObserver
         )
-
         val stream = peerConnectionFactory.createLocalMediaStream("stream")
         stream.addTrack(audioTrack)
         stream.addTrack(videoTrack)
         peerConnection?.addStream(stream)
+
+        listenForIceCandidates(connectionObserver.streamObservable)
+    }
+
+    private fun listenForIceCandidates(streamObservable: Observable<StreamState>) {
+        streamObservable
+            .subscribeOn(Schedulers.io())
+            .ofType(OnIceCandidatesChange::class.java)
+            .subscribeBy(onNext = { iceCandidateChange ->
+                when (iceCandidateChange.iceCandidateState) {
+                    is OnIceCandidateAdded -> {
+                        handleIceCandidate(iceCandidateChange.iceCandidateState.iceCandidate)
+                    }
+                    else -> Unit
+                }
+            }, onError = { throwable -> throwable.printStackTrace() })
+            .addTo(compositeDisposable)
+    }
+
+    private fun handleIceCandidate(iceCandidate: IceCandidate) {
+        sendMessage(
+            Message(
+                iceCandidate = Message.IceCandidateData(
+                    iceCandidate.sdp,
+                    iceCandidate.sdpMid,
+                    iceCandidate.sdpMLineIndex
+                )
+            )
+        )
     }
 
     fun stopCapturing() {
         Timber.d("stopCapturing()")
-        peerConnectionDisposable?.dispose()
+        compositeDisposable.dispose()
         audioSource.dispose()
         videoSource.dispose()
         cameraVideoCapturer?.dispose()
@@ -102,8 +141,8 @@ class WebRtcManager constructor(
 
     fun acceptOffer(offer: String) {
         Timber.i("acceptOffer($offer)")
-        rtcServerConnectionObserver.onAcceptOffer()
-        peerConnectionDisposable = peerConnection?.run {
+        connectionObserver.onAcceptOffer()
+        peerConnection?.run {
             setRemoteDescription(SessionDescription(SessionDescription.Type.OFFER, offer))
                 .doOnComplete { Timber.d("Offer set as a remote description.") }
                 .andThen(createAnswer())
@@ -121,7 +160,17 @@ class WebRtcManager constructor(
                 }
                 .doOnComplete { Timber.d("Answer set as a local description.") }
                 .subscribe()
-        }
+        }?.addTo(compositeDisposable)
+    }
+
+    fun addIceCandidate(iceCandidateData: Message.IceCandidateData) {
+        peerConnection?.addIceCandidate(
+            IceCandidate(
+                iceCandidateData.sdpMid,
+                iceCandidateData.sdpMLineIndex,
+                iceCandidateData.sdp
+            )
+        )
     }
 
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
@@ -129,8 +178,9 @@ class WebRtcManager constructor(
         videoTrack.addSink(surfaceViewRenderer)
     }
 
-    fun getConnectionObservable(): Observable<RtcServerConnectionState> =
-        rtcServerConnectionObserver.rtcConnectionObservable
+    fun getConnectionObservable(): Observable<RtcConnectionState> =
+        connectionObserver.streamObservable.ofType(ConnectionState::class.java)
+            .flatMap { Observable.just(it.connectionState) }
 
     companion object {
         private const val VIDEO_HEIGHT = 480

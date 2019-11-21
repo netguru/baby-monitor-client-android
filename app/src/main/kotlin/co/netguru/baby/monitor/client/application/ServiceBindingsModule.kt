@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.application
 
 import co.netguru.baby.monitor.client.feature.babycrynotification.BabyMonitorMessagingService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService

@@ -21,8 +21,8 @@ import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
@@ -142,7 +142,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun childMonitorObservables() {
-        viewModel.babyNameStatus.observeNonNull(viewLifecycleOwner, { name ->
+        viewModel.babyNameStatus.observeNonNull(viewLifecycleOwner) { name ->
             babyName.text = name
             babyName.visibility =
                 if (name.isBlank()) {
@@ -150,7 +150,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                 } else {
                     View.VISIBLE
                 }
-        })
+        }
         viewModel.nightModeStatus.observe(viewLifecycleOwner, Observer { isNightModeEnabled ->
             nightModeGroup.isVisible = isNightModeEnabled
         })
@@ -167,13 +167,13 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun serverViewModelObservers() {
-        serverViewModel.previewingVideo.observeNonNull(viewLifecycleOwner, { previewing ->
+        serverViewModel.previewingVideo.observeNonNull(viewLifecycleOwner) { previewing ->
             if (previewing) {
                 showVideoPreview()
             } else {
                 hideVideoPreview()
             }
-        })
+        }
         serverViewModel.timer.observe(viewLifecycleOwner, Observer { secondsLeft ->
             timer.text = if (secondsLeft != null && secondsLeft < VIDEO_PREVIEW_MAX_TIME) {
                 getString(
@@ -185,13 +185,13 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             }
         })
 
-        serverViewModel.rtcConnectionStatus.observeNonNull(viewLifecycleOwner, { connectionState ->
+        serverViewModel.rtcConnectionStatus.observeNonNull(viewLifecycleOwner) { connectionState ->
             when (connectionState) {
-                RtcServerConnectionState.ConnectionOffer -> machineLearningServiceBinder?.stopRecording()
-                RtcServerConnectionState.Disconnected -> machineLearningServiceBinder?.startRecording()
+                RtcConnectionState.ConnectionOffer -> machineLearningServiceBinder?.stopRecording()
+                RtcConnectionState.Disconnected -> machineLearningServiceBinder?.startRecording()
                 else -> Unit
             }
-        })
+        }
         serverViewModel.cameraState.observe(viewLifecycleOwner, Observer { cameraState ->
             webRtcServiceBinder?.enableCamera(
                 cameraState.previewEnabled ||

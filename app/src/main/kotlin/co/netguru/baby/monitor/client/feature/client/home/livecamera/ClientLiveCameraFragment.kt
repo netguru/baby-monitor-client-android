@@ -7,15 +7,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
-import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import kotlinx.android.synthetic.main.fragment_client_live_camera.*
-import org.webrtc.PeerConnection
 import timber.log.Timber
 import java.net.URI
 import javax.inject.Inject
@@ -70,10 +69,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment() {
         )
     }
 
-    private fun handleStateChange(state: CallState) {
-        Timber.i(state.toString())
-    }
-
     private fun onAvailabilityChange(connectionAvailable: Boolean) {
         Timber.d("onAvailabilityChange($connectionAvailable)")
         if (connectionAvailable) {
@@ -94,15 +89,14 @@ class ClientLiveCameraFragment : BaseDaggerFragment() {
             liveCameraRemoteRenderer,
             serverUri,
             rxWebSocketClient,
-            this@ClientLiveCameraFragment::handleStateChange,
             this@ClientLiveCameraFragment::handleStreamStateChange
         )
     }
 
     private fun handleStreamStateChange(streamState: StreamState) {
         when ((streamState as? ConnectionState)?.connectionState) {
-            PeerConnection.IceConnectionState.COMPLETED -> streamProgressBar.visibility = View.GONE
-            PeerConnection.IceConnectionState.CHECKING -> streamProgressBar.visibility =
+            RtcConnectionState.Completed -> streamProgressBar.visibility = View.GONE
+            RtcConnectionState.Checking -> streamProgressBar.visibility =
                 View.VISIBLE
             else -> Unit
         }
