@@ -7,8 +7,8 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.server.CameraState
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel.Companion.VIDEO_PREVIEW_TOTAL_TIME
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
@@ -85,11 +85,11 @@ class ServerViewModelTest {
     @Test
     fun `should handle RTC connected state`() {
         val cameraStateObserver: Observer<CameraState> = mock()
-        val rtcConnectionStateObserver: Observer<RtcServerConnectionState> = mock()
+        val rtcConnectionStateObserver: Observer<RtcConnectionState> = mock()
         val webRtcServiceBinder: WebRtcService.Binder = mock()
         whenever(webRtcServiceBinder.getConnectionObservable()).doReturn(
-            Observable.just<RtcServerConnectionState>(
-                RtcServerConnectionState.Connected
+            Observable.just<RtcConnectionState>(
+                RtcConnectionState.Connected
             )
         )
 
@@ -99,18 +99,18 @@ class ServerViewModelTest {
         serverViewModel.rtcConnectionStatus.observeForever(rtcConnectionStateObserver)
 
         verify(cameraStateObserver, times(2)).onChanged(any())
-        verify(rtcConnectionStateObserver).onChanged(RtcServerConnectionState.Connected)
+        verify(rtcConnectionStateObserver).onChanged(RtcConnectionState.Connected)
         assert(serverViewModel.cameraState.value?.streamingEnabled == true)
     }
 
     @Test
     fun `should handle RTC disconnected state`() {
         val cameraStateObserver: Observer<CameraState> = mock()
-        val rtcConnectionStateObserver: Observer<RtcServerConnectionState> = mock()
+        val rtcConnectionStateObserver: Observer<RtcConnectionState> = mock()
         val webRtcServiceBinder: WebRtcService.Binder = mock()
         whenever(webRtcServiceBinder.getConnectionObservable()).doReturn(
-            Observable.just<RtcServerConnectionState>(
-                RtcServerConnectionState.Disconnected
+            Observable.just<RtcConnectionState>(
+                RtcConnectionState.Disconnected
             )
         )
 
@@ -120,7 +120,7 @@ class ServerViewModelTest {
         serverViewModel.rtcConnectionStatus.observeForever(rtcConnectionStateObserver)
 
         verify(cameraStateObserver, times(2)).onChanged(any())
-        verify(rtcConnectionStateObserver).onChanged(RtcServerConnectionState.Disconnected)
+        verify(rtcConnectionStateObserver).onChanged(RtcConnectionState.Disconnected)
         assert(serverViewModel.cameraState.value?.streamingEnabled == false)
     }
 

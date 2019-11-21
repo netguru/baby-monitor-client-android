@@ -3,10 +3,11 @@ package co.netguru.baby.monitor.client.feature.client.home.livecamera
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
-import co.netguru.baby.monitor.client.data.communication.webrtc.CallState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient
+import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClientMessageController
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import com.google.gson.Gson
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -16,9 +17,11 @@ import java.net.URI
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-class ClientLiveCameraFragmentViewModel @Inject constructor() : ViewModel() {
+class ClientLiveCameraFragmentViewModel @Inject constructor(
+    private val gson: Gson
+) : ViewModel() {
 
-    private var currentCall: RtcClient? = null
+    private var rtcClient: RtcClient? = null
     val callInProgress = AtomicBoolean(false)
     private val compositeDisposable = CompositeDisposable()
 
@@ -32,13 +35,19 @@ class ClientLiveCameraFragmentViewModel @Inject constructor() : ViewModel() {
         liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
         serverUri: URI,
         client: RxWebSocketClient,
-        listener: (state: CallState) -> Unit,
         streamStateListener: (streamState: StreamState) -> Unit
     ) {
         callInProgress.set(true)
-        currentCall = RtcClient(client = client, serverUri = serverUri).apply {
-
-            startCall(context, listener, streamStateListener)
+        rtcClient = RtcClient(
+            RtcClientMessageController(
+                gson,
+                serverUri,
+                client
+            ),
+            streamStateListener,
+            liveCameraRemoteRenderer
+        ).apply {
+            startCall(context)
                 .subscribeOn(Schedulers.newThread())
                 .subscribeBy(
                     onComplete = {
@@ -50,14 +59,13 @@ class ClientLiveCameraFragmentViewModel @Inject constructor() : ViewModel() {
                         Timber.e(it, "Error during startCall")
                     }
                 ).addTo(compositeDisposable)
-            remoteView = liveCameraRemoteRenderer
         }
     }
 
     fun endCall() {
         compositeDisposable.clear()
-        currentCall?.cleanup()
-        currentCall = null
+        rtcClient?.cleanup()
+        rtcClient = null
         callInProgress.set(false)
     }
 }

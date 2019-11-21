@@ -52,7 +52,7 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".feature.machinelearning.MachineLearningService" />
-        <service android:name=".feature.communication.webrtc.WebRtcService" />
+        <service android:name=".feature.communication.webrtc.server.WebRtcService" />
         <service android:name=".feature.communication.websocket.WebSocketServerService" />
         <service
             android:name=".feature.babycrynotification.BabyMonitorMessagingService"

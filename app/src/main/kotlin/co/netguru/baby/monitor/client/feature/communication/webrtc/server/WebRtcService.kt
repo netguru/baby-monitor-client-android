@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.communication.webrtc
+package co.netguru.baby.monitor.client.feature.communication.webrtc.server
 
 import android.app.Service
 import android.content.ComponentName
@@ -70,6 +70,7 @@ class WebRtcService : Service() {
         Timber.i("handleMessage($data)")
         val (_, msg) = data
         msg.sdpOffer?.sdp?.let(webRtcManager::acceptOffer)
+        msg.iceCandidate?.let(webRtcManager::addIceCandidate)
     }
 
     private fun sendMessage(message: Message) {

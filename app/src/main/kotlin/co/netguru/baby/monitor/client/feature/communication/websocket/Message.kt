@@ -7,16 +7,24 @@ data class Message(
     @SerializedName("value") private val value: String? = null,
     @SerializedName("offerSDP") val sdpOffer: SdpData? = null,
     @SerializedName("answerSDP") val sdpAnswer: SdpData? = null,
-    @SerializedName("baby_name") val babyName: String? = null
+    @SerializedName("baby_name") val babyName: String? = null,
+    @SerializedName("iceCandidate") val iceCandidate: IceCandidateData? = null
 ) {
     fun action() =
-        if (action != null && value != null)
+        if (action != null && value != null) {
             action to value
-        else
+        } else {
             null
+        }
 
     data class SdpData(
-        @SerializedName("sdp") val sdp: String?,
-        @SerializedName("type") val type: String?
+        @SerializedName("sdp") val sdp: String,
+        @SerializedName("type") val type: String
+    )
+
+    data class IceCandidateData(
+        @SerializedName("candidate") val sdp: String,
+        @SerializedName("id") val sdpMid: String,
+        @SerializedName("label") val sdpMLineIndex: Int
     )
 }

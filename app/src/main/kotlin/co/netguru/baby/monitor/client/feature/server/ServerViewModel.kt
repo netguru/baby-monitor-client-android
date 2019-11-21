@@ -6,8 +6,8 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.server.CameraState
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.communication.webrtc.WebRtcService
-import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.RtcServerConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
+import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -29,7 +29,7 @@ class ServerViewModel @Inject constructor(
     private val mutableTimer = MutableLiveData<Long>()
     private var timerDisposable: Disposable? = null
     private val compositeDisposable = CompositeDisposable()
-    private val mutableRtcConnectionStatus = MutableLiveData<RtcServerConnectionState>()
+    private val mutableRtcConnectionStatus = MutableLiveData<RtcConnectionState>()
     private val mutableCameraState = MutableLiveData(
         CameraState(
             previewEnabled = true,
@@ -37,7 +37,7 @@ class ServerViewModel @Inject constructor(
         )
     )
     internal val cameraState: LiveData<CameraState> = mutableCameraState
-    val rtcConnectionStatus: LiveData<RtcServerConnectionState> = mutableRtcConnectionStatus
+    val rtcConnectionStatus: LiveData<RtcConnectionState> = mutableRtcConnectionStatus
 
     internal val previewingVideo = Transformations.map(cameraState) { it.previewEnabled }
         .distinctUntilChanged()
@@ -105,7 +105,7 @@ class ServerViewModel @Inject constructor(
                     handleStreamState(it)
                     mutableRtcConnectionStatus.postValue(it)
                 },
-                onError = { mutableRtcConnectionStatus.postValue(RtcServerConnectionState.Error) }
+                onError = { mutableRtcConnectionStatus.postValue(RtcConnectionState.Error) }
             )
     }
 
@@ -125,10 +125,10 @@ class ServerViewModel @Inject constructor(
         mutableCameraState.postValue(CameraState(previewEnabled, streamingEnabled))
     }
 
-    private fun handleStreamState(it: RtcServerConnectionState?) {
+    private fun handleStreamState(it: RtcConnectionState?) {
         when (it) {
-            RtcServerConnectionState.Connected -> handleCameraState(streamingEnabled = true)
-            RtcServerConnectionState.Disconnected -> handleCameraState(streamingEnabled = false)
+            RtcConnectionState.Connected -> handleCameraState(streamingEnabled = true)
+            RtcConnectionState.Disconnected -> handleCameraState(streamingEnabled = false)
         }
     }
 
