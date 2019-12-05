@@ -14,27 +14,32 @@ class NotifyBabyCryingUseCase @Inject constructor(
     private val notificationSender: FirebaseNotificationSender
 ) {
     private val babyCryingEvents: PublishSubject<BabyCrying> = PublishSubject.create()
+    private var babyCryingDisposable: Disposable? = null
 
     private fun fetchClientsAndPostNotification(
         title: String,
-        text: String,
-        type: NotificationType
+        text: String
     ) =
-        notificationSender.broadcastNotificationToFcm(title, text, type)
+        notificationSender.broadcastNotificationToFcm(
+            title,
+            text,
+            NotificationType.CRY_NOTIFICATION
+        )
 
-    fun subscribe(title: String, text: String): Disposable =
-        babyCryingEvents
+    fun subscribe(title: String, text: String) {
+        babyCryingDisposable?.dispose()
+        babyCryingDisposable = babyCryingEvents
             .throttleFirst(CRYING_EVENTS_THROTTLING_TIME, TimeUnit.MINUTES)
             .flatMapCompletable {
                 fetchClientsAndPostNotification(
                     title = title,
-                    text = text,
-                    type = NotificationType.CRY_NOTIFICATION
+                    text = text
                 )
             }
             .doOnError { Timber.w(it) }
             .retry()
             .subscribe()
+    }
 
     fun notifyBabyCrying() =
         babyCryingEvents.onNext(BabyCrying)
