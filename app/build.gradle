@@ -53,7 +53,7 @@ android {
             shrinkResources true
             zipAlignEnabled true
             sourceSets {
-                main.java.srcDirs += 'src/debugTools/'
+                main.java.srcDirs += 'src/debugTools/kotlin'
             }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release-preprod.pro'
