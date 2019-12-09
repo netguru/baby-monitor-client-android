@@ -23,4 +23,11 @@
         <item name="android:background">@drawable/button_rounded_ripple</item>
         <item name="android:fontFamily">@font/rubik</item>
     </style>
+
+    <style name="ShadowTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:shadowColor">@android:color/black</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
 </resources>

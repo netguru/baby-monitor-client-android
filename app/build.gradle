@@ -38,6 +38,9 @@ android {
             debuggable true
             minifyEnabled false
             shrinkResources false
+            sourceSets {
+                main.java.srcDirs += 'src/debugTools/kotlin/'
+            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
         }
@@ -49,6 +52,9 @@ android {
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
+            sourceSets {
+                main.java.srcDirs += 'src/debugTools/'
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release-preprod.pro'
         }

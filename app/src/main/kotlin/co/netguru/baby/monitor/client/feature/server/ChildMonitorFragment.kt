@@ -29,6 +29,7 @@ import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningSer
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
 import javax.inject.Inject
+import co.netguru.baby.monitor.client.feature.debug.DebugModule
 
 @Suppress("TooManyFunctions")
 class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
@@ -42,6 +43,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         ViewModelProviders.of(requireActivity(), factory).get(ChildMonitorViewModel::class.java)
     }
 
+    @Inject
+    internal lateinit var debugModule: DebugModule
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
     private var machineLearningServiceBinder: MachineLearningBinder? = null
@@ -81,6 +84,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override fun onDestroyView() {
         surfaceView.release()
+        debugView.clearDebugStateObservable()
         super.onDestroyView()
     }
 
@@ -134,6 +138,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             serverViewModel.toggleDrawer(true)
         }
         videoPreviewButton.setOnClickListener { serverViewModel.toggleVideoPreview(true) }
+        debugView.setDebugStateObservable(debugModule.debugStateObservable())
     }
 
     private fun setupObservers() {

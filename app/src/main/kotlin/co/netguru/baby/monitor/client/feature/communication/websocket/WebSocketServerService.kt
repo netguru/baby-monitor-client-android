@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
+import co.netguru.baby.monitor.client.feature.debug.DebugNotificationManager
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import dagger.android.AndroidInjection
@@ -18,6 +19,8 @@ class WebSocketServerService : Service() {
     private lateinit var serverHandler: WebSocketServerHandler
     @Inject
     internal lateinit var gson: Gson
+    @Inject
+    internal lateinit var debugNotificationManager: DebugNotificationManager
 
     private val messages = PublishSubject.create<Pair<WebSocket, Message>>()
 
@@ -43,10 +46,12 @@ class WebSocketServerService : Service() {
             }
         }
             .apply { startServer() }
+        debugNotificationManager.show(this)
     }
 
     override fun onDestroy() {
         serverHandler.stopServer()
+        debugNotificationManager.clear(this)
         super.onDestroy()
     }
 

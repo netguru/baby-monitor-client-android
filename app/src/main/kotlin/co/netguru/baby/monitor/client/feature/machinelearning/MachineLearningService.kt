@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import androidx.annotation.UiThread
 import android.widget.Toast
-import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
@@ -17,6 +16,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
+import co.netguru.baby.monitor.client.feature.debug.DebugModule
 
 class MachineLearningService : IntentService("MachineLearningService") {
 
@@ -30,16 +30,14 @@ class MachineLearningService : IntentService("MachineLearningService") {
     internal lateinit var sharedPrefsWrapper: FirebaseSharedPreferencesWrapper
     @Inject
     internal lateinit var notificationHandler: NotificationHandler
+    @Inject
+    internal lateinit var debugModule: DebugModule
 
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
         notificationHandler.showForegroundNotification(this)
         startRecording()
-        notifyBabyCryingUseCase.subscribe(
-            title = getString(R.string.notification_baby_is_crying_title),
-            text = getString(R.string.notification_baby_is_crying_content)
-        )
     }
 
     override fun onBind(intent: Intent?) = MachineLearningBinder()
@@ -81,6 +79,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
+        debugModule.sendCryingProbabilityEvent(cryingProbability)
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
             notifyBabyCryingUseCase.notifyBabyCrying()
