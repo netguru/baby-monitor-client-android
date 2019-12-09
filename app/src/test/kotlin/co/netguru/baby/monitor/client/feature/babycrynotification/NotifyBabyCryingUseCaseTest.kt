@@ -4,6 +4,7 @@ import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Rule
 import org.junit.Test
@@ -15,15 +16,25 @@ class NotifyBabyCryingUseCaseTest {
 
     private val notificationSender: FirebaseNotificationSender = mock()
     private val notifyBabyCryingUseCase = NotifyBabyCryingUseCase(notificationSender)
+    private val title = "title"
+    private val text = "text"
 
     @Test
     fun `should send crying notification on notifyBabyCrying`() {
-        val title = "title"
-        val text = "text"
         notifyBabyCryingUseCase.subscribe(title, text)
 
         notifyBabyCryingUseCase.notifyBabyCrying()
 
         verify(notificationSender).broadcastNotificationToFcm(title, text, NotificationType.CRY_NOTIFICATION)
+    }
+
+    @Test
+    fun `should keep only one subscription to babyCryingEvents`() {
+        notifyBabyCryingUseCase.subscribe(title, text)
+        notifyBabyCryingUseCase.subscribe(title, text)
+
+        notifyBabyCryingUseCase.notifyBabyCrying()
+
+        verify(notificationSender, times(1)).broadcastNotificationToFcm(title, text, NotificationType.CRY_NOTIFICATION)
     }
 }
