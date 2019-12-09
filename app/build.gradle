@@ -30,6 +30,7 @@ android {
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
     }
+
     buildTypes {
         debug {
             versionNameSuffix "-DEBUG"
@@ -38,9 +39,6 @@ android {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            sourceSets {
-                main.java.srcDirs += 'src/debugTools/kotlin/'
-            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro', 'proguard-instant-run.pro', 'proguard-rules-test.pro'
         }
@@ -52,9 +50,6 @@ android {
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
-            sourceSets {
-                main.java.srcDirs += 'src/debugTools/kotlin'
-            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release-preprod.pro'
         }
@@ -66,6 +61,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
         }
+    }
+
+    sourceSets {
+        debug { java.srcDirs += 'src/debugTools/kotlin' }
+        releasePreprod { java.srcDirs += 'src/debugTools/kotlin' }
     }
 
     buildTypes.each { type ->
