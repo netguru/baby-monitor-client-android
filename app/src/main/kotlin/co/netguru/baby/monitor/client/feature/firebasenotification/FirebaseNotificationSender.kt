@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.firebasenotification
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
+import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import io.reactivex.Completable
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 class FirebaseNotificationSender @Inject constructor(
     private val dataRepository: DataRepository,
-    private val httpClient: OkHttpClient
+    private val httpClient: OkHttpClient,
+    private val debugModule: DebugModule
 ) {
     fun broadcastNotificationToFcm(
         title: String,
@@ -34,8 +36,9 @@ class FirebaseNotificationSender @Inject constructor(
                 if (firebaseTokens.isNotEmpty()) {
                     postNotificationToFcm(firebaseTokens, title, text, notificationType)
                         .doOnSuccess { response ->
-                            Timber.d("Posting notification succeeded: $response.")
-                            Timber.d(response.body?.string().toString())
+                            debugModule.sendNotificationEvent("Notification posted: Title: $title" +
+                                    " text: $text. Response: ${response.body?.string()}.")
+                            Timber.d("Notification posted: $response.")
                         }
                         .ignoreElement()
                 } else {

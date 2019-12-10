@@ -1,13 +1,13 @@
 package co.netguru.baby.monitor.client.application
 
-import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.common.base.ViewModelModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
+import javax.inject.Singleton
 
-@AppScope
+@Singleton
 @Component(
     modules = [
         AndroidInjectionModule::class,

@@ -30,6 +30,7 @@ android {
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
     }
+
     buildTypes {
         debug {
             versionNameSuffix "-DEBUG"
@@ -60,6 +61,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules-release.pro'
         }
+    }
+
+    sourceSets {
+        debug { java.srcDirs += 'src/debugTools/kotlin' }
+        releasePreprod { java.srcDirs += 'src/debugTools/kotlin' }
     }
 
     buildTypes.each { type ->

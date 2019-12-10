@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.data
 
 import androidx.lifecycle.LiveData
-import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
@@ -11,8 +10,9 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@AppScope
+@Singleton
 class DataRepository @Inject constructor(
     private val database: AppDatabase,
     private val appStateHandler: AppStateHandler

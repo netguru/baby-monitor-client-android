@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.application
 
-import co.netguru.baby.monitor.client.application.scope.AppScope
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Helper class that initializes a set of debugging tools
@@ -16,7 +16,7 @@ import javax.inject.Inject
  * ## Release type tools:
  * - CrashManager
  */
-@AppScope
+@Singleton
 class DebugMetricsHelper @Inject constructor() {
 
     internal fun init() {

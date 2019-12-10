@@ -114,21 +114,31 @@
             />
 
     <TextView
+            style="@style/ShadowTextViewStyle"
             android:id="@+id/timer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:shadowColor="@android:color/black"
-            android:shadowDx="4"
-            android:shadowDy="4"
-            android:shadowRadius="2"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="@+id/surfaceView"
             app:layout_constraintStart_toStartOf="@+id/surfaceView"
             app:layout_constraintTop_toTopOf="@+id/surfaceView"
             tools:text="4:59"
+            />
+
+    <co.netguru.baby.monitor.client.feature.debug.DebugView
+            android:id="@+id/debugView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/surfaceView"
+            app:layout_constraintStart_toStartOf="@+id/surfaceView"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             />
 
     <ImageButton
@@ -159,8 +169,8 @@
             android:id="@+id/nightModeGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="nightModeActiveIv,nightCoverV"
             android:visibility="gone"
+            app:constraint_referenced_ids="nightModeActiveIv,nightCoverV"
             />
 
     <!-- Allows to set proper height for NavigationDrawer -->
