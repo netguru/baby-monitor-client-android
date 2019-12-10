@@ -17,7 +17,7 @@ import javax.inject.Inject
  * ## Release type tools:
  * - CrashManager
  */
-@AppScope
+@Singleton
 class DebugMetricsHelper @Inject constructor() {
 
     internal fun init() {

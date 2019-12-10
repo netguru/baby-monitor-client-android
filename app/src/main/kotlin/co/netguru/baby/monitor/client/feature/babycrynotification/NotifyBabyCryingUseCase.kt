@@ -6,10 +6,9 @@ import dagger.Reusable
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @Reusable
-class NotifyBabyCryingUseCase @Inject constructor(
+class NotifyBabyCryingUseCase(
     private val notificationSender: FirebaseNotificationSender,
     private val title: String,
     private val text: String

@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
@@ -138,7 +139,10 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
             serverViewModel.toggleDrawer(true)
         }
         videoPreviewButton.setOnClickListener { serverViewModel.toggleVideoPreview(true) }
-        debugView.setDebugStateObservable(debugModule.debugStateObservable())
+        debugView.apply {
+            setDebugStateObservable(debugModule.debugStateObservable())
+            isVisible = BuildConfig.DEBUG
+        }
     }
 
     private fun setupObservers() {

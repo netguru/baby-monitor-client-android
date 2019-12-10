@@ -1,15 +1,15 @@
 package co.netguru.baby.monitor.client.feature.debug
 
-import co.netguru.baby.monitor.client.application.scope.AppScope
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.text.DateFormat
-import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@AppScope
+@Singleton
 class DebugModule @Inject constructor() {
     private val cryingProbabilityEvents: PublishSubject<Float> = PublishSubject.create()
     private val notificationEvents: PublishSubject<String> = PublishSubject.create()
@@ -19,7 +19,7 @@ class DebugModule @Inject constructor() {
     }
 
     fun sendNotificationEvent(notificationInformation: String) {
-        val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
+        val currentDateTimeString = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN))
         notificationEvents.onNext("$notificationInformation at $currentDateTimeString")
     }
 
@@ -37,5 +37,6 @@ class DebugModule @Inject constructor() {
     companion object {
         private const val NOTIFICATION_INFORMATION_INITIAL_STATE = "No notification sent."
         private const val CRYING_PROBABILITY_INITIAL_STATE = 0f
+        private const val DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss"
     }
 }

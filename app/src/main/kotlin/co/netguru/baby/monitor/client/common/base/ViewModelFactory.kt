@@ -2,12 +2,11 @@ package co.netguru.baby.monitor.client.common.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import co.netguru.baby.monitor.client.application.scope.AppScope
-import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragmentViewModel
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
+import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.settings.SettingsViewModel
 import co.netguru.baby.monitor.client.feature.splash.SplashViewModel
 import dagger.Binds
@@ -16,10 +15,11 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import javax.inject.Inject
 import javax.inject.Provider
+import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 @Suppress("UNCHECKED_CAST")
-@AppScope
+@Singleton
 class ViewModelFactory @Inject constructor(
     private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>
 ) : ViewModelProvider.Factory {

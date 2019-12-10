@@ -8,7 +8,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
-import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.SchedulersProvider
@@ -23,11 +22,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import okhttp3.OkHttpClient
+import javax.inject.Singleton
 
 @Module
 class ApplicationModule {
 
-    @AppScope
+    @Singleton
     @Provides
     fun rxJavaErrorHandler(): RxJavaErrorHandler = RxJavaErrorHandlerImpl()
 
@@ -47,16 +47,16 @@ class ApplicationModule {
     @Provides
     fun notificationHandler(context: Context) = NotificationHandler(context)
 
-    @AppScope
+    @Singleton
     @Provides
     fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) =
         FirebaseRepository(preferencesWrapper, context)
 
-    @AppScope
+    @Singleton
     @Provides
     fun firebaseInstanceManager() = FirebaseInstanceManager(FirebaseInstanceId.getInstance())
 
-    @AppScope
+    @Singleton
     @Provides
     fun applicationDatabse(context: Context) =
         Room.databaseBuilder(

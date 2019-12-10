@@ -10,15 +10,15 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.scope.AppScope
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@AppScope
+@Singleton
 class DebugNotificationManager @Inject constructor(
     val notifyBabyCryingUseCase: NotifyBabyCryingUseCase,
     val notifyLowBatteryUseCase: NotifyLowBatteryUseCase
@@ -27,19 +27,17 @@ class DebugNotificationManager @Inject constructor(
     private val receiver = DebugNotificationReceiver()
 
     fun show(service: Service) {
-        val channelId = "debug"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createNotificationChannel(
-            service,
-            channelId
+            service
         )
         receiver.register(service)
-        service.startForeground(DEBUG_NOTIFICATION_ID, createDebugNotification(service, channelId))
+        service.startForeground(DEBUG_NOTIFICATION_ID, createDebugNotification(service))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel(service: Service, channelId: String) {
+    private fun createNotificationChannel(service: Service) {
         val channel = NotificationChannel(
-            channelId,
+            DEBUG_CHANNEL_ID,
             "Debug Channel",
             NotificationManager.IMPORTANCE_DEFAULT
         )
@@ -53,29 +51,29 @@ class DebugNotificationManager @Inject constructor(
         context.unregisterReceiver(receiver)
     }
 
-    private fun createDebugNotification(service: Service, channelId: String): Notification =
-        NotificationCompat.Builder(service, channelId)
+    private fun createDebugNotification(service: Service): Notification =
+        NotificationCompat.Builder(service, DEBUG_CHANNEL_ID)
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Debug notification ")
             .addAction(
-                0,
+                NO_ICON,
                 "Cry",
                 PendingIntent.getBroadcast(
                     service,
-                    1,
+                    CRY_ACTION_REQUEST_CODE,
                     receiver.cryingBabyIntent(),
-                    0
+                    NO_FLAGS
                 )
             )
             .addAction(
-                0,
+                NO_ICON,
                 "Low Battery",
                 PendingIntent.getBroadcast(
                     service,
-                    2,
+                    LOW_BATTERY_ACTION_REQUEST_CODE,
                     receiver.lowBatteryIntent(),
-                    0
+                    NO_FLAGS
                 )
             )
             .build()
@@ -131,5 +129,10 @@ class DebugNotificationManager @Inject constructor(
         private const val KEY_DEBUG_NOTIFICATION_EXTRA =
             "co.netguru.baby.KEY_DEBUG_NOTIFICATION_EXTRA"
         private const val DEBUG_NOTIFICATION_ID = 987
+        private const val NO_ICON = 0
+        private const val NO_FLAGS = 0
+        private const val CRY_ACTION_REQUEST_CODE = 1
+        private const val LOW_BATTERY_ACTION_REQUEST_CODE = 2
+        private const val DEBUG_CHANNEL_ID = "debug"
     }
 }
