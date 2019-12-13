@@ -46,4 +46,7 @@
 
     <item name="setup_buttons_top_guideline" type="dimen">0.868</item>
     <item name="setup_buttons_bottom_guideline" type="dimen">0.952</item>
+
+    <item name="nsd_service_item_height" type="dimen">56dp</item>
+    <item name="divider_height" type="dimen">1dp</item>
 </resources>

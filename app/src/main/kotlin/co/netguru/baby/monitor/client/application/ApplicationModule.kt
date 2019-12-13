@@ -13,6 +13,7 @@ import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
+import co.netguru.baby.monitor.client.feature.communication.nsd.DeviceNameProvider
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
@@ -39,7 +40,8 @@ class ApplicationModule {
     fun context(app: App): Context = app.applicationContext
 
     @Provides
-    fun nsdServiceManager(nsdManager: NsdManager) = NsdServiceManager(nsdManager)
+    fun nsdServiceManager(nsdManager: NsdManager, deviceNameProvider: DeviceNameProvider) =
+        NsdServiceManager(nsdManager, deviceNameProvider)
 
     @Provides
     fun schedulersProvider(): ISchedulersProvider = SchedulersProvider()

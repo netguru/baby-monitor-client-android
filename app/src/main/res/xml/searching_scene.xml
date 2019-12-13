@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:motion="http://schemas.android.com/apk/res-auto"
+        >
+
+    <Transition
+            motion:constraintSetEnd="@+id/end"
+            motion:constraintSetStart="@+id/start"
+            motion:duration="1000"
+            />
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+                android:id="@+id/progressBar"
+                android:background="@drawable/all_circle_white_bg"
+                android:padding="@dimen/spacing_xmedium"
+                motion:layout_constraintBottom_toBottomOf="@+id/connectingDevicesProgressBarBottomGl"
+                motion:layout_constraintDimensionRatio="1:1"
+                motion:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+                motion:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+                motion:layout_constraintTop_toTopOf="@+id/connectingDevicesProgressBarTopGl"
+                />
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+                android:id="@+id/progressBar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:background="@drawable/all_circle_white_bg"
+                android:padding="@dimen/spacing_xxxsmall"
+                motion:layout_constraintDimensionRatio="1:1"
+                motion:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+                motion:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+                motion:layout_constraintTop_toBottomOf="@+id/recyclerView"
+                />
+    </ConstraintSet>
+
+</MotionScene>

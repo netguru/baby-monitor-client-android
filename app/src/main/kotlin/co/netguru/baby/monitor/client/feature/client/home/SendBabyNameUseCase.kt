@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import co.netguru.baby.monitor.client.common.proto.Message
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import com.google.gson.Gson
 import io.reactivex.Completable

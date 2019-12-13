@@ -22,15 +22,16 @@ import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
+import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
 import javax.inject.Inject
-import co.netguru.baby.monitor.client.feature.debug.DebugModule
 
 @Suppress("TooManyFunctions")
 class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
@@ -225,9 +226,10 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     }
 
     private fun registerNsdService() {
-        serverViewModel.registerNsdService {
-            showSnackbarMessage(R.string.nsd_service_registration_failed)
-        }
+        serverViewModel.registerNsdService()
+        serverViewModel.nsdState.observe(viewLifecycleOwner, Observer {
+            if (it is NsdState.Error) showSnackbarMessage(R.string.nsd_service_registration_failed)
+        })
     }
 
     private fun bindServices() {

@@ -1,8 +1,8 @@
 package co.netguru.baby.monitor.client.feature.client.configuration
 
 import android.content.Context
+import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
-import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -10,40 +10,97 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.extensions.setDivider
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
+import co.netguru.baby.monitor.client.feature.communication.nsd.*
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_connecting_devices.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ConnectingDevicesFragment : BaseDaggerFragment(),
-    NsdServiceManager.OnServiceConnectedListener {
+class ConnectingDevicesFragment : BaseDaggerFragment() {
     override val layoutResource = R.layout.fragment_connecting_devices
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
 
     private var timeOutDisposable: Disposable? = null
+    private var nsdServicesAdapter: NsdServicesAdapter? = null
     private val viewModel by lazy {
         ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
     }
 
-    private val disposables = CompositeDisposable()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupAdapter()
+        setupObservers()
+        setupCancelButton()
+    }
+
+    private fun setupAdapter() {
+        nsdServicesAdapter =
+            NsdServicesAdapter { nsdServiceInfo -> viewModel.handleNewService(nsdServiceInfo) }
+        recyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = nsdServicesAdapter
+        recyclerView.setDivider(R.drawable.recycler_divider)
+    }
+
+    private fun setupObservers() {
         viewModel.connectionCompletedState.observe(viewLifecycleOwner,
             Observer { onConnectionCompleted(it) })
-        cancelSearchingButton.setOnClickListener {
-            goBackToSpecifyDevice()
+        viewModel.nsdStateLiveData.observe(viewLifecycleOwner, Observer { nsdState ->
+            handleNsdState(nsdState)
+        })
+    }
+
+    private fun handleNsdState(nsdState: NsdState?) {
+        when (nsdState) {
+            is NsdState.Error -> handleNsdServiceError(nsdState.throwable)
+            is NsdState.InProgress -> {
+                if (motionContainer.currentState != R.id.end) motionContainer.transitionToEnd()
+                handleServices(nsdState.serviceInfoList)
+                setupCancelButton()
+            }
+            is NsdState.Completed -> {
+                handleServices(nsdState.serviceInfoList)
+                setupRefreshButton()
+            }
         }
+    }
+
+    private fun handleNsdServiceError(throwable: Throwable) {
+        when(throwable) {
+            is ResolveFailedException ->  showSnackbarMessage(R.string.discovering_services_error)
+            is StartDiscoveryFailedException -> findNavController().navigate(R.id.connectionFailed)
+        }
+    }
+
+    private fun setupRefreshButton() {
+        cancelRefreshButton.apply {
+            setOnClickListener {
+                discoverNsdService()
+            }
+            text = resources.getString(R.string.refresh_list)
+        }
+    }
+
+    private fun setupCancelButton() {
+        cancelRefreshButton.apply {
+            setOnClickListener {
+                goBackToSpecifyDevice()
+            }
+            text = resources.getString(R.string.cancel)
+        }
+    }
+
+    private fun handleServices(serviceInfoList: List<NsdServiceInfo>) {
+        nsdServicesAdapter?.submitList(serviceInfoList.toMutableList())
     }
 
     private fun goBackToSpecifyDevice() {
@@ -59,50 +116,23 @@ class ConnectingDevicesFragment : BaseDaggerFragment(),
     override fun onStart() {
         super.onStart()
         discoverNsdService()
-        Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
-            .subscribe { _ ->
-                findNavController().navigate(R.id.connectionFailed)
-            }
-            .addTo(disposables)
     }
 
     private fun discoverNsdService() {
         val wifiManager =
             requireContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        viewModel.discoverNsdService(this, wifiManager)
+        viewModel.discoverNsdService(wifiManager)
+        timeOutDisposable?.dispose()
+        timeOutDisposable = Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
+            .subscribe { _ ->
+                viewModel.stopNsdServiceDiscovery()
+            }
     }
 
     override fun onStop() {
-        disposables.clear()
+        timeOutDisposable?.dispose()
         viewModel.stopNsdServiceDiscovery()
         super.onStop()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        timeOutDisposable?.dispose()
-    }
-
-    override fun onServiceConnectionError(errorCode: Int) {
-        when (errorCode) {
-            WifiP2pManager.P2P_UNSUPPORTED -> {
-                showSnackbarMessage(R.string.p2p_unsupported_on_device_error)
-            }
-            WifiP2pManager.BUSY -> {
-                showSnackbarMessage(R.string.system_is_busy_error)
-            }
-            else -> {
-                showSnackbarMessage(R.string.discovering_services_error)
-            }
-        }
-    }
-
-    override fun onRegistrationFailed(errorCode: Int) {
-        showSnackbarMessage(R.string.nsd_service_registration_failed)
-    }
-
-    override fun onStartDiscoveryFailed(errorCode: Int) {
-        showSnackbarMessage(R.string.discovery_start_failed)
     }
 
     private fun onConnectionCompleted(connectionCompleted: Boolean) {

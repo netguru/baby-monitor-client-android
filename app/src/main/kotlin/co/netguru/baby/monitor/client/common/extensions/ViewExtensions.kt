@@ -11,6 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import android.view.View
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import co.netguru.baby.monitor.client.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -106,4 +109,20 @@ fun <T> ImageView.babyProfileImage(uri: T, borderSize: Float, colorRes: Int, vec
                 setImageDrawable(circularBitmapDrawable)
             }
         })
+}
+
+
+fun RecyclerView.setDivider(@DrawableRes drawableRes: Int) {
+    val divider = DividerItemDecoration(
+        this.context,
+        DividerItemDecoration.VERTICAL
+    )
+    val drawable = ContextCompat.getDrawable(
+        this.context,
+        drawableRes
+    )
+    drawable?.let {
+        divider.setDrawable(it)
+        addItemDecoration(divider)
+    }
 }
