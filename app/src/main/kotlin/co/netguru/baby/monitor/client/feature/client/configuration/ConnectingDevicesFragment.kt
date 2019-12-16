@@ -16,7 +16,10 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.setDivider
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.feature.communication.nsd.*
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServicesAdapter
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
+import co.netguru.baby.monitor.client.feature.communication.nsd.ResolveFailedException
+import co.netguru.baby.monitor.client.feature.communication.nsd.StartDiscoveryFailedException
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -68,8 +71,12 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
                 handleServices(nsdState.serviceInfoList)
             }
             is NsdState.Completed -> {
-                handleServices(nsdState.serviceInfoList)
-                setupCompleteViews()
+                if (nsdState.serviceInfoList.isNotEmpty()) {
+                    handleServices(nsdState.serviceInfoList)
+                    setupCompleteViews()
+                } else {
+                    navigateToFailedConnection()
+                }
             }
         }
     }
@@ -77,8 +84,12 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
     private fun handleNsdServiceError(throwable: Throwable) {
         when (throwable) {
             is ResolveFailedException -> showSnackbarMessage(R.string.discovering_services_error)
-            is StartDiscoveryFailedException -> findNavController().navigate(R.id.connectionFailed)
+            is StartDiscoveryFailedException -> navigateToFailedConnection()
         }
+    }
+
+    private fun navigateToFailedConnection() {
+        findNavController().navigate(R.id.connectionFailed)
     }
 
     private fun setupCompleteViews() {
