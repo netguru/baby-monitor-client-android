@@ -49,10 +49,12 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
     private fun setupAdapter() {
         nsdServicesAdapter =
             NsdServicesAdapter { nsdServiceInfo -> viewModel.handleNewService(nsdServiceInfo) }
-        recyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = nsdServicesAdapter
-        recyclerView.setDivider(R.drawable.recycler_divider)
+        recyclerView.apply {
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = nsdServicesAdapter
+            setDivider(R.drawable.recycler_divider)
+        }
     }
 
     private fun setupObservers() {

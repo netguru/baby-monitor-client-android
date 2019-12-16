@@ -84,8 +84,8 @@ class NsdServiceManagerTest {
         argumentCaptorDiscovery.firstValue.onStartDiscoveryFailed("", 0)
 
         verify(nsdStateObserver).onChanged(argThat {
-            this is NsdState.Error
-                    && throwable is StartDiscoveryFailedException
+            this is NsdState.Error &&
+                    throwable is StartDiscoveryFailedException
         })
     }
 
@@ -100,8 +100,8 @@ class NsdServiceManagerTest {
         argumentCaptorResolve.firstValue.onResolveFailed(nsdServiceInfo, 0)
 
         verify(nsdStateObserver).onChanged(argThat {
-            this is NsdState.Error
-                    && throwable is ResolveFailedException
+            this is NsdState.Error &&
+                    throwable is ResolveFailedException
         })
     }
 }

@@ -17,12 +17,14 @@ class NsdServicesAdapter(private val onServiceClick: (nsdServiceInfo: NsdService
         )
         view.layoutParams = layoutParams
         return ServiceViewHolder(view)
+            .apply {
+                itemView.setOnClickListener {
+                    onServiceClick.invoke(getItem(adapterPosition))
+                }
+            }
     }
 
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
         holder.bind(getItem(position))
-        holder.itemView.setOnClickListener {
-            onServiceClick.invoke(getItem(position))
-        }
     }
 }
