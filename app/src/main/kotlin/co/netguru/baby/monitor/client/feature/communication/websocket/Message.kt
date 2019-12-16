@@ -8,7 +8,8 @@ data class Message(
     @SerializedName("offerSDP") val sdpOffer: SdpData? = null,
     @SerializedName("answerSDP") val sdpAnswer: SdpData? = null,
     @SerializedName("baby_name") val babyName: String? = null,
-    @SerializedName("iceCandidate") val iceCandidate: IceCandidateData? = null
+    @SerializedName("iceCandidate") val iceCandidate: IceCandidateData? = null,
+    @SerializedName("errorSDP") val sdpError: String? = null
 ) {
     fun action() =
         if (action != null && value != null) {

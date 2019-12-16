@@ -52,7 +52,3 @@ private class CreateSdpObserver(private val emitter: SingleEmitter<SessionDescri
 fun PeerConnection.createAnswer(): Single<SessionDescription> = Single.create { emitter ->
     createAnswer(CreateSdpObserver(emitter), MediaConstraints())
 }
-
-fun PeerConnection.createOffer(): Single<SessionDescription> = Single.create { emitter ->
-    createOffer(CreateSdpObserver(emitter), MediaConstraints())
-}

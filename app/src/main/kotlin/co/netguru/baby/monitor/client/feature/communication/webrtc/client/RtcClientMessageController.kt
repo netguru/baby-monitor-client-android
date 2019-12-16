@@ -78,6 +78,9 @@ class RtcClientMessageController(
         message?.iceCandidate?.let {
             rtcMessageHandler.handleIceCandidateMessage(it)
         }
+        message?.sdpError?.let {
+            rtcMessageHandler.handleBabyDeviceSdpError(it)
+        }
     }
 
     private fun parseWebSocketMessage(event: RxWebSocketClient.Event.Message): Message? {

@@ -19,6 +19,10 @@ class ConnectionObserver : DefaultObserver() {
         streamSubject.onNext(ConnectionState(RtcConnectionState.ConnectionOffer))
     }
 
+    fun onSetDescriptionError() {
+        streamSubject.onNext(ConnectionState(RtcConnectionState.Error))
+    }
+
     override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState?) {
         streamSubject.onNext(GatheringState(iceGatheringState))
     }

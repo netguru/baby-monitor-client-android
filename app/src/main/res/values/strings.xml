@@ -121,4 +121,6 @@
     <string name="no_internet_message">Your wifi don\'t have internet connection. Notifications won\'t work. Try again.</string>
     <string name="specify_this_device">Specify this device</string>
     <string name="restart">Restart</string>
+
+    <string name="stream_error">Error while connecting to the stream</string>
 </resources>

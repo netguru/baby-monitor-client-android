@@ -197,7 +197,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         serverViewModel.rtcConnectionStatus.observeNonNull(viewLifecycleOwner) { connectionState ->
             when (connectionState) {
                 RtcConnectionState.ConnectionOffer -> machineLearningServiceBinder?.stopRecording()
-                RtcConnectionState.Disconnected -> machineLearningServiceBinder?.startRecording()
+                RtcConnectionState.Disconnected,
+                RtcConnectionState.Error -> machineLearningServiceBinder?.startRecording()
                 else -> Unit
             }
         }

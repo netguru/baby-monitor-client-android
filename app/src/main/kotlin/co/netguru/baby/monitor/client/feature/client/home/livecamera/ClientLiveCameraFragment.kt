@@ -5,8 +5,10 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
@@ -98,7 +100,14 @@ class ClientLiveCameraFragment : BaseDaggerFragment() {
             RtcConnectionState.Completed -> streamProgressBar.visibility = View.GONE
             RtcConnectionState.Checking -> streamProgressBar.visibility =
                 View.VISIBLE
+            RtcConnectionState.Error -> handleBabyDeviceSdpError()
             else -> Unit
         }
+    }
+
+    private fun handleBabyDeviceSdpError() {
+        showSnackbarMessage(R.string.stream_error)
+        requireActivity()
+            .findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
     }
 }
