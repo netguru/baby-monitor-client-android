@@ -19,10 +19,10 @@ private class SetSdpObserver(private val emitter: CompletableEmitter) : SdpObser
     }
 
     override fun onCreateSuccess(sessionDescription: SessionDescription) =
-        throw RuntimeException()
+        throw IllegalStateException()
 
     override fun onCreateFailure(error: String?) =
-        throw RuntimeException()
+        throw IllegalStateException()
 }
 
 fun PeerConnection.setRemoteDescription(sessionDescription: SessionDescription) = Completable.create { emitter ->
@@ -43,10 +43,10 @@ private class CreateSdpObserver(private val emitter: SingleEmitter<SessionDescri
     }
 
     override fun onSetFailure(error: String?) =
-        throw RuntimeException()
+        throw IllegalStateException()
 
     override fun onSetSuccess() =
-        throw RuntimeException()
+        throw IllegalStateException()
 }
 
 fun PeerConnection.createAnswer(): Single<SessionDescription> = Single.create { emitter ->

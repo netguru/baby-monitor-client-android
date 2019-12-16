@@ -165,7 +165,8 @@ class WebRtcManager constructor(
                             sdpError = it.message
                         )
                     )
-                    Timber.e(it)})
+                    Timber.e(it)
+                })
         }?.addTo(compositeDisposable)
     }
 
