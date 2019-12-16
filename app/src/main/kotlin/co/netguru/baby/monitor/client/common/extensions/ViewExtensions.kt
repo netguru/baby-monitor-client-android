@@ -31,6 +31,7 @@ fun View.setVisible(boolean: Boolean) {
         View.GONE
     }
 }
+
 @Suppress("MagicNumber")
 fun Bitmap.addBorderAndCover(
     borderColor: Int,
@@ -110,7 +111,6 @@ fun <T> ImageView.babyProfileImage(uri: T, borderSize: Float, colorRes: Int, vec
             }
         })
 }
-
 
 fun RecyclerView.setDivider(@DrawableRes drawableRes: Int) {
     val divider = DividerItemDecoration(

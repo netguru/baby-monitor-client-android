@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.motion.widget.MotionLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -32,6 +31,48 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.156"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonStartGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="@dimen/back_button_start_guideline"
+            />
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonEndGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="@dimen/back_button_end_guideline"
+            />
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonTopGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/back_button_top_guideline"
+            />
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonBottomGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/back_button_bottom_guideline"
+            />
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/backButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/backButtonBottomGuideline"
+            app:layout_constraintEnd_toEndOf="@+id/backButtonEndGuideline"
+            app:layout_constraintStart_toStartOf="@+id/backButtonStartGuideline"
+            app:layout_constraintTop_toTopOf="@+id/backButtonTopGuideline"
+            app:srcCompat="@drawable/ic_arrow_back"
             />
 
     <androidx.appcompat.widget.AppCompatTextView

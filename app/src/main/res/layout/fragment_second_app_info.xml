@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.057"
+            app:layout_constraintGuide_percent="@dimen/back_button_top_guideline"
             />
 
     <androidx.constraintlayout.widget.Guideline
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.043"
+            app:layout_constraintGuide_percent="@dimen/back_button_end_guideline"
             />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.093"
+            app:layout_constraintGuide_percent="@dimen/back_button_bottom_guideline"
             />
 
     <androidx.constraintlayout.widget.Guideline
@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.107"
+            app:layout_constraintGuide_percent="@dimen/back_button_end_guideline"
             />
 
     <androidx.constraintlayout.widget.Guideline

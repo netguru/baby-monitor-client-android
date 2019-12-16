@@ -40,7 +40,7 @@ class ConfigurationViewModel @Inject constructor(
     val nsdStateLiveData: LiveData<NsdState> = nsdServiceManager.nsdStateLiveData
 
     fun handleNewService(
-       nsdServiceInfo: NsdServiceInfo
+        nsdServiceInfo: NsdServiceInfo
     ) {
         val address = "ws://${nsdServiceInfo.host.hostAddress}:${nsdServiceInfo.port}"
         dataRepository.putChildData(ChildDataEntity(address))

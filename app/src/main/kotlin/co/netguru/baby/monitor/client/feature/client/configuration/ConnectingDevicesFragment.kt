@@ -5,6 +5,7 @@ import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -39,7 +40,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         setupObservers()
-        setupCancelButton()
+        setupInProgressViews()
     }
 
     private fun setupAdapter() {
@@ -65,38 +66,46 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
             is NsdState.InProgress -> {
                 if (motionContainer.currentState != R.id.end) motionContainer.transitionToEnd()
                 handleServices(nsdState.serviceInfoList)
-                setupCancelButton()
             }
             is NsdState.Completed -> {
                 handleServices(nsdState.serviceInfoList)
-                setupRefreshButton()
+                setupCompleteViews()
             }
         }
     }
 
     private fun handleNsdServiceError(throwable: Throwable) {
-        when(throwable) {
-            is ResolveFailedException ->  showSnackbarMessage(R.string.discovering_services_error)
+        when (throwable) {
+            is ResolveFailedException -> showSnackbarMessage(R.string.discovering_services_error)
             is StartDiscoveryFailedException -> findNavController().navigate(R.id.connectionFailed)
         }
     }
 
-    private fun setupRefreshButton() {
+    private fun setupCompleteViews() {
         cancelRefreshButton.apply {
             setOnClickListener {
                 discoverNsdService()
             }
             text = resources.getString(R.string.refresh_list)
         }
+        backButton.apply {
+            isVisible = true
+            setOnClickListener {
+                findNavController().navigateUp()
+            }
+        }
+        progressBar.isVisible = false
     }
 
-    private fun setupCancelButton() {
+    private fun setupInProgressViews() {
         cancelRefreshButton.apply {
             setOnClickListener {
                 goBackToSpecifyDevice()
             }
             text = resources.getString(R.string.cancel)
         }
+        backButton.isVisible = false
+        progressBar.isVisible = true
     }
 
     private fun handleServices(serviceInfoList: List<NsdServiceInfo>) {
@@ -123,6 +132,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
             requireContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         viewModel.discoverNsdService(wifiManager)
         timeOutDisposable?.dispose()
+        setupInProgressViews()
         timeOutDisposable = Single.timer(SEARCH_TIME_TILL_FAIL, TimeUnit.MINUTES)
             .subscribe { _ ->
                 viewModel.stopNsdServiceDiscovery()

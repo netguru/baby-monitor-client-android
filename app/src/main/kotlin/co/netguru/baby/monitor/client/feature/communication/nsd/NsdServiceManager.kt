@@ -39,7 +39,7 @@ class NsdServiceManager @Inject constructor(
 
         override fun onRegistrationFailed(serviceInfo: NsdServiceInfo?, errorCode: Int) {
             Timber.e("Baby Monitor Service registration failed")
-            mutableNsdStateLiveData.postValue(NsdState.Error(RegistrationFailedExcetpion()))
+            mutableNsdStateLiveData.postValue(NsdState.Error(RegistrationFailedException()))
         }
 
         override fun onServiceRegistered(serviceInfo: NsdServiceInfo?) =
@@ -82,9 +82,13 @@ class NsdServiceManager @Inject constructor(
             .subscribeBy(onNext = this::handleResolvedService,
                 onError = {
                     handleNsdError(it)
-                })
+                }, onComplete = this::handleDiscoveryComplete)
             .addTo(disposables)
         discoveryStatus = DiscoveryStatus.STARTED
+    }
+
+    private fun handleDiscoveryComplete() {
+        mutableNsdStateLiveData.postValue(NsdState.Completed(serviceInfoList))
     }
 
     private fun initDiscovery(emitter: ObservableEmitter<NsdServiceInfo>) {
@@ -118,6 +122,7 @@ class NsdServiceManager @Inject constructor(
         )
         emitter.setCancellable {
             nsdManager.stopServiceDiscovery(nsdDiscoveryListener)
+            handleDiscoveryComplete()
         }
     }
 
