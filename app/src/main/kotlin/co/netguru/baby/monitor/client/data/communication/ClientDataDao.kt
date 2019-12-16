@@ -15,6 +15,6 @@ interface ClientDataDao {
     @Query("SELECT * FROM CLIENT_DATA")
     fun getAllData(): Flowable<List<ClientEntity>>
 
-    @Query("DELETE FROM LOG_DATA")
+    @Query("DELETE FROM CLIENT_DATA")
     fun deleteAll()
 }
