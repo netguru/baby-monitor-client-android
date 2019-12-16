@@ -158,7 +158,15 @@ class WebRtcManager constructor(
                     peerConnection?.setLocalDescription(answer)
                 }
                 .doOnComplete { Timber.d("Answer set as a local description.") }
-                .subscribe()
+                .subscribeBy(onError = {
+                    connectionObserver.onSetDescriptionError()
+                    sendMessage(
+                        Message(
+                            sdpError = it.message
+                        )
+                    )
+                    Timber.e(it)
+                })
         }?.addTo(compositeDisposable)
     }
 

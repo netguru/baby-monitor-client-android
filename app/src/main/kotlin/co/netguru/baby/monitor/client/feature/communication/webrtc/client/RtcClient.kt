@@ -170,6 +170,11 @@ class RtcClient(
         )
     }
 
+    override fun handleBabyDeviceSdpError(error: String) {
+        Timber.e(error)
+        streamStateListener.invoke(ConnectionState(RtcConnectionState.Error))
+    }
+
     companion object {
         internal const val WEB_SOCKET_ACTION_KEY = "action"
 
