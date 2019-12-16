@@ -107,7 +107,6 @@ class ClientLiveCameraFragment : BaseDaggerFragment() {
 
     private fun handleBabyDeviceSdpError() {
         showSnackbarMessage(R.string.stream_error)
-        requireActivity()
-            .findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
+        requireActivity().onBackPressed()
     }
 }
