@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="?attr/selectableItemBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/spacing_small"
+        tools:background="@color/primary_dark"
+        >
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/deviceIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/spacing_normal"
+            app:srcCompat="@drawable/phone_item_icon"
+            />
+
+    <TextView
+            android:id="@+id/deviceName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            tools:text="Samsung Galaxy S10"
+            />
+</LinearLayout>

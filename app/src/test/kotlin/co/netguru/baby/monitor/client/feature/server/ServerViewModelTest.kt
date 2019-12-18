@@ -61,9 +61,9 @@ class ServerViewModelTest {
 
     @Test
     fun `should register NsdService using NsdServiceManager`() {
-        serverViewModel.registerNsdService { }
+        serverViewModel.registerNsdService()
 
-        verify(nsdServiceManager).registerService(any())
+        verify(nsdServiceManager).registerService()
     }
 
     @Test

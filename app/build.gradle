@@ -236,6 +236,8 @@ dependencies {
     implementation libs.firebaseAnalytics
     implementation libs.crashlytics
 
+    implementation libs.deviceNames
+
     //Unit testing
     testImplementation test.junit
     testImplementation test.mockito

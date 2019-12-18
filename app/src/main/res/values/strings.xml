@@ -3,9 +3,7 @@
     <string name="app_name">BabyGuard</string>
     <string name="company_url">https://www.netguru.com/</string>
 
-    <string name="discovering_services_error">Error while connecting to service</string>
-    <string name="system_is_busy_error">The system is to busy to process the request</string>
-    <string name="p2p_unsupported_on_device_error">Wi-Fi P2P isn\'t supported on the device running the app</string>
+    <string name="discovering_services_error">Error while discovering services</string>
     <string name="no_name">Your baby name</string>
     <string name="settings">Settings</string>
     <string name="specify_this_device_title">Specify this\ndevice</string>
@@ -121,6 +119,6 @@
     <string name="no_internet_message">Your wifi don\'t have internet connection. Notifications won\'t work. Try again.</string>
     <string name="specify_this_device">Specify this device</string>
     <string name="restart">Restart</string>
-
+    <string name="refresh_list">Refresh the list</string>
     <string name="stream_error">Error while connecting to the stream</string>
 </resources>

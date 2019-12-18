@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.settings
 
 import android.app.Activity
 import android.content.Intent
+import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,7 @@ import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
+import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import io.reactivex.disposables.CompositeDisposable
@@ -35,19 +37,12 @@ class ConfigurationViewModel @Inject constructor(
     private var multicastLock: WifiManager.MulticastLock? = null
     val resetInProgress: LiveData<Boolean> = mutableResetInProgress
 
-    init {
-        nsdServiceManager.serviceInfoData.observeForever { list ->
-            list?.first()?.let { service ->
-                handleNewService(service.host.hostAddress, service.port)
-            }
-        }
-    }
+    val nsdStateLiveData: LiveData<NsdState> = nsdServiceManager.nsdStateLiveData
 
-    private fun handleNewService(
-        address: String,
-        port: Int
+    fun handleNewService(
+        nsdServiceInfo: NsdServiceInfo
     ) {
-        val address = "ws://$address:$port"
+        val address = "ws://${nsdServiceInfo.host.hostAddress}:${nsdServiceInfo.port}"
         dataRepository.putChildData(ChildDataEntity(address))
             .andThen(addPairingEventToDataBase(address))
             .subscribeOn(Schedulers.io())
@@ -73,11 +68,10 @@ class ConfigurationViewModel @Inject constructor(
     }
 
     internal fun discoverNsdService(
-        onServiceConnectedListener: NsdServiceManager.OnServiceConnectedListener,
         wifiManager: WifiManager
     ) {
         acquireMulticastLock(wifiManager)
-        nsdServiceManager.discoverService(onServiceConnectedListener)
+        nsdServiceManager.discoverService()
     }
 
     private fun acquireMulticastLock(wifiManager: WifiManager) {

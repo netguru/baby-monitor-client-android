@@ -36,6 +36,7 @@ class ServerViewModel @Inject constructor(
             streamingEnabled = false
         )
     )
+    internal val nsdState = nsdServiceManager.nsdStateLiveData
     internal val cameraState: LiveData<CameraState> = mutableCameraState
     val rtcConnectionStatus: LiveData<RtcConnectionState> = mutableRtcConnectionStatus
 
@@ -62,21 +63,8 @@ class ServerViewModel @Inject constructor(
             )
     }
 
-    internal fun registerNsdService(
-        onRegistrationFailed: (errorCode: Int) -> Unit
-    ) {
-        nsdServiceManager.registerService(object : NsdServiceManager.OnServiceConnectedListener {
-            override fun onServiceConnectionError(errorCode: Int) {
-                Timber.e("Service connection error with error code: $errorCode")
-            }
-            override fun onStartDiscoveryFailed(errorCode: Int) {
-                Timber.e("Service registration failed with error code: $errorCode")
-            }
-
-            override fun onRegistrationFailed(errorCode: Int) {
-                onRegistrationFailed(errorCode)
-            }
-        })
+    internal fun registerNsdService() {
+        nsdServiceManager.registerService()
     }
 
     internal fun unregisterNsdService() {
