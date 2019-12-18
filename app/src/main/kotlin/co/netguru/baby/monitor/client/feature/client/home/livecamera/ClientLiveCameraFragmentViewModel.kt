@@ -54,8 +54,7 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
                         Timber.i("Call started")
                     },
                     onError = {
-                        cleanup()
-                        callInProgress.set(false)
+                        endCall()
                         Timber.e(it, "Error during startCall")
                     }
                 ).addTo(compositeDisposable)

@@ -120,4 +120,5 @@
     <string name="specify_this_device">Specify this device</string>
     <string name="restart">Restart</string>
     <string name="refresh_list">Refresh the list</string>
+    <string name="stream_error">Error while connecting to the stream</string>
 </resources>
