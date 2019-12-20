@@ -9,7 +9,9 @@ data class Message(
     @SerializedName("answerSDP") val sdpAnswer: SdpData? = null,
     @SerializedName("baby_name") val babyName: String? = null,
     @SerializedName("iceCandidate") val iceCandidate: IceCandidateData? = null,
-    @SerializedName("errorSDP") val sdpError: String? = null
+    @SerializedName("errorSDP") val sdpError: String? = null,
+    @SerializedName("pairingCode") val pairingCode: String? = null,
+    @SerializedName("pairingResponse") val pairingApproved: Boolean? = null
 ) {
     fun action() =
         if (action != null && value != null) {

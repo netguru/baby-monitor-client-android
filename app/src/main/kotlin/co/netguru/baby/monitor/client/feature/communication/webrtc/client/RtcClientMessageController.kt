@@ -4,9 +4,8 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.IceCandidateS
 import co.netguru.baby.monitor.client.feature.communication.webrtc.OnIceCandidateAdded
 import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcMessageHandler
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
-import com.google.gson.Gson
-import com.google.gson.JsonParseException
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -16,7 +15,7 @@ import timber.log.Timber
 import java.net.URI
 
 class RtcClientMessageController(
-    private val gson: Gson,
+    private val messageParser: MessageParser,
     private val serverUri: URI,
     private val rxWebSocketClient: RxWebSocketClient
 ) {
@@ -71,7 +70,7 @@ class RtcClientMessageController(
     }
 
     private fun handleIncomingMessage(event: RxWebSocketClient.Event.Message) {
-        val message = parseWebSocketMessage(event)
+        val message = messageParser.parseWebSocketMessage(event)
         message?.sdpAnswer?.let {
             rtcMessageHandler.handleSdpAnswerMessage(it)
         }
@@ -83,17 +82,8 @@ class RtcClientMessageController(
         }
     }
 
-    private fun parseWebSocketMessage(event: RxWebSocketClient.Event.Message): Message? {
-        return try {
-            gson.fromJson(event.message, Message::class.java)
-        } catch (e: JsonParseException) {
-            Timber.w(e)
-            null
-        }
-    }
-
     private fun sendMessage(message: Message) {
-        compositeDisposable += rxWebSocketClient.send(message.let(gson::toJson))
+        compositeDisposable += rxWebSocketClient.send(messageParser.getMessageJson(message))
             .subscribeBy(
                 onComplete = { Timber.i("message sent: $message") },
                 onError = { Timber.e(it) })

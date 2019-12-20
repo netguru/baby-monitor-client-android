@@ -83,7 +83,7 @@ class WebSocketServerHandler(
     }
 
     fun broadcast(text: String) {
-        server!!.broadcast(text)
+        server?.broadcast(text)
     }
 
     private fun stopServer(shouldRestart: Boolean, server: CustomWebSocketServer) {

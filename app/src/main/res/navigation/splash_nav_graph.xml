@@ -188,37 +188,63 @@
             >
 
         <action
-                android:id="@+id/secondAppInfoToConnectingDevices"
-                app:destination="@+id/connectingDevices"
+                android:id="@+id/secondAppInfoToServiceDiscovery"
+                app:destination="@+id/serviceDiscovery"
                 />
     </fragment>
 
     <fragment
-            android:id="@+id/connectingDevices"
-            android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFragment"
+            android:id="@+id/serviceDiscovery"
+            android:name="co.netguru.baby.monitor.client.feature.communication.pairing.ServiceDiscoveryFragment"
             android:label="Configuration"
             tools:layout="@layout/fragment_connecting_devices"
             >
 
         <action
-                android:id="@+id/connectingDevicesToAllDone"
-                app:destination="@+id/allDone"
+                android:id="@+id/serviceDiscoveryToPairing"
+                app:destination="@+id/pairing"
                 />
 
         <action
-                android:id="@+id/connectingDevicesToConnectionFailed"
+                android:id="@+id/serviceDiscoveryToConnectionFailed"
                 app:destination="@+id/connectionFailed"
                 />
 
         <action
-                android:id="@+id/cancelConnecting"
+                android:id="@+id/cancelServiceDiscovery"
                 app:destination="@id/specifyDevice"
                 />
     </fragment>
 
     <fragment
+            android:id="@+id/pairing"
+            android:name="co.netguru.baby.monitor.client.feature.communication.pairing.PairingFragment"
+            android:label="Pairing"
+            tools:layout="@layout/fragment_pairing"
+            >
+
+        <action
+                android:id="@+id/pairingToAllDone"
+                app:destination="@+id/allDone"
+                />
+
+        <action
+                android:id="@+id/pairingToConnectionFailed"
+                app:destination="@+id/connectionFailed"
+                app:launchSingleTop="true"
+                app:popUpTo="@+id/serviceDiscovery"
+                app:popUpToInclusive="true"
+                />
+
+        <argument
+                android:name="address"
+                app:argType="string"
+                />
+    </fragment>
+
+    <fragment
             android:id="@+id/connectionFailed"
-            android:name="co.netguru.baby.monitor.client.feature.client.configuration.ConnectingDevicesFailedFragment"
+            android:name="co.netguru.baby.monitor.client.feature.communication.pairing.ConnectingDevicesFailedFragment"
             android:label="Configuration Failed"
             tools:layout="@layout/fragment_failed_devices_connecting"
             />

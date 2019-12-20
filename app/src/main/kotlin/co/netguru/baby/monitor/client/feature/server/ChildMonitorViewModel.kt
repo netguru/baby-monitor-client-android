@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager.Companion.PUSH_NOTIFICATIONS_KEY
 import dagger.Lazy
@@ -30,6 +31,9 @@ class ChildMonitorViewModel @Inject constructor(
     val pulsatingViewStatus: LiveData<ClientConnectionStatus> = mutablePulsatingViewStatus
     private val mutableNightModeStatus = MutableLiveData<Boolean>()
     internal val nightModeStatus: LiveData<Boolean> = mutableNightModeStatus
+
+    private val mutablePairingCodeLiveData = MutableLiveData<String>()
+    internal val pairingCodeLiveData: LiveData<String> = mutablePairingCodeLiveData
 
     private fun receiveFirebaseToken(ipAddress: String, token: String) {
         receiveFirebaseTokenUseCase.get().receiveToken(ipAddress = ipAddress, token = token)
@@ -73,13 +77,17 @@ class ChildMonitorViewModel @Inject constructor(
         disposables += binder.messages()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { (ws, msg) ->
-                msg.action()?.let { (key, value) ->
+            .subscribe { (ws, message) ->
+                message.action()?.let { (key, value) ->
                     handleWebSocketAction(ws, key, value)
                 }
 
-                msg.babyName?.let { name ->
+                message.babyName?.let { name ->
                     mutableBabyNameStatus.postValue(name)
+                }
+
+                message.pairingCode?.let {
+                    mutablePairingCodeLiveData.postValue(it)
                 }
             }
     }
@@ -87,6 +95,23 @@ class ChildMonitorViewModel @Inject constructor(
     fun switchNightMode() {
         val currentStatus = mutableNightModeStatus.value == true
         mutableNightModeStatus.postValue(!currentStatus)
+    }
+
+    fun approvePairingCode(binder: WebSocketServerService.Binder) {
+        binder.sendMessage(
+            Message(
+                pairingApproved = true
+            )
+        )
+    }
+
+    fun disapprovePairingCode(binder: WebSocketServerService.Binder) {
+        binder.sendMessage(
+            Message(
+                pairingApproved = false
+            )
+        )
+        mutablePairingCodeLiveData.postValue("")
     }
 
     private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {

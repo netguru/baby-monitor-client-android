@@ -1,21 +1,9 @@
 package co.netguru.baby.monitor.client.feature.settings
 
-import android.app.Activity
-import android.content.Intent
-import android.net.nsd.NsdServiceInfo
-import android.net.wifi.WifiManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
-import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
-import co.netguru.baby.monitor.client.common.RunsInBackground
-import co.netguru.baby.monitor.client.data.DataRepository
-import co.netguru.baby.monitor.client.data.client.ChildDataEntity
-import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
-import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
-import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
-import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -24,71 +12,27 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ConfigurationViewModel @Inject constructor(
-    private val nsdServiceManager: NsdServiceManager,
     private val resetAppUseCase: ResetAppUseCase,
-    private val dataRepository: DataRepository,
-    private val firebaseRepository: FirebaseRepository,
-    private val localDateTimeProvider: LocalDateTimeProvider
+    private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
-    internal val connectionCompletedState = MutableLiveData<Boolean>()
     private val compositeDisposable = CompositeDisposable()
-    private val mutableResetInProgress = MutableLiveData<Boolean>()
-    private var multicastLock: WifiManager.MulticastLock? = null
-    val resetInProgress: LiveData<Boolean> = mutableResetInProgress
+    private val mutableResetState = MutableLiveData<ResetState>()
+    val resetState: LiveData<ResetState> = mutableResetState
 
-    val nsdStateLiveData: LiveData<NsdState> = nsdServiceManager.nsdStateLiveData
-
-    fun handleNewService(
-        nsdServiceInfo: NsdServiceInfo
-    ) {
-        val address = "ws://${nsdServiceInfo.host.hostAddress}:${nsdServiceInfo.port}"
-        dataRepository.putChildData(ChildDataEntity(address))
-            .andThen(addPairingEventToDataBase(address))
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onComplete = { connectionCompletedState.postValue(true) },
-                onError = { connectionCompletedState.postValue(false) }
-            ).addTo(compositeDisposable)
-    }
-
-    fun resetApp(activity: Activity) {
+    fun resetApp() {
         resetAppUseCase.resetApp()
-            .doOnSubscribe { mutableResetInProgress.postValue(true) }
+            .doOnSubscribe { mutableResetState.postValue(ResetState.InProgress) }
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
-                    handleAppReset(activity)
+                    mutableResetState.postValue(ResetState.Completed)
                 },
                 onError = {
-                    mutableResetInProgress.postValue(false)
+                    mutableResetState.postValue(ResetState.Failed)
                     Timber.w(it)
                 }
             ).addTo(compositeDisposable)
-    }
-
-    internal fun discoverNsdService(
-        wifiManager: WifiManager
-    ) {
-        acquireMulticastLock(wifiManager)
-        nsdServiceManager.discoverService()
-    }
-
-    private fun acquireMulticastLock(wifiManager: WifiManager) {
-        // Pixel workaround for discovering services
-        multicastLock = wifiManager.createMulticastLock(MUTLICAST_LOCK_TAG)
-        multicastLock?.setReferenceCounted(true)
-        multicastLock?.acquire()
-    }
-
-    internal fun stopNsdServiceDiscovery() {
-        releaseMulticastLock()
-        nsdServiceManager.stopServiceDiscovery()
-    }
-
-    private fun releaseMulticastLock() {
-        multicastLock?.release()
-        multicastLock = null
     }
 
     internal fun isUploadEnabled() = firebaseRepository.isUploadEnablad()
@@ -98,31 +42,7 @@ class ConfigurationViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        nsdServiceManager.stopServiceDiscovery()
         compositeDisposable.dispose()
         super.onCleared()
-    }
-
-    @RunsInBackground
-    private fun handleAppReset(activity: Activity) {
-        activity.startActivity(
-            Intent(activity, OnboardingActivity::class.java)
-        )
-        activity.finish()
-    }
-
-    @RunsInBackground
-    private fun addPairingEventToDataBase(address: String) =
-        dataRepository.insertLogToDatabase(
-            LogDataEntity(
-                DEVICES_PAIRED,
-                localDateTimeProvider.now().toString(),
-                address
-            )
-        )
-
-    companion object {
-        private const val DEVICES_PAIRED = "Devices were paired correctly"
-        internal const val MUTLICAST_LOCK_TAG = "multicastLock"
     }
 }

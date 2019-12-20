@@ -121,4 +121,8 @@
     <string name="restart">Restart</string>
     <string name="refresh_list">Refresh the list</string>
     <string name="stream_error">Error while connecting to the stream</string>
+
+    <string name="security_code_information">Compare the security code and accept on the Baby device</string>
+    <string name="pairing_dialog_title">Confirm pairing code</string>
+    <string name="pairing_dialog_message">Someone with %1$s code wants to connect. Do you approve?"</string>
 </resources>

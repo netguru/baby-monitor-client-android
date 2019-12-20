@@ -4,8 +4,8 @@ import android.content.DialogInterface
 import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import co.netguru.baby.monitor.client.R
-import org.jetbrains.anko.bundleOf
 
 class YesNoDialog : androidx.fragment.app.DialogFragment() {
 
