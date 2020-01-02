@@ -1,10 +1,11 @@
-package co.netguru.baby.monitor.client.feature.client.configuration
+package co.netguru.baby.monitor.client.feature.communication.pairing
 
 import android.content.Context
 import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,14 +21,13 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServicesAdapt
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.nsd.ResolveFailedException
 import co.netguru.baby.monitor.client.feature.communication.nsd.StartDiscoveryFailedException
-import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_connecting_devices.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ConnectingDevicesFragment : BaseDaggerFragment() {
+class ServiceDiscoveryFragment : BaseDaggerFragment() {
     override val layoutResource = R.layout.fragment_connecting_devices
 
     @Inject
@@ -36,7 +36,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
     private var timeOutDisposable: Disposable? = null
     private var nsdServicesAdapter: NsdServicesAdapter? = null
     private val viewModel by lazy {
-        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
+        ViewModelProviders.of(this, factory)[ServiceDiscoveryViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +48,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
 
     private fun setupAdapter() {
         nsdServicesAdapter =
-            NsdServicesAdapter { nsdServiceInfo -> viewModel.handleNewService(nsdServiceInfo) }
+            NsdServicesAdapter { nsdServiceInfo -> navigateToPairingFragment(nsdServiceInfo) }
         recyclerView.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -57,9 +57,15 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
         }
     }
 
+    private fun navigateToPairingFragment(nsdServiceInfo: NsdServiceInfo) {
+        findNavController().navigate(
+            R.id.serviceDiscoveryToPairing, bundleOf(
+                ADDRESS_BUNDLE_KEY to "ws://${nsdServiceInfo.host.hostAddress}:${nsdServiceInfo.port}"
+            )
+        )
+    }
+
     private fun setupObservers() {
-        viewModel.connectionCompletedState.observe(viewLifecycleOwner,
-            Observer { onConnectionCompleted(it) })
         viewModel.nsdStateLiveData.observe(viewLifecycleOwner, Observer { nsdState ->
             handleNsdState(nsdState)
         })
@@ -128,7 +134,7 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
     private fun goBackToSpecifyDevice() {
         findNavController()
             .navigate(
-                R.id.cancelConnecting, null,
+                R.id.cancelServiceDiscovery, null,
                 NavOptions.Builder()
                     .setPopUpTo(R.id.specifyDevice, true)
                     .build()
@@ -158,17 +164,13 @@ class ConnectingDevicesFragment : BaseDaggerFragment() {
         super.onStop()
     }
 
-    private fun onConnectionCompleted(connectionCompleted: Boolean) {
-        findNavController().navigate(
-            if (connectionCompleted) {
-                R.id.connectingDevicesToAllDone
-            } else {
-                R.id.connectionFailed
-            }
-        )
+    override fun onDestroyView() {
+        super.onDestroyView()
+        nsdServicesAdapter = null
     }
 
     companion object {
         private const val SEARCH_TIME_TILL_FAIL = 2L
+        const val ADDRESS_BUNDLE_KEY = "addressKey"
     }
 }

@@ -11,8 +11,15 @@ import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import kotlinx.android.synthetic.main.fragment_server_settings.*
+import kotlinx.android.synthetic.main.fragment_server_settings.closeIbtn
+import kotlinx.android.synthetic.main.fragment_server_settings.logoutProgressBar
+import kotlinx.android.synthetic.main.fragment_server_settings.rateUsBtn
+import kotlinx.android.synthetic.main.fragment_server_settings.secondPartTv
+import kotlinx.android.synthetic.main.fragment_server_settings.settingsLogoutBtn
+import kotlinx.android.synthetic.main.fragment_server_settings.version
 import javax.inject.Inject
 
 class ServerSettingsFragment : BaseDaggerFragment() {
@@ -42,7 +49,21 @@ class ServerSettingsFragment : BaseDaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupViews()
+        setupObservers()
+    }
 
+    private fun setupObservers() {
+        viewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
+            when (resetState) {
+                is ResetState.InProgress -> setupResetButton(true)
+                is ResetState.Failed -> setupResetButton(false)
+                is ResetState.Completed -> handleAppReset()
+            }
+        })
+    }
+
+    private fun setupViews() {
         sendRecordingsSw.isChecked = viewModel.isUploadEnabled()
 
         rateUsBtn.setOnClickListener {
@@ -58,7 +79,7 @@ class ServerSettingsFragment : BaseDaggerFragment() {
         }
 
         settingsLogoutBtn.setOnClickListener {
-            viewModel.resetApp(requireActivity())
+            viewModel.resetApp()
         }
 
         sendRecordingsSw.setOnCheckedChangeListener { _, isChecked ->
@@ -67,13 +88,20 @@ class ServerSettingsFragment : BaseDaggerFragment() {
 
         version.text =
             getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+    }
 
-        viewModel.resetInProgress.observe(viewLifecycleOwner, Observer { resetInProgress ->
-            settingsLogoutBtn.apply {
-                isClickable = !resetInProgress
-                text = if (resetInProgress) "" else resources.getString(R.string.reset_the_app)
-            }
-            logoutProgressBar.isVisible = resetInProgress
-        })
+    private fun setupResetButton(resetInProgress: Boolean) {
+        settingsLogoutBtn.apply {
+            isClickable = !resetInProgress
+            text = if (resetInProgress) "" else resources.getString(R.string.reset_the_app)
+        }
+        logoutProgressBar.isVisible = resetInProgress
+    }
+
+    private fun handleAppReset() {
+        requireActivity().startActivity(
+            Intent(activity, OnboardingActivity::class.java)
+        )
+        requireActivity().finish()
     }
 }

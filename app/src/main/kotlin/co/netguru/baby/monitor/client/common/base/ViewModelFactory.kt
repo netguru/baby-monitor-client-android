@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragmentViewModel
+import co.netguru.baby.monitor.client.feature.communication.pairing.PairingViewModel
+import co.netguru.baby.monitor.client.feature.communication.pairing.ServiceDiscoveryViewModel
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorViewModel
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
@@ -72,6 +74,16 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ChildMonitorViewModel::class)
     internal abstract fun bindChildMonitorViewModel(childMonitorViewModel: ChildMonitorViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PairingViewModel::class)
+    internal abstract fun bindPairingViewModel(pairingViewModel: PairingViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ServiceDiscoveryViewModel::class)
+    internal abstract fun bindServiceDiscoveryViewModel(serviceDiscoveryViewModel: ServiceDiscoveryViewModel): ViewModel
 
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

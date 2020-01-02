@@ -10,11 +10,13 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
@@ -34,7 +36,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
+class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
+    YesNoDialog.YesNoDialogClickListener {
 
     override val layoutResource = R.layout.fragment_child_monitor
 
@@ -51,6 +54,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
     internal lateinit var factory: ViewModelProvider.Factory
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var webRtcServiceBinder: WebRtcService.Binder? = null
+    private var webSocketServerServiceBinder: WebSocketServerService.Binder? = null
 
     @Inject
     internal lateinit var lowBatteryReceiver: LowBatteryReceiver
@@ -116,8 +120,10 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         when (service) {
             is WebRtcService.Binder ->
                 handleWebRtcBinder(service)
-            is WebSocketServerService.Binder ->
+            is WebSocketServerService.Binder -> {
+                webSocketServerServiceBinder = service
                 viewModel.handleWebSocketServerBinder(service)
+            }
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
                 machineLearningServiceBinder = service
@@ -174,6 +180,31 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
                     pulsatingView.stop()
             }
         })
+
+        viewModel.pairingCodeLiveData.observe(viewLifecycleOwner, Observer { pairingCode ->
+            if (pairingCode.isNotEmpty()) {
+                showPairingDialog(pairingCode)
+            } else {
+                dismissPairingDialog()
+            }
+        })
+    }
+
+    private fun dismissPairingDialog() {
+        currentPairingDialog()?.dismiss()
+    }
+
+    private fun currentPairingDialog() =
+        childFragmentManager.findFragmentByTag(PAIRING_CODE_DIALOG_TAG) as? DialogFragment
+
+    private fun showPairingDialog(pairingCode: String) {
+        dismissPairingDialog()
+        YesNoDialog.newInstance(
+            R.string.pairing_dialog_title,
+            requireContext().getString(R.string.pairing_dialog_message, pairingCode),
+            R.string.accept,
+            R.string.decline
+        ).show(childFragmentManager, PAIRING_CODE_DIALOG_TAG)
     }
 
     private fun serverViewModelObservers() {
@@ -260,9 +291,18 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
         webRtcServiceBinder.addSurfaceView(surfaceView)
     }
 
+    override fun onYesClick(requestCode: Int, params: Bundle) {
+        webSocketServerServiceBinder?.let { viewModel.approvePairingCode(it) }
+    }
+
+    override fun onDismiss(requestCode: Int) {
+        webSocketServerServiceBinder?.let { viewModel.disapprovePairingCode(it) }
+    }
+
     companion object {
         private const val PERMISSIONS_REQUEST_CODE = 125
         private const val VIDEO_PREVIEW_MAX_TIME = 60
+        private const val PAIRING_CODE_DIALOG_TAG = "PAIRING_DIALOG_TAG"
 
         private val permissions = arrayOf(
             RECORD_AUDIO, CAMERA

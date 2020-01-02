@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.client.configuration
+package co.netguru.baby.monitor.client.feature.communication.pairing
 
 import android.os.Bundle
 import android.view.View
@@ -13,7 +13,7 @@ class ConnectingDevicesFailedFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configurationFailedTryAgainButton.setOnClickListener {
-            findNavController().popBackStack(R.id.connectingDevices, false)
+            findNavController().popBackStack(R.id.serviceDiscovery, false)
         }
     }
 }

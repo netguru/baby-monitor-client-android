@@ -6,8 +6,8 @@ import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient
 import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClientMessageController
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
-import com.google.gson.Gson
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class ClientLiveCameraFragmentViewModel @Inject constructor(
-    private val gson: Gson
+    private val messageParser: MessageParser
 ) : ViewModel() {
 
     private var rtcClient: RtcClient? = null
@@ -40,7 +40,7 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
         callInProgress.set(true)
         rtcClient = RtcClient(
             RtcClientMessageController(
-                gson,
+                messageParser,
                 serverUri,
                 client
             ),

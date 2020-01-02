@@ -1,0 +1,157 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/motionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutDescription="@xml/searching_scene"
+        tools:background="@color/background"
+        >
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesBaseStartGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.064"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesBaseEndGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.936"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesText1TopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.156"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonStartGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="@dimen/back_button_start_guideline"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonEndGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="@dimen/back_button_end_guideline"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonTopGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/back_button_top_guideline"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/backButtonBottomGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="@dimen/back_button_bottom_guideline"
+            />
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/backButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/backButtonBottomGuideline"
+            app:layout_constraintEnd_toEndOf="@+id/backButtonEndGuideline"
+            app:layout_constraintStart_toStartOf="@+id/backButtonStartGuideline"
+            app:layout_constraintTop_toTopOf="@+id/backButtonTopGuideline"
+            app:srcCompat="@drawable/ic_arrow_back"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/connectingTextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_bold"
+            android:text="@string/connecting"
+            android:textColor="@color/accent"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/connectingDevicesText1BottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingDevicesText1TopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesText1BottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.19"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/connectingDevicesText2TopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.202"
+            />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/securityCodeInformation"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:fontFamily="@font/rubik_medium"
+            android:text="@string/security_code_information"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@id/pairingCode"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/connectingDevicesText2TopGl"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pairingCodeTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.486"
+            />
+
+    <TextView
+            android:id="@+id/pairingCode"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_medium"
+            android:gravity="center_horizontal"
+            android:indeterminate="true"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/pairingCodeBottomGl"
+            app:layout_constraintEnd_toEndOf="@+id/connectingDevicesBaseEndGl"
+            app:layout_constraintStart_toStartOf="@+id/connectingDevicesBaseStartGl"
+            app:layout_constraintTop_toTopOf="@+id/pairingCodeTopGl"
+            tools:text="1245"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pairingCodeBottomGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.606"
+            />
+</androidx.constraintlayout.widget.ConstraintLayout>
