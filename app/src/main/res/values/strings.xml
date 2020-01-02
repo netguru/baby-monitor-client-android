@@ -68,7 +68,6 @@
     <string name="dialog_title_choose_source">Choose source</string>
 
     <string name="nsd_service_registration_failed">Device discovery registration failed</string>
-    <string name="discovery_start_failed">Device discovery start failed</string>
 
     <string name="devices_disconnected">Devices disconnected</string>
     <string name="monitoring_enabled">Monitoring enabled</string>
@@ -124,5 +123,7 @@
 
     <string name="security_code_information">Compare the security code and accept on the Baby device</string>
     <string name="pairing_dialog_title">Confirm pairing code</string>
-    <string name="pairing_dialog_message">Someone with %1$s code wants to connect. Do you approve?"</string>
+    <string name="pairing_dialog_message">A device with code %1$s would like to connect.</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>

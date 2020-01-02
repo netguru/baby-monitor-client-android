@@ -2,7 +2,6 @@ package co.netguru.baby.monitor.client.feature.communication.pairing
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.disposables.CompositeDisposable
 import java.net.URI
 import javax.inject.Inject
 import kotlin.random.Random
@@ -13,9 +12,9 @@ class PairingViewModel @Inject constructor(
 ) : ViewModel() {
 
     internal val pairingCompletedState: LiveData<Boolean> = pairingUseCase.pairingCompletedState
-    private val compositeDisposable = CompositeDisposable()
-    val randomPairingCode = List(4) { Random.nextInt(0..9) }
-        .joinToString("")
+    val randomPairingCode =
+        List(NUMBER_OF_DIGITS_PAIRING_CODE) { Random.nextInt(PARING_CODE_DIGITS_RANGE) }
+            .joinToString("")
 
     fun pair(address: URI) {
         pairingUseCase.pair(address, randomPairingCode)
@@ -28,5 +27,10 @@ class PairingViewModel @Inject constructor(
     override fun onCleared() {
         pairingUseCase.dispose()
         super.onCleared()
+    }
+
+    companion object {
+        private const val NUMBER_OF_DIGITS_PAIRING_CODE = 4
+        private val PARING_CODE_DIGITS_RANGE = 0..9
     }
 }

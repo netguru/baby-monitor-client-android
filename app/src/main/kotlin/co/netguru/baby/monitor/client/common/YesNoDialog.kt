@@ -12,6 +12,7 @@ class YesNoDialog : androidx.fragment.app.DialogFragment() {
     private val title by lazy { requireArguments().getInt(KEY_TITLE) }
     private val message by lazy { requireArguments().getString(KEY_MESSAGE) }
     private val positiveButton by lazy { requireArguments().getInt(KEY_POSITIVE) }
+    private val negativeButton by lazy { requireArguments().getInt(KEY_NEGATIVE) }
     private val requestCode by lazy { requireArguments().getInt(KEY_REQUEST_CODE) }
 
     private val yesNoDialogClickListener
@@ -25,7 +26,7 @@ class YesNoDialog : androidx.fragment.app.DialogFragment() {
             .setPositiveButton(positiveButton) { _, _ ->
                 yesNoDialogClickListener.onYesClick(requestCode, requireArguments())
             }
-            .setNegativeButton(R.string.dialog_no) { _, _ ->
+            .setNegativeButton(negativeButton) { _, _ ->
                 yesNoDialogClickListener.onDismiss(requestCode)
             }
             .create()
@@ -44,12 +45,14 @@ class YesNoDialog : androidx.fragment.app.DialogFragment() {
         private const val KEY_TITLE = "key:title"
         private const val KEY_MESSAGE = "key:message"
         private const val KEY_POSITIVE = "key:positive"
+        private const val KEY_NEGATIVE = "key:negative"
         private const val KEY_REQUEST_CODE = "key:request_code"
 
         fun newInstance(
             @StringRes title: Int,
             message: String,
             @StringRes positiveButton: Int = R.string.dialog_yes,
+            @StringRes negativeButton: Int = R.string.dialog_no,
             requestCode: Int = -1,
             params: Bundle? = null
         ) = YesNoDialog().apply {
@@ -57,6 +60,7 @@ class YesNoDialog : androidx.fragment.app.DialogFragment() {
                 KEY_TITLE to title,
                 KEY_MESSAGE to message,
                 KEY_POSITIVE to positiveButton,
+                KEY_NEGATIVE to negativeButton,
                 KEY_REQUEST_CODE to requestCode
             ).also {
                 if (params != null) {

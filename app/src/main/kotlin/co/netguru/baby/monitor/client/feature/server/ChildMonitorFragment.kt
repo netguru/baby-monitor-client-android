@@ -195,13 +195,15 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
     }
 
     private fun currentPairingDialog() =
-        (childFragmentManager.findFragmentByTag(PAIRING_CODE_DIALOG_TAG) as? DialogFragment)
+        childFragmentManager.findFragmentByTag(PAIRING_CODE_DIALOG_TAG) as? DialogFragment
 
     private fun showPairingDialog(pairingCode: String) {
         dismissPairingDialog()
         YesNoDialog.newInstance(
             R.string.pairing_dialog_title,
-            requireContext().getString(R.string.pairing_dialog_message, pairingCode)
+            requireContext().getString(R.string.pairing_dialog_message, pairingCode),
+            R.string.accept,
+            R.string.decline
         ).show(childFragmentManager, PAIRING_CODE_DIALOG_TAG)
     }
 

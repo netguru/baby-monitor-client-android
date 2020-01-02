@@ -28,7 +28,6 @@ class PairingFragment : BaseDaggerFragment() {
         setupObservers()
         setupViews()
         handlePairingCodeArgument()
-
     }
 
     private fun handlePairingCodeArgument() {

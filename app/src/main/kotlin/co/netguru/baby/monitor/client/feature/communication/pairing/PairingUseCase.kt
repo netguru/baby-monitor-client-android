@@ -79,8 +79,11 @@ class PairingUseCase @Inject constructor(
     }
 
     private fun handlePairingResponse(pairingApproved: Boolean, address: URI) {
-        if (pairingApproved) handleNewService(address)
-        else disconnectFromService()
+        if (pairingApproved) {
+            handleNewService(address)
+        } else {
+            disconnectFromService()
+        }
     }
 
     private fun handleNewService(
