@@ -3,11 +3,12 @@ package co.netguru.baby.monitor.client.feature.machinelearning
 import android.app.IntentService
 import android.content.Intent
 import android.os.Binder
-import androidx.annotation.UiThread
 import android.widget.Toast
+import androidx.annotation.UiThread
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
+import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -15,8 +16,8 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import co.netguru.baby.monitor.client.feature.debug.DebugModule
 
 class MachineLearningService : IntentService("MachineLearningService") {
 
@@ -59,6 +60,7 @@ class MachineLearningService : IntentService("MachineLearningService") {
                 onError = Timber::e
             )?.addTo(compositeDisposable)
         aacRecorder?.data
+            ?.throttleLast(DATA_PROCESS_THROTTLE_TIME, TimeUnit.SECONDS)
             ?.subscribeOn(Schedulers.newThread())
             ?.subscribeBy(
                 onNext = this::handleRecordingData,
@@ -136,5 +138,9 @@ class MachineLearningService : IntentService("MachineLearningService") {
             aacRecorder?.release()
             aacRecorder = null
         }
+    }
+
+    companion object {
+        private const val DATA_PROCESS_THROTTLE_TIME = 10L
     }
 }
