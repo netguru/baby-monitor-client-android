@@ -126,4 +126,5 @@
     <string name="pairing_dialog_message">A device with code %1$s would like to connect.</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="unknown_device">Unknown device name</string>
 </resources>
