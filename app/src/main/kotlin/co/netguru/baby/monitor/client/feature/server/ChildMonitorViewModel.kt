@@ -7,7 +7,6 @@ import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnect
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
-import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager.Companion.PUSH_NOTIFICATIONS_KEY
 import dagger.Lazy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -15,7 +14,6 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.java_websocket.WebSocket
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -78,14 +76,12 @@ class ChildMonitorViewModel @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { (ws, message) ->
-                message.action()?.let { (key, value) ->
-                    handleWebSocketAction(ws, key, value)
+                message.pushNotificationsToken?.let {
+                    receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, it)
                 }
-
                 message.babyName?.let { name ->
                     mutableBabyNameStatus.postValue(name)
                 }
-
                 message.pairingCode?.let {
                     mutablePairingCodeLiveData.postValue(it)
                 }
@@ -112,14 +108,6 @@ class ChildMonitorViewModel @Inject constructor(
             )
         )
         mutablePairingCodeLiveData.postValue("")
-    }
-
-    private fun handleWebSocketAction(ws: WebSocket, key: String, value: String) {
-        if (key == PUSH_NOTIFICATIONS_KEY) {
-            receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, value)
-        } else {
-            Timber.w("Unhandled web socket action: '$key', '$value'.")
-        }
     }
 
     override fun onCleared() {

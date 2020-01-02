@@ -7,7 +7,6 @@ import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnect
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
-import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager.Companion.PUSH_NOTIFICATIONS_KEY
 import com.nhaarman.mockitokotlin2.*
 import dagger.Lazy
 import io.reactivex.Completable
@@ -58,30 +57,14 @@ class ChildMonitorViewModelTest {
         ChildMonitorViewModel(lazyReceiveFirebaseTokenUseCase, notifyLowBatteryUseCase)
 
     @Test
-    fun `should send Firebase token on PUSH_NOTIFICATIONS_KEY Websocket action`() {
-        val message: Message = mock {
-            on { action() }.doReturn(PUSH_NOTIFICATIONS_KEY to firebaseToken)
-        }
+    fun `should handle Firebase token`() {
+        val message = Message(pushNotificationsToken = firebaseToken)
         whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
 
         childViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
 
         verify(lazyReceiveFirebaseTokenUseCase).get()
         verify(receiveFirebaseTokenUseCase).receiveToken(deviceAddress, firebaseToken)
-    }
-
-    @Test
-    fun `should not send Firebase token on key that isn't PUSH_NOTIFICATIONS_KEY`() {
-        val notPushNotificationKey = "notPushNotificationKey"
-        val message: Message = mock {
-            on { action() }.doReturn(notPushNotificationKey to firebaseToken)
-        }
-        whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
-
-        childViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
-
-        verifyZeroInteractions(lazyReceiveFirebaseTokenUseCase)
-        verifyZeroInteractions(receiveFirebaseTokenUseCase)
     }
 
     @Test
@@ -130,7 +113,6 @@ class ChildMonitorViewModelTest {
         val name = "babyName"
         val babyNameObserver: Observer<String> = mock()
         val message: Message = mock {
-            on { action() }.doReturn("" to "")
             on { babyName }.doReturn(name)
         }
         whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
