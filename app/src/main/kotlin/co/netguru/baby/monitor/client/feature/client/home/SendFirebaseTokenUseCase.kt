@@ -1,26 +1,21 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
-import co.netguru.baby.monitor.client.feature.communication.webrtc.client.RtcClient.Companion.WEB_SOCKET_ACTION_KEY
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
-import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager.Companion.PUSH_NOTIFICATIONS_KEY
-import com.google.gson.JsonObject
+import com.google.gson.Gson
 import io.reactivex.Completable
 import javax.inject.Inject
 
 class SendFirebaseTokenUseCase @Inject constructor(
-    private val firebaseInstanceManager: FirebaseInstanceManager
+    private val firebaseInstanceManager: FirebaseInstanceManager,
+    private val gson: Gson
 ) {
 
     fun sendFirebaseToken(client: RxWebSocketClient): Completable =
         firebaseInstanceManager.getFirebaseToken()
             .flatMapCompletable { token ->
-                JsonObject()
-                    .apply {
-                        addProperty(WEB_SOCKET_ACTION_KEY, PUSH_NOTIFICATIONS_KEY)
-                        addProperty("value", token)
-                    }
-                    .toString()
+                gson.toJson(Message(pushNotificationsToken = token))
                     .let(client::send)
             }
 }
