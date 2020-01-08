@@ -20,7 +20,6 @@ class SendBabyNameUseCaseTest {
     private val dataRepository: DataRepository = mock {
         on { getChildData() }.doReturn(Maybe.just(childDataEntity))
     }
-    private val message = "message"
     private val rxWebSocketClient: RxWebSocketClient = mock {
         on { send(any()) }.doReturn(Completable.complete())
     }

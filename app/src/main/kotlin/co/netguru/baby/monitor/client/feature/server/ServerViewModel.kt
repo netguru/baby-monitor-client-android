@@ -11,7 +11,6 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManage
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
-import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import dagger.Lazy
 import io.reactivex.Observable
@@ -31,7 +30,7 @@ class ServerViewModel @Inject constructor(
     private val dataRepository: DataRepository,
     private val receiveFirebaseTokenUseCase: Lazy<ReceiveFirebaseTokenUseCase>,
     private val schedulersProvider: ISchedulersProvider
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val mutableShouldDrawerBeOpen = MutableLiveData<Boolean>()
     internal val shouldDrawerBeOpen: LiveData<Boolean> = mutableShouldDrawerBeOpen
@@ -58,7 +57,7 @@ class ServerViewModel @Inject constructor(
     private val mutablePairingCodeLiveData = MutableLiveData<String>()
     internal val pairingCodeLiveData: LiveData<String> = mutablePairingCodeLiveData
 
-    internal val resetAction = SingleLiveEvent<Unit>()
+    internal val webSocketAction = SingleLiveEvent<String>()
 
     internal val previewingVideo = Transformations.map(cameraState) { it.previewEnabled }
         .distinctUntilChanged()
@@ -134,10 +133,7 @@ class ServerViewModel @Inject constructor(
     }
 
     private fun handleMessageAction(action: String) {
-        when (action) {
-            RESET_ACTION -> resetAction.postValue(Unit)
-            else -> Timber.d("Action not handled: $action")
-        }
+        webSocketAction.postValue(action)
     }
 
     fun approvePairingCode(binder: WebSocketServerService.Binder) {

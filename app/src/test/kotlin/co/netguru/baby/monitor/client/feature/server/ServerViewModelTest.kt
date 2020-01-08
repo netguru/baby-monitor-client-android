@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManage
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel.Companion.VIDEO_PREVIEW_TOTAL_TIME
 import com.nhaarman.mockitokotlin2.*
@@ -251,5 +252,19 @@ class ServerViewModelTest {
         serverViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
 
         verify(babyNameObserver).onChanged(name)
+    }
+
+    @Test
+    fun `should notify observers about web socket reset action`() {
+        val resetActionObserver: Observer<String> = mock()
+        val message: Message = mock {
+            on { action }.doReturn(RESET_ACTION)
+        }
+        whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
+        serverViewModel.webSocketAction.observeForever(resetActionObserver)
+
+        serverViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
+
+        verify(resetActionObserver).onChanged(RESET_ACTION)
     }
 }

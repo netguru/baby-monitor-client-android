@@ -55,7 +55,19 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
     }
 
     private fun setupObservers() {
-        resetObservers()
+        configurationViewModel.resetState.observe(this, Observer { resetState ->
+            when (resetState) {
+                is ResetState.Completed -> handleAppReset()
+            }
+        })
+
+        serverViewModel.webSocketAction.observe(this, Observer {
+            if (it == Message.RESET_ACTION) {
+                configurationViewModel.resetApp()
+            } else {
+                Timber.d("Action not handled: $it")
+            }
+        })
 
         serverViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
             if (shouldClose) {
@@ -63,18 +75,6 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
             } else {
                 server_drawer.closeDrawer(GravityCompat.END)
             }
-        })
-    }
-
-    private fun resetObservers() {
-        configurationViewModel.resetState.observe(this, Observer { resetState ->
-            when (resetState) {
-                is ResetState.Completed -> handleAppReset()
-            }
-        })
-
-        serverViewModel.resetAction.observe(this, Observer {
-            configurationViewModel.resetApp()
         })
     }
 

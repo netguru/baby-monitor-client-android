@@ -80,9 +80,10 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         })
 
         homeViewModel.webSocketAction.observe(this, Observer {
-            when (it) {
-                Message.RESET_ACTION -> configurationViewModel.resetApp()
-                else -> Timber.d("Action not handled: $it")
+            if (it == Message.RESET_ACTION) {
+                configurationViewModel.resetApp()
+            } else {
+                Timber.d("Action not handled: $it")
             }
         })
 
