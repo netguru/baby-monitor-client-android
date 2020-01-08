@@ -16,6 +16,4 @@ class MessageParser @Inject constructor(
             null
         }
     }
-
-    fun getMessageJson(message: Message): String = message.let(gson::toJson)
 }

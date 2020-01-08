@@ -2,27 +2,38 @@ package co.netguru.baby.monitor.client.feature.server
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.data.server.CameraState
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel.Companion.VIDEO_PREVIEW_TOTAL_TIME
 import com.nhaarman.mockitokotlin2.*
+import dagger.Lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
+import org.java_websocket.WebSocket
 import org.junit.Rule
 import org.junit.Test
+import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
 class ServerViewModelTest {
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val schedulersRule = RxSchedulersOverrideRule()
 
     private val timerTestScheduler = TestScheduler()
     private val nsdServiceManager: NsdServiceManager = mock()
@@ -32,8 +43,41 @@ class ServerViewModelTest {
         on { mainThread() } doReturn Schedulers.trampoline()
         on { computation() } doReturn timerTestScheduler
     }
+    private val deviceAddress = "deviceAddress"
+    private val firebaseToken = "firebaseToken"
+    private val receiveFirebaseTokenUseCase: ReceiveFirebaseTokenUseCase = mock {
+        on { receiveToken(deviceAddress, firebaseToken) }.doReturn(Completable.complete())
+    }
+    private val lazyReceiveFirebaseTokenUseCase: Lazy<ReceiveFirebaseTokenUseCase> = mock {
+        on { get() }.doReturn(receiveFirebaseTokenUseCase)
+    }
+
+    private val websocket: WebSocket = mock {
+        val inetSocketAddress: InetSocketAddress = mock {
+            val inetAddress: InetAddress = mock {
+                on { hostAddress }.doReturn(deviceAddress)
+            }
+            on { address }.doReturn(inetAddress)
+        }
+        on { remoteSocketAddress }.doReturn(inetSocketAddress)
+    }
+
+    private val webSocketServiceBinder: WebSocketServerService.Binder = mock {
+        on { clientConnectionStatus() }.doReturn(
+            Observable.just(
+                ClientConnectionStatus.CLIENT_CONNECTED
+            )
+        )
+        on { messages() }.doReturn(Observable.just(websocket to mock()))
+    }
+
     private val serverViewModel =
-        ServerViewModel(nsdServiceManager, dataRepository, schedulersProvider)
+        ServerViewModel(
+            nsdServiceManager,
+            dataRepository,
+            lazyReceiveFirebaseTokenUseCase,
+            schedulersProvider
+        )
 
     @Test
     fun `should disable preview after VIDEO_PREVIEW_TOTAL_TIME`() {
@@ -156,5 +200,56 @@ class ServerViewModelTest {
 
         assert(serverViewModel.shouldDrawerBeOpen.value == false)
         verify(drawerStateObserver).onChanged(false)
+    }
+
+    @Test
+    fun `should handle Firebase token`() {
+        val message = Message(pushNotificationsToken = firebaseToken)
+        whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
+
+        serverViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
+
+        verify(lazyReceiveFirebaseTokenUseCase).get()
+        verify(receiveFirebaseTokenUseCase).receiveToken(deviceAddress, firebaseToken)
+    }
+
+    @Test
+    fun `should update pulsating view state on connnection status`() {
+        val clientConnectionStatusObserver: Observer<ClientConnectionStatus> = mock()
+        serverViewModel.pulsatingViewStatus.observeForever(clientConnectionStatusObserver)
+        whenever(webSocketServiceBinder.clientConnectionStatus()).doReturn(
+            Observable.just(
+                ClientConnectionStatus.CLIENT_CONNECTED
+            )
+        )
+
+        serverViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
+
+        verify(clientConnectionStatusObserver).onChanged(ClientConnectionStatus.CLIENT_CONNECTED)
+
+        whenever(webSocketServiceBinder.clientConnectionStatus()).doReturn(
+            Observable.just(
+                ClientConnectionStatus.EMPTY
+            )
+        )
+
+        serverViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
+
+        verify(clientConnectionStatusObserver).onChanged(ClientConnectionStatus.EMPTY)
+    }
+
+    @Test
+    fun `should update baby name status on binder messages`() {
+        val name = "babyName"
+        val babyNameObserver: Observer<String> = mock()
+        val message: Message = mock {
+            on { babyName }.doReturn(name)
+        }
+        whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
+        serverViewModel.babyNameStatus.observeForever(babyNameObserver)
+
+        serverViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
+
+        verify(babyNameObserver).onChanged(name)
     }
 }

@@ -83,7 +83,7 @@ class RtcClientMessageController(
     }
 
     private fun sendMessage(message: Message) {
-        compositeDisposable += rxWebSocketClient.send(messageParser.getMessageJson(message))
+        compositeDisposable += rxWebSocketClient.send(message)
             .subscribeBy(
                 onComplete = { Timber.i("message sent: $message") },
                 onError = { Timber.e(it) })

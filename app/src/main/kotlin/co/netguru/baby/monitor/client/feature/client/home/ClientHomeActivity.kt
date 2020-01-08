@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.client.home
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
@@ -11,8 +12,13 @@ import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
+import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
+import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
+import co.netguru.baby.monitor.client.feature.settings.ResetState
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -32,32 +38,70 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
     }
 
+    private val configurationViewModel by lazy {
+        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_home)
 
         setupView()
-        getData()
-        initWebSocketConnection()
-        checkInternetConnection()
+        setupObservers()
+
+        homeViewModel.fetchLogData()
+        homeViewModel.checkInternetConnection()
     }
 
-    private fun checkInternetConnection() {
-        homeViewModel.checkInternetConnection()
+    private fun setupObservers() {
+        homeViewModel.selectedChild.observeNonNull(this) { child ->
+            Timber.i("Opening socket to ${child.address}.")
+            homeViewModel.openSocketConnection(URI.create(child.address))
+        }
+
         homeViewModel.internetConnectionAvailability.observe(this, Observer { isConnected ->
             if (!isConnected) showNoInternetSnackbar()
         })
+
+        homeViewModel.selectedChild.observeNonNull(this) { child ->
+            handleSelectedChild(child)
+        }
+        homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
+
+        homeViewModel.backButtonState.observe(
+            this,
+            Observer {
+                backIbtn.setVisible(it?.shouldBeVisible == true)
+                setBackButtonClick(it?.shouldShowSnoozeDialog == true)
+            })
+
+        homeViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
+            handleDrawerEvent(shouldClose)
+        })
+
+        homeViewModel.webSocketAction.observe(this, Observer {
+            when (it) {
+                Message.RESET_ACTION -> configurationViewModel.resetApp()
+                else -> Timber.d("Action not handled: $it")
+            }
+        })
+
+        configurationViewModel.resetState.observe(this, Observer { resetState ->
+            when (resetState) {
+                is ResetState.Completed -> handleAppReset()
+            }
+        })
+    }
+
+    private fun handleAppReset() {
+        startActivity(
+            Intent(this, OnboardingActivity::class.java)
+        )
+        finish()
     }
 
     override fun onSupportNavigateUp() =
         findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
-
-    private fun initWebSocketConnection() {
-        homeViewModel.selectedChild.observeNonNull(this, { child ->
-            Timber.i("Opening socket to ${child.address}.")
-            homeViewModel.openSocketConnection(URI.create(child.address))
-        })
-    }
 
     private fun setupView() {
         toolbarSettingsIbtn.setOnClickListener {
@@ -66,33 +110,24 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         toolbarBackBtn.setOnClickListener {
             findNavController(R.id.clientDashboardNavigationHostFragment).navigateUp()
         }
+        client_drawer.isDrawerOpen(GravityCompat.END)
     }
 
-    private fun getData() {
-        homeViewModel.fetchLogData()
-        homeViewModel.selectedChild.observeNonNull(this, { child ->
-            setSelectedChildName(child.name ?: "")
-            GlideApp.with(this)
-                .load(child.image)
-                .placeholder(R.drawable.child)
-                .apply(RequestOptions.circleCropTransform())
-                .into(toolbarChildMiniatureIv)
-        })
-        homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
-        homeViewModel.backButtonState.observe(
-            this,
-            Observer {
-                backIbtn.setVisible(it?.shouldBeVisible == true)
-                setBackButtonClick(it?.shouldShowSnoozeDialog == true)
-            })
-        homeViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
-            if (shouldClose == true) {
-                client_drawer.openDrawer(GravityCompat.END)
-            } else {
-                client_drawer.closeDrawer(GravityCompat.END)
-            }
-        })
-        client_drawer.isDrawerOpen(GravityCompat.END)
+    private fun handleSelectedChild(child: ChildDataEntity) {
+        setSelectedChildName(child.name ?: "")
+        GlideApp.with(this)
+            .load(child.image)
+            .placeholder(R.drawable.child)
+            .apply(RequestOptions.circleCropTransform())
+            .into(toolbarChildMiniatureIv)
+    }
+
+    private fun handleDrawerEvent(shouldClose: Boolean?) {
+        if (shouldClose == true) {
+            client_drawer.openDrawer(GravityCompat.END)
+        } else {
+            client_drawer.closeDrawer(GravityCompat.END)
+        }
     }
 
     private fun showNoInternetSnackbar() {

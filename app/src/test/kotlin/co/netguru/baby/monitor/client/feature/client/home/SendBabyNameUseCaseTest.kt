@@ -3,9 +3,7 @@ package co.netguru.baby.monitor.client.feature.client.home
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
-import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
-import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -23,13 +21,10 @@ class SendBabyNameUseCaseTest {
         on { getChildData() }.doReturn(Maybe.just(childDataEntity))
     }
     private val message = "message"
-    private val gson: Gson = mock {
-        on { toJson(any<Message>()) }.doReturn(message)
-    }
     private val rxWebSocketClient: RxWebSocketClient = mock {
         on { send(any()) }.doReturn(Completable.complete())
     }
-    private val sendBabyNameUseCase = SendBabyNameUseCase(dataRepository, gson)
+    private val sendBabyNameUseCase = SendBabyNameUseCase(dataRepository)
 
     @Test
     fun `should send baby name message`() {
@@ -38,10 +33,9 @@ class SendBabyNameUseCaseTest {
             .test()
             .assertComplete()
 
-        verify(gson).toJson(check<Message> {
+        verify(dataRepository).getChildData()
+        verify(rxWebSocketClient).send(check {
             assertEquals(childDataEntity.name, it.babyName)
         })
-        verify(dataRepository).getChildData()
-        verify(rxWebSocketClient).send(message)
     }
 }

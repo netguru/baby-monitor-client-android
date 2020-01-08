@@ -14,7 +14,6 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
 import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import kotlinx.android.synthetic.main.fragment_client_settings.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
@@ -26,9 +25,9 @@ class ClientSettingsFragment : BaseDaggerFragment() {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
 
-    private val viewModel by lazy {
+    private val configurationViewModel by lazy {
         ViewModelProviders.of(
-            this,
+            requireActivity(),
             factory
         )[ConfigurationViewModel::class.java]
     }
@@ -52,8 +51,8 @@ class ClientSettingsFragment : BaseDaggerFragment() {
             settingsViewModel.openMarket(requireActivity())
         }
 
-        settingsLogoutBtn.setOnClickListener {
-            viewModel.resetApp()
+        resetAppBtn.setOnClickListener {
+            configurationViewModel.resetApp(clientViewModel)
         }
 
         secondPartTv.setOnClickListener {
@@ -104,28 +103,20 @@ class ClientSettingsFragment : BaseDaggerFragment() {
                 )
             }
         }
-        viewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
+        configurationViewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
             when (resetState) {
                 is ResetState.InProgress -> setupResetButton(true)
                 is ResetState.Failed -> setupResetButton(false)
-                is ResetState.Completed -> handleAppReset()
             }
         })
     }
 
     private fun setupResetButton(resetInProgress: Boolean) {
-        settingsLogoutBtn.apply {
+        resetAppBtn.apply {
             isClickable = !resetInProgress
-            text = if (resetInProgress) "" else resources.getString(R.string.reset_the_app)
+            text = if (resetInProgress) "" else resources.getString(R.string.reset)
         }
-        logoutProgressBar.isVisible = resetInProgress
-    }
-
-    private fun handleAppReset() {
-        requireActivity().startActivity(
-            Intent(activity, OnboardingActivity::class.java)
-        )
-        requireActivity().finish()
+        resetProgressBar.isVisible = resetInProgress
     }
 
     private fun getPictureWithEasyPicker() {

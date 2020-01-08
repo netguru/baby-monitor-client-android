@@ -27,7 +27,6 @@ import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
-import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
@@ -36,15 +35,14 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
-    YesNoDialog.YesNoDialogClickListener {
+class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
 
     override val layoutResource = R.layout.fragment_child_monitor
 
     private val serverViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
     }
-    private val viewModel by lazy {
+    private val childMonitorViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory).get(ChildMonitorViewModel::class.java)
     }
 
@@ -54,7 +52,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
     internal lateinit var factory: ViewModelProvider.Factory
     private var machineLearningServiceBinder: MachineLearningBinder? = null
     private var webRtcServiceBinder: WebRtcService.Binder? = null
-    private var webSocketServerServiceBinder: WebSocketServerService.Binder? = null
 
     @Inject
     internal lateinit var lowBatteryReceiver: LowBatteryReceiver
@@ -120,10 +117,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
         when (service) {
             is WebRtcService.Binder ->
                 handleWebRtcBinder(service)
-            is WebSocketServerService.Binder -> {
-                webSocketServerServiceBinder = service
-                viewModel.handleWebSocketServerBinder(service)
-            }
             is MachineLearningBinder -> {
                 Timber.i("MachineLearningService service connected")
                 machineLearningServiceBinder = service
@@ -132,7 +125,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
     }
 
     fun handleLowBattery() {
-        viewModel.notifyLowBattery(
+        childMonitorViewModel.notifyLowBattery(
             title = getString(R.string.notification_low_battery_title),
             text = getString(R.string.notification_low_battery_text)
         )
@@ -140,7 +133,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
 
     private fun setupView() {
         nightModeToggleBtn.setOnClickListener {
-            viewModel.switchNightMode()
+            childMonitorViewModel.switchNightMode()
         }
         settingsIbtn.setOnClickListener {
             serverViewModel.toggleDrawer(true)
@@ -158,35 +151,8 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
     }
 
     private fun childMonitorObservables() {
-        viewModel.babyNameStatus.observeNonNull(viewLifecycleOwner) { name ->
-            babyName.text = name
-            babyName.visibility =
-                if (name.isBlank()) {
-                    View.GONE
-                } else {
-                    View.VISIBLE
-                }
-        }
-        viewModel.nightModeStatus.observe(viewLifecycleOwner, Observer { isNightModeEnabled ->
+        childMonitorViewModel.nightModeStatus.observe(viewLifecycleOwner, Observer { isNightModeEnabled ->
             nightModeGroup.isVisible = isNightModeEnabled
-        })
-
-        viewModel.pulsatingViewStatus.observe(viewLifecycleOwner, Observer { status ->
-            Timber.d("Client status: $status.")
-            when (status) {
-                ClientConnectionStatus.CLIENT_CONNECTED ->
-                    pulsatingView.start()
-                ClientConnectionStatus.EMPTY ->
-                    pulsatingView.stop()
-            }
-        })
-
-        viewModel.pairingCodeLiveData.observe(viewLifecycleOwner, Observer { pairingCode ->
-            if (pairingCode.isNotEmpty()) {
-                showPairingDialog(pairingCode)
-            } else {
-                dismissPairingDialog()
-            }
         })
     }
 
@@ -208,6 +174,15 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
     }
 
     private fun serverViewModelObservers() {
+        serverViewModel.babyNameStatus.observeNonNull(viewLifecycleOwner) { name ->
+            babyName.text = name
+            babyName.visibility =
+                if (name.isBlank()) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+        }
         serverViewModel.previewingVideo.observeNonNull(viewLifecycleOwner) { previewing ->
             if (previewing) {
                 showVideoPreview()
@@ -215,6 +190,7 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
                 hideVideoPreview()
             }
         }
+
         serverViewModel.timer.observe(viewLifecycleOwner, Observer { secondsLeft ->
             timer.text = if (secondsLeft != null && secondsLeft < VIDEO_PREVIEW_MAX_TIME) {
                 getString(
@@ -240,6 +216,24 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
                         cameraState.streamingEnabled
             )
         })
+        serverViewModel.pulsatingViewStatus.observe(viewLifecycleOwner, Observer { status ->
+            Timber.d("Client status: $status.")
+            when (status) {
+                ClientConnectionStatus.CLIENT_CONNECTED ->
+                    pulsatingView.start()
+                ClientConnectionStatus.EMPTY ->
+                    pulsatingView.stop()
+            }
+        })
+
+        serverViewModel.pairingCodeLiveData.observe(viewLifecycleOwner, Observer { pairingCode ->
+            if (pairingCode.isNotEmpty()) {
+                showPairingDialog(pairingCode)
+            } else {
+                dismissPairingDialog()
+            }
+        })
+
     }
 
     private fun showVideoPreview() {
@@ -276,11 +270,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
                 this@ChildMonitorFragment,
                 Service.BIND_AUTO_CREATE
             )
-            bindService(
-                Intent(this, WebSocketServerService::class.java),
-                this@ChildMonitorFragment,
-                Service.BIND_AUTO_CREATE
-            )
         }
     }
 
@@ -289,14 +278,6 @@ class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection,
         this.webRtcServiceBinder = webRtcServiceBinder
         serverViewModel.toggleVideoPreview(true)
         webRtcServiceBinder.addSurfaceView(surfaceView)
-    }
-
-    override fun onYesClick(requestCode: Int, params: Bundle) {
-        webSocketServerServiceBinder?.let { viewModel.approvePairingCode(it) }
-    }
-
-    override fun onDismiss(requestCode: Int) {
-        webSocketServerServiceBinder?.let { viewModel.disapprovePairingCode(it) }
     }
 
     companion object {
