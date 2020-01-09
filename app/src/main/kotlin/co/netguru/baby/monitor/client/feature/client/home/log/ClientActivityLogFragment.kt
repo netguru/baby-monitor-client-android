@@ -5,17 +5,19 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.CLIENT_ACTIVITY_LOG
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import kotlinx.android.synthetic.main.fragment_client_activity_log.*
 import javax.inject.Inject
 
-class ClientActivityLogFragment : BaseDaggerFragment() {
+class ClientActivityLogFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_client_activity_log
+    override val screenName: String = CLIENT_ACTIVITY_LOG
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

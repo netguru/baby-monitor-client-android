@@ -5,10 +5,12 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.CONNECTION_FAILED
 import kotlinx.android.synthetic.main.fragment_failed_devices_connecting.*
 
 class ConnectingDevicesFailedFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_failed_devices_connecting
+    override val screenName: String = CONNECTION_FAILED
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,9 +1,13 @@
 package co.netguru.baby.monitor.client.feature.server
 
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.ENABLED_PARAM
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.NIGHT_MODE_EVENT
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
@@ -19,7 +23,8 @@ import javax.inject.Inject
 
 class ChildMonitorViewModel @Inject constructor(
     private val receiveFirebaseTokenUseCase: Lazy<ReceiveFirebaseTokenUseCase>,
-    private val notifyLowBatteryUseCase: NotifyLowBatteryUseCase
+    private val notifyLowBatteryUseCase: NotifyLowBatteryUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
@@ -90,6 +95,7 @@ class ChildMonitorViewModel @Inject constructor(
 
     fun switchNightMode() {
         val currentStatus = mutableNightModeStatus.value == true
+        analyticsManager.logEvent(NIGHT_MODE_EVENT, bundleOf(ENABLED_PARAM to !currentStatus))
         mutableNightModeStatus.postValue(!currentStatus)
     }
 

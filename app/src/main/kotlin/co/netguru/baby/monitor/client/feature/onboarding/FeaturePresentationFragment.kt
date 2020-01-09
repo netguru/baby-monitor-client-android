@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.onboarding
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.core.text.HtmlCompat
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -10,13 +9,20 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.ONBOARDING
 import kotlinx.android.synthetic.main.onboarding_buttons.*
 
-class FeaturePresentationFragment : Fragment() {
+class FeaturePresentationFragment : BaseFragment() {
 
-    private var layoutResource = R.layout.fragment_feature_a
+    override var layoutResource = R.layout.fragment_feature_a
+    override val screenName: String = ONBOARDING
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         layoutResource = when (arguments?.getString(FEATURE_KEY)) {
             FEATURE_B -> R.layout.fragment_feature_b
             FEATURE_C -> R.layout.fragment_feature_c
@@ -38,7 +44,7 @@ class FeaturePresentationFragment : Fragment() {
             handleNextClicked()
         }
         featureSkipBtn.setOnClickListener {
-            findNavController().navigate(R.id.featureToInfoAboutDevices)
+            findNavController().navigate(R.id.onboardingToInfoAboutDevices)
         }
     }
 
@@ -52,12 +58,12 @@ class FeaturePresentationFragment : Fragment() {
             putString(FEATURE_KEY, nextFeature)
         }
         findNavController().navigate(
-                if (nextFeature.isEmpty()) {
-                    R.id.featureToInfoAboutDevices
-                } else {
-                    R.id.featureToFeature
-                },
-                bundle
+            if (nextFeature.isEmpty()) {
+                R.id.onboardingToInfoAboutDevices
+            } else {
+                R.id.featureToFeature
+            },
+            bundle
         )
     }
 

@@ -8,13 +8,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.PAIRING
 import kotlinx.android.synthetic.main.fragment_pairing.*
 import java.net.URI
 import javax.inject.Inject
 
-class PairingFragment : BaseDaggerFragment() {
+class PairingFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_pairing
+    override val screenName: String = PAIRING
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

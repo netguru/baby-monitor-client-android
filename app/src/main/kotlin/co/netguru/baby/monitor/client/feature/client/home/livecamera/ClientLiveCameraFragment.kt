@@ -5,10 +5,10 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.CLIENT_LIVE_CAMERA
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
@@ -21,8 +21,9 @@ import timber.log.Timber
 import java.net.URI
 import javax.inject.Inject
 
-class ClientLiveCameraFragment : BaseDaggerFragment() {
+class ClientLiveCameraFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_client_live_camera
+    override val screenName: String = CLIENT_LIVE_CAMERA
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

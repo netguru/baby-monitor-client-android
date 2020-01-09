@@ -5,9 +5,11 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.PERMISSION_CAMERA
 
 class PermissionCameraFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_camera_permission
+    override val screenName: String = PERMISSION_CAMERA
 
     override fun onResume() {
         super.onResume()

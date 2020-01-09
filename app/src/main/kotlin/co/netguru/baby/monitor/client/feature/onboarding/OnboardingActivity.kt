@@ -19,7 +19,7 @@ class OnboardingActivity : AppCompatActivity() {
             controller == R.id.setupInformation) {
             findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.connectWiFi, false)
         } else if (controller == R.id.allDone) {
-            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.secondAppInfo, false)
+            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.parentDeviceInfo, false)
         } else {
             super.onBackPressed()
         }

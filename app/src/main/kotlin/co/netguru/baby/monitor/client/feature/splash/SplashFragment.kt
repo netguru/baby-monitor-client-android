@@ -1,14 +1,15 @@
 package co.netguru.baby.monitor.client.feature.splash
 
+import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import android.os.Bundle
-import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.data.splash.AppState
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.SPLASH
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -17,8 +18,9 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class SplashFragment : BaseDaggerFragment() {
+class SplashFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_splash
+    override val screenName: String = SPLASH
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

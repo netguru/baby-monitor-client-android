@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        android:orientation="vertical"
+        >
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/clientActivityLogRv"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:id="@+id/clientActivityLogRv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_log_activity_record"
+            />
 
     <TextView
-        android:id="@+id/clientActivityLogEndTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_normal"
-        android:layout_marginBottom="@dimen/spacing_normal"
-        android:fontFamily="@font/rubik_light"
-        android:gravity="center_horizontal"
-        android:text="@string/end_of_logs_info"
-        android:textColor="@color/accent"
-        android:visibility="gone"
-        android:textSize="@dimen/text_size_small" />
+            android:id="@+id/clientActivityLogEndTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            android:layout_marginBottom="@dimen/spacing_normal"
+            android:fontFamily="@font/rubik_light"
+            android:gravity="center_horizontal"
+            android:text="@string/end_of_logs_info"
+            android:textColor="@color/accent"
+            android:textSize="@dimen/text_size_small"
+            android:visibility="gone"
+            />
 </LinearLayout>

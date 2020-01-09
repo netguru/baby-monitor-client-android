@@ -8,16 +8,18 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.getColor
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.CLIENT_DASHBOARD
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
 import javax.inject.Inject
 
-class ClientDashboardFragment : BaseDaggerFragment() {
+class ClientDashboardFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_client_dashboard
+    override val screenName: String = CLIENT_DASHBOARD
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
