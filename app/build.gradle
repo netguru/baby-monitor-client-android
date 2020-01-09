@@ -7,6 +7,7 @@ apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
 apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 ext {
 
@@ -235,6 +236,7 @@ dependencies {
     //Firebase Analytics
     implementation libs.firebaseAnalytics
     implementation libs.crashlytics
+    implementation libs.firebasePerformance
 
     implementation libs.deviceNames
 
