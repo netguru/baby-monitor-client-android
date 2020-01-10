@@ -24,11 +24,15 @@ class AnalyticsManager(
         const val TYPE_PARAM = "type"
 
         const val NOTIFICATION_SNOOZE_EVENT = "notification_snooze"
+        const val NOTIFICATION_OPEN_CAMERA_EVENT = "notification_open_camera"
 
         const val RESET_APP_EVENT = "reset_app"
 
         const val NIGHT_MODE_EVENT = "night_mode"
         const val ENABLED_PARAM = "is_enabled"
+
+        const val VIDEO_STREAM_CONNECTED = "video_stream_connected"
+        const val VIDEO_STREAM_ERROR = "video_stream_error"
 
         //Screen names
         //General

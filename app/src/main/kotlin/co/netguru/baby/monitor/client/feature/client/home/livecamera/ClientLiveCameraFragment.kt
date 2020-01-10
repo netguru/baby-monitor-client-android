@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -38,15 +39,22 @@ class ClientLiveCameraFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.selectedChildAvailability.observe(
-            viewLifecycleOwner,
-            Observer { it?.let(::onAvailabilityChange) })
         viewModel.setBackButtonState(
             BackButtonState(
                 true,
                 shouldShowSnoozeDialogOnBack()
             )
         )
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.selectedChildAvailability.observe(
+            viewLifecycleOwner,
+            Observer { it?.let(::onAvailabilityChange) })
+        fragmentViewModel.streamState.observe(viewLifecycleOwner, Observer {
+            handleStreamStateChange(it)
+        })
     }
 
     override fun onStart() {
@@ -91,16 +99,14 @@ class ClientLiveCameraFragment : BaseFragment() {
             requireActivity().applicationContext,
             liveCameraRemoteRenderer,
             serverUri,
-            rxWebSocketClient,
-            this@ClientLiveCameraFragment::handleStreamStateChange
+            rxWebSocketClient
         )
     }
 
     private fun handleStreamStateChange(streamState: StreamState) {
         when ((streamState as? ConnectionState)?.connectionState) {
-            RtcConnectionState.Connected -> streamProgressBar.visibility = View.GONE
-            RtcConnectionState.Checking -> streamProgressBar.visibility =
-                View.VISIBLE
+            RtcConnectionState.Connected -> streamProgressBar.isVisible = false
+            RtcConnectionState.Checking -> streamProgressBar.isVisible = true
             RtcConnectionState.Error -> handleBabyDeviceSdpError()
             else -> Unit
         }
