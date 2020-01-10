@@ -98,7 +98,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         startActivity(
             Intent(this, OnboardingActivity::class.java)
         )
-        finish()
+        finishAffinity()
     }
 
     override fun onSupportNavigateUp() =

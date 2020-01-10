@@ -231,9 +231,6 @@
         <action
                 android:id="@+id/pairingToConnectionFailed"
                 app:destination="@+id/connectionFailed"
-                app:launchSingleTop="true"
-                app:popUpTo="@+id/serviceDiscovery"
-                app:popUpToInclusive="true"
                 />
 
         <argument
@@ -247,6 +244,12 @@
             android:name="co.netguru.baby.monitor.client.feature.communication.pairing.ConnectingDevicesFailedFragment"
             android:label="Configuration Failed"
             tools:layout="@layout/fragment_failed_devices_connecting"
+            />
+    <action
+            android:id="@+id/connectionFailedToServiceDiscovery"
+            app:destination="@+id/serviceDiscovery"
+            app:popUpTo="@id/serviceDiscovery"
+            app:popUpToInclusive="true"
             />
 
     <fragment

@@ -184,7 +184,7 @@ class ClientHomeViewModel @Inject constructor(
 
     override fun sendMessage(message: Message) {
         rxWebSocketClient.send(message)
-            .subscribe()
+            .subscribeBy(onError = {Timber.e(it)})
             .addTo(compositeDisposable)
     }
 }

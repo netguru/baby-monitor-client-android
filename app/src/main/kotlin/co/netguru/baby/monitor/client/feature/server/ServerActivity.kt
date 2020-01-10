@@ -31,16 +31,10 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
     private var webSocketServerServiceBinder: WebSocketServerService.Binder? = null
 
     private val serverViewModel by lazy {
-        ViewModelProviders.of(
-            this,
-            factory
-        )[ServerViewModel::class.java]
+        ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
     }
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(
-            this,
-            factory
-        )[ConfigurationViewModel::class.java]
+        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +76,7 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
         startActivity(
             Intent(this, OnboardingActivity::class.java)
         )
-        finish()
+        finishAffinity()
     }
 
     override fun onSupportNavigateUp() =

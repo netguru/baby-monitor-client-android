@@ -23,22 +23,13 @@ class ServerSettingsFragment : BaseDaggerFragment() {
     lateinit var factory: ViewModelProvider.Factory
 
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            factory
-        )[ConfigurationViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[ConfigurationViewModel::class.java]
     }
     private val serverViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            factory
-        )[ServerViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
     }
     private val settingsViewModel by lazy {
-        ViewModelProviders.of(
-            this,
-            factory
-        )[SettingsViewModel::class.java]
+        ViewModelProviders.of(this, factory)[SettingsViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

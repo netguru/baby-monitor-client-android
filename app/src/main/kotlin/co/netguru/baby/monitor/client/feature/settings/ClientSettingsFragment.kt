@@ -26,22 +26,13 @@ class ClientSettingsFragment : BaseDaggerFragment() {
     lateinit var factory: ViewModelProvider.Factory
 
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            factory
-        )[ConfigurationViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[ConfigurationViewModel::class.java]
     }
     private val settingsViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            factory
-        )[SettingsViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[SettingsViewModel::class.java]
     }
     private val clientViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            factory
-        )[ClientHomeViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

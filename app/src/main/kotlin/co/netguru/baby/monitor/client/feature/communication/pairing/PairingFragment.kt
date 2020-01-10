@@ -64,7 +64,7 @@ class PairingFragment : BaseDaggerFragment() {
             if (connectionCompleted) {
                 R.id.pairingToAllDone
             } else {
-                R.id.connectionFailed
+                R.id.pairingToConnectionFailed
             }
         )
     }
