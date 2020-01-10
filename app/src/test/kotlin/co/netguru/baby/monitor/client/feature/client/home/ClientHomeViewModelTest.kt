@@ -10,12 +10,16 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase
 import co.netguru.baby.monitor.client.feature.communication.internet.CheckInternetConnectionUseCase
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import junit.framework.TestCase.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.net.URI
@@ -42,6 +46,7 @@ class ClientHomeViewModelTest {
     private val snoozeNotificationUseCase: SnoozeNotificationUseCase = mock()
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase = mock()
     private val restartAppUseCase: RestartAppUseCase = mock()
+    private val messageParser: MessageParser = mock()
 
     private val clientHomeViewModel = ClientHomeViewModel(
         dataRepository,
@@ -50,7 +55,8 @@ class ClientHomeViewModelTest {
         snoozeNotificationUseCase,
         checkInternetConnectionUseCase,
         restartAppUseCase,
-        rxWebSocketClient
+        rxWebSocketClient,
+        messageParser
     )
 
     @Test
@@ -91,6 +97,30 @@ class ClientHomeViewModelTest {
 
         verify(selectedChildAvailabilityObserver).onChanged(false)
         verifyZeroInteractions(sendFirebaseTokenUseCase)
+    }
+
+    @Test
+    fun `should notify observers about web socket reset action`() {
+        val uri: URI = mock()
+        val resetActionObserver: Observer<String> = mock()
+        val resetAction: RxWebSocketClient.Event.Message = mock()
+        whenever(rxWebSocketClient.events(uri)).doReturn(
+            Observable.just<RxWebSocketClient.Event>(
+                resetAction
+            )
+        )
+        whenever(messageParser.parseWebSocketMessage(resetAction)).doReturn(
+            Message(action = RESET_ACTION)
+        )
+        clientHomeViewModel.webSocketAction.observeForever(
+            resetActionObserver
+        )
+
+        clientHomeViewModel.openSocketConnection(uri)
+
+        verify(resetActionObserver).onChanged(check {
+            assertEquals(RESET_ACTION, it)
+        })
     }
 
     @Test

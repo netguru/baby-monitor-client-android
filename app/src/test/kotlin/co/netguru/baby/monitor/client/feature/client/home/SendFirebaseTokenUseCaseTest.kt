@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Single
+import org.junit.Assert
 import org.junit.Test
 
 class SendFirebaseTokenUseCaseTest {
@@ -21,7 +22,7 @@ class SendFirebaseTokenUseCaseTest {
     private val gson: Gson = mock {
         on { toJson(any<Message>()) }.doReturn(token)
     }
-    private val sendFirebaseTokenUseCase = SendFirebaseTokenUseCase(firebaseInstanceManager, gson)
+    private val sendFirebaseTokenUseCase = SendFirebaseTokenUseCase(firebaseInstanceManager)
 
     @Test
     fun sendFirebaseToken() {
@@ -29,6 +30,8 @@ class SendFirebaseTokenUseCaseTest {
             .test()
             .assertComplete()
 
-        verify(rxWebSocketClient).send(argThat { contains(token) })
+        verify(rxWebSocketClient).send(check {
+            Assert.assertTrue(it.pushNotificationsToken?.contains(token) == true)
+        })
     }
 }

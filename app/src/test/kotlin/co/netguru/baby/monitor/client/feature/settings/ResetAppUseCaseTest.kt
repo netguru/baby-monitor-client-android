@@ -4,6 +4,8 @@ import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
+import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
@@ -22,6 +24,7 @@ class ResetAppUseCaseTest {
         on { deleteAllData() }.doReturn(Completable.complete())
         on { getSavedState() }.doReturn(Single.just(AppState.UNDEFINED))
     }
+    private val messageSender = mock<MessageSender>()
     private val resetAppUseCase =
         ResetAppUseCase(notificationHandler, firebaseInstanceManager, dataRepository)
 
@@ -31,6 +34,15 @@ class ResetAppUseCaseTest {
 
         verify(dataRepository).deleteAllData()
         verify(notificationHandler).clearNotifications()
+    }
+
+    @Test
+    fun `should send reset action when messageSender is provided`() {
+        resetAppUseCase.resetApp(messageSender).subscribe()
+
+        verify(messageSender).sendMessage(check {
+            assert(it.action == RESET_ACTION)
+        })
     }
 
     @Test

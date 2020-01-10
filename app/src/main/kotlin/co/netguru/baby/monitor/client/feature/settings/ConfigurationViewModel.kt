@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -20,8 +21,8 @@ class ConfigurationViewModel @Inject constructor(
     private val mutableResetState = MutableLiveData<ResetState>()
     val resetState: LiveData<ResetState> = mutableResetState
 
-    fun resetApp() {
-        resetAppUseCase.resetApp()
+    fun resetApp(messageSender: MessageSender? = null) {
+        resetAppUseCase.resetApp(messageSender)
             .doOnSubscribe { mutableResetState.postValue(ResetState.InProgress) }
             .subscribeOn(Schedulers.io())
             .subscribeBy(

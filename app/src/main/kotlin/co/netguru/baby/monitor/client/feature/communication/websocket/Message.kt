@@ -23,4 +23,8 @@ data class Message(
         @SerializedName("id") val sdpMid: String,
         @SerializedName("label") val sdpMLineIndex: Int
     )
+
+    companion object {
+        const val RESET_ACTION = "reset"
+    }
 }
