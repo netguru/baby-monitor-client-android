@@ -11,7 +11,7 @@
     <string name="splash_by_netguru">by <u>Netguru</u></string>
     <string name="splash_crafted_with">Crafted with</string>
     <string name="rate_us">Rate us</string>
-    <string name="reset_the_app">Reset the app</string>
+    <string name="reset">Reset the connection</string>
     <string name="allow_to_send_recordings">Send anonymized baby voice recordings</string>
     <string name="send_recordings_info">Don\'t worry, your data is safe. We only use\nvoice recordings for app development. What\ndoes it mean?\n\nWith your help, BabyGuard will learn to\nrecognise baby voices more accurately! The\ndata is sent automatically and only over\nWiFi.</string>
 

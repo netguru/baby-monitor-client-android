@@ -15,7 +15,7 @@ class ConnectingDevicesFailedFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configurationFailedTryAgainButton.setOnClickListener {
-            findNavController().popBackStack(R.id.serviceDiscovery, false)
+            findNavController().navigate(R.id.connectionFailedToServiceDiscovery)
         }
     }
 }

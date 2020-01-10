@@ -66,7 +66,7 @@ class PairingFragment : BaseFragment() {
             if (connectionCompleted) {
                 R.id.pairingToAllDone
             } else {
-                R.id.connectionFailed
+                R.id.pairingToConnectionFailed
             }
         )
     }

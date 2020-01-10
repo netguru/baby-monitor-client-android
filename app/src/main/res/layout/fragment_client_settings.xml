@@ -85,30 +85,30 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/settingsLogoutBtn"
+            android:id="@+id/resetAppBtn"
             style="@style/MainButtonStyle"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/button_purple_outline_to_purple_rounded"
             android:enabled="true"
-            android:text="@string/reset_the_app"
-            app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtnGLBottom"
+            android:text="@string/reset"
+            app:layout_constraintBottom_toTopOf="@+id/resetBtnGLBottom"
             app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
             app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
-            app:layout_constraintTop_toBottomOf="@+id/settingsLogoutBtnGLTop"
+            app:layout_constraintTop_toBottomOf="@+id/resetBtnGLTop"
             />
 
     <ProgressBar
-            android:id="@+id/logoutProgressBar"
+            android:id="@+id/resetProgressBar"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:indeterminate="true"
             android:padding="@dimen/spacing_tiny"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/settingsLogoutBtnGLBottom"
+            app:layout_constraintBottom_toTopOf="@+id/resetBtnGLBottom"
             app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
             app:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
-            app:layout_constraintTop_toBottomOf="@+id/settingsLogoutBtnGLTop"
+            app:layout_constraintTop_toBottomOf="@+id/resetBtnGLTop"
             />
 
     <TextView
@@ -260,7 +260,7 @@
             />
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/settingsLogoutBtnGLTop"
+            android:id="@+id/resetBtnGLTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -268,7 +268,7 @@
             />
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/settingsLogoutBtnGLBottom"
+            android:id="@+id/resetBtnGLBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

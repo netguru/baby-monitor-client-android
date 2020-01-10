@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -24,6 +25,7 @@ class ConfigurationViewModelTest {
     private val resetAppUseCase: ResetAppUseCase = mock()
     private val firebaseRepository: FirebaseRepository = mock()
     private val resetStateObserver: Observer<ResetState> = mock()
+    private val messageSender: MessageSender = mock()
 
     private val configurationViewModel = ConfigurationViewModel(
         resetAppUseCase,
@@ -42,6 +44,17 @@ class ConfigurationViewModelTest {
         configurationViewModel.resetApp()
 
         verify(resetAppUseCase).resetApp()
+        verify(resetStateObserver).onChanged(ResetState.InProgress)
+        verify(resetStateObserver).onChanged(ResetState.Completed)
+    }
+
+    @Test
+    fun `should complete app reset with messageSender`() {
+        whenever(resetAppUseCase.resetApp(messageSender)).doReturn(Completable.complete())
+
+        configurationViewModel.resetApp(messageSender)
+
+        verify(resetAppUseCase).resetApp(messageSender)
         verify(resetStateObserver).onChanged(ResetState.InProgress)
         verify(resetStateObserver).onChanged(ResetState.Completed)
     }

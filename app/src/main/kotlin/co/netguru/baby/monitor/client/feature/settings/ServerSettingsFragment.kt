@@ -12,14 +12,9 @@ import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import kotlinx.android.synthetic.main.fragment_server_settings.*
-import kotlinx.android.synthetic.main.fragment_server_settings.closeIbtn
-import kotlinx.android.synthetic.main.fragment_server_settings.logoutProgressBar
-import kotlinx.android.synthetic.main.fragment_server_settings.rateUsBtn
-import kotlinx.android.synthetic.main.fragment_server_settings.secondPartTv
-import kotlinx.android.synthetic.main.fragment_server_settings.settingsLogoutBtn
-import kotlinx.android.synthetic.main.fragment_server_settings.version
 import javax.inject.Inject
 
 class ServerSettingsFragment : BaseFragment() {
@@ -28,23 +23,14 @@ class ServerSettingsFragment : BaseFragment() {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
 
-    private val viewModel by lazy {
-        ViewModelProviders.of(
-            this,
-            factory
-        )[ConfigurationViewModel::class.java]
+    private val configurationViewModel by lazy {
+        ViewModelProviders.of(requireActivity(), factory)[ConfigurationViewModel::class.java]
     }
     private val serverViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            factory
-        )[ServerViewModel::class.java]
+        ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
     }
     private val settingsViewModel by lazy {
-        ViewModelProviders.of(
-            this,
-            factory
-        )[SettingsViewModel::class.java]
+        ViewModelProviders.of(this, factory)[SettingsViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,17 +40,16 @@ class ServerSettingsFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
+        configurationViewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
             when (resetState) {
                 is ResetState.InProgress -> setupResetButton(true)
                 is ResetState.Failed -> setupResetButton(false)
-                is ResetState.Completed -> handleAppReset()
             }
         })
     }
 
     private fun setupViews() {
-        sendRecordingsSw.isChecked = viewModel.isUploadEnabled()
+        sendRecordingsSw.isChecked = configurationViewModel.isUploadEnabled()
 
         rateUsBtn.setOnClickListener {
             settingsViewModel.openMarket(requireActivity())
@@ -78,30 +63,27 @@ class ServerSettingsFragment : BaseFragment() {
             serverViewModel.toggleDrawer(false)
         }
 
-        settingsLogoutBtn.setOnClickListener {
-            viewModel.resetApp()
+        resetAppBtn.setOnClickListener {
+            resetApp()
         }
 
         sendRecordingsSw.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setUploadEnabled(isChecked)
+            configurationViewModel.setUploadEnabled(isChecked)
         }
 
         version.text =
             getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
     }
 
-    private fun setupResetButton(resetInProgress: Boolean) {
-        settingsLogoutBtn.apply {
-            isClickable = !resetInProgress
-            text = if (resetInProgress) "" else resources.getString(R.string.reset_the_app)
-        }
-        logoutProgressBar.isVisible = resetInProgress
+    private fun resetApp() {
+        configurationViewModel.resetApp(requireActivity() as? MessageSender)
     }
 
-    private fun handleAppReset() {
-        requireActivity().startActivity(
-            Intent(activity, OnboardingActivity::class.java)
-        )
-        requireActivity().finish()
+    private fun setupResetButton(resetInProgress: Boolean) {
+        resetAppBtn.apply {
+            isClickable = !resetInProgress
+            text = if (resetInProgress) "" else resources.getString(R.string.reset)
+        }
+        resetProgressBar.isVisible = resetInProgress
     }
 }

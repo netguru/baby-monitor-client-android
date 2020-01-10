@@ -99,7 +99,7 @@ class ServiceDiscoveryFragment : BaseFragment() {
     }
 
     private fun navigateToFailedConnection() {
-        findNavController().navigate(R.id.connectionFailed)
+        findNavController().navigate(R.id.serviceDiscoveryToConnectionFailed)
     }
 
     private fun setupCompleteViews() {

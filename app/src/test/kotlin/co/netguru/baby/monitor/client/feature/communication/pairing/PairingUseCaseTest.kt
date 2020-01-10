@@ -32,9 +32,7 @@ class PairingUseCaseTest {
     private val address = mock<URI>()
     private val message = "message"
     private val pairingCode = "1234"
-    private val messageParser: MessageParser = mock {
-        on { getMessageJson(any()) }.doReturn(message)
-    }
+    private val messageParser: MessageParser = mock()
     private val localDateTimeProvider: LocalDateTimeProvider = mock {
         val localDateTime: LocalDateTime = mock()
         on { now() }.doReturn(localDateTime)
@@ -59,8 +57,7 @@ class PairingUseCaseTest {
 
         pairingUseCase.pair(address, pairingCode)
 
-        verify(rxWebSocketClient).send(any())
-        verify(messageParser).getMessageJson(check {
+        verify(rxWebSocketClient).send(check {
             assertEquals(pairingCode, it.pairingCode)
         })
     }

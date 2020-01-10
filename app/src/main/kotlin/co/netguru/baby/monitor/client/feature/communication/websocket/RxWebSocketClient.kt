@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -11,7 +12,9 @@ import java.net.URI
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class RxWebSocketClient @Inject constructor() {
+class RxWebSocketClient @Inject constructor(
+    private val gson: Gson
+) {
 
     private var client: RxWebSocketClient? = null
 
@@ -40,10 +43,10 @@ class RxWebSocketClient @Inject constructor() {
                 }
             }
 
-    fun send(message: String): Completable =
+    fun send(message: Message): Completable =
         Completable.fromAction {
             checkNotNull(client).run {
-                send(message)
+                send(gson.toJson(message))
             }
         }
 

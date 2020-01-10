@@ -3,19 +3,14 @@ package co.netguru.baby.monitor.client.feature.server
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
-import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
-import co.netguru.baby.monitor.client.feature.communication.websocket.Message
-import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
-import com.nhaarman.mockitokotlin2.*
-import dagger.Lazy
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Completable
-import io.reactivex.Observable
-import org.java_websocket.WebSocket
 import org.junit.Rule
 import org.junit.Test
-import java.net.InetAddress
-import java.net.InetSocketAddress
 
 class ChildMonitorViewModelTest {
 
@@ -25,72 +20,9 @@ class ChildMonitorViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private val deviceAddress = "deviceAddress"
-    private val firebaseToken = "firebaseToken"
-    private val websocket: WebSocket = mock {
-        val inetSocketAddress: InetSocketAddress = mock {
-            val inetAddress: InetAddress = mock {
-                on { hostAddress }.doReturn(deviceAddress)
-            }
-            on { address }.doReturn(inetAddress)
-        }
-        on { remoteSocketAddress }.doReturn(inetSocketAddress)
-    }
-
-    private val receiveFirebaseTokenUseCase: ReceiveFirebaseTokenUseCase = mock {
-        on { receiveToken(deviceAddress, firebaseToken) }.doReturn(Completable.complete())
-    }
-    private val lazyReceiveFirebaseTokenUseCase: Lazy<ReceiveFirebaseTokenUseCase> = mock {
-        on { get() }.doReturn(receiveFirebaseTokenUseCase)
-    }
     private val notifyLowBatteryUseCase: NotifyLowBatteryUseCase = mock()
-    private val webSocketServiceBinder: WebSocketServerService.Binder = mock {
-        on { clientConnectionStatus() }.doReturn(
-            Observable.just(
-                ClientConnectionStatus.CLIENT_CONNECTED
-            )
-        )
-        on { messages() }.doReturn(Observable.just(websocket to mock()))
-    }
-
     private val childViewModel =
-        ChildMonitorViewModel(lazyReceiveFirebaseTokenUseCase, notifyLowBatteryUseCase)
-
-    @Test
-    fun `should handle Firebase token`() {
-        val message = Message(pushNotificationsToken = firebaseToken)
-        whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
-
-        childViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
-
-        verify(lazyReceiveFirebaseTokenUseCase).get()
-        verify(receiveFirebaseTokenUseCase).receiveToken(deviceAddress, firebaseToken)
-    }
-
-    @Test
-    fun `should update pulsating view state on connnection status`() {
-        val clientConnectionStatusObserver: Observer<ClientConnectionStatus> = mock()
-        childViewModel.pulsatingViewStatus.observeForever(clientConnectionStatusObserver)
-        whenever(webSocketServiceBinder.clientConnectionStatus()).doReturn(
-            Observable.just(
-                ClientConnectionStatus.CLIENT_CONNECTED
-            )
-        )
-
-        childViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
-
-        verify(clientConnectionStatusObserver).onChanged(ClientConnectionStatus.CLIENT_CONNECTED)
-
-        whenever(webSocketServiceBinder.clientConnectionStatus()).doReturn(
-            Observable.just(
-                ClientConnectionStatus.EMPTY
-            )
-        )
-
-        childViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
-
-        verify(clientConnectionStatusObserver).onChanged(ClientConnectionStatus.EMPTY)
-    }
+        ChildMonitorViewModel(notifyLowBatteryUseCase)
 
     @Test
     fun `should use notifyLowBatteryUseCase on notifyLowBattery`() {
@@ -106,21 +38,6 @@ class ChildMonitorViewModelTest {
         childViewModel.notifyLowBattery(title, text)
 
         verify(notifyLowBatteryUseCase).notifyLowBattery(title, text)
-    }
-
-    @Test
-    fun `should update baby name status on binder messages`() {
-        val name = "babyName"
-        val babyNameObserver: Observer<String> = mock()
-        val message: Message = mock {
-            on { babyName }.doReturn(name)
-        }
-        whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
-        childViewModel.babyNameStatus.observeForever(babyNameObserver)
-
-        childViewModel.handleWebSocketServerBinder(webSocketServiceBinder)
-
-        verify(babyNameObserver).onChanged(name)
     }
 
     @Test
