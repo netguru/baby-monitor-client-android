@@ -3,8 +3,8 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 import android.os.Bundle
 import androidx.core.app.TaskStackBuilder
 import androidx.navigation.NavDeepLinkBuilder
-import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.TestUtils
+import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import com.nhaarman.mockitokotlin2.mock

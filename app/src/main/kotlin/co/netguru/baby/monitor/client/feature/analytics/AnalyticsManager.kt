@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.analytics
 
 import android.app.Activity
-import android.os.Bundle
 import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
 import timber.log.Timber
@@ -11,21 +10,24 @@ class AnalyticsManager(
 ) {
     fun setCurrentScreen(activity: Activity, screenName: String) {
         firebaseAnalytics.setCurrentScreen(activity, screenName, null)
-        Timber.d("screen $screenName")
+        Timber.d("$SCREEN $screenName")
     }
 
     fun logEvent(eventName: String) {
         firebaseAnalytics.logEvent(eventName, null)
-        Timber.d("event $eventName")
+        Timber.d("$EVENT $eventName")
     }
 
     fun logEventWithParam(eventName: String, pair: Pair<String, Any>) {
         firebaseAnalytics.logEvent(eventName, bundleOf(pair))
-        Timber.d("event $eventName")
+        Timber.d("$EVENT $eventName")
     }
 
     companion object {
-        //Log events
+        private const val EVENT = "event"
+        private const val SCREEN = "screen"
+
+        // Log events
         const val NOTIFICATION_SENT_EVENT = "notification_sent"
         const val TYPE_PARAM = "type"
 
@@ -40,13 +42,13 @@ class AnalyticsManager(
         const val VIDEO_STREAM_CONNECTED = "video_stream_connected"
         const val VIDEO_STREAM_ERROR = "video_stream_error"
 
-        //Screen names
-        //General
+        // Screen names
+        // General
         const val SPLASH = "Splash"
         const val ONBOARDING = "Onboarding"
         const val INFO_ABOUT_DEVICES = "InfoAboutDevices"
         const val SPECIFY_DEVICE = "SpecifyDevice"
-        //Child Device
+        // Child Device
         const val VOICE_RECORDINGS_SETTING = "VoiceRecordingsSetting"
         const val CONNECT_WIFI = "ConnectWifi"
         const val PERMISSION_CAMERA = "PermissionCamera"
@@ -54,7 +56,7 @@ class AnalyticsManager(
         const val PERMISSION_DENIED = "PermissionDenied"
         const val SETUP_INFORMATION = "SetupInformation"
         const val CHILD_MONITOR = "ChildMonitor"
-        //Parent Device
+        // Parent Device
         const val PARENT_DEVICE_INFO = "ParentDeviceInfo"
         const val SERVICE_DISCOVERY = "ServiceDiscovery"
         const val PAIRING = "Pairing"
@@ -63,7 +65,5 @@ class AnalyticsManager(
         const val CLIENT_LIVE_CAMERA = "ClientLiveCamera"
         const val CLIENT_DASHBOARD = "ClientDashboard"
         const val CLIENT_ACTIVITY_LOG = "ClientActivityLog"
-
-
     }
 }

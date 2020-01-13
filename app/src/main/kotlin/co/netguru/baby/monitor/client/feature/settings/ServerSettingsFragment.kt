@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import kotlinx.android.synthetic.main.fragment_server_settings.*

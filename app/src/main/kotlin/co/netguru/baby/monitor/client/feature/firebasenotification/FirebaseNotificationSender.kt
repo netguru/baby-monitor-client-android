@@ -1,6 +1,5 @@
 package co.netguru.baby.monitor.client.feature.firebasenotification
 
-import androidx.core.os.bundleOf
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity

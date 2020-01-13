@@ -9,7 +9,7 @@ import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.INFO_ABOUT_DEVICES
 import kotlinx.android.synthetic.main.fragment_info_about_devices.*
 
-class InfoAboutDevicesFragment: BaseFragment() {
+class InfoAboutDevicesFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_info_about_devices
     override val screenName: String = INFO_ABOUT_DEVICES
 
