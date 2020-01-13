@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/server_nav_graph"
-    app:startDestination="@+id/serverFragment">
+    app:startDestination="@+id/childMonitor">
 
     <fragment
-        android:id="@+id/serverFragment"
+        android:id="@+id/childMonitor"
         android:name="co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment"
         tools:layout="@layout/fragment_child_monitor">
     </fragment>

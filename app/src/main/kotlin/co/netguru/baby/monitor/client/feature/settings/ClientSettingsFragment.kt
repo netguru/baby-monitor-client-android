@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import kotlinx.android.synthetic.main.fragment_client_settings.*
@@ -19,7 +19,7 @@ import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
 import javax.inject.Inject
 
-class ClientSettingsFragment : BaseDaggerFragment() {
+class ClientSettingsFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_client_settings
 
     @Inject

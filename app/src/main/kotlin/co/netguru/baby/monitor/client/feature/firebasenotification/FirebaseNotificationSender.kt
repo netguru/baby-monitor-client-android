@@ -3,6 +3,8 @@ package co.netguru.baby.monitor.client.feature.firebasenotification
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class FirebaseNotificationSender @Inject constructor(
     private val dataRepository: DataRepository,
     private val httpClient: OkHttpClient,
-    private val debugModule: DebugModule
+    private val debugModule: DebugModule,
+    private val analyticsManager: AnalyticsManager
 ) {
     fun broadcastNotificationToFcm(
         title: String,
@@ -33,11 +36,14 @@ class FirebaseNotificationSender @Inject constructor(
             .firstOrError()
             .map { clients -> clients.map(ClientEntity::firebaseKey) }
             .flatMapCompletable { firebaseTokens ->
+                analyticsManager.logEvent(Event.ParamEvent.NotificationSent(notificationType))
                 if (firebaseTokens.isNotEmpty()) {
                     postNotificationToFcm(firebaseTokens, title, text, notificationType)
                         .doOnSuccess { response ->
-                            debugModule.sendNotificationEvent("Notification posted: Title: $title" +
-                                    " text: $text. Response: ${response.body?.string()}.")
+                            debugModule.sendNotificationEvent(
+                                "Notification posted: Title: $title" +
+                                        " text: $text. Response: ${response.body?.string()}."
+                            )
                             Timber.d("Notification posted: $response.")
                         }
                         .ignoreElement()

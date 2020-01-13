@@ -17,12 +17,13 @@ import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.YesNoDialog
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
@@ -35,9 +36,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions")
-class ChildMonitorFragment : BaseDaggerFragment(), ServiceConnection {
+class ChildMonitorFragment : BaseFragment(), ServiceConnection {
 
     override val layoutResource = R.layout.fragment_child_monitor
+    override val screen: Screen = Screen.CHILD_MONITOR
 
     private val serverViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]

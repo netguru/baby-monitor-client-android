@@ -5,10 +5,12 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import kotlinx.android.synthetic.main.fragment_specify_device.*
 
 class SpecifyDeviceFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_specify_device
+    override val screen: Screen = Screen.SPECIFY_DEVICE
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -16,7 +18,7 @@ class SpecifyDeviceFragment : BaseFragment() {
             findNavController().navigate(R.id.specifyDeviceToFeatureD)
         }
         parentCtl.setOnClickListener {
-            findNavController().navigate(R.id.specifyDeviceToSecondAppInfo)
+            findNavController().navigate(R.id.specifyDeviceToParentDeviceInfo)
         }
     }
 }

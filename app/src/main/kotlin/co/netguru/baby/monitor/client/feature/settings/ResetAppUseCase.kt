@@ -3,6 +3,9 @@ package co.netguru.baby.monitor.client.feature.settings
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
@@ -14,10 +17,12 @@ import javax.inject.Inject
 class ResetAppUseCase @Inject constructor(
     private val notificationHandler: NotificationHandler,
     private val firebaseInstanceManager: FirebaseInstanceManager,
-    private val dataRepository: DataRepository
+    private val dataRepository: DataRepository,
+    private val analyticsManager: AnalyticsManager
 ) {
 
     fun resetApp(messageSender: MessageSender? = null): Completable {
+        analyticsManager.logEvent(Event.Simple(EventType.RESET_APP))
         return Completable.merge(
             listOf(
                 Completable.fromAction { messageSender?.sendMessage(Message(action = RESET_ACTION)) },

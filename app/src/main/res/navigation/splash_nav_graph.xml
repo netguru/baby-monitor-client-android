@@ -4,26 +4,26 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/splash_nav_graph"
-        app:startDestination="@+id/splashFragment"
+        app:startDestination="@+id/splash"
         >
 
     <fragment
-            android:id="@+id/splashFragment"
+            android:id="@+id/splash"
             android:name="co.netguru.baby.monitor.client.feature.splash.SplashFragment"
-            android:label="Splash Fragment"
+            android:label="Splash"
             tools:layout="@layout/fragment_splash"
             >
 
         <action
                 android:id="@+id/splashToOnboarding"
-                app:destination="@+id/feature"
+                app:destination="@+id/onboarding"
                 app:popUpTo="@+id/splash_nav_graph"
                 app:popUpToInclusive="true"
                 />
 
         <action
                 android:id="@+id/splashToClientHome"
-                app:destination="@+id/clientHomeActivity"
+                app:destination="@+id/clientHome"
                 app:popUpTo="@+id/splash_nav_graph"
                 app:popUpToInclusive="true"
                 />
@@ -37,17 +37,17 @@
     </fragment>
 
     <fragment
-            android:id="@+id/feature"
+            android:id="@+id/onboarding"
             android:name="co.netguru.baby.monitor.client.feature.onboarding.FeaturePresentationFragment"
-            android:label="Specify Device"
+            android:label="Onboarding"
             tools:layout="@layout/fragment_feature_a"
             >
         <action
                 android:id="@+id/featureToFeature"
-                app:destination="@+id/feature"
+                app:destination="@+id/onboarding"
                 />
         <action
-                android:id="@+id/featureToInfoAboutDevices"
+                android:id="@+id/onboardingToInfoAboutDevices"
                 app:destination="@+id/infoAboutDevices"
                 />
     </fragment>
@@ -55,7 +55,7 @@
     <fragment
             android:id="@+id/infoAboutDevices"
             android:name="co.netguru.baby.monitor.client.feature.onboarding.InfoAboutDevicesFragment"
-            android:label="Specify Device"
+            android:label="Info About Devices"
             tools:layout="@layout/fragment_info_about_devices"
             >
 
@@ -68,25 +68,25 @@
     <fragment
             android:id="@+id/specifyDevice"
             android:name="co.netguru.baby.monitor.client.feature.welcome.SpecifyDeviceFragment"
-            android:label="Welcome Fragment"
+            android:label="Specify Device"
             tools:layout="@layout/fragment_specify_device"
             >
         <action
                 android:id="@+id/specifyDeviceToFeatureD"
-                app:destination="@+id/featureD"
+                app:destination="@+id/voiceRecordingsSetting"
                 />
 
         <action
-                android:id="@+id/specifyDeviceToSecondAppInfo"
-                app:destination="@+id/secondAppInfo"
+                android:id="@+id/specifyDeviceToParentDeviceInfo"
+                app:destination="@+id/parentDeviceInfo"
                 />
     </fragment>
 
     <fragment
-            android:id="@+id/featureD"
-            android:name="co.netguru.baby.monitor.client.feature.onboarding.FeatureDFragment"
-            android:label="Specify Device"
-            tools:layout="@layout/fragment_feature_d"
+            android:id="@+id/voiceRecordingsSetting"
+            android:name="co.netguru.baby.monitor.client.feature.onboarding.VoiceRecordingsSettingsFragment"
+            android:label="Voice Recordings Setting"
+            tools:layout="@layout/fragment_voice_recordings_setting"
             >
 
         <action
@@ -181,10 +181,10 @@
             />
 
     <fragment
-            android:id="@+id/secondAppInfo"
-            android:name="co.netguru.baby.monitor.client.feature.client.configuration.SecondAppInfo"
+            android:id="@+id/parentDeviceInfo"
+            android:name="co.netguru.baby.monitor.client.feature.client.configuration.ParentDeviceInfoFragment"
             android:label="Second App Info"
-            tools:layout="@layout/fragment_second_app_info"
+            tools:layout="@layout/fragment_parent_device_info"
             >
 
         <action
@@ -261,12 +261,12 @@
 
         <action
                 android:id="@+id/allDoneToClientHome"
-                app:destination="@+id/clientHomeActivity"
+                app:destination="@+id/clientHome"
                 />
     </fragment>
 
     <activity
-            android:id="@+id/clientHomeActivity"
+            android:id="@+id/clientHome"
             android:name="co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity"
             android:label="Client Home"
             tools:layout="@layout/activity_client_home"

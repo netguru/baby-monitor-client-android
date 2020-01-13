@@ -1,19 +1,21 @@
 package co.netguru.baby.monitor.client.feature.onboarding.baby
 
 import android.Manifest
-import androidx.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import kotlinx.android.synthetic.main.fragment_connect_wifi.*
 
 class ConnectWifiFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_connect_wifi
+    override val screen: Screen = Screen.CONNECT_WIFI
 
     private val wifiReceiver by lazy { WifiReceiver() }
 

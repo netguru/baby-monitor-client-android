@@ -2,13 +2,14 @@ package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.common.base.BaseDaggerFragment
+import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
@@ -21,8 +22,9 @@ import timber.log.Timber
 import java.net.URI
 import javax.inject.Inject
 
-class ClientLiveCameraFragment : BaseDaggerFragment() {
+class ClientLiveCameraFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_client_live_camera
+    override val screen: Screen = Screen.CLIENT_LIVE_CAMERA
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
@@ -37,15 +39,22 @@ class ClientLiveCameraFragment : BaseDaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.selectedChildAvailability.observe(
-            viewLifecycleOwner,
-            Observer { it?.let(::onAvailabilityChange) })
         viewModel.setBackButtonState(
             BackButtonState(
                 true,
                 shouldShowSnoozeDialogOnBack()
             )
         )
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.selectedChildAvailability.observe(
+            viewLifecycleOwner,
+            Observer { it?.let(::onAvailabilityChange) })
+        fragmentViewModel.streamState.observe(viewLifecycleOwner, Observer {
+            handleStreamStateChange(it)
+        })
     }
 
     override fun onStart() {
@@ -90,16 +99,14 @@ class ClientLiveCameraFragment : BaseDaggerFragment() {
             requireActivity().applicationContext,
             liveCameraRemoteRenderer,
             serverUri,
-            rxWebSocketClient,
-            this@ClientLiveCameraFragment::handleStreamStateChange
+            rxWebSocketClient
         )
     }
 
     private fun handleStreamStateChange(streamState: StreamState) {
         when ((streamState as? ConnectionState)?.connectionState) {
-            RtcConnectionState.Connected -> streamProgressBar.visibility = View.GONE
-            RtcConnectionState.Checking -> streamProgressBar.visibility =
-                View.VISIBLE
+            RtcConnectionState.Connected -> streamProgressBar.isVisible = false
+            RtcConnectionState.Checking -> streamProgressBar.isVisible = true
             RtcConnectionState.Error -> handleBabyDeviceSdpError()
             else -> Unit
         }

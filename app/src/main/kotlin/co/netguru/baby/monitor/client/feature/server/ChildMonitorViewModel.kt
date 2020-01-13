@@ -3,6 +3,8 @@ package co.netguru.baby.monitor.client.feature.server
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -11,7 +13,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ChildMonitorViewModel @Inject constructor(
-    private val notifyLowBatteryUseCase: NotifyLowBatteryUseCase
+    private val notifyLowBatteryUseCase: NotifyLowBatteryUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
@@ -33,6 +36,7 @@ class ChildMonitorViewModel @Inject constructor(
 
     fun switchNightMode() {
         val currentStatus = mutableNightModeStatus.value == true
+        analyticsManager.logEvent(Event.ParamEvent.NightMode(!currentStatus))
         mutableNightModeStatus.postValue(!currentStatus)
     }
 

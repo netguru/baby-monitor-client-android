@@ -5,9 +5,11 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 
 class PermissionMicrophoneFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_microphone_permission
+    override val screen: Screen = Screen.PERMISSION_MICROPHONE
 
     override fun onResume() {
         super.onResume()

@@ -12,11 +12,13 @@ import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.AppDatabase
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.communication.nsd.DeviceNameProvider
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import dagger.Module
@@ -91,6 +93,11 @@ class ApplicationModule {
             context.resources.getString(R.string.notification_baby_is_crying_title),
             context.resources.getString(R.string.notification_baby_is_crying_content)
         )
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsManager(context: Context) =
+        AnalyticsManager(FirebaseAnalytics.getInstance(context))
 
     @Suppress("MagicNumber")
     companion object {

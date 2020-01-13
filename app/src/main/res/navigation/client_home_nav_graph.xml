@@ -30,7 +30,7 @@
         android:id="@+id/clientActivityLog"
         android:name="co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment"
         android:label="Activity Log"
-        tools:layout="@layout/fragment_client_dashboard" />
+        tools:layout="@layout/fragment_client_activity_log" />
 
     <fragment
         android:id="@+id/clientSettings"
