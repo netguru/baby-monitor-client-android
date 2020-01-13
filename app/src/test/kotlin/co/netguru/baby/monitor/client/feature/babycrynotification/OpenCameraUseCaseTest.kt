@@ -6,6 +6,8 @@ import androidx.navigation.NavDeepLinkBuilder
 import co.netguru.baby.monitor.TestUtils
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -36,6 +38,8 @@ class OpenCameraUseCaseTest {
     @Test
     fun `should send openCameraEvent to firebase`() {
         openCameraUseCase.openLiveClientCamera(navDeepLinkBuilder, snoozeDialogArgument)
-        verify(analyticsManager).logEvent(AnalyticsManager.NOTIFICATION_OPEN_CAMERA_EVENT)
+        verify(analyticsManager).logEvent(com.nhaarman.mockitokotlin2.check {
+            assert(it is Event.Simple && it.eventType == EventType.NOTIFICATION_OPEN_CAMERA)
+        })
     }
 }

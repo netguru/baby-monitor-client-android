@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 abstract class BaseFragment : DaggerFragment(), AnalyticScreen {
     abstract val layoutResource: Int
-    override val screenName: String? = null
+    override val screen: Screen? = null
 
     @Inject
     lateinit var analyticsManager: AnalyticsManager
@@ -21,7 +22,7 @@ abstract class BaseFragment : DaggerFragment(), AnalyticScreen {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        screenName?.run {
+        screen?.run {
             analyticsManager.setCurrentScreen(requireActivity(), this)
         }
     }

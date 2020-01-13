@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.CLIENT_LIVE_CAMERA
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 class ClientLiveCameraFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_client_live_camera
-    override val screenName: String = CLIENT_LIVE_CAMERA
+    override val screen: Screen = Screen.CLIENT_LIVE_CAMERA
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

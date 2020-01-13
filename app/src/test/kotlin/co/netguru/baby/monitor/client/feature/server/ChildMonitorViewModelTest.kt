@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
@@ -55,8 +56,6 @@ class ChildMonitorViewModelTest {
     fun `should send nightMode event to firebase`() {
         childViewModel.switchNightMode()
 
-        verify(analyticsManager).logEventWithParam(eq(AnalyticsManager.NIGHT_MODE_EVENT), check {
-            assert(it.first == AnalyticsManager.ENABLED_PARAM)
-        })
+        verify(analyticsManager).logEvent(Event.ParamEvent.NightMode(true))
     }
 }

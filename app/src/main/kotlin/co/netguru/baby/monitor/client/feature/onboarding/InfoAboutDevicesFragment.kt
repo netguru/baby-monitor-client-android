@@ -6,12 +6,12 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.INFO_ABOUT_DEVICES
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import kotlinx.android.synthetic.main.fragment_info_about_devices.*
 
 class InfoAboutDevicesFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_info_about_devices
-    override val screenName: String = INFO_ABOUT_DEVICES
+    override val screen: Screen = Screen.INFO_ABOUT_DEVICES
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

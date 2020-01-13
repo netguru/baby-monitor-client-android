@@ -3,6 +3,8 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import org.junit.Rule
@@ -31,6 +33,8 @@ class SnoozeNotificationUseCaseTest {
     fun `should send snoozeNotification event to firebase`() {
         snoozeNotificationUseCase.snoozeNotifications()
 
-        verify(analyticsManager).logEvent(AnalyticsManager.NOTIFICATION_SNOOZE_EVENT)
+        verify(analyticsManager).logEvent(check {
+            it is Event.Simple && it.eventType == EventType.NOTIFICATION_SNOOZE
+        })
     }
 }

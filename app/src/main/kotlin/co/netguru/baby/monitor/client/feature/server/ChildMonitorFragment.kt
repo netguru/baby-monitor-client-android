@@ -23,7 +23,7 @@ import co.netguru.baby.monitor.client.common.extensions.bindService
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.CHILD_MONITOR
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.batterylevel.LowBatteryReceiver
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
@@ -39,7 +39,7 @@ import javax.inject.Inject
 class ChildMonitorFragment : BaseFragment(), ServiceConnection {
 
     override val layoutResource = R.layout.fragment_child_monitor
-    override val screenName: String = CHILD_MONITOR
+    override val screen: Screen = Screen.CHILD_MONITOR
 
     private val serverViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]

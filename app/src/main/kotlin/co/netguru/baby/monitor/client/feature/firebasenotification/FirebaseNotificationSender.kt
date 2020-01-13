@@ -4,8 +4,7 @@ import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.NOTIFICATION_SENT_EVENT
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.TYPE_PARAM
+import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -37,10 +36,7 @@ class FirebaseNotificationSender @Inject constructor(
             .firstOrError()
             .map { clients -> clients.map(ClientEntity::firebaseKey) }
             .flatMapCompletable { firebaseTokens ->
-                analyticsManager.logEventWithParam(
-                    NOTIFICATION_SENT_EVENT,
-                    TYPE_PARAM to notificationType.name
-                )
+                analyticsManager.logEvent(Event.ParamEvent.NotificationSent(notificationType))
                 if (firebaseTokens.isNotEmpty()) {
                     postNotificationToFcm(firebaseTokens, title, text, notificationType)
                         .doOnSuccess { response ->

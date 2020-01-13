@@ -4,7 +4,8 @@ import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.RESET_APP_EVENT
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
@@ -21,7 +22,7 @@ class ResetAppUseCase @Inject constructor(
 ) {
 
     fun resetApp(messageSender: MessageSender? = null): Completable {
-        analyticsManager.logEvent(RESET_APP_EVENT)
+        analyticsManager.logEvent(Event.Simple(EventType.RESET_APP))
         return Completable.merge(
             listOf(
                 Completable.fromAction { messageSender?.sendMessage(Message(action = RESET_ACTION)) },

@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.data.splash.AppState
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.SPLASH
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 class SplashFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_splash
-    override val screenName: String = SPLASH
+    override val screen: Screen = Screen.SPLASH
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

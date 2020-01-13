@@ -17,7 +17,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.setDivider
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.SERVICE_DISCOVERY
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServicesAdapter
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.nsd.ResolveFailedException
@@ -30,7 +30,7 @@ import javax.inject.Inject
 
 class ServiceDiscoveryFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_connecting_devices
-    override val screenName: String = SERVICE_DISCOVERY
+    override val screen: Screen = Screen.SERVICE_DISCOVERY
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory

@@ -2,7 +2,8 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.NOTIFICATION_SNOOZE_EVENT
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -15,7 +16,7 @@ class SnoozeNotificationUseCase @Inject constructor(
 ) {
 
     fun snoozeNotifications(): Disposable {
-        analyticsManager.logEvent(NOTIFICATION_SNOOZE_EVENT)
+        analyticsManager.logEvent(Event.Simple(EventType.NOTIFICATION_SNOOZE))
         return dataRepository
             .updateChildSnoozeTimestamp(System.currentTimeMillis() + SNOOZE_TIME)
             .subscribeOn(Schedulers.io())

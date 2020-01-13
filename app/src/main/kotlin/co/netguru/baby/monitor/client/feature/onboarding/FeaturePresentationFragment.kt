@@ -10,13 +10,13 @@ import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.ONBOARDING
+import co.netguru.baby.monitor.client.feature.analytics.Screen
 import kotlinx.android.synthetic.main.onboarding_buttons.*
 
 class FeaturePresentationFragment : BaseFragment() {
 
     override var layoutResource = R.layout.fragment_feature_a
-    override val screenName: String = ONBOARDING
+    override val screen: Screen = Screen.ONBOARDING
 
     override fun onCreateView(
         inflater: LayoutInflater,

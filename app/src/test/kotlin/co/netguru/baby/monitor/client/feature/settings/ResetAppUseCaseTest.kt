@@ -5,6 +5,8 @@ import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
@@ -74,6 +76,8 @@ class ResetAppUseCaseTest {
     fun `should send resetApp event to firebase`() {
         resetAppUseCase.resetApp().subscribe()
 
-        verify(analyticsManager).logEvent(AnalyticsManager.RESET_APP_EVENT)
+        verify(analyticsManager).logEvent(check {
+            it is Event.Simple && it.eventType == EventType.RESET_APP
+        })
     }
 }

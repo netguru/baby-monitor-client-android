@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.Event
+import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
@@ -78,8 +80,8 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
 
     private fun handleStreamStateChange(streamState: StreamState) {
         when ((streamState as? ConnectionState)?.connectionState) {
-            RtcConnectionState.Connected -> analyticsManager.logEvent(AnalyticsManager.VIDEO_STREAM_CONNECTED)
-            RtcConnectionState.Error -> analyticsManager.logEvent(AnalyticsManager.VIDEO_STREAM_ERROR)
+            RtcConnectionState.Connected -> analyticsManager.logEvent(Event.Simple(EventType.VIDEO_STREAM_CONNECTED))
+            RtcConnectionState.Error -> analyticsManager.logEvent(Event.Simple(EventType.VIDEO_STREAM_ERROR))
             else -> Unit
         }
         mutableStreamState.postValue(streamState)

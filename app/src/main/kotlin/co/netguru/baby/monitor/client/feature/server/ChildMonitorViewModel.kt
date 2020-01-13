@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.ENABLED_PARAM
-import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager.Companion.NIGHT_MODE_EVENT
+import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -37,7 +36,7 @@ class ChildMonitorViewModel @Inject constructor(
 
     fun switchNightMode() {
         val currentStatus = mutableNightModeStatus.value == true
-        analyticsManager.logEventWithParam(NIGHT_MODE_EVENT, ENABLED_PARAM to !currentStatus)
+        analyticsManager.logEvent(Event.ParamEvent.NightMode(!currentStatus))
         mutableNightModeStatus.postValue(!currentStatus)
     }
 
