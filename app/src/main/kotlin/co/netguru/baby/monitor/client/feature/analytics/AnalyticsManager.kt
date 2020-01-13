@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.analytics
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
 import timber.log.Timber
 
@@ -13,8 +14,13 @@ class AnalyticsManager(
         Timber.d("screen $screenName")
     }
 
-    fun logEvent(eventName: String, params: Bundle? = null) {
-        firebaseAnalytics.logEvent(eventName, params)
+    fun logEvent(eventName: String) {
+        firebaseAnalytics.logEvent(eventName, null)
+        Timber.d("event $eventName")
+    }
+
+    fun logEventWithParam(eventName: String, pair: Pair<String, Any>) {
+        firebaseAnalytics.logEvent(eventName, bundleOf(pair))
         Timber.d("event $eventName")
     }
 

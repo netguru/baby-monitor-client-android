@@ -38,9 +38,9 @@ class FirebaseNotificationSender @Inject constructor(
             .firstOrError()
             .map { clients -> clients.map(ClientEntity::firebaseKey) }
             .flatMapCompletable { firebaseTokens ->
-                analyticsManager.logEvent(
+                analyticsManager.logEventWithParam(
                     NOTIFICATION_SENT_EVENT,
-                    bundleOf(TYPE_PARAM to notificationType.name)
+                    TYPE_PARAM to notificationType.name
                 )
                 if (firebaseTokens.isNotEmpty()) {
                     postNotificationToFcm(firebaseTokens, title, text, notificationType)

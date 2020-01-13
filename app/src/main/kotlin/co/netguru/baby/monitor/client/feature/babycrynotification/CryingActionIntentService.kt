@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 import android.app.IntentService
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.babycrynotification.BabyMonitorMessagingService.Companion.CRYING_NOTIFICATION_ID
@@ -29,7 +30,10 @@ class CryingActionIntentService : IntentService(NAME) {
 
         when (intent?.action) {
             NotificationHandler.SHOW_CAMERA_ACTION -> openCameraUseCase
-                .openLiveClientCamera(NavDeepLinkBuilder(this))
+                .openLiveClientCamera(
+                    NavDeepLinkBuilder(this),
+                    bundleOf(SHOULD_SHOW_SNOOZE_DIALOG to true)
+                )
             NotificationHandler.SNOOZE_ACTION -> snoozeNotificationUseCase
                 .snoozeNotifications()
                 .addTo(disposables)

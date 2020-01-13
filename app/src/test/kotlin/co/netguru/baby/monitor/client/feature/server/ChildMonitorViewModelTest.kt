@@ -3,11 +3,9 @@ package co.netguru.baby.monitor.client.feature.server
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import org.junit.Rule
 import org.junit.Test
@@ -21,8 +19,9 @@ class ChildMonitorViewModelTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private val notifyLowBatteryUseCase: NotifyLowBatteryUseCase = mock()
+    private val analyticsManager: AnalyticsManager = mock()
     private val childViewModel =
-        ChildMonitorViewModel(notifyLowBatteryUseCase)
+        ChildMonitorViewModel(notifyLowBatteryUseCase, analyticsManager)
 
     @Test
     fun `should use notifyLowBatteryUseCase on notifyLowBattery`() {
@@ -50,5 +49,14 @@ class ChildMonitorViewModelTest {
 
         verify(nightModeObserver).onChanged(true)
         assert(childViewModel.nightModeStatus.value == true)
+    }
+
+    @Test
+    fun `should send nightMode event to firebase`() {
+        childViewModel.switchNightMode()
+
+        verify(analyticsManager).logEventWithParam(eq(AnalyticsManager.NIGHT_MODE_EVENT), check {
+            assert(it.first == AnalyticsManager.ENABLED_PARAM)
+        })
     }
 }

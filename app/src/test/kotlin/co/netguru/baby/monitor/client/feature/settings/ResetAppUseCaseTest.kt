@@ -4,6 +4,7 @@ import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.splash.AppState
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
@@ -25,8 +26,14 @@ class ResetAppUseCaseTest {
         on { getSavedState() }.doReturn(Single.just(AppState.UNDEFINED))
     }
     private val messageSender = mock<MessageSender>()
+    private val analyticsManager = mock<AnalyticsManager>()
     private val resetAppUseCase =
-        ResetAppUseCase(notificationHandler, firebaseInstanceManager, dataRepository)
+        ResetAppUseCase(
+            notificationHandler,
+            firebaseInstanceManager,
+            dataRepository,
+            analyticsManager
+        )
 
     @Test
     fun `should clear data and notifications on app reset`() {
@@ -61,5 +68,12 @@ class ResetAppUseCaseTest {
         resetAppUseCase.resetApp().subscribe()
 
         verifyZeroInteractions(firebaseInstanceManager)
+    }
+
+    @Test
+    fun `should send resetApp event to firebase`() {
+        resetAppUseCase.resetApp().subscribe()
+
+        verify(analyticsManager).logEvent(AnalyticsManager.RESET_APP_EVENT)
     }
 }

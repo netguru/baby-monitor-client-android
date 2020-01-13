@@ -13,20 +13,14 @@ class OpenCameraUseCase @Inject constructor(
     private val analyticsManager: AnalyticsManager
 ) {
 
-    fun openLiveClientCamera(navDeepLinkBuilder: NavDeepLinkBuilder) {
+    fun openLiveClientCamera(navDeepLinkBuilder: NavDeepLinkBuilder, snoozeDialogArgument: Bundle) {
         analyticsManager.logEvent(NOTIFICATION_OPEN_CAMERA_EVENT)
         navDeepLinkBuilder
             .setComponentName(ClientHomeActivity::class.java)
             .setGraph(R.navigation.client_home_nav_graph)
             .setDestination(R.id.clientLiveCamera)
-            .setArguments(showSnoozeDialogArg())
+            .setArguments(snoozeDialogArgument)
             .createTaskStackBuilder()
             .startActivities()
-    }
-
-    private fun showSnoozeDialogArg(): Bundle {
-        return bundleOf(
-            CryingActionIntentService.SHOULD_SHOW_SNOOZE_DIALOG to true
-        )
     }
 }
