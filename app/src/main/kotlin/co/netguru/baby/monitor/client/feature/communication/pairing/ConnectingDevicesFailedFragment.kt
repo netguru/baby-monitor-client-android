@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.communication.pairing
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
@@ -15,5 +16,15 @@ class ConnectingDevicesFailedFragment : BaseFragment() {
         configurationFailedTryAgainButton.setOnClickListener {
             findNavController().navigate(R.id.connectionFailedToServiceDiscovery)
         }
+        setupOnBackPressedHandling()
+    }
+
+    private fun setupOnBackPressedHandling() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
+            OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.connectionFailedToServiceDiscovery)
+            }
+        })
     }
 }
