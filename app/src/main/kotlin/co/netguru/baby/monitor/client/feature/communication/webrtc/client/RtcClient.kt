@@ -15,6 +15,7 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import org.webrtc.*
 import timber.log.Timber
 
@@ -107,6 +108,7 @@ class RtcClient(
         )
 
         connectionObserver.streamObservable
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { streamState ->
                 when (streamState) {
@@ -176,8 +178,6 @@ class RtcClient(
     }
 
     companion object {
-        internal const val WEB_SOCKET_ACTION_KEY = "action"
-
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"
 

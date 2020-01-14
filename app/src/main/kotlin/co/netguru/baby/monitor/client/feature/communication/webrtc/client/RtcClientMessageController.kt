@@ -9,6 +9,7 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocke
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
 import timber.log.Timber
@@ -84,6 +85,7 @@ class RtcClientMessageController(
 
     private fun sendMessage(message: Message) {
         compositeDisposable += rxWebSocketClient.send(message)
+            .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = { Timber.i("message sent: $message") },
                 onError = { Timber.e(it) })

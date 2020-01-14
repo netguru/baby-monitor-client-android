@@ -105,7 +105,8 @@ class ClientLiveCameraFragment : BaseFragment() {
 
     private fun handleStreamStateChange(streamState: StreamState) {
         when ((streamState as? ConnectionState)?.connectionState) {
-            RtcConnectionState.Connected -> streamProgressBar.isVisible = false
+            RtcConnectionState.Connected,
+            RtcConnectionState.Completed -> streamProgressBar.isVisible = false
             RtcConnectionState.Checking -> streamProgressBar.isVisible = true
             RtcConnectionState.Error -> handleBabyDeviceSdpError()
             else -> Unit
