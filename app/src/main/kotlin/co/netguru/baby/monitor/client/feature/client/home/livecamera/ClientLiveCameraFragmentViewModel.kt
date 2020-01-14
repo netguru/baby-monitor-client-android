@@ -46,7 +46,7 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
         liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
         serverUri: URI,
         client: RxWebSocketClient
-        ) {
+    ) {
         callInProgress.set(true)
         rtcClient = RtcClient(
             RtcClientMessageController(
@@ -84,6 +84,6 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
             RtcConnectionState.Error -> analyticsManager.logEvent(Event.Simple(EventType.VIDEO_STREAM_ERROR))
             else -> Unit
         }
-        mutableStreamState.postValue(streamState)
+        mutableStreamState.value = streamState
     }
 }
