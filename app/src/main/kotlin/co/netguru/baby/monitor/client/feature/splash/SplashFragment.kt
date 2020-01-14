@@ -42,11 +42,11 @@ class SplashFragment : BaseFragment() {
 
     private fun handleSplash(appState: AppState?) {
         Completable
-                .timer(DELAY_MILLISECONDS, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                        onComplete = { handleSplashDelay(appState) }
-                ).addTo(compositeDisposable)
+            .timer(DELAY_MILLISECONDS, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = { handleSplashDelay(appState) }
+            ).addTo(compositeDisposable)
     }
 
     private fun handleSplashDelay(appState: AppState?) {
@@ -59,7 +59,10 @@ class SplashFragment : BaseFragment() {
                 findNavController().navigate(R.id.splashToClientHome)
                 requireActivity().finish()
             }
-            else -> {
+            AppState.UNDEFINED -> {
+                findNavController().navigate(R.id.splashToInfoAboutDevices)
+            }
+            AppState.FIRST_OPEN -> {
                 findNavController().navigate(R.id.splashToOnboarding)
             }
         }

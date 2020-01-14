@@ -12,11 +12,14 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import kotlinx.android.synthetic.main.onboarding_buttons.*
+import javax.inject.Inject
 
 class FeaturePresentationFragment : BaseFragment() {
 
     override var layoutResource = R.layout.fragment_feature_a
     override val screen: Screen = Screen.ONBOARDING
+    @Inject
+    lateinit var finishOnboardingUseCase: FinishOnboardingUseCase
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +47,7 @@ class FeaturePresentationFragment : BaseFragment() {
             handleNextClicked()
         }
         featureSkipBtn.setOnClickListener {
-            findNavController().navigate(R.id.onboardingToInfoAboutDevices)
+            findNavController().navigate(finishOnboarding())
         }
     }
 
@@ -59,12 +62,17 @@ class FeaturePresentationFragment : BaseFragment() {
         }
         findNavController().navigate(
             if (nextFeature.isEmpty()) {
-                R.id.onboardingToInfoAboutDevices
+                finishOnboarding()
             } else {
                 R.id.featureToFeature
             },
             bundle
         )
+    }
+
+    private fun finishOnboarding(): Int {
+        finishOnboardingUseCase.finishOnboarding()
+        return R.id.onboardingToInfoAboutDevices
     }
 
     companion object {
