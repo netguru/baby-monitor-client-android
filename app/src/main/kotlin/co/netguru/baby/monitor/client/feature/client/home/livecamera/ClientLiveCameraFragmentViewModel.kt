@@ -46,7 +46,7 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
         liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
         serverUri: URI,
         client: RxWebSocketClient
-        ) {
+    ) {
         callInProgress.set(true)
         rtcClient = RtcClient(
             RtcClientMessageController(
