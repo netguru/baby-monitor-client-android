@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.webrtc.server
 
 import android.content.Context
+import android.media.AudioManager
 import co.netguru.baby.monitor.client.feature.communication.webrtc.*
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.ConnectionObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
@@ -84,7 +85,16 @@ class WebRtcManager constructor(
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
         cameraVideoCapturer?.let { enableVideo(true, it) }
+
+        setSpeakerphoneOn(context)
+
         createConnection()
+    }
+
+    private fun setSpeakerphoneOn(context: Context) {
+        (context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager)?.run {
+            isSpeakerphoneOn = true
+        }
     }
 
     private fun createConnection() {

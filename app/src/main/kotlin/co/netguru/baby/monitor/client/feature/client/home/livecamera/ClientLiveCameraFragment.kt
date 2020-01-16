@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.common.extensions.scaleAnimation
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
@@ -45,7 +47,39 @@ class ClientLiveCameraFragment : BaseFragment() {
                 shouldShowSnoozeDialogOnBack()
             )
         )
+        setupPushToSpeakButton()
         setupObservers()
+    }
+
+    private fun setupPushToSpeakButton() {
+        pushToSpeakButton.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                onPushToSpeakButtonPressed()
+            } else if (event.action == MotionEvent.ACTION_UP) {
+                onPushToSpeakButtonRelease()
+            }
+            true
+        }
+    }
+
+    private fun onPushToSpeakButtonRelease() {
+        fragmentViewModel.pushToSpeak(false)
+        pushToSpeakButton.scaleAnimation(
+            false,
+            PRESSED_SCALE,
+            NORMAL_SCALE,
+            ANIMATION_DURATION
+        )
+    }
+
+    private fun onPushToSpeakButtonPressed() {
+        fragmentViewModel.pushToSpeak(true)
+        pushToSpeakButton.scaleAnimation(
+            true,
+            PRESSED_SCALE,
+            NORMAL_SCALE,
+            ANIMATION_DURATION
+        )
     }
 
     private fun setupObservers() {
@@ -116,5 +150,11 @@ class ClientLiveCameraFragment : BaseFragment() {
     private fun handleBabyDeviceSdpError() {
         showSnackbarMessage(R.string.stream_error)
         requireActivity().onBackPressed()
+    }
+
+    companion object {
+        private const val NORMAL_SCALE = 1.0f
+        private const val PRESSED_SCALE = 2.5f
+        private const val ANIMATION_DURATION = 500L
     }
 }

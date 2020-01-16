@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.YesNoDialog
+import co.netguru.baby.monitor.client.common.extensions.controlVideoStreamVolume
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
@@ -40,6 +41,7 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_server)
+        controlVideoStreamVolume()
         setupObservers()
         bindService(
             Intent(this, WebSocketServerService::class.java),

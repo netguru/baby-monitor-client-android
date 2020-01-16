@@ -10,6 +10,7 @@ import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
 import co.netguru.baby.monitor.client.common.YesNoDialog
+import co.netguru.baby.monitor.client.common.extensions.controlVideoStreamVolume
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
@@ -45,6 +46,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_home)
+        controlVideoStreamVolume()
 
         setupView()
         setupObservers()
