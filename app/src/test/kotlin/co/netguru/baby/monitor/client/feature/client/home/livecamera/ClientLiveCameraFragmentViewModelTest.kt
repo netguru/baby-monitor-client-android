@@ -32,12 +32,13 @@ class ClientLiveCameraFragmentViewModelTest {
             context,
             liveCameraRemoteRenderer,
             serverUri,
-            client
+            client,
+            true
         )
 
         verify(rtcClientController).startCall(
             eq(context), eq(liveCameraRemoteRenderer), eq(serverUri),
-            eq(client), any()
+            eq(client), any(), any()
         )
         assert(clientLiveCameraFragmentViewModel.callInProgress.get())
     }

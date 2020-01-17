@@ -8,12 +8,16 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.GlideApp
+import co.netguru.baby.monitor.client.common.PermissionResult
+import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.getColor
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_client_dashboard.*
 import javax.inject.Inject
 
@@ -41,7 +45,7 @@ class ClientDashboardFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.selectedChild.observeNonNull(viewLifecycleOwner, { child ->
+        viewModel.selectedChild.observeNonNull(viewLifecycleOwner) { child ->
             clientHomeBabyNameTv.apply {
                 if (child.name.isNullOrBlank()) {
                     text = getString(R.string.your_baby_name)
@@ -58,21 +62,21 @@ class ClientDashboardFragment : BaseFragment() {
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeBabyIv)
             }
-        })
-        viewModel.selectedChildAvailability.observeNonNull(viewLifecycleOwner, { childAvailable ->
+        }
+        viewModel.selectedChildAvailability.observeNonNull(viewLifecycleOwner) { childAvailable ->
             if (childAvailable) {
                 showClientConnected()
             } else {
                 showClientDisconnected()
             }
-        })
+        }
     }
 
     private fun showClientConnected() {
         clientConnectionStatusTv.text = getString(R.string.monitoring_enabled)
         clientConnectionStatusPv.start()
         clientHomeLiveCameraIbtn.setOnClickListener {
-            findNavController().navigate(R.id.clientLiveCamera)
+            requestMicrophonePermission()
         }
     }
 
@@ -86,5 +90,48 @@ class ClientDashboardFragment : BaseFragment() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun requestMicrophonePermission() {
+        requestPermissions(
+            arrayOf(android.Manifest.permission.RECORD_AUDIO),
+            REQUEST_MICROPHONE_PERMISSION
+        )
+    }
+
+    private fun showRationaleSnackbar() {
+        Snackbar.make(
+            requireView(),
+            getString(R.string.parent_microphone_permission),
+            Snackbar.LENGTH_SHORT
+        )
+            .setAction(getString(R.string.check_again)) { requestMicrophonePermission() }
+            .setDuration(BaseTransientBottomBar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val recordAudioResult = PermissionUtils.getPermissionsRequestResult(
+            requireActivity(),
+            REQUEST_MICROPHONE_PERMISSION,
+            requestCode,
+            grantResults,
+            android.Manifest.permission.RECORD_AUDIO
+        )
+
+        when (recordAudioResult) {
+            PermissionResult.SHOW_RATIONALE -> showRationaleSnackbar()
+            PermissionResult.GRANTED -> findNavController().navigate(R.id.clientLiveCamera)
+            PermissionResult.NOT_GRANTED -> findNavController().navigate(R.id.clientLiveCamera)
+        }
+    }
+
+    companion object {
+        private const val REQUEST_MICROPHONE_PERMISSION = 678
     }
 }

@@ -50,9 +50,10 @@ class RtcClient(
     }
 
     fun startCall(
-        context: Context
+        context: Context,
+        hasRecordAudioPermission: Boolean
     ) = Completable.fromAction {
-        initRtc(context)
+        initRtc(context, hasRecordAudioPermission)
     }
 
     fun cleanup() {
@@ -85,7 +86,10 @@ class RtcClient(
         }
     }
 
-    private fun initRtc(context: Context) {
+    private fun initRtc(
+        context: Context,
+        hasRecordAudioPermission: Boolean
+    ) {
         Timber.i("initializing")
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(context)
@@ -108,7 +112,7 @@ class RtcClient(
 
         setSpeakerphoneOn(context)
 
-        createConnection(factory ?: return)
+        createConnection(factory ?: return, hasRecordAudioPermission)
     }
 
     private fun setSpeakerphoneOn(context: Context) {
@@ -117,14 +121,15 @@ class RtcClient(
         }
     }
 
-    private fun createConnection(factory: PeerConnectionFactory) {
+    private fun createConnection(factory: PeerConnectionFactory,
+                                 hasRecordAudioPermission: Boolean) {
         connectionObserver = ConnectionObserver()
 
         peerConnection = factory.createPeerConnection(
             emptyList(),
             connectionObserver
         )
-        addAudioTrack(factory)
+        if (hasRecordAudioPermission) addAudioTrack(factory)
 
         connectionObserver.streamObservable
             .subscribeOn(Schedulers.io())

@@ -24,7 +24,8 @@ class RtcClientController @Inject constructor(
         liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
         serverUri: URI,
         client: RxWebSocketClient,
-        streamStateListener: (streamState: StreamState) -> Unit
+        streamStateListener: (streamState: StreamState) -> Unit,
+        hasRecordAudioPermission: Boolean
     ) {
         rtcClient = RtcClient(
             RtcClientMessageController(
@@ -35,7 +36,10 @@ class RtcClientController @Inject constructor(
             streamStateListener,
             liveCameraRemoteRenderer
         ).apply {
-            startCall(context)
+            startCall(
+                context,
+                hasRecordAudioPermission
+            )
                 .subscribeOn(Schedulers.newThread())
                 .subscribeBy(
                     onComplete = {

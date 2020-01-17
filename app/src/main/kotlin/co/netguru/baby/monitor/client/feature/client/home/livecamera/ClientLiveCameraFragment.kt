@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.scaleAnimation
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
@@ -52,6 +53,19 @@ class ClientLiveCameraFragment : BaseFragment() {
     }
 
     private fun setupPushToSpeakButton() {
+        if (PermissionUtils.arePermissionsGranted(
+                requireContext(),
+                android.Manifest.permission.RECORD_AUDIO
+            )
+        ) {
+            enablePushToSpeakButton()
+        } else {
+            pushToSpeakButton.isVisible = false
+        }
+    }
+
+    private fun enablePushToSpeakButton() {
+        pushToSpeakButton.isVisible = true
         pushToSpeakButton.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 onPushToSpeakButtonPressed()
@@ -124,16 +138,23 @@ class ClientLiveCameraFragment : BaseFragment() {
     }
 
     private fun maybeStartCall() {
-        if (!fragmentViewModel.callInProgress.get()) startCall(viewModel.rxWebSocketClient)
+        if (!fragmentViewModel.callInProgress.get()) startCall(
+            viewModel.rxWebSocketClient,
+            PermissionUtils.arePermissionsGranted(
+                requireContext(),
+                android.Manifest.permission.RECORD_AUDIO
+            )
+        )
     }
 
-    private fun startCall(rxWebSocketClient: RxWebSocketClient) {
+    private fun startCall(rxWebSocketClient: RxWebSocketClient, hasRecordAudioPermission: Boolean) {
         val serverUri = URI.create(viewModel.selectedChild.value?.address ?: return)
         fragmentViewModel.startCall(
             requireActivity().applicationContext,
             liveCameraRemoteRenderer,
             serverUri,
-            rxWebSocketClient
+            rxWebSocketClient,
+            hasRecordAudioPermission
         )
     }
 

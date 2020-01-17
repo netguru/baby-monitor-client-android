@@ -36,14 +36,16 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
         context: Context,
         liveCameraRemoteRenderer: CustomSurfaceViewRenderer,
         serverUri: URI,
-        client: RxWebSocketClient
+        client: RxWebSocketClient,
+        hasRecordAudioPermission: Boolean
     ) {
         rtcClientController.startCall(
             context,
             liveCameraRemoteRenderer,
             serverUri,
             client,
-            this::handleStreamStateChange
+            this::handleStreamStateChange,
+            hasRecordAudioPermission
         )
         callInProgress.set(true)
     }
