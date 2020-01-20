@@ -29,6 +29,12 @@
                 />
 
         <action
+                android:id="@+id/splashToInfoAboutDevices"
+                app:destination="@+id/infoAboutDevices"
+                app:popUpTo="@+id/splash_nav_graph"
+                app:popUpToInclusive="true"
+                />
+        <action
                 android:id="@+id/splashToServer"
                 app:destination="@+id/server"
                 app:popUpTo="@+id/splash_nav_graph"
