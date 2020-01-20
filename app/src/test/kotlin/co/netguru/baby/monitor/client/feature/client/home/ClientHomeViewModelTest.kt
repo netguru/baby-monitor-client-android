@@ -37,9 +37,7 @@ class ClientHomeViewModelTest {
         on { getChildLiveData() }.doReturn(childLiveData)
     }
     private val rxWebSocketClient: RxWebSocketClient = mock()
-    private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase = mock {
-        on { sendFirebaseToken(rxWebSocketClient) }.doReturn(Completable.complete())
-    }
+
     private val sendBabyNameUseCase: SendBabyNameUseCase = mock {
         on { streamBabyName(rxWebSocketClient) }.doReturn(Completable.complete())
     }
@@ -50,7 +48,6 @@ class ClientHomeViewModelTest {
 
     private val clientHomeViewModel = ClientHomeViewModel(
         dataRepository,
-        sendFirebaseTokenUseCase,
         sendBabyNameUseCase,
         snoozeNotificationUseCase,
         checkInternetConnectionUseCase,
@@ -76,7 +73,6 @@ class ClientHomeViewModelTest {
 
         verify(selectedChildAvailabilityObserver).onChanged(true)
         verify(sendBabyNameUseCase).streamBabyName(rxWebSocketClient)
-        verify(sendFirebaseTokenUseCase).sendFirebaseToken(rxWebSocketClient)
     }
 
     @Test
@@ -96,7 +92,6 @@ class ClientHomeViewModelTest {
         clientHomeViewModel.openSocketConnection(uri)
 
         verify(selectedChildAvailabilityObserver).onChanged(false)
-        verifyZeroInteractions(sendFirebaseTokenUseCase)
     }
 
     @Test
