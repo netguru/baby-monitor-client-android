@@ -121,8 +121,10 @@ class RtcClient(
         }
     }
 
-    private fun createConnection(factory: PeerConnectionFactory,
-                                 hasRecordAudioPermission: Boolean) {
+    private fun createConnection(
+        factory: PeerConnectionFactory,
+        hasRecordAudioPermission: Boolean
+    ) {
         connectionObserver = ConnectionObserver()
 
         peerConnection = factory.createPeerConnection(

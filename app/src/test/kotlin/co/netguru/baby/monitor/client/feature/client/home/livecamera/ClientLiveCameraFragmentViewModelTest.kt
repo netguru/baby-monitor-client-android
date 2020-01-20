@@ -60,5 +60,4 @@ class ClientLiveCameraFragmentViewModelTest {
 
         verify(rtcClientController).pushToSpeak(false)
     }
-
 }

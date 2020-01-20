@@ -46,4 +46,3 @@ enum class PermissionResult {
     NOT_GRANTED,
     SHOW_RATIONALE
 }
-
