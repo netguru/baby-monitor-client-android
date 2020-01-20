@@ -73,13 +73,20 @@ class WebRtcManager constructor(
                 .setEnableInternalTracer(false)
                 .createInitializationOptions()
         )
+        val encoderFactory = DefaultVideoEncoderFactory(sharedContext, true, false)
+        val decoderFactory = DefaultVideoDecoderFactory(sharedContext)
         peerConnectionFactory = PeerConnectionFactory.builder()
+            .setVideoDecoderFactory(decoderFactory)
+            .setVideoEncoderFactory(encoderFactory)
             .createPeerConnectionFactory()
-            .apply {
-                setVideoHwAccelerationOptions(sharedContext, sharedContext)
-            }
+
+        val surfaceTextureHelper = SurfaceTextureHelper.create(SURFACE_TEXTURE_HELPER_THREAD, sharedContext)
+        videoSource = peerConnectionFactory.createVideoSource(true)
         cameraVideoCapturer = createCameraCapturer(Camera2Enumerator(context))
-        videoSource = peerConnectionFactory.createVideoSource(cameraVideoCapturer)
+            .apply {
+                initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
+            }
+
         videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
         audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
         audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
@@ -193,5 +200,6 @@ class WebRtcManager constructor(
         private const val VIDEO_HEIGHT = 480
         private const val VIDEO_WIDTH = 320
         private const val VIDEO_FRAMERATE = 30
+        private const val SURFACE_TEXTURE_HELPER_THREAD = "SURFACE_TEXTURE_HELPER_THREAD"
     }
 }
