@@ -31,10 +31,10 @@ class RxWebSocketClient @Inject constructor(
                     }
                 }
 
-    fun events(serverUri: URI): Observable<Event> {
-        return requireActiveClient(serverUri = serverUri)
+    fun events(serverUri: URI): Observable<Event> =
+        requireActiveClient(serverUri = serverUri)
             .events()
-            .startWith(if(isOpen()) Event.Connected else Event.Disconnected)
+            .startWith(if (isOpen()) Event.Connected else Event.Disconnected)
             .flatMap { event ->
                 if (event is Event.Close) {
                     Timber.i("Received close event, expect restart.")
@@ -45,7 +45,6 @@ class RxWebSocketClient @Inject constructor(
                     Observable.just(event)
                 }
             }
-    }
 
     fun send(message: Message): Completable =
         Completable.fromAction {
