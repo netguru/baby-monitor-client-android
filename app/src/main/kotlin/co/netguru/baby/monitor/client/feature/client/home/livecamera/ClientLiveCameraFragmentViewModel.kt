@@ -84,6 +84,6 @@ class ClientLiveCameraFragmentViewModel @Inject constructor(
             RtcConnectionState.Error -> analyticsManager.logEvent(Event.Simple(EventType.VIDEO_STREAM_ERROR))
             else -> Unit
         }
-        mutableStreamState.value = streamState
+        mutableStreamState.postValue(streamState)
     }
 }
