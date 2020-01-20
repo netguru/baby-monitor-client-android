@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import com.google.gson.Gson
+import dagger.Reusable
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -12,6 +13,7 @@ import java.net.URI
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+@Reusable
 class RxWebSocketClient @Inject constructor(
     private val gson: Gson
 ) {
@@ -29,9 +31,10 @@ class RxWebSocketClient @Inject constructor(
                     }
                 }
 
-    fun events(serverUri: URI): Observable<Event> =
-        requireActiveClient(serverUri = serverUri)
+    fun events(serverUri: URI): Observable<Event> {
+        return requireActiveClient(serverUri = serverUri)
             .events()
+            .startWith(if(isOpen()) Event.Connected else Event.Disconnected)
             .flatMap { event ->
                 if (event is Event.Close) {
                     Timber.i("Received close event, expect restart.")
@@ -42,6 +45,7 @@ class RxWebSocketClient @Inject constructor(
                     Observable.just(event)
                 }
             }
+    }
 
     fun send(message: Message): Completable =
         Completable.fromAction {
@@ -50,7 +54,7 @@ class RxWebSocketClient @Inject constructor(
             }
         }
 
-    fun isOpen() = client?.isOpen == true
+    private fun isOpen() = client?.isOpen == true
 
     fun dispose() {
         client?.close()
@@ -110,5 +114,9 @@ class RxWebSocketClient @Inject constructor(
          * @see [WebSocketClient.onError]
          */
         data class Error(val error: Throwable) : Event()
+
+        object Connected : Event()
+
+        object Disconnected : Event()
     }
 }

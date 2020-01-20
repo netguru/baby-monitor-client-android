@@ -6,6 +6,7 @@ import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
+import co.netguru.baby.monitor.client.feature.client.home.SendFirebaseTokenUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
@@ -21,7 +22,8 @@ class PairingUseCase @Inject constructor(
     private val messageParser: MessageParser,
     private val rxWebSocketClient: RxWebSocketClient,
     private val dataRepository: DataRepository,
-    private val localDateTimeProvider: LocalDateTimeProvider
+    private val localDateTimeProvider: LocalDateTimeProvider,
+    private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase
 ) {
     private val compositeDisposable = CompositeDisposable()
     private val mutablePairingCompletedState = MutableLiveData<Boolean>()
@@ -32,7 +34,8 @@ class PairingUseCase @Inject constructor(
             .subscribeOn(Schedulers.io())
             .subscribeBy(onNext = {
                 when (it) {
-                    is RxWebSocketClient.Event.Open -> sendPairingCode(pairingCode)
+                    is RxWebSocketClient.Event.Open, RxWebSocketClient.Event.Connected
+                    -> sendPairingCode(pairingCode)
                     is RxWebSocketClient.Event.Message -> handleMessage(it, address)
                 }
             }, onError = { mutablePairingCompletedState.postValue(false) })
@@ -47,7 +50,7 @@ class PairingUseCase @Inject constructor(
     }
 
     fun dispose() {
-        disconnectFromService()
+        compositeDisposable.dispose()
     }
 
     private fun sendMessage(message: Message) {
@@ -89,13 +92,18 @@ class PairingUseCase @Inject constructor(
     private fun handleNewService(
         address: URI
     ) {
-        compositeDisposable += dataRepository.putChildData(ChildDataEntity(address.toString()))
-            .andThen(addPairingEventToDataBase(address.toString()))
+        compositeDisposable += sendFirebaseTokenUseCase
+            .sendFirebaseToken(rxWebSocketClient)
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .andThen(dataRepository.putChildData(ChildDataEntity(address.toString())))
+            .andThen(addPairingEventToDataBase(address.toString()))
             .subscribeBy(
-                onComplete = { mutablePairingCompletedState.postValue(true) },
-                onError = { mutablePairingCompletedState.postValue(false) }
-            )
+                onComplete = {
+                    mutablePairingCompletedState.postValue(true)
+                }, onError = {
+                    mutablePairingCompletedState.postValue(false)
+                })
     }
 
     private fun addPairingEventToDataBase(address: String) =

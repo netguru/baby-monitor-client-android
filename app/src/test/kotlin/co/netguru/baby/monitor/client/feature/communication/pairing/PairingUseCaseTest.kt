@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.common.LocalDateTimeProvider
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.feature.client.home.SendFirebaseTokenUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
@@ -33,13 +34,22 @@ class PairingUseCaseTest {
     private val message = "message"
     private val pairingCode = "1234"
     private val messageParser: MessageParser = mock()
+    private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase = mock {
+        on { sendFirebaseToken(rxWebSocketClient) }.doReturn(Completable.complete())
+    }
     private val localDateTimeProvider: LocalDateTimeProvider = mock {
         val localDateTime: LocalDateTime = mock()
         on { now() }.doReturn(localDateTime)
     }
     private val pairingCompletedObserver: Observer<Boolean> = mock()
     private val pairingUseCase =
-        PairingUseCase(messageParser, rxWebSocketClient, dataRepository, localDateTimeProvider)
+        PairingUseCase(
+            messageParser,
+            rxWebSocketClient,
+            dataRepository,
+            localDateTimeProvider,
+            sendFirebaseTokenUseCase
+        )
 
     @Before
     fun setUp() {
@@ -77,6 +87,7 @@ class PairingUseCaseTest {
 
         verify(dataRepository).putChildData(any())
         verify(dataRepository).insertLogToDatabase(any())
+        verify(sendFirebaseTokenUseCase).sendFirebaseToken(rxWebSocketClient)
         verify(pairingCompletedObserver).onChanged(true)
     }
 
