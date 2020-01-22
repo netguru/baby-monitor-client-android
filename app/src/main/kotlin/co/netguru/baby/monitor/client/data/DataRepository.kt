@@ -24,7 +24,7 @@ class DataRepository @Inject constructor(
         database.logDataDao().insertAll(data)
     }
 
-    fun getAllClientData() = database.clientDao().getAllData()
+    fun getClientData() = database.clientDao().getClientData()
 
     fun insertClientData(data: ClientEntity): Completable = Completable.fromAction {
         database.clientDao().insertClient(data)
