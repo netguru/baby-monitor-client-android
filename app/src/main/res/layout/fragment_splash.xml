@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="@+id/splashImageEndGl"
         app:layout_constraintStart_toStartOf="@+id/splashImageStartGl"
         app:layout_constraintTop_toTopOf="@+id/splashImageTopGl"
-        app:srcCompat="@drawable/baby_logo_welcome_screen" />
+        app:srcCompat="@drawable/baby_logo" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/splashImageBottomGl"
