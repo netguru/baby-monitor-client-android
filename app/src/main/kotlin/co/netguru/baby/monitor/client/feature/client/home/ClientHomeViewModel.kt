@@ -115,6 +115,8 @@ class ClientHomeViewModel @Inject constructor(
                     when (event) {
                         is RxWebSocketClient.Event.Open, RxWebSocketClient.Event.Connected
                         -> handleWebSocketOpen(rxWebSocketClient)
+                        is RxWebSocketClient.Event.Disconnected
+                        -> mutableSelectedChildAvailability.postValue(false)
                         is RxWebSocketClient.Event.Close -> handleWebSocketClose()
                         is RxWebSocketClient.Event.Message -> handleMessage(
                             messageParser.parseWebSocketMessage(
