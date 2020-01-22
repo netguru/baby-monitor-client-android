@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.extensions.addActions
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
@@ -66,6 +67,7 @@ class NotificationHandler(private val context: Context) {
         return notificationBuilder
             .setContentTitle(title)
             .setContentText(content)
+            .setColor(ContextCompat.getColor(context, R.color.accent))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(resultPendingIntent)
             .setAutoCancel(true)
