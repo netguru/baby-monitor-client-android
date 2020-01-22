@@ -68,16 +68,19 @@
             app:layout_constraintGuide_percent="0.283"
             />
 
-    <ImageView
+    <ImageButton
             android:id="@+id/clientHomeBabyIv"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/child_large"
-            android:visibility="visible"
+            android:background="@drawable/circle_primary_bg"
+            android:padding="@dimen/spacing_xmedium"
+            app:elevation="@dimen/spacing_small"
             app:layout_constraintBottom_toBottomOf="@+id/dashboardBabyIvBottomGl"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="@+id/dashboardBabyIvEndGl"
             app:layout_constraintStart_toStartOf="@+id/dashboardBabyIvStartGl"
             app:layout_constraintTop_toTopOf="@+id/dashboardBabyIvTopGl"
+            app:srcCompat="@drawable/ic_baby"
             />
 
     <androidx.constraintlayout.widget.Guideline
@@ -182,19 +185,19 @@
 
     <ImageButton
             android:id="@+id/clientHomeLiveCameraIbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="0dp"
-            android:src="@drawable/baby_preview"
-            app:backgroundTint="@color/transparent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/button_rounded_ripple"
+            android:padding="@dimen/spacing_small"
+            android:scaleType="fitCenter"
             app:elevation="@dimen/spacing_small"
             app:layout_constraintBottom_toBottomOf="@+id/dashboardButtonsBottomGl"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="@+id/dashboardLiveCameraEndGl"
             app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/dashboardBabyIvStartGl"
             app:layout_constraintTop_toTopOf="@+id/dashboardButtonsTopGl"
+            app:srcCompat="@drawable/ic_baby"
             />
 
     <androidx.constraintlayout.widget.Guideline
@@ -215,19 +218,19 @@
 
     <ImageButton
             android:id="@+id/clientHomeActivityLogIbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="0dp"
-            android:src="@drawable/activity"
-            app:backgroundTint="@color/transparent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/button_rounded_ripple"
+            android:padding="@dimen/spacing_xmedium"
+            android:scaleType="fitCenter"
             app:elevation="@dimen/spacing_small"
             app:layout_constraintBottom_toBottomOf="@+id/dashboardButtonsBottomGl"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/dashboardBabyIvEndGl"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@+id/dashboardActivityLogStartGl"
             app:layout_constraintTop_toTopOf="@+id/dashboardButtonsTopGl"
+            app:srcCompat="@drawable/ic_activity"
             />
 
     <androidx.constraintlayout.widget.Guideline
