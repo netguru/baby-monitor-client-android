@@ -100,7 +100,7 @@ class FirebaseNotificationSender @Inject constructor(
                     .post(
                         gson.toJson(
                             if (isAndroid) {
-                                Message(firebaseToken, data = Data(title, text, notificationType))
+                                Message(firebaseToken, data = Data(title, text, notificationType.name))
                             } else {
                                 Message(firebaseToken, notification = Notification(title, text))
                             }

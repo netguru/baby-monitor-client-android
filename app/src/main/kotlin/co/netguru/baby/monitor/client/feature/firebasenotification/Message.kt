@@ -18,5 +18,5 @@ data class Data(
     val title: String,
     val text: String,
     @SerializedName("notification_type")
-    val type: NotificationType?
+    val type: String
 )
