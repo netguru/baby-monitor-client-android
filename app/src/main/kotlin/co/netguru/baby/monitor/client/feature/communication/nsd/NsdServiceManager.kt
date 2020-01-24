@@ -77,7 +77,7 @@ class NsdServiceManager @Inject constructor(
         }
         this.nsdDiscoveryObservable = nsdDiscoveryObservable
 
-        nsdDiscoveryObservable.subscribeOn(Schedulers.computation())
+        nsdDiscoveryObservable.subscribeOn(Schedulers.io())
             .concatMapSingle(this::createResolveServiceSingle)
             .subscribeBy(onNext = this::handleResolvedService,
                 onError = {
