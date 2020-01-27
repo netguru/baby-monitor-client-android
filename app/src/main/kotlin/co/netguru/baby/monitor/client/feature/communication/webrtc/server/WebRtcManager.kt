@@ -180,7 +180,7 @@ class WebRtcManager constructor(
 
     private fun addStream() {
         Timber.i("Add stream")
-        if (stream != null) disposeStream() // If parent enters/exits stream very quick
+        disposeStream() // If parent enters/exits stream very quick
         initAudio()
         stream = peerConnectionFactory.createLocalMediaStream(STREAM_LABEL)
         stream?.addTrack(audioTrack)
@@ -189,6 +189,10 @@ class WebRtcManager constructor(
     }
 
     private fun disposeStream() {
+        if (stream == null) {
+            Timber.i("Stream already disposed")
+            return
+        }
         Timber.i("Dispose stream")
         disposeAudio()
         peerConnection?.removeStream(stream)
@@ -198,6 +202,7 @@ class WebRtcManager constructor(
     private fun disposeAudio() {
         audioTrack?.dispose()
         audioSource?.dispose()
+        audioTrack = null
         audioSource = null
     }
 
