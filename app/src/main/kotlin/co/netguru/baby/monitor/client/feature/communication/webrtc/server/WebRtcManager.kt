@@ -180,7 +180,7 @@ class WebRtcManager constructor(
 
     private fun addStream() {
         Timber.i("Add stream")
-        if (stream != null) disposeStream() //If parent enters/exits stream very quick
+        if (stream != null) disposeStream() // If parent enters/exits stream very quick
         initAudio()
         stream = peerConnectionFactory.createLocalMediaStream(STREAM_LABEL)
         stream?.addTrack(audioTrack)
@@ -219,8 +219,8 @@ class WebRtcManager constructor(
     fun getConnectionObservable(): Observable<RtcConnectionState> =
         connectionObserver.streamObservable.ofType(ConnectionState::class.java)
             .doOnNext {
-                if (it.connectionState is RtcConnectionState.Disconnected
-                    || it.connectionState is RtcConnectionState.Error
+                if (it.connectionState is RtcConnectionState.Disconnected ||
+                    it.connectionState is RtcConnectionState.Error
                 ) disposeStream()
             }
             .flatMap { Observable.just(it.connectionState) }
