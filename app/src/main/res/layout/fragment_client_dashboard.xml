@@ -68,12 +68,12 @@
             app:layout_constraintGuide_percent="0.283"
             />
 
-    <ImageButton
+    <ImageView
             android:id="@+id/clientHomeBabyIv"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/circle_primary_bg"
-            android:padding="@dimen/spacing_xmedium"
+            android:padding="@dimen/spacing_normal"
             app:elevation="@dimen/spacing_small"
             app:layout_constraintBottom_toBottomOf="@+id/dashboardBabyIvBottomGl"
             app:layout_constraintDimensionRatio="1:1"

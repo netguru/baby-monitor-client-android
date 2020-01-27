@@ -14,13 +14,11 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import dagger.Lazy
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -75,10 +73,10 @@ class ServerViewModel @Inject constructor(
             .subscribeBy(
                 onNext = { elapsedSeconds ->
                     val secondsLeft = VIDEO_PREVIEW_TOTAL_TIME - elapsedSeconds
-                    mutableTimer.postValue(secondsLeft)
+                    mutableTimer.value = secondsLeft
                 },
                 onComplete = {
-                    mutableTimer.postValue(null)
+                    mutableTimer.value = null
                     toggleVideoPreview(false)
                 }
             )
@@ -104,18 +102,20 @@ class ServerViewModel @Inject constructor(
     fun handleWebSocketServerBinder(binder: WebSocketServerService.Binder) {
         Timber.d("handleWebSocketServerBinder($binder)")
 
-        compositeDisposable += binder.clientConnectionStatus().subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        compositeDisposable += binder
+            .clientConnectionStatus()
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.mainThread())
             .subscribeBy(
                 onNext = { connectionStatus ->
-                    mutablePulsatingViewStatus.postValue(connectionStatus)
+                    mutablePulsatingViewStatus.value = connectionStatus
                 },
                 onError = { Timber.e(it) }
             )
 
         compositeDisposable += binder.messages()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.mainThread())
             .subscribe { (ws, message) ->
                 message.action?.let {
                     handleMessageAction(it)
@@ -124,16 +124,16 @@ class ServerViewModel @Inject constructor(
                     receiveFirebaseToken(ws.remoteSocketAddress.address.hostAddress, it)
                 }
                 message.babyName?.let { name ->
-                    mutableBabyNameStatus.postValue(name)
+                    mutableBabyNameStatus.value = name
                 }
                 message.pairingCode?.let {
-                    mutablePairingCodeLiveData.postValue(it)
+                    mutablePairingCodeLiveData.value = it
                 }
             }
     }
 
     private fun handleMessageAction(action: String) {
-        webSocketAction.postValue(action)
+        webSocketAction.value = action
     }
 
     fun approvePairingCode(binder: WebSocketServerService.Binder) {
@@ -150,7 +150,7 @@ class ServerViewModel @Inject constructor(
                 pairingApproved = false
             )
         )
-        mutablePairingCodeLiveData.postValue("")
+        mutablePairingCodeLiveData.value = ""
     }
 
     fun handleRtcServerConnectionState(webRtcServiceBinder: WebRtcService.Binder) {
@@ -169,7 +169,7 @@ class ServerViewModel @Inject constructor(
     }
 
     fun toggleDrawer(shouldBeOpened: Boolean) {
-        mutableShouldDrawerBeOpen.postValue(shouldBeOpened)
+        mutableShouldDrawerBeOpen.value = shouldBeOpened
     }
 
     fun toggleVideoPreview(shouldShowPreview: Boolean) {
@@ -199,7 +199,7 @@ class ServerViewModel @Inject constructor(
     private fun receiveFirebaseToken(ipAddress: String, token: String) {
         compositeDisposable += receiveFirebaseTokenUseCase.get()
             .receiveToken(ipAddress = ipAddress, token = token)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(schedulersProvider.io())
             .subscribeBy(
                 onComplete = {
                     Timber.d("Firebase token saved for address $ipAddress.")

@@ -1,19 +1,17 @@
 package co.netguru.baby.monitor.client.common.extensions
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
-import android.graphics.RectF
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.graphics.*
 import android.view.View
+import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import co.netguru.baby.monitor.client.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -126,3 +124,30 @@ fun RecyclerView.setDivider(@DrawableRes drawableRes: Int) {
         addItemDecoration(divider)
     }
 }
+
+fun View.scaleAnimation(
+    isScaleUp: Boolean,
+    scaleUpSize: Float,
+    scaleDownSize: Float,
+    duration: Long
+) {
+    val scaleX = ObjectAnimator.ofFloat(
+        this,
+        SCALE_X_PROPERTY, if (isScaleUp) scaleUpSize else scaleDownSize
+    )
+    val scaleY = ObjectAnimator.ofFloat(
+        this,
+        SCALE_Y_PROPERTY, if (isScaleUp) scaleUpSize else scaleDownSize
+    )
+    scaleX.duration = duration
+    scaleY.duration = duration
+
+    val scale = AnimatorSet()
+    scale.interpolator = BounceInterpolator()
+    scale.play(scaleX).with(scaleY)
+
+    scale.start()
+}
+
+private const val SCALE_X_PROPERTY = "scaleX"
+private const val SCALE_Y_PROPERTY = "scaleY"

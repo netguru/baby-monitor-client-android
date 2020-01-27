@@ -2,6 +2,7 @@ package co.netguru.baby.monitor.client.feature.communication.webrtc.client
 
 import android.content.Context
 import android.graphics.Color
+import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import co.netguru.baby.monitor.client.common.view.CustomSurfaceViewRenderer
@@ -25,6 +26,8 @@ class RtcClient(
     private val remoteView: CustomSurfaceViewRenderer
 ) : RtcMessageHandler {
 
+    private var audioTrack: AudioTrack? = null
+    private var audioSource: AudioSource? = null
     private val compositeDisposable = CompositeDisposable()
     private val eglBase by lazy { EglBase.create() }
     private var sharedContext: EglBase.Context? = eglBase.eglBaseContext
@@ -36,14 +39,21 @@ class RtcClient(
 
     private var peerConnection: PeerConnection? = null
 
+    var microphoneEnabled = false
+        set(isEnabled) {
+            field = isEnabled
+            audioTrack?.setEnabled(isEnabled)
+        }
+
     init {
         rtcClientMessageController.rtcMessageHandler = this
     }
 
     fun startCall(
-        context: Context
+        context: Context,
+        hasRecordAudioPermission: Boolean
     ) = Completable.fromAction {
-        initRtc(context)
+        initRtc(context, hasRecordAudioPermission)
     }
 
     fun cleanup() {
@@ -76,7 +86,10 @@ class RtcClient(
         }
     }
 
-    private fun initRtc(context: Context) {
+    private fun initRtc(
+        context: Context,
+        hasRecordAudioPermission: Boolean
+    ) {
         Timber.i("initializing")
         PeerConnectionFactory.initialize(
             PeerConnectionFactory.InitializationOptions.builder(context)
@@ -96,16 +109,29 @@ class RtcClient(
             mandatory.add(MediaConstraints.KeyValuePair(HANDSHAKE_VIDEO_OFFER, "true"))
             mandatory.add(MediaConstraints.KeyValuePair(HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT, "true"))
         }
-        createConnection(factory ?: return)
+
+        setSpeakerphoneOn(context)
+
+        createConnection(factory ?: return, hasRecordAudioPermission)
     }
 
-    private fun createConnection(factory: PeerConnectionFactory) {
+    private fun setSpeakerphoneOn(context: Context) {
+        (context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager)?.run {
+            isSpeakerphoneOn = true
+        }
+    }
+
+    private fun createConnection(
+        factory: PeerConnectionFactory,
+        hasRecordAudioPermission: Boolean
+    ) {
         connectionObserver = ConnectionObserver()
 
         peerConnection = factory.createPeerConnection(
             emptyList(),
             connectionObserver
         )
+        if (hasRecordAudioPermission) addAudioTrack(factory)
 
         connectionObserver.streamObservable
             .subscribeOn(Schedulers.io())
@@ -123,6 +149,18 @@ class RtcClient(
             .addTo(compositeDisposable)
 
         createOffer()
+    }
+
+    private fun addAudioTrack(factory: PeerConnectionFactory) {
+        audioSource = factory.createAudioSource(MediaConstraints())
+        audioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, audioSource).apply {
+            setEnabled(microphoneEnabled)
+        }
+
+        val stream = factory.createLocalMediaStream(STREAM_LABEL)
+        stream.addTrack(audioTrack)
+
+        peerConnection?.addStream(stream)
     }
 
     private fun createOffer() {
@@ -180,6 +218,8 @@ class RtcClient(
     companion object {
         private const val HANDSHAKE_AUDIO_OFFER = "OfferToReceiveAudio"
         private const val HANDSHAKE_VIDEO_OFFER = "OfferToReceiveVideo"
+        private const val AUDIO_TRACK_ID = "audio"
+        private const val STREAM_LABEL = "stream"
 
         private const val HANDSHAKE_DTLS_SRTP_KEY_AGREEMENT = "DtlsSrtpKeyAgreement"
     }
