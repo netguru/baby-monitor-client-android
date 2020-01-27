@@ -29,7 +29,6 @@ import javax.inject.Inject
 
 class ClientHomeViewModel @Inject constructor(
     private val dataRepository: DataRepository,
-    private val sendFirebaseTokenUseCase: SendFirebaseTokenUseCase,
     private val sendBabyNameUseCase: SendBabyNameUseCase,
     private val snoozeNotificationUseCase: SnoozeNotificationUseCase,
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
@@ -107,7 +106,6 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     fun openSocketConnection(address: URI) {
-        mutableSelectedChildAvailability.postValue(rxWebSocketClient.isOpen())
         rxWebSocketClient.events(address)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -115,7 +113,10 @@ class ClientHomeViewModel @Inject constructor(
                 onNext = { event ->
                     Timber.i("Consuming event: $event.")
                     when (event) {
-                        is RxWebSocketClient.Event.Open -> handleWebSocketOpen(rxWebSocketClient)
+                        is RxWebSocketClient.Event.Open, RxWebSocketClient.Event.Connected
+                        -> handleWebSocketOpen(rxWebSocketClient)
+                        is RxWebSocketClient.Event.Disconnected
+                        -> mutableSelectedChildAvailability.postValue(false)
                         is RxWebSocketClient.Event.Close -> handleWebSocketClose()
                         is RxWebSocketClient.Event.Message -> handleMessage(
                             messageParser.parseWebSocketMessage(
@@ -143,15 +144,6 @@ class ClientHomeViewModel @Inject constructor(
 
     private fun handleWebSocketOpen(client: RxWebSocketClient) {
         mutableSelectedChildAvailability.postValue(true)
-        sendFirebaseTokenUseCase.sendFirebaseToken(client)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onComplete = {
-                    Timber.d("Firebase token sent successfully.")
-                }, onError = { error ->
-                    Timber.w(error, "Error sending Firebase token.")
-                })
-            .addTo(openSocketDisposables)
         sendBabyNameUseCase.streamBabyName(client)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
@@ -184,7 +176,7 @@ class ClientHomeViewModel @Inject constructor(
 
     override fun sendMessage(message: Message) {
         rxWebSocketClient.send(message)
-            .subscribeBy(onError = {Timber.e(it)})
+            .subscribeBy(onError = { Timber.e(it) })
             .addTo(compositeDisposable)
     }
 }

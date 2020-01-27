@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.extensions.addActions
+import co.netguru.baby.monitor.client.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
@@ -21,7 +22,7 @@ class NotificationHandler(private val context: Context) {
 
     fun showForegroundNotification(service: Service) {
         val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            R.drawable.top_monitoring_icon
+            R.drawable.ic_baby
         } else {
             R.mipmap.ic_launcher
         }
@@ -30,6 +31,7 @@ class NotificationHandler(private val context: Context) {
             NotificationCompat.Builder(service, context.getString(R.string.notification_channel_id))
                 .setOngoing(true)
                 .setSmallIcon(drawableResId)
+                .setColor(context.getColorCompat(R.color.accent))
                 .setContentTitle(service.getString(R.string.notification_foreground_content_title))
                 .setContentText(service.getString(R.string.notification_foreground_content_text))
                 .setContentIntent(
@@ -66,6 +68,7 @@ class NotificationHandler(private val context: Context) {
         return notificationBuilder
             .setContentTitle(title)
             .setContentText(content)
+            .setColor(context.getColorCompat(R.color.accent))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(resultPendingIntent)
             .setAutoCancel(true)

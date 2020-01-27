@@ -10,7 +10,7 @@ class AppStateHandler @Inject constructor(
 ) {
     internal var appState: AppState
         get() = AppState.valueOf(
-            prefs.getString(APP_STATE_KEY, null) ?: AppState.UNDEFINED.toString()
+            prefs.getString(APP_STATE_KEY, null) ?: AppState.FIRST_OPEN.toString()
         )
         set(value) {
             prefs.edit {
@@ -24,5 +24,5 @@ class AppStateHandler @Inject constructor(
 }
 
 enum class AppState {
-    UNDEFINED, SERVER, CLIENT
+    UNDEFINED, SERVER, CLIENT, FIRST_OPEN
 }

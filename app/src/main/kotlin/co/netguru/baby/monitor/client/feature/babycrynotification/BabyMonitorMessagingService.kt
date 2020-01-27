@@ -99,7 +99,7 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
         actions: List<NotificationCompat.Action>? = null
     ) {
         val drawableResId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            R.drawable.white_logo
+            R.drawable.ic_baby
         } else {
             R.mipmap.ic_launcher
         }

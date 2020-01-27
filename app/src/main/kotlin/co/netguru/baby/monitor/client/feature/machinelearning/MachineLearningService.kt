@@ -116,14 +116,9 @@ class MachineLearningService : IntentService("MachineLearningService") {
 
     inner class MachineLearningBinder : Binder() {
         fun startRecording() {
-            stopIfRunning()
+            if (aacRecorder != null) return
             Timber.i("Start recording")
             this@MachineLearningService.startRecording()
-        }
-
-        private fun stopIfRunning() {
-            // In case of multiple disconnected statuses from RtcServerConnectionState
-            if (aacRecorder != null) stopRecording()
         }
 
         fun stopRecording() {

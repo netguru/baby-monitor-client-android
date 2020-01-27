@@ -27,11 +27,11 @@ class RtcClientMessageController(
     fun startRtcSession(
         sessionDescription: SessionDescription
     ) {
-
-        if (rxWebSocketClient.isOpen()) sendOffer(sessionDescription)
         compositeDisposable += rxWebSocketClient.events(serverUri = serverUri)
             .doOnNext {
-                if (it is RxWebSocketClient.Event.Open) sendOffer(sessionDescription)
+                if (it is RxWebSocketClient.Event.Open ||
+                    it is RxWebSocketClient.Event.Connected
+                ) sendOffer(sessionDescription)
             }
             .ofType(RxWebSocketClient.Event.Message::class.java)
             .subscribe { event: RxWebSocketClient.Event.Message ->

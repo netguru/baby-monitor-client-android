@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.babycrynotification
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
 import dagger.Reusable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -27,6 +28,7 @@ class NotifyBabyCryingUseCase(
             .throttleFirst(CRYING_EVENTS_THROTTLING_TIME, TimeUnit.MINUTES)
             .flatMapCompletable {
                 fetchClientsAndPostNotification()
+                    .subscribeOn(Schedulers.io())
             }
             .doOnError { Timber.w(it) }
             .retry()

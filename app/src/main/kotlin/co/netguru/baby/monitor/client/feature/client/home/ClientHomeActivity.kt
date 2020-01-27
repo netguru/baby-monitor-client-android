@@ -120,7 +120,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         setSelectedChildName(child.name ?: "")
         GlideApp.with(this)
             .load(child.image)
-            .placeholder(R.drawable.child)
+            .placeholder(R.drawable.baby_logo)
             .apply(RequestOptions.circleCropTransform())
             .into(toolbarChildMiniatureIv)
     }

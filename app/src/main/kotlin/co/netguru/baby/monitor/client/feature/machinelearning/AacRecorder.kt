@@ -46,6 +46,7 @@ class AacRecorder {
     }
 
     fun release() {
+        Timber.i("release recording")
         shouldStopRecording = true
         audioRecord?.stop()
         audioRecord?.release()
