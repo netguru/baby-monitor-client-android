@@ -42,7 +42,7 @@ class ServerViewModelTest {
     private val schedulersProvider: ISchedulersProvider = mock {
         on { io() } doReturn Schedulers.trampoline()
         on { mainThread() } doReturn Schedulers.trampoline()
-        on { computation() } doReturn timerTestScheduler
+        on { computation() } doReturn Schedulers.trampoline()
     }
     private val deviceAddress = "deviceAddress"
     private val firebaseToken = "firebaseToken"
@@ -83,6 +83,7 @@ class ServerViewModelTest {
     @Test
     fun `should disable preview after VIDEO_PREVIEW_TOTAL_TIME`() {
         val cameraStateObserver: Observer<CameraState> = mock()
+        whenever(schedulersProvider.io()).doReturn(timerTestScheduler)
         serverViewModel.cameraState.observeForever(cameraStateObserver)
 
         assert(serverViewModel.cameraState.value?.previewEnabled == true)
@@ -97,6 +98,7 @@ class ServerViewModelTest {
     fun `should update timer value`() {
         val passedTime = 5L
         val startingFromOne = 1
+        whenever(schedulersProvider.io()).doReturn(timerTestScheduler)
 
         serverViewModel.resetTimer()
         timerTestScheduler.advanceTimeBy(passedTime, TimeUnit.SECONDS)
