@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.client.home.dashboard
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.setPadding
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -61,6 +62,7 @@ class ClientDashboardFragment : BaseFragment() {
                     .load(child.image)
                     .apply(RequestOptions.circleCropTransform())
                     .into(clientHomeBabyIv)
+                clientHomeBabyIv.setPadding(NO_PADDING)
             }
         }
         viewModel.selectedChildAvailability.observeNonNull(viewLifecycleOwner) { childAvailable ->
@@ -133,5 +135,6 @@ class ClientDashboardFragment : BaseFragment() {
 
     companion object {
         private const val REQUEST_MICROPHONE_PERMISSION = 678
+        private const val NO_PADDING = 0
     }
 }
