@@ -186,7 +186,7 @@ class ServerViewModel @Inject constructor(
         previewEnabled: Boolean = mutableCameraState.value?.previewEnabled == true,
         streamingEnabled: Boolean = mutableCameraState.value?.streamingEnabled == true
     ) {
-        mutableCameraState.value = (CameraState(previewEnabled, streamingEnabled))
+        mutableCameraState.postValue(CameraState(previewEnabled, streamingEnabled))
     }
 
     private fun handleStreamState(it: RtcConnectionState?) {
