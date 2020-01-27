@@ -69,7 +69,7 @@ class ServerViewModel @Inject constructor(
         timerDisposable?.dispose()
         timerDisposable = Observable.intervalRange(
             1, VIDEO_PREVIEW_TOTAL_TIME, 0, 1, TimeUnit.SECONDS,
-            schedulersProvider.computation()
+            schedulersProvider.io()
         )
             .observeOn(schedulersProvider.mainThread())
             .subscribeBy(
@@ -161,7 +161,10 @@ class ServerViewModel @Inject constructor(
                     handleStreamState(it)
                     mutableRtcConnectionStatus.postValue(it)
                 },
-                onError = { mutableRtcConnectionStatus.postValue(RtcConnectionState.Error) }
+                onError = {
+                    mutableRtcConnectionStatus.postValue(RtcConnectionState.Error)
+                    Timber.e(it)
+                }
             )
     }
 

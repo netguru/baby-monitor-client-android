@@ -21,10 +21,11 @@ class WebRtcManager constructor(
     private var cameraVideoCapturer: CameraVideoCapturer? = null
     private lateinit var videoSource: VideoSource
     private lateinit var videoTrack: VideoTrack
-    private lateinit var audioSource: AudioSource
-    private lateinit var audioTrack: AudioTrack
+    private var audioSource: AudioSource? = null
+    private var audioTrack: AudioTrack? = null
 
     private var peerConnection: PeerConnection? = null
+    private var stream: MediaStream? = null
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var connectionObserver: ConnectionObserver
 
@@ -80,16 +81,15 @@ class WebRtcManager constructor(
             .setVideoEncoderFactory(encoderFactory)
             .createPeerConnectionFactory()
 
-        val surfaceTextureHelper = SurfaceTextureHelper.create(SURFACE_TEXTURE_HELPER_THREAD, sharedContext)
+        val surfaceTextureHelper =
+            SurfaceTextureHelper.create(SURFACE_TEXTURE_HELPER_THREAD, sharedContext)
         videoSource = peerConnectionFactory.createVideoSource(true)
         cameraVideoCapturer = createCameraCapturer(Camera2Enumerator(context))
             .apply {
                 initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
             }
 
-        videoTrack = peerConnectionFactory.createVideoTrack("video", videoSource)
-        audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
-        audioTrack = peerConnectionFactory.createAudioTrack("audio", audioSource)
+        videoTrack = peerConnectionFactory.createVideoTrack(VIDEO_TRACK_ID, videoSource)
         cameraVideoCapturer?.let { enableVideo(true, it) }
         createConnection()
     }
@@ -101,12 +101,12 @@ class WebRtcManager constructor(
             emptyList(),
             connectionObserver
         )
-        val stream = peerConnectionFactory.createLocalMediaStream("stream")
-        stream.addTrack(audioTrack)
-        stream.addTrack(videoTrack)
-        peerConnection?.addStream(stream)
-
         listenForIceCandidates(connectionObserver.streamObservable)
+    }
+
+    private fun initAudio() {
+        audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
+        audioTrack = peerConnectionFactory.createAudioTrack(AUDIO_TRACK_ID, audioSource)
     }
 
     private fun listenForIceCandidates(streamObservable: Observable<StreamState>) {
@@ -138,7 +138,7 @@ class WebRtcManager constructor(
     fun stopCapturing() {
         Timber.d("stopCapturing()")
         compositeDisposable.dispose()
-        audioSource.dispose()
+        audioSource?.dispose()
         videoSource.dispose()
         cameraVideoCapturer?.dispose()
         peerConnection?.dispose()
@@ -148,6 +148,7 @@ class WebRtcManager constructor(
     fun acceptOffer(offer: String) {
         Timber.i("acceptOffer($offer)")
         connectionObserver.onAcceptOffer()
+        addStream()
         peerConnection?.run {
             setRemoteDescription(SessionDescription(SessionDescription.Type.OFFER, offer))
                 .doOnComplete { Timber.d("Offer set as a remote description.") }
@@ -177,6 +178,29 @@ class WebRtcManager constructor(
         }?.addTo(compositeDisposable)
     }
 
+    private fun addStream() {
+        Timber.i("Add stream")
+        if (stream != null) disposeStream() // If parent enters/exits stream very quick
+        initAudio()
+        stream = peerConnectionFactory.createLocalMediaStream(STREAM_LABEL)
+        stream?.addTrack(audioTrack)
+        stream?.addTrack(videoTrack)
+        peerConnection?.addStream(stream)
+    }
+
+    private fun disposeStream() {
+        Timber.i("Dispose stream")
+        disposeAudio()
+        peerConnection?.removeStream(stream)
+        stream = null
+    }
+
+    private fun disposeAudio() {
+        audioTrack?.dispose()
+        audioSource?.dispose()
+        audioSource = null
+    }
+
     fun addIceCandidate(iceCandidateData: Message.IceCandidateData) {
         peerConnection?.addIceCandidate(
             IceCandidate(
@@ -194,12 +218,20 @@ class WebRtcManager constructor(
 
     fun getConnectionObservable(): Observable<RtcConnectionState> =
         connectionObserver.streamObservable.ofType(ConnectionState::class.java)
+            .doOnNext {
+                if (it.connectionState is RtcConnectionState.Disconnected ||
+                    it.connectionState is RtcConnectionState.Error
+                ) disposeStream()
+            }
             .flatMap { Observable.just(it.connectionState) }
 
     companion object {
         private const val VIDEO_HEIGHT = 480
         private const val VIDEO_WIDTH = 320
         private const val VIDEO_FRAMERATE = 30
+        private const val STREAM_LABEL = "stream"
+        private const val AUDIO_TRACK_ID = "audio"
+        private const val VIDEO_TRACK_ID = "video"
         private const val SURFACE_TEXTURE_HELPER_THREAD = "SURFACE_TEXTURE_HELPER_THREAD"
     }
 }
