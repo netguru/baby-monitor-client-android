@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnection
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
+import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
 import dagger.Lazy
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -54,6 +55,10 @@ class ServerViewModel @Inject constructor(
 
     private val mutablePairingCodeLiveData = MutableLiveData<String>()
     internal val pairingCodeLiveData: LiveData<String> = mutablePairingCodeLiveData
+
+    private val mutableVoiceAnalysisOptionLiveData = MutableLiveData<VoiceAnalysisOption>()
+    internal val voiceAnalysisOptionLiveData: LiveData<VoiceAnalysisOption> =
+        mutableVoiceAnalysisOptionLiveData
 
     internal val webSocketAction = SingleLiveEvent<String>()
 
@@ -129,7 +134,31 @@ class ServerViewModel @Inject constructor(
                 message.pairingCode?.let {
                     mutablePairingCodeLiveData.value = it
                 }
+                message.voiceAnalysisOption?.let {
+                    handleVoiceAnalysisOptionChange(it, message.confirmationId, binder)
+                }
             }
+    }
+
+    private fun handleVoiceAnalysisOptionChange(
+        voiceAnalysisOption: String,
+        confirmationId: Int,
+        binder: WebSocketServerService.Binder
+    ) {
+        when (voiceAnalysisOption) {
+            VoiceAnalysisOption.NoiseDetection.name -> {
+                mutableVoiceAnalysisOptionLiveData.value = VoiceAnalysisOption.NoiseDetection
+            }
+            VoiceAnalysisOption.MachineLearning.name -> {
+                mutableVoiceAnalysisOptionLiveData.value = VoiceAnalysisOption.MachineLearning
+            }
+        }
+        compositeDisposable += dataRepository.updateVoiceAnalysisOption(
+            VoiceAnalysisOption.valueOf(
+                voiceAnalysisOption
+            )
+        ).subscribeOn(schedulersProvider.io())
+            .subscribe { binder.sendMessage(Message(confirmationId = confirmationId)) }
     }
 
     private fun handleMessageAction(action: String) {

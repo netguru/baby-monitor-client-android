@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.RadioGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +15,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
+import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
 import kotlinx.android.synthetic.main.fragment_client_settings.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
@@ -38,6 +40,35 @@ class ClientSettingsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupButtons()
+        setupObservers()
+        setupBabyDetails()
+
+        version.text =
+            getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+    }
+
+    private fun setupBabyDetails() {
+        childPhotoIv.babyProfileImage(
+            R.drawable.ic_select_photo_placeholder,
+            BITMAP_AUTO_SIZE,
+            R.color.alpha_accent,
+            R.drawable.ic_select_photo_camera
+        )
+
+        childNameEt.onFocusChangeListener =
+            View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
+                if (!hasFocus) {
+                    settingsViewModel.hideKeyboard(view, requireContext())
+                    if (childNameEt.text.isNullOrBlank()) {
+                        childNameEt.text?.clear()
+                    }
+                    settingsViewModel.updateChildName(childNameEt.text.toString())
+                }
+            }
+    }
+
+    private fun setupButtons() {
         rateUsBtn.setOnClickListener {
             settingsViewModel.openMarket(requireActivity())
         }
@@ -58,32 +89,25 @@ class ClientSettingsFragment : BaseFragment() {
             takeOrChoosePhoto()
         }
 
-        childPhotoIv.babyProfileImage(
-            R.drawable.ic_select_photo_placeholder,
-            BITMAP_AUTO_SIZE,
-            R.color.alpha_accent,
-            R.drawable.ic_select_photo_camera
-        )
+        voiceAnalysisRadioButtons.setOnCheckedChangeListener(voiceAnalysisCheckChangedListener())
+    }
 
-        setupObservers()
-
-        childNameEt.onFocusChangeListener =
-            View.OnFocusChangeListener { view: View, hasFocus: Boolean ->
-                if (!hasFocus) {
-                    settingsViewModel.hideKeyboard(view, requireContext())
-                    if (childNameEt.text.isNullOrBlank()) {
-                        childNameEt.text?.clear()
-                    }
-                    settingsViewModel.updateChildName(childNameEt.text.toString())
-                }
+    private fun voiceAnalysisCheckChangedListener(): RadioGroup.OnCheckedChangeListener {
+        return RadioGroup.OnCheckedChangeListener { _, checkedId ->
+            val voiceAnalysisOption = when (checkedId) {
+                R.id.noiseDetectionOption -> VoiceAnalysisOption.NoiseDetection
+                R.id.machineLearningOption -> VoiceAnalysisOption.MachineLearning
+                else -> null
             }
-
-        version.text =
-            getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+            configurationViewModel.chooseVoiceAnalysisOption(
+                clientViewModel,
+                voiceAnalysisOption!!
+            )
+        }
     }
 
     private fun setupObservers() {
-        clientViewModel.selectedChild.observeNonNull(viewLifecycleOwner) { child ->
+        clientViewModel.selectedChildLiveData.observeNonNull(viewLifecycleOwner) { child ->
             if (!child.name.isNullOrEmpty()) {
                 childNameEt.setText(child.name)
             }
@@ -93,13 +117,45 @@ class ClientSettingsFragment : BaseFragment() {
                     R.color.alpha_accent, R.drawable.ic_select_photo_camera
                 )
             }
+            checkVoiceAnalysisOption(resolveOption(child.voiceAnalysisOption))
         }
         configurationViewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
             when (resetState) {
-                is ResetState.InProgress -> setupResetButton(true)
-                is ResetState.Failed -> setupResetButton(false)
+                is ChangeState.InProgress -> setupResetButton(true)
+                is ChangeState.Failed -> setupResetButton(false)
             }
         })
+
+        configurationViewModel.voiceAnalysisOptionState.observe(
+            viewLifecycleOwner,
+            Observer { voiceAnalysisChangeState ->
+                setupVoiceAnalysisRadioButtons(voiceAnalysisChangeState)
+            })
+    }
+
+    private fun setupVoiceAnalysisRadioButtons(voiceAnalysisChangeState: Pair<ChangeState, VoiceAnalysisOption?>) {
+        machineLearningOption.isEnabled = voiceAnalysisChangeState.first != ChangeState.InProgress
+        noiseDetectionOption.isEnabled = voiceAnalysisChangeState.first != ChangeState.InProgress
+        voiceAnalysisChangeState.second?.run {
+            checkVoiceAnalysisOption(resolveOption(this))
+        }
+    }
+
+    private fun resolveOption(
+        voiceAnalysisOption: VoiceAnalysisOption
+    ): Int {
+        return when (voiceAnalysisOption) {
+            VoiceAnalysisOption.MachineLearning -> R.id.machineLearningOption
+            VoiceAnalysisOption.NoiseDetection -> R.id.noiseDetectionOption
+        }
+    }
+
+    private fun checkVoiceAnalysisOption(optionToSet: Int) {
+        voiceAnalysisRadioButtons.apply {
+            setOnCheckedChangeListener(null)
+            voiceAnalysisRadioButtons.check(optionToSet)
+            setOnCheckedChangeListener(voiceAnalysisCheckChangedListener())
+        }
     }
 
     private fun setupResetButton(resetInProgress: Boolean) {
@@ -131,7 +187,7 @@ class ClientSettingsFragment : BaseFragment() {
                     type: Int
                 ) {
                     imageFile ?: return
-                    clientViewModel.selectedChild.value?.let { child ->
+                    clientViewModel.selectedChildLiveData.value?.let { child ->
                         settingsViewModel.saveImage(requireContext(), imageFile, child)
                     }
                 }

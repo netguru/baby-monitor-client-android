@@ -15,18 +15,19 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.extensions.controlVideoStreamVolume
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
-import co.netguru.baby.monitor.client.feature.settings.ResetState
+import co.netguru.baby.monitor.client.feature.settings.ChangeState
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_server.*
 import timber.log.Timber
 import javax.inject.Inject
 
 class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
-    YesNoDialog.YesNoDialogClickListener, MessageSender {
+    YesNoDialog.YesNoDialogClickListener, MessageController {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
     private var webSocketServerServiceBinder: WebSocketServerService.Binder? = null
@@ -53,7 +54,7 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
     private fun setupObservers() {
         configurationViewModel.resetState.observe(this, Observer { resetState ->
             when (resetState) {
-                is ResetState.Completed -> handleAppReset()
+                is ChangeState.Completed -> handleAppReset()
             }
         })
 
@@ -112,5 +113,12 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
 
     override fun sendMessage(message: Message) {
         webSocketServerServiceBinder?.sendMessage(message)
+    }
+
+    override fun receivedMessages(): Observable<Message> {
+        return webSocketServerServiceBinder?.messages()
+            ?.flatMap {
+                Observable.just(it.second)
+            } ?: Observable.error(Throwable("Failed Initialisation"))
     }
 }

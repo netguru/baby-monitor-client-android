@@ -148,7 +148,7 @@ class ClientLiveCameraFragment : BaseFragment() {
     }
 
     private fun startCall(rxWebSocketClient: RxWebSocketClient, hasRecordAudioPermission: Boolean) {
-        val serverUri = URI.create(viewModel.selectedChild.value?.address ?: return)
+        val serverUri = URI.create(viewModel.selectedChildLiveData.value?.address ?: return)
         fragmentViewModel.startCall(
             requireActivity().applicationContext,
             liveCameraRemoteRenderer,

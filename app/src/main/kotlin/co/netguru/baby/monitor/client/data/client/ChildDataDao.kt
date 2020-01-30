@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
 import io.reactivex.Maybe
 
 @Dao
@@ -27,6 +28,9 @@ interface ChildDataDao {
 
     @Query("UPDATE CHILD_DATA SET snoozeTimeStamp = :notificationSnoozeTimeStamp WHERE id = 0")
     fun updateNotificationSnoozeTimeStamp(notificationSnoozeTimeStamp: Long): Int
+
+    @Query("UPDATE CHILD_DATA SET voiceAnalysisOption = :voiceAnalysisOption WHERE id = 0")
+    fun updateVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption)
 
     @Query("DELETE FROM CHILD_DATA")
     fun deleteAll()

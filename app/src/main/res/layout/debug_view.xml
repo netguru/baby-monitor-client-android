@@ -16,6 +16,13 @@
 
     <TextView
             style="@style/ShadowTextViewStyle"
+            android:id="@+id/soundDecibels"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    <TextView
+            style="@style/ShadowTextViewStyle"
             android:id="@+id/notificationInformation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

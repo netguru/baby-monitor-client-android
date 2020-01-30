@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
 import kotlinx.android.synthetic.main.fragment_server_settings.*
 import javax.inject.Inject
@@ -41,8 +41,8 @@ class ServerSettingsFragment : BaseFragment() {
     private fun setupObservers() {
         configurationViewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
             when (resetState) {
-                is ResetState.InProgress -> setupResetButton(true)
-                is ResetState.Failed -> setupResetButton(false)
+                is ChangeState.InProgress -> setupResetButton(true)
+                is ChangeState.Failed -> setupResetButton(false)
             }
         })
     }
@@ -75,7 +75,7 @@ class ServerSettingsFragment : BaseFragment() {
     }
 
     private fun resetApp() {
-        configurationViewModel.resetApp(requireActivity() as? MessageSender)
+        configurationViewModel.resetApp(requireActivity() as? MessageController)
     }
 
     private fun setupResetButton(resetInProgress: Boolean) {

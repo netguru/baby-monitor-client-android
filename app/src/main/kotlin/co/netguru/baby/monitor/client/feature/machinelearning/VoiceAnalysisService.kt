@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.annotation.UiThread
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
+import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
+import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -16,14 +18,14 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class MachineLearningService : IntentService("MachineLearningService") {
+class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
 
     private val compositeDisposable = CompositeDisposable()
     private var aacRecorder: AacRecorder? = null
     private val machineLearning by lazy { MachineLearning(applicationContext) }
+    private var voiceAnalysisOption = VoiceAnalysisOption.MachineLearning
 
     @Inject
     internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
@@ -33,15 +35,25 @@ class MachineLearningService : IntentService("MachineLearningService") {
     internal lateinit var notificationHandler: NotificationHandler
     @Inject
     internal lateinit var debugModule: DebugModule
+    @Inject
+    internal lateinit var noiseDetector: NoiseDetector
+    @Inject
+    internal lateinit var dataRepository: DataRepository
 
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
         notificationHandler.showForegroundNotification(this)
-        startRecording()
+        dataRepository.getClientData()
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(onSuccess = {
+                voiceAnalysisOption = it.voiceAnalysisOption
+                startRecording()
+            }, onComplete = this::startRecording)
+            .addTo(compositeDisposable)
     }
 
-    override fun onBind(intent: Intent?) = MachineLearningBinder()
+    override fun onBind(intent: Intent?) = VoiceAnalysisBinder()
 
     override fun onHandleIntent(intent: Intent?) = Unit
 
@@ -52,15 +64,21 @@ class MachineLearningService : IntentService("MachineLearningService") {
     }
 
     private fun startRecording() {
-        aacRecorder = AacRecorder()
+        aacRecorder = AacRecorder(voiceAnalysisOption)
         aacRecorder?.startRecording()
             ?.subscribeOn(Schedulers.computation())
             ?.subscribeBy(
                 onComplete = { Timber.i("Recording completed") },
                 onError = Timber::e
             )?.addTo(compositeDisposable)
-        aacRecorder?.data
-            ?.throttleLast(DATA_PROCESS_THROTTLE_TIME, TimeUnit.SECONDS)
+        aacRecorder?.machineLearningData
+            ?.subscribeOn(Schedulers.newThread())
+            ?.subscribeBy(
+                onNext = this::handleRecordingData,
+                onComplete = { Timber.i("Complete") },
+                onError = Timber::e
+            )?.addTo(compositeDisposable)
+        aacRecorder?.soundDetectionData
             ?.subscribeOn(Schedulers.newThread())
             ?.subscribeBy(
                 onNext = this::handleRecordingData,
@@ -79,12 +97,28 @@ class MachineLearningService : IntentService("MachineLearningService") {
             ).addTo(compositeDisposable)
     }
 
+    private fun handleRecordingData(noiseRecordingData: ShortArray) {
+        noiseDetector.processData(noiseRecordingData, noiseRecordingData.size)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { decibels -> handleNoiseDetectorData(decibels) },
+                onError = { error -> complain("Noise detector error", error) }
+            ).addTo(compositeDisposable)
+    }
+
+    private fun handleNoiseDetectorData(decibels: Double) {
+        debugModule.sendSoundEvent(decibels.toInt())
+        Timber.i("Decibels: $decibels")
+    }
+
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
         debugModule.sendCryingProbabilityEvent(cryingProbability)
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
-            notifyBabyCryingUseCase.notifyBabyCrying()
+            if (voiceAnalysisOption == VoiceAnalysisOption.MachineLearning)
+                notifyBabyCryingUseCase.notifyBabyCrying()
 
             // Save baby recordings for later upload only when we have a strict user's permission
             if (sharedPrefsWrapper.isUploadEnablad()) {
@@ -114,11 +148,11 @@ class MachineLearningService : IntentService("MachineLearningService") {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    inner class MachineLearningBinder : Binder() {
+    inner class VoiceAnalysisBinder : Binder() {
         fun startRecording() {
             if (aacRecorder != null) return
             Timber.i("Start recording")
-            this@MachineLearningService.startRecording()
+            this@VoiceAnalysisService.startRecording()
         }
 
         fun stopRecording() {
@@ -133,9 +167,10 @@ class MachineLearningService : IntentService("MachineLearningService") {
             aacRecorder?.release()
             aacRecorder = null
         }
-    }
 
-    companion object {
-        private const val DATA_PROCESS_THROTTLE_TIME = 10L
+        fun setVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption) {
+            this@VoiceAnalysisService.voiceAnalysisOption = voiceAnalysisOption
+            aacRecorder?.voiceAnalysisOption = voiceAnalysisOption
+        }
     }
 }

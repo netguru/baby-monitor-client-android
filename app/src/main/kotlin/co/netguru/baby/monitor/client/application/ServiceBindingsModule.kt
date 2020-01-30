@@ -4,7 +4,7 @@ import co.netguru.baby.monitor.client.feature.babycrynotification.BabyMonitorMes
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
-import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
+import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisService
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -12,7 +12,7 @@ import dagger.android.ContributesAndroidInjector
 internal abstract class ServiceBindingsModule {
 
     @ContributesAndroidInjector
-    internal abstract fun bindMachineLearningService(): MachineLearningService
+    internal abstract fun bindVoiceAnalysisService(): VoiceAnalysisService
 
     @ContributesAndroidInjector
     internal abstract fun bindWebRtcService(): WebRtcService
