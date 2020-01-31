@@ -15,5 +15,5 @@ data class ClientEntity(
     @ColumnInfo(name = "firebase_key") var firebaseKey: String,
     val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MachineLearning,
     // There is only one parent handled right now
-    @PrimaryKey val id: Int = 0
+    @PrimaryKey val id: Int? = 0
 )
