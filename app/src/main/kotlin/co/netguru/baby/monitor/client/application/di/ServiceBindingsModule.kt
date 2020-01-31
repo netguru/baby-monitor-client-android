@@ -1,10 +1,10 @@
-package co.netguru.baby.monitor.client.application
+package co.netguru.baby.monitor.client.application.di
 
 import co.netguru.baby.monitor.client.feature.babycrynotification.BabyMonitorMessagingService
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisService
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisService
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

@@ -1,9 +1,10 @@
-package co.netguru.baby.monitor.client.feature.machinelearning
+package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import co.netguru.baby.monitor.client.common.RunsInBackground
+import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
@@ -62,7 +63,8 @@ class AacRecorder(var voiceAnalysisOption: VoiceAnalysisOption) {
         rawData = rawData.plus(array.toTypedArray())
 
         if (newData.size >= NoiseDetector.DATA_SIZE &&
-            voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection) {
+            voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection
+        ) {
             soundDetectionData.onNext(newData.takeLast(NoiseDetector.DATA_SIZE).toShortArray())
         }
 

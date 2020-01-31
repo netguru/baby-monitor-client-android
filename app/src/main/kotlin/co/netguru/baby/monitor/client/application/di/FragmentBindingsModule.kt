@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.application
+package co.netguru.baby.monitor.client.application.di
 
 import co.netguru.baby.monitor.client.application.scope.FragmentScope
 import co.netguru.baby.monitor.client.feature.client.configuration.AllDoneFragment
@@ -18,7 +18,7 @@ import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragmentModule
 import co.netguru.baby.monitor.client.feature.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.settings.ServerSettingsFragment
 import co.netguru.baby.monitor.client.feature.splash.SplashFragment
-import co.netguru.baby.monitor.client.feature.welcome.SpecifyDeviceFragment
+import co.netguru.baby.monitor.client.feature.onboarding.SpecifyDeviceFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

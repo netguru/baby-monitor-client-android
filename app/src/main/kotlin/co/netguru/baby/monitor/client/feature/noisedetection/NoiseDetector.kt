@@ -1,6 +1,6 @@
 package co.netguru.baby.monitor.client.feature.noisedetection
 
-import co.netguru.baby.monitor.client.feature.machinelearning.AacRecorder.Companion.SAMPLING_RATE
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.AacRecorder.Companion.SAMPLING_RATE
 import io.reactivex.Single
 import timber.log.Timber
 import javax.inject.Inject

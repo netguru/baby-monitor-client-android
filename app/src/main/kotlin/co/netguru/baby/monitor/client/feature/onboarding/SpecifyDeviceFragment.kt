@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.welcome
+package co.netguru.baby.monitor.client.feature.onboarding
 
 import android.os.Bundle
 import android.view.View

@@ -52,7 +52,7 @@
             android:name=".feature.server.ServerActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name=".feature.machinelearning.VoiceAnalysisService" />
+        <service android:name=".feature.voiceAnalysis.VoiceAnalysisService" />
         <service android:name=".feature.communication.webrtc.server.WebRtcService" />
         <service android:name=".feature.communication.websocket.WebSocketServerService" />
         <service

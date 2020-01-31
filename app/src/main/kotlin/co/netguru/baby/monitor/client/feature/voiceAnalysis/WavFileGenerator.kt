@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.machinelearning
+package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import android.content.Context
 import io.reactivex.Single
@@ -27,7 +27,9 @@ object WavFileGenerator {
         sampleRate: Int,
         byteRate: Int
     ) = Single.fromCallable {
-        checkAvailableSpace(context)
+        checkAvailableSpace(
+            context
+        )
         val formatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
         val file = File(
             context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE),
@@ -35,18 +37,54 @@ object WavFileGenerator {
         )
 
         DataOutputStream(FileOutputStream(file)).use { output ->
-            writeString(output, "RIFF") // chunk id
-            writeInt(output, 36 + rawData.size) // chunk size
-            writeString(output, "WAVE") // format
-            writeString(output, "fmt ") // subchunk 1 id
-            writeInt(output, 16) // subchunk 1 size
-            writeShort(output, 1.toShort()) // audio format (1 = PCM)
-            writeShort(output, 1.toShort()) // number of channels
-            writeInt(output, sampleRate) // sample rate
-            writeInt(output, byteRate) // byte rate
-            writeShort(output, 2.toShort()) // block align
-            writeShort(output, 16.toShort()) // bits per sample
-            writeString(output, "data") // subchunk 2 id
+            writeString(
+                output,
+                "RIFF"
+            ) // chunk id
+            writeInt(
+                output,
+                36 + rawData.size
+            ) // chunk size
+            writeString(
+                output,
+                "WAVE"
+            ) // format
+            writeString(
+                output,
+                "fmt "
+            ) // subchunk 1 id
+            writeInt(
+                output,
+                16
+            ) // subchunk 1 size
+            writeShort(
+                output,
+                1.toShort()
+            ) // audio format (1 = PCM)
+            writeShort(
+                output,
+                1.toShort()
+            ) // number of channels
+            writeInt(
+                output,
+                sampleRate
+            ) // sample rate
+            writeInt(
+                output,
+                byteRate
+            ) // byte rate
+            writeShort(
+                output,
+                2.toShort()
+            ) // block align
+            writeShort(
+                output,
+                16.toShort()
+            ) // bits per sample
+            writeString(
+                output,
+                "data"
+            ) // subchunk 2 id
         }
 
         FileOutputStream(file).use { steam ->
@@ -150,7 +188,9 @@ object WavFileGenerator {
                 .listFiles()
                 .sortedBy { file -> file.lastModified() }
                 .firstOrNull()?.delete()
-            checkAvailableSpace(context)
+            checkAvailableSpace(
+                context
+            )
         }
     }
 }

@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.machinelearning
 
 import android.content.Context
-import co.netguru.baby.monitor.client.feature.machinelearning.AacRecorder.Companion.SAMPLING_RATE
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.AacRecorder.Companion.SAMPLING_RATE
 import io.reactivex.Single
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 import timber.log.Timber

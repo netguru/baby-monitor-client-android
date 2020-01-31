@@ -29,8 +29,8 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisService
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisService.VoiceAnalysisBinder
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisService
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisService.VoiceAnalysisBinder
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
 import javax.inject.Inject
