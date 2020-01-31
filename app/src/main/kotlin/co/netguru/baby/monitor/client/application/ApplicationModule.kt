@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.AppDatabase
+import co.netguru.baby.monitor.client.data.AppDatabase.Companion.DATABASE_NAME
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.communication.nsd.DeviceNameProvider
@@ -64,14 +65,24 @@ class ApplicationModule {
     @Singleton
     @Provides
     fun applicationDatabse(context: Context) =
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "baby-monitor-database"
-        )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
-            .fallbackToDestructiveMigration()
-            .build()
+        try {
+            Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                DATABASE_NAME
+            )
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .build()
+        } catch (e: IllegalStateException) {
+            Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                DATABASE_NAME
+
+            )
+                .fallbackToDestructiveMigration()
+                .build()
+        }
 
     @Provides
     @Reusable

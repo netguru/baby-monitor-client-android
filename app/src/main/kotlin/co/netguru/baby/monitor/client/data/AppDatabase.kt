@@ -24,4 +24,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun logDataDao(): LogDataDao
     abstract fun clientDao(): ClientDataDao
     abstract fun childDataDao(): ChildDataDao
+
+    companion object {
+        const val DATABASE_NAME = "baby-monitor-database"
+    }
 }
