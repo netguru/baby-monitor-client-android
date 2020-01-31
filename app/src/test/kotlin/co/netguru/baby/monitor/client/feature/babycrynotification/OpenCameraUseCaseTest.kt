@@ -8,6 +8,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.analytics.EventType
+import co.netguru.baby.monitor.client.feature.babynotification.OpenCameraUseCase
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify

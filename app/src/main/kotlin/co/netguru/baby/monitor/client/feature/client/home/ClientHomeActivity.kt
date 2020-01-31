@@ -15,7 +15,7 @@ import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
-import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
+import co.netguru.baby.monitor.client.feature.babynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel

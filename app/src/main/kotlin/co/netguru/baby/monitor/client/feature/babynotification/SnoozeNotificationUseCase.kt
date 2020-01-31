@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.babycrynotification
+package co.netguru.baby.monitor.client.feature.babynotification
 
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager

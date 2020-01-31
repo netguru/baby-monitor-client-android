@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
-import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase
+import co.netguru.baby.monitor.client.feature.babynotification.SnoozeNotificationUseCase
 import co.netguru.baby.monitor.client.feature.communication.internet.CheckInternetConnectionUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION

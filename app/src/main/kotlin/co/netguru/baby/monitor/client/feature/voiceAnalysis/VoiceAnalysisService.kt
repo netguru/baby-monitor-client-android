@@ -8,10 +8,11 @@ import androidx.annotation.UiThread
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
-import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
+import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUseCase
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
+import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector.Companion.DEFAULT_NOISE_THRESHOLD
 import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -34,7 +35,7 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
         VoiceAnalysisOption.MachineLearning
 
     @Inject
-    internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
+    internal lateinit var notifyBabyEventUseCase: NotifyBabyEventUseCase
     @Inject
     internal lateinit var sharedPrefsWrapper: FirebaseSharedPreferencesWrapper
     @Inject
@@ -73,12 +74,13 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
         aacRecorder =
             AacRecorder(voiceAnalysisOption)
         aacRecorder?.startRecording()
-            ?.subscribeOn(Schedulers.computation())
+            ?.subscribeOn(Schedulers.io())
             ?.subscribeBy(
                 onComplete = { Timber.i("Recording completed") },
                 onError = Timber::e
             )?.addTo(compositeDisposable)
         aacRecorder?.machineLearningData
+            ?.filter { voiceAnalysisOption == VoiceAnalysisOption.MachineLearning }
             ?.subscribeOn(Schedulers.newThread())
             ?.subscribeBy(
                 onNext = this::handleRecordingData,
@@ -86,6 +88,7 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
                 onError = Timber::e
             )?.addTo(compositeDisposable)
         aacRecorder?.soundDetectionData
+            ?.filter { voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection }
             ?.subscribeOn(Schedulers.newThread())
             ?.subscribeBy(
                 onNext = this::handleRecordingData,
@@ -106,7 +109,7 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
 
     private fun handleRecordingData(noiseRecordingData: ShortArray) {
         noiseDetector.processData(noiseRecordingData, noiseRecordingData.size)
-            .subscribeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { decibels -> handleNoiseDetectorData(decibels) },
@@ -116,6 +119,7 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
 
     private fun handleNoiseDetectorData(decibels: Double) {
         debugModule.sendSoundEvent(decibels.toInt())
+        if (decibels > DEFAULT_NOISE_THRESHOLD) notifyBabyEventUseCase.notifyNoiseDetected()
         Timber.i("Decibels: $decibels")
     }
 
@@ -124,8 +128,7 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
         debugModule.sendCryingProbabilityEvent(cryingProbability)
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
-            if (voiceAnalysisOption == VoiceAnalysisOption.MachineLearning)
-                notifyBabyCryingUseCase.notifyBabyCrying()
+            notifyBabyEventUseCase.notifyBabyCrying()
 
             // Save baby recordings for later upload only when we have a strict user's permission
             if (sharedPrefsWrapper.isUploadEnablad()) {

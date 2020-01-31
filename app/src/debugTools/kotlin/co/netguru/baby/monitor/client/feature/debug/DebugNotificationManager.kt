@@ -10,7 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
+import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUseCase
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 @Singleton
 class DebugNotificationManager @Inject constructor(
-    val notifyBabyCryingUseCase: NotifyBabyCryingUseCase,
+    val notifyBabyEventUseCase: NotifyBabyEventUseCase,
     val notifyLowBatteryUseCase: NotifyLowBatteryUseCase
 ) {
 
@@ -76,6 +76,16 @@ class DebugNotificationManager @Inject constructor(
                     NO_FLAGS
                 )
             )
+            .addAction(
+                NO_ICON,
+                "Noise",
+                PendingIntent.getBroadcast(
+                    service,
+                    NOISE_ACTION_REQUEST_CODE,
+                    receiver.noiseDetectedIntent(),
+                    NO_FLAGS
+                )
+            )
             .build()
 
     private inner class DebugNotificationReceiver : BroadcastReceiver() {
@@ -83,8 +93,8 @@ class DebugNotificationManager @Inject constructor(
             require(intent.action == ACTION_DEBUG_NOTIFICATION) { "Unhandled action: {intent.action}." }
 
             when (intent.getSerializableExtra(KEY_DEBUG_NOTIFICATION_EXTRA) as DebugNotificationAction) {
-                DebugNotificationAction.BABY_CRYING -> notifyBabyCryingUseCase.notifyBabyCrying()
-
+                DebugNotificationAction.BABY_CRYING -> notifyBabyEventUseCase.notifyBabyCrying()
+                DebugNotificationAction.NOISE_DETECTED -> notifyBabyEventUseCase.notifyNoiseDetected()
                 DebugNotificationAction.LOW_BATTERY -> {
                     notifyLowBatteryUseCase.notifyLowBattery(
                         context.getString(R.string.notification_low_battery_title),
@@ -117,11 +127,15 @@ class DebugNotificationManager @Inject constructor(
 
         internal fun lowBatteryIntent() =
             intent(DebugNotificationAction.LOW_BATTERY)
+
+        internal fun noiseDetectedIntent() =
+            intent(DebugNotificationAction.NOISE_DETECTED)
     }
 
     private enum class DebugNotificationAction {
         BABY_CRYING,
         LOW_BATTERY,
+        NOISE_DETECTED
     }
 
     companion object {
@@ -133,6 +147,7 @@ class DebugNotificationManager @Inject constructor(
         private const val NO_FLAGS = 0
         private const val CRY_ACTION_REQUEST_CODE = 1
         private const val LOW_BATTERY_ACTION_REQUEST_CODE = 2
+        private const val NOISE_ACTION_REQUEST_CODE = 3
         private const val DEBUG_CHANNEL_ID = "debug"
     }
 }

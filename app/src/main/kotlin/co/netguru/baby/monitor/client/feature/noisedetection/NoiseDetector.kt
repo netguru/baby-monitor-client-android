@@ -26,5 +26,6 @@ class NoiseDetector @Inject constructor() {
 
     companion object {
         internal const val DATA_SIZE = SAMPLING_RATE / 10
+        const val DEFAULT_NOISE_THRESHOLD = 65
     }
 }
