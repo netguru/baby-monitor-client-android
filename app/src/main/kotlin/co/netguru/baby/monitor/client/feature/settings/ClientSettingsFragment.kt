@@ -94,15 +94,16 @@ class ClientSettingsFragment : BaseFragment() {
 
     private fun voiceAnalysisCheckChangedListener(): RadioGroup.OnCheckedChangeListener {
         return RadioGroup.OnCheckedChangeListener { _, checkedId ->
-            val voiceAnalysisOption = when (checkedId) {
+            when (checkedId) {
                 R.id.noiseDetectionOption -> VoiceAnalysisOption.NoiseDetection
                 R.id.machineLearningOption -> VoiceAnalysisOption.MachineLearning
                 else -> null
+            }?.let {
+                configurationViewModel.chooseVoiceAnalysisOption(
+                    clientViewModel,
+                    it
+                )
             }
-            configurationViewModel.chooseVoiceAnalysisOption(
-                clientViewModel,
-                voiceAnalysisOption!!
-            )
         }
     }
 

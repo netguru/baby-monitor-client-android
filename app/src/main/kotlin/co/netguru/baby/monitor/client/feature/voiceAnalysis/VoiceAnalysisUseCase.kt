@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
-import co.netguru.baby.monitor.client.common.SchedulersProvider
+import co.netguru.baby.monitor.client.common.ISchedulersProvider
+import co.netguru.baby.monitor.client.common.Randomiser
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
@@ -13,13 +14,17 @@ import javax.inject.Inject
 
 class VoiceAnalysisUseCase @Inject constructor(
     private val dataRepository: DataRepository,
-    private val schedulersProvider: SchedulersProvider
+    private val schedulersProvider: ISchedulersProvider,
+    private val randomiser: Randomiser
 ) {
     fun chooseVoiceAnalysisOption(
         messageController: MessageController,
         voiceAnalysisOption: VoiceAnalysisOption
     ): Single<Boolean> {
-        val sentMessage = Message(voiceAnalysisOption = voiceAnalysisOption.name)
+        val sentMessage = Message(
+            voiceAnalysisOption = voiceAnalysisOption.name,
+            confirmationId = randomiser.getRandomDigits(4).joinToString("")
+        )
         return Completable.fromAction {
             messageController.sendMessage(sentMessage)
         }

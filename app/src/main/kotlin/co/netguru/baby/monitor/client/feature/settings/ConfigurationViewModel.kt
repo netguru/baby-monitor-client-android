@@ -49,7 +49,10 @@ class ConfigurationViewModel @Inject constructor(
         messageController: MessageController,
         voiceAnalysisOption: VoiceAnalysisOption
     ) {
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(messageController, voiceAnalysisOption)
+        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+            messageController,
+            voiceAnalysisOption
+        )
             .doOnSubscribe { mutableVoiceAnalysisOptionState.postValue(ChangeState.InProgress to null) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
