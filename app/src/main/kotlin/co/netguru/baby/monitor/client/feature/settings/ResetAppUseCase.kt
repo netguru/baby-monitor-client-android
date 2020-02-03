@@ -8,7 +8,7 @@ import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import io.reactivex.Completable
 import io.reactivex.rxkotlin.toCompletable
@@ -21,11 +21,11 @@ class ResetAppUseCase @Inject constructor(
     private val analyticsManager: AnalyticsManager
 ) {
 
-    fun resetApp(messageSender: MessageSender? = null): Completable {
+    fun resetApp(messageController: MessageController? = null): Completable {
         analyticsManager.logEvent(Event.Simple(EventType.RESET_APP))
         return Completable.merge(
             listOf(
-                Completable.fromAction { messageSender?.sendMessage(Message(action = RESET_ACTION)) },
+                Completable.fromAction { messageController?.sendMessage(Message(action = RESET_ACTION)) },
                 handleAppState(),
                 dataRepository.deleteAllData(),
                 notificationHandler::clearNotifications.toCompletable()

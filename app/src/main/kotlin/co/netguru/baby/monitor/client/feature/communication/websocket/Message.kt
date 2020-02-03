@@ -1,17 +1,25 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import com.google.gson.annotations.SerializedName
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 data class Message(
+    // Action
     @SerializedName("action") val action: String? = null,
-    @SerializedName("offerSDP") val sdpOffer: SdpData? = null,
-    @SerializedName("answerSDP") val sdpAnswer: SdpData? = null,
-    @SerializedName("baby_name") val babyName: String? = null,
-    @SerializedName("pushNotificationsToken") val pushNotificationsToken: String? = null,
+    // Rtc
     @SerializedName("iceCandidate") val iceCandidate: IceCandidateData? = null,
     @SerializedName("errorSDP") val sdpError: String? = null,
+    @SerializedName("offerSDP") val sdpOffer: SdpData? = null,
+    @SerializedName("answerSDP") val sdpAnswer: SdpData? = null,
+    // Config
+    @SerializedName("baby_name") val babyName: String? = null,
+    @SerializedName("pushNotificationsToken") val pushNotificationsToken: String? = null,
+    @SerializedName("voiceAnalysisOption") val voiceAnalysisOption: String? = null,
+    // Pairing
     @SerializedName("pairingCode") val pairingCode: String? = null,
-    @SerializedName("pairingResponse") val pairingApproved: Boolean? = null
+    @SerializedName("pairingResponse") val pairingApproved: Boolean? = null,
+    @SerializedName("confirmationId") val confirmationId: Int = Random(0).nextInt(0..100)
 ) {
     data class SdpData(
         @SerializedName("sdp") val sdp: String,

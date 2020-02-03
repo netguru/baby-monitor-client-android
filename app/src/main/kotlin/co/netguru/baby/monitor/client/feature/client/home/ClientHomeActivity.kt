@@ -19,7 +19,7 @@ import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotifica
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
-import co.netguru.baby.monitor.client.feature.settings.ResetState
+import co.netguru.baby.monitor.client.feature.settings.ChangeState
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -53,19 +53,15 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
 
         homeViewModel.fetchLogData()
         homeViewModel.checkInternetConnection()
+        homeViewModel.openSocketConnection { address -> URI.create(address) }
     }
 
     private fun setupObservers() {
-        homeViewModel.selectedChild.observeNonNull(this) { child ->
-            Timber.i("Opening socket to ${child.address}.")
-            homeViewModel.openSocketConnection(URI.create(child.address))
-        }
-
         homeViewModel.internetConnectionAvailability.observe(this, Observer { isConnected ->
             if (!isConnected) showNoInternetSnackbar()
         })
 
-        homeViewModel.selectedChild.observeNonNull(this) { child ->
+        homeViewModel.selectedChildLiveData.observeNonNull(this) { child ->
             handleSelectedChild(child)
         }
         homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
@@ -91,7 +87,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
 
         configurationViewModel.resetState.observe(this, Observer { resetState ->
             when (resetState) {
-                is ResetState.Completed -> handleAppReset()
+                is ChangeState.Completed -> handleAppReset()
             }
         })
     }

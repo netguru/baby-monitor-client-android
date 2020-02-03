@@ -16,6 +16,7 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.MessagePar
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -35,6 +36,7 @@ class ClientHomeViewModelTest {
     private val childLiveData: LiveData<ChildDataEntity> = MutableLiveData()
     private val dataRepository: DataRepository = mock {
         on { getChildLiveData() }.doReturn(childLiveData)
+        on { getChildData() }.doReturn(Maybe.just(ChildDataEntity(address = "address")))
     }
     private val rxWebSocketClient: RxWebSocketClient = mock()
 
@@ -45,6 +47,10 @@ class ClientHomeViewModelTest {
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase = mock()
     private val restartAppUseCase: RestartAppUseCase = mock()
     private val messageParser: MessageParser = mock()
+    private val urifier: (address: String) -> URI = mock {
+        val uri = mock<URI>()
+        on { invoke(any()) }.doReturn(uri)
+    }
 
     private val clientHomeViewModel = ClientHomeViewModel(
         dataRepository,
@@ -58,9 +64,8 @@ class ClientHomeViewModelTest {
 
     @Test
     fun `should handle web socket open connection`() {
-        val uri: URI = mock()
         val selectedChildAvailabilityObserver: Observer<Boolean> = mock()
-        whenever(rxWebSocketClient.events(uri)).doReturn(
+        whenever(rxWebSocketClient.events(any())).doReturn(
             Observable.just<RxWebSocketClient.Event>(
                 RxWebSocketClient.Event.Open
             )
@@ -69,7 +74,7 @@ class ClientHomeViewModelTest {
             selectedChildAvailabilityObserver
         )
 
-        clientHomeViewModel.openSocketConnection(uri)
+        clientHomeViewModel.openSocketConnection(urifier)
 
         verify(selectedChildAvailabilityObserver).onChanged(true)
         verify(sendBabyNameUseCase).streamBabyName(rxWebSocketClient)
@@ -77,10 +82,9 @@ class ClientHomeViewModelTest {
 
     @Test
     fun `should handle web socket closed connection`() {
-        val uri: URI = mock()
         val selectedChildAvailabilityObserver: Observer<Boolean> = mock()
         val closeEvent: RxWebSocketClient.Event.Close = mock()
-        whenever(rxWebSocketClient.events(uri)).doReturn(
+        whenever(rxWebSocketClient.events(any())).doReturn(
             Observable.just<RxWebSocketClient.Event>(
                 closeEvent
             )
@@ -89,17 +93,16 @@ class ClientHomeViewModelTest {
             selectedChildAvailabilityObserver
         )
 
-        clientHomeViewModel.openSocketConnection(uri)
+        clientHomeViewModel.openSocketConnection(urifier)
 
         verify(selectedChildAvailabilityObserver).onChanged(false)
     }
 
     @Test
     fun `should notify observers about web socket reset action`() {
-        val uri: URI = mock()
         val resetActionObserver: Observer<String> = mock()
         val resetAction: RxWebSocketClient.Event.Message = mock()
-        whenever(rxWebSocketClient.events(uri)).doReturn(
+        whenever(rxWebSocketClient.events(any())).doReturn(
             Observable.just<RxWebSocketClient.Event>(
                 resetAction
             )
@@ -111,7 +114,7 @@ class ClientHomeViewModelTest {
             resetActionObserver
         )
 
-        clientHomeViewModel.openSocketConnection(uri)
+        clientHomeViewModel.openSocketConnection(urifier)
 
         verify(resetActionObserver).onChanged(check {
             assertEquals(RESET_ACTION, it)

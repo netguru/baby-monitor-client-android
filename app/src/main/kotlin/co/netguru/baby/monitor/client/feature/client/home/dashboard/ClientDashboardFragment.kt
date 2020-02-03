@@ -46,7 +46,7 @@ class ClientDashboardFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.selectedChild.observeNonNull(viewLifecycleOwner) { child ->
+        viewModel.selectedChildLiveData.observeNonNull(viewLifecycleOwner) { child ->
             clientHomeBabyNameTv.apply {
                 if (child.name.isNullOrBlank()) {
                     text = getString(R.string.your_baby_name)

@@ -12,12 +12,14 @@ import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.AppDatabase
+import co.netguru.baby.monitor.client.data.AppDatabase.Companion.DATABASE_NAME
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.communication.nsd.DeviceNameProvider
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServiceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
+import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
@@ -63,13 +65,24 @@ class ApplicationModule {
     @Singleton
     @Provides
     fun applicationDatabse(context: Context) =
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "baby-monitor-database"
-        )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
-            .build()
+        try {
+            Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                DATABASE_NAME
+            )
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .build()
+        } catch (e: IllegalStateException) {
+            Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                DATABASE_NAME
+
+            )
+                .fallbackToDestructiveMigration()
+                .build()
+        }
 
     @Provides
     @Reusable
@@ -110,6 +123,12 @@ class ApplicationModule {
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN snoozeTimeStamp INTEGER")
+            }
+        }
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN voiceAnalysisOption  TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MachineLearning.name}")
+                database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN voiceAnalysisOption TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MachineLearning.name}")
             }
         }
     }

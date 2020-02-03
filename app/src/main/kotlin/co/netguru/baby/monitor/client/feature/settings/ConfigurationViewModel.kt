@@ -4,7 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
+import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisUseCase
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -14,25 +17,57 @@ import javax.inject.Inject
 
 class ConfigurationViewModel @Inject constructor(
     private val resetAppUseCase: ResetAppUseCase,
-    private val firebaseRepository: FirebaseRepository
+    private val firebaseRepository: FirebaseRepository,
+    private val voiceAnalysisUseCase: VoiceAnalysisUseCase
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
-    private val mutableResetState = MutableLiveData<ResetState>()
-    val resetState: LiveData<ResetState> = mutableResetState
+    private val mutableResetState = MutableLiveData<ChangeState>()
+    val resetState: LiveData<ChangeState> = mutableResetState
 
-    fun resetApp(messageSender: MessageSender? = null) {
-        resetAppUseCase.resetApp(messageSender)
-            .doOnSubscribe { mutableResetState.postValue(ResetState.InProgress) }
+    private val mutableVoiceAnalysisOptionState =
+        MutableLiveData<Pair<ChangeState, VoiceAnalysisOption?>>()
+    val voiceAnalysisOptionState: LiveData<Pair<ChangeState, VoiceAnalysisOption?>> =
+        mutableVoiceAnalysisOptionState
+
+    fun resetApp(messageController: MessageController? = null) {
+        resetAppUseCase.resetApp(messageController)
+            .doOnSubscribe { mutableResetState.postValue(ChangeState.InProgress) }
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
-                    mutableResetState.postValue(ResetState.Completed)
+                    mutableResetState.postValue(ChangeState.Completed)
                 },
                 onError = {
-                    mutableResetState.postValue(ResetState.Failed)
+                    mutableResetState.postValue(ChangeState.Failed)
                     Timber.w(it)
                 }
+            ).addTo(compositeDisposable)
+    }
+
+    fun chooseVoiceAnalysisOption(
+        messageController: MessageController,
+        voiceAnalysisOption: VoiceAnalysisOption
+    ) {
+        voiceAnalysisUseCase.chooseVoiceAnalysisOption(messageController, voiceAnalysisOption)
+            .doOnSubscribe { mutableVoiceAnalysisOptionState.postValue(ChangeState.InProgress to null) }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { success ->
+                    mutableVoiceAnalysisOptionState.postValue(
+                        if (success) ChangeState.Completed to voiceAnalysisOption
+                        else {
+                            val previousOption =
+                                when (voiceAnalysisOption) {
+                                    VoiceAnalysisOption.MachineLearning -> VoiceAnalysisOption.NoiseDetection
+                                    VoiceAnalysisOption.NoiseDetection -> VoiceAnalysisOption.MachineLearning
+                                }
+                            ChangeState.Failed to previousOption
+                        }
+                    )
+                },
+                onError = { Timber.e(it) }
             ).addTo(compositeDisposable)
     }
 

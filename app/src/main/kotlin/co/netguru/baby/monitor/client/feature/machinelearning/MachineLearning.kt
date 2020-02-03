@@ -43,7 +43,7 @@ class MachineLearning(context: Context) {
     }
 
     companion object {
-        internal const val DATA_SIZE = 176_400
+        internal const val DATA_SIZE = 4 * SAMPLING_RATE
         private const val INPUT_DATA_NAME = "raw_audio:0"
         private const val SAMPLE_RATE_NAME = "sample_rate:0"
         private const val OUTPUT_SCORES_NAME = "labels_softmax"

@@ -8,7 +8,7 @@ import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.analytics.EventType
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
@@ -27,7 +27,7 @@ class ResetAppUseCaseTest {
         on { deleteAllData() }.doReturn(Completable.complete())
         on { getSavedState() }.doReturn(Single.just(AppState.UNDEFINED))
     }
-    private val messageSender = mock<MessageSender>()
+    private val messageSender = mock<MessageController>()
     private val analyticsManager = mock<AnalyticsManager>()
     private val resetAppUseCase =
         ResetAppUseCase(

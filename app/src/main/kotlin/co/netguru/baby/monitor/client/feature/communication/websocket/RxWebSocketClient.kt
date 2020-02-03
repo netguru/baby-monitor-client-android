@@ -46,6 +46,8 @@ class RxWebSocketClient @Inject constructor(
                 }
             }
 
+    fun events() = client?.events()
+
     fun send(message: Message): Completable =
         Completable.fromAction {
             checkNotNull(client).run {
