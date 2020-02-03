@@ -15,7 +15,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import kotlinx.android.synthetic.main.fragment_client_settings.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File

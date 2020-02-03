@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.GlideApp
+import co.netguru.baby.monitor.client.application.di.GlideApp
 import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.extensions.controlVideoStreamVolume
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull

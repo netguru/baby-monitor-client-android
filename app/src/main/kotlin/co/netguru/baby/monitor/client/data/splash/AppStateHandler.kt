@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.data.splash
 
 import android.content.SharedPreferences
-import co.netguru.baby.monitor.client.application.ConfigurationPreferencesQualifier
+import co.netguru.baby.monitor.client.application.di.ConfigurationPreferencesQualifier
 import co.netguru.baby.monitor.client.common.extensions.edit
 import javax.inject.Inject
 

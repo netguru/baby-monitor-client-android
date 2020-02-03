@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.application
 
+import co.netguru.baby.monitor.client.application.di.DaggerApplicationComponent
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.android.AndroidInjector

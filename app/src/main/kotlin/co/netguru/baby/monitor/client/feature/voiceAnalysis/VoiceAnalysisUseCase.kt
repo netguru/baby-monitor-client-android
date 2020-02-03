@@ -4,7 +4,6 @@ import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy

@@ -2,7 +2,7 @@ package co.netguru.baby.monitor.client.data.client
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 
 @Entity(tableName = "CHILD_DATA")
 data class ChildDataEntity(

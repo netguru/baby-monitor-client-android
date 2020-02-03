@@ -1,7 +1,8 @@
-package co.netguru.baby.monitor.client.application
+package co.netguru.baby.monitor.client.application.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import co.netguru.baby.monitor.client.application.App
 import dagger.Module
 import dagger.Provides
 import javax.inject.Qualifier

@@ -1,5 +1,6 @@
-package co.netguru.baby.monitor.client.application
+package co.netguru.baby.monitor.client.application.di
 
+import co.netguru.baby.monitor.client.application.App
 import co.netguru.baby.monitor.client.common.base.ViewModelModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -17,7 +18,10 @@ import javax.inject.Singleton
         FragmentBindingsModule::class,
         ActivityBindingsModule::class,
         ServiceBindingsModule::class,
-        SharedPreferencesModule::class
+        SharedPreferencesModule::class,
+        NotificationsModule::class,
+        FirebaseModule::class,
+        NetworkModule::class
     ]
 )
 internal interface ApplicationComponent : AndroidInjector<App> {

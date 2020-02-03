@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.machinelearning
+package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import android.content.Context
 import io.reactivex.Single
@@ -27,7 +27,9 @@ object WavFileGenerator {
         sampleRate: Int,
         byteRate: Int
     ) = Single.fromCallable {
-        checkAvailableSpace(context)
+        checkAvailableSpace(
+            context
+        )
         val formatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
         val file = File(
             context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE),
@@ -150,7 +152,9 @@ object WavFileGenerator {
                 .listFiles()
                 .sortedBy { file -> file.lastModified() }
                 .firstOrNull()?.delete()
-            checkAvailableSpace(context)
+            checkAvailableSpace(
+                context
+            )
         }
     }
 }

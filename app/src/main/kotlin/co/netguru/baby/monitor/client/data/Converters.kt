@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.data
 
 import androidx.room.TypeConverter
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 
 class Converters {
     @TypeConverter

@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.data.communication
 
 import androidx.room.*
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import io.reactivex.Maybe
 
 @Dao

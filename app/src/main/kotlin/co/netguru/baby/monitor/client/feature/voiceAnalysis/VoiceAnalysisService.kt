@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.machinelearning
+package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import android.app.IntentService
 import android.content.Intent
@@ -10,6 +10,7 @@ import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.babycrynotification.NotifyBabyCryingUseCase
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
+import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import dagger.android.AndroidInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,8 +25,13 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
 
     private val compositeDisposable = CompositeDisposable()
     private var aacRecorder: AacRecorder? = null
-    private val machineLearning by lazy { MachineLearning(applicationContext) }
-    private var voiceAnalysisOption = VoiceAnalysisOption.MachineLearning
+    private val machineLearning by lazy {
+        MachineLearning(
+            applicationContext
+        )
+    }
+    private var voiceAnalysisOption =
+        VoiceAnalysisOption.MachineLearning
 
     @Inject
     internal lateinit var notifyBabyCryingUseCase: NotifyBabyCryingUseCase
@@ -64,7 +70,8 @@ class VoiceAnalysisService : IntentService("VoiceAnalysisService") {
     }
 
     private fun startRecording() {
-        aacRecorder = AacRecorder(voiceAnalysisOption)
+        aacRecorder =
+            AacRecorder(voiceAnalysisOption)
         aacRecorder?.startRecording()
             ?.subscribeOn(Schedulers.computation())
             ?.subscribeBy(

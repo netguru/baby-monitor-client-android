@@ -6,7 +6,7 @@ import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.data.splash.AppStateHandler
-import co.netguru.baby.monitor.client.feature.machinelearning.VoiceAnalysisOption
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
