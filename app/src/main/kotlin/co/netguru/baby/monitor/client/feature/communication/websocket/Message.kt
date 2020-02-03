@@ -19,7 +19,7 @@ data class Message(
     // Pairing
     @SerializedName("pairingCode") val pairingCode: String? = null,
     @SerializedName("pairingResponse") val pairingApproved: Boolean? = null,
-    @SerializedName("confirmationId") val confirmationId: Int = Random(0).nextInt(0..100)
+    @SerializedName("confirmationId") val confirmationId: String? = null
 ) {
     data class SdpData(
         @SerializedName("sdp") val sdp: String,

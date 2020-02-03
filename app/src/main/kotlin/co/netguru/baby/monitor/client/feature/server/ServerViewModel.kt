@@ -142,7 +142,7 @@ class ServerViewModel @Inject constructor(
 
     private fun handleVoiceAnalysisOptionChange(
         voiceAnalysisOption: String,
-        confirmationId: Int,
+        confirmationId: String?,
         binder: WebSocketServerService.Binder
     ) {
         when (voiceAnalysisOption) {
