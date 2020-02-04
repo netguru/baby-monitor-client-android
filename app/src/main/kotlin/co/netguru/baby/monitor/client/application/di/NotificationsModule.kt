@@ -7,7 +7,6 @@ import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUs
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 
 @Module
 object NotificationsModule {
@@ -15,7 +14,6 @@ object NotificationsModule {
     fun notificationHandler(context: Context) = NotificationHandler(context)
 
     @Provides
-    @Reusable
     fun provideNotifyBabyEventUseCase(
         notificationSender: FirebaseNotificationSender,
         context: Context

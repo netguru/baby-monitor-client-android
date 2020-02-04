@@ -2,19 +2,18 @@ package co.netguru.baby.monitor.client.feature.babynotification
 
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
-import dagger.Reusable
 import io.reactivex.Completable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-@Reusable
 class NotifyBabyEventUseCase(
     private val notificationSender: FirebaseNotificationSender,
     private val notificationTexts: Map<String, String>
 ) {
-    private val babyCryingEvents: PublishSubject<BabyEvent> = PublishSubject.create()
+    private val babyEvents: PublishSubject<BabyEvent> = PublishSubject.create()
 
     private fun fetchClientsAndPostNotification(babyEvent: BabyEvent): Completable {
         val (notificationTitle, notificationType) = when (babyEvent) {
@@ -28,8 +27,8 @@ class NotifyBabyEventUseCase(
         )
     }
 
-    init {
-        babyCryingEvents
+    fun babyEvents(): Disposable {
+        return babyEvents
             .throttleFirst(CRYING_EVENTS_THROTTLING_TIME, TimeUnit.MINUTES)
             .flatMapCompletable {
                 fetchClientsAndPostNotification(it)
@@ -41,10 +40,10 @@ class NotifyBabyEventUseCase(
     }
 
     fun notifyBabyCrying() =
-        babyCryingEvents.onNext(BabyEvent.BabyCrying)
+        babyEvents.onNext(BabyEvent.BabyCrying)
 
     fun notifyNoiseDetected() =
-        babyCryingEvents.onNext(BabyEvent.NoiseDetected)
+        babyEvents.onNext(BabyEvent.NoiseDetected)
 
     private sealed class BabyEvent {
         object BabyCrying : BabyEvent()

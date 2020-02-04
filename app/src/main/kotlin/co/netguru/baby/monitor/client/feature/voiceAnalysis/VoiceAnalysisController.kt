@@ -50,6 +50,7 @@ class VoiceAnalysisController @Inject constructor(
 
     fun startRecording() {
         if (aacRecorder != null) return
+        initBabyEventsSubscription()
         aacRecorder =
             AacRecorder(voiceAnalysisOption)
                 .apply {
@@ -76,6 +77,12 @@ class VoiceAnalysisController @Inject constructor(
                             onError = Timber::e
                         ).addTo(compositeDisposable)
                 }
+    }
+
+    private fun initBabyEventsSubscription() {
+        notifyBabyEventUseCase
+            .babyEvents()
+            .addTo(compositeDisposable)
     }
 
     fun stopRecording() {

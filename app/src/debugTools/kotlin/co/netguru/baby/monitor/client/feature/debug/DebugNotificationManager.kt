@@ -12,26 +12,34 @@ import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUseCase
 import co.netguru.baby.monitor.client.feature.batterylevel.NotifyLowBatteryUseCase
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class DebugNotificationManager @Inject constructor(
     val notifyBabyEventUseCase: NotifyBabyEventUseCase,
     val notifyLowBatteryUseCase: NotifyLowBatteryUseCase
 ) {
 
     private val receiver = DebugNotificationReceiver()
+    private val compositeDisposable = CompositeDisposable()
 
     fun show(service: Service) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createNotificationChannel(
             service
         )
         receiver.register(service)
+        initBabyEventsSubscription()
         service.startForeground(DEBUG_NOTIFICATION_ID, createDebugNotification(service))
+    }
+
+    private fun initBabyEventsSubscription() {
+        notifyBabyEventUseCase
+            .babyEvents()
+            .addTo(compositeDisposable)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -49,6 +57,7 @@ class DebugNotificationManager @Inject constructor(
     fun clear(context: Context) {
         NotificationManagerCompat.from(context).cancel(DEBUG_NOTIFICATION_ID)
         context.unregisterReceiver(receiver)
+        compositeDisposable.dispose()
     }
 
     private fun createDebugNotification(service: Service): Notification =

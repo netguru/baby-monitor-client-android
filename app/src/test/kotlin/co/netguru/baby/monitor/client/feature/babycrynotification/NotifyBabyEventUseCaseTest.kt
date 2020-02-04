@@ -30,6 +30,8 @@ class NotifyBabyEventUseCaseTest {
 
     @Test
     fun `should send crying notification on notifyBabyCrying`() {
+        notifyBabyEventUseCase.babyEvents()
+
         notifyBabyEventUseCase.notifyBabyCrying()
 
         verify(notificationSender).broadcastNotificationToFcm(
@@ -41,6 +43,8 @@ class NotifyBabyEventUseCaseTest {
 
     @Test
     fun `should send crying notification on notifyNoiseDetected`() {
+        notifyBabyEventUseCase.babyEvents()
+
         notifyBabyEventUseCase.notifyNoiseDetected()
 
         verify(notificationSender).broadcastNotificationToFcm(
