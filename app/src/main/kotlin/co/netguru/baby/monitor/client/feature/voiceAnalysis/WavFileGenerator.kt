@@ -37,54 +37,18 @@ object WavFileGenerator {
         )
 
         DataOutputStream(FileOutputStream(file)).use { output ->
-            writeString(
-                output,
-                "RIFF"
-            ) // chunk id
-            writeInt(
-                output,
-                36 + rawData.size
-            ) // chunk size
-            writeString(
-                output,
-                "WAVE"
-            ) // format
-            writeString(
-                output,
-                "fmt "
-            ) // subchunk 1 id
-            writeInt(
-                output,
-                16
-            ) // subchunk 1 size
-            writeShort(
-                output,
-                1.toShort()
-            ) // audio format (1 = PCM)
-            writeShort(
-                output,
-                1.toShort()
-            ) // number of channels
-            writeInt(
-                output,
-                sampleRate
-            ) // sample rate
-            writeInt(
-                output,
-                byteRate
-            ) // byte rate
-            writeShort(
-                output,
-                2.toShort()
-            ) // block align
-            writeShort(
-                output,
-                16.toShort()
-            ) // bits per sample
-            writeString(
-                output,
-                "data"
-            ) // subchunk 2 id
+            writeString(output, "RIFF") // chunk id
+            writeInt(output, 36 + rawData.size) // chunk size
+            writeString(output, "WAVE") // format
+            writeString(output, "fmt ") // subchunk 1 id
+            writeInt(output, 16) // subchunk 1 size
+            writeShort(output, 1.toShort()) // audio format (1 = PCM)
+            writeShort(output, 1.toShort()) // number of channels
+            writeInt(output, sampleRate) // sample rate
+            writeInt(output, byteRate) // byte rate
+            writeShort(output, 2.toShort()) // block align
+            writeShort(output, 16.toShort()) // bits per sample
+            writeString(output, "data") // subchunk 2 id
         }
 
         FileOutputStream(file).use { steam ->
