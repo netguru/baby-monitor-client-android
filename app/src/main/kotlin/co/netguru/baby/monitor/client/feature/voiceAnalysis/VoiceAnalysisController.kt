@@ -82,6 +82,7 @@ class VoiceAnalysisController @Inject constructor(
     private fun initBabyEventsSubscription() {
         notifyBabyEventUseCase
             .babyEvents()
+            .subscribe()
             .addTo(compositeDisposable)
     }
 

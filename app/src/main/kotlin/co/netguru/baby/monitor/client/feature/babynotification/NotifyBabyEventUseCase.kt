@@ -27,7 +27,7 @@ class NotifyBabyEventUseCase(
         )
     }
 
-    fun babyEvents(): Disposable {
+    fun babyEvents(): Completable {
         return babyEvents
             .throttleFirst(CRYING_EVENTS_THROTTLING_TIME, TimeUnit.MINUTES)
             .flatMapCompletable {
@@ -36,7 +36,6 @@ class NotifyBabyEventUseCase(
             }
             .doOnError { Timber.w(it) }
             .retry()
-            .subscribe()
     }
 
     fun notifyBabyCrying() =

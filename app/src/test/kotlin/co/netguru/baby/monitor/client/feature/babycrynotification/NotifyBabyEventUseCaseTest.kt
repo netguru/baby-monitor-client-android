@@ -30,7 +30,9 @@ class NotifyBabyEventUseCaseTest {
 
     @Test
     fun `should send crying notification on notifyBabyCrying`() {
-        notifyBabyEventUseCase.babyEvents()
+        notifyBabyEventUseCase
+            .babyEvents()
+            .subscribe()
 
         notifyBabyEventUseCase.notifyBabyCrying()
 
@@ -43,7 +45,9 @@ class NotifyBabyEventUseCaseTest {
 
     @Test
     fun `should send crying notification on notifyNoiseDetected`() {
-        notifyBabyEventUseCase.babyEvents()
+        notifyBabyEventUseCase
+            .babyEvents()
+            .subscribe()
 
         notifyBabyEventUseCase.notifyNoiseDetected()
 
