@@ -5,6 +5,7 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.analytics.EventType
+import co.netguru.baby.monitor.client.feature.babynotification.SnoozeNotificationUseCase
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import org.junit.Rule
@@ -20,7 +21,10 @@ class SnoozeNotificationUseCaseTest {
     }
     private val analyticsManager: AnalyticsManager = mock()
     private val snoozeNotificationUseCase =
-        SnoozeNotificationUseCase(dataRepository, analyticsManager)
+        SnoozeNotificationUseCase(
+            dataRepository,
+            analyticsManager
+        )
 
     @Test
     fun `should update snoozeTimestamp on snoozeNotifications`() {

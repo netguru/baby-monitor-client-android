@@ -12,7 +12,7 @@ import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
-import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase
+import co.netguru.baby.monitor.client.feature.babynotification.SnoozeNotificationUseCase
 import co.netguru.baby.monitor.client.feature.communication.internet.CheckInternetConnectionUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController

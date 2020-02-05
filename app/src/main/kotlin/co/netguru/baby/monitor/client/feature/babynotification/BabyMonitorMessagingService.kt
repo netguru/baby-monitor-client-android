@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.babycrynotification
+package co.netguru.baby.monitor.client.feature.babynotification
 
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -17,6 +17,7 @@ import com.google.firebase.messaging.RemoteMessage
 import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -43,7 +44,9 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
         Timber.i("Received a message: $message.")
         val notificationType = message.data[NOTIFICATION_TYPE] ?: NotificationType.DEFAULT.name
         when (NotificationType.valueOf(notificationType)) {
-            NotificationType.CRY_NOTIFICATION -> handleCryNotification(message.data)
+            NotificationType.CRY_NOTIFICATION, NotificationType.NOISE_NOTIFICATION -> handleBabyEvent(
+                message.data
+            )
             NotificationType.LOW_BATTERY_NOTIFICATION -> handleLowBatteryNotification(message.data)
             else -> {
                 message.notification?.let {
@@ -63,8 +66,8 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
         )
     }
 
-    private fun handleCryNotification(data: MutableMap<String, String>) {
-        database.getChildData()
+    private fun handleBabyEvent(data: MutableMap<String, String>) {
+        disposables += database.getChildData()
             .subscribeBy(
                 onSuccess = { childDataEntity ->
                     if (isFiveMinutesSnoozeEnabled(childDataEntity)) {

@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.feature.babycrynotification
+package co.netguru.baby.monitor.client.feature.babynotification
 
 import android.app.IntentService
 import android.content.Intent
@@ -6,13 +6,13 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import co.netguru.baby.monitor.client.common.NotificationHandler
-import co.netguru.baby.monitor.client.feature.babycrynotification.BabyMonitorMessagingService.Companion.CRYING_NOTIFICATION_ID
+import co.netguru.baby.monitor.client.feature.babynotification.BabyMonitorMessagingService.Companion.CRYING_NOTIFICATION_ID
 import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
-class CryingActionIntentService : IntentService(NAME) {
+class BabyEventActionIntentService : IntentService(NAME) {
 
     @Inject
     internal lateinit var snoozeNotificationUseCase: SnoozeNotificationUseCase

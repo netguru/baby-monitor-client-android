@@ -13,7 +13,7 @@ import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.scaleAnimation
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.feature.analytics.Screen
-import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
+import co.netguru.baby.monitor.client.feature.babynotification.BabyEventActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionState
@@ -116,7 +116,7 @@ class ClientLiveCameraFragment : BaseFragment() {
     }
 
     private fun shouldShowSnoozeDialogOnBack() =
-        arguments?.getBoolean(CryingActionIntentService.SHOULD_SHOW_SNOOZE_DIALOG) == true
+        arguments?.getBoolean(BabyEventActionIntentService.SHOULD_SHOW_SNOOZE_DIALOG) == true
 
     override fun onDestroy() {
         super.onDestroy()
