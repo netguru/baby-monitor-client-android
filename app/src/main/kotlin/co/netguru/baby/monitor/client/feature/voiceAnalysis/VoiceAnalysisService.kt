@@ -42,10 +42,6 @@ class VoiceAnalysisService : ServiceFacade,
             serviceController.stopRecording()
         }
 
-        fun cleanup() {
-            serviceController.cleanup()
-        }
-
         fun setVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption) {
             serviceController.voiceAnalysisOption = voiceAnalysisOption
         }

@@ -140,7 +140,7 @@ class VoiceAnalysisController @Inject constructor(
         }
     }
 
-    fun cleanup() {
+    private fun cleanup() {
         compositeDisposable.dispose()
         aacRecorder?.release()
         aacRecorder = null

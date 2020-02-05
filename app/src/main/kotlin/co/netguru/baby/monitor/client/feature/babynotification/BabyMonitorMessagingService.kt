@@ -16,7 +16,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -122,7 +121,7 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
     }
 
     private fun logToDatabase(title: String) {
-        database.insertLogToDatabase(LogDataEntity(title))
+        disposables += database.insertLogToDatabase(LogDataEntity(title))
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
@@ -131,7 +130,6 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
                     Timber.w(error, "Couldn't insert log into the database.")
                 }
             )
-            .addTo(disposables)
     }
 
     override fun onDestroy() {

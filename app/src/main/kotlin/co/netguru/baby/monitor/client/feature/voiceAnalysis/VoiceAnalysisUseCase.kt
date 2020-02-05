@@ -33,11 +33,10 @@ class VoiceAnalysisUseCase @Inject constructor(
                     .filter { it.confirmationId == sentMessage.confirmationId }
                     .timeout(RESPONSE_TIMEOUT, TimeUnit.SECONDS, schedulersProvider.io())
                     .firstOrError()
-                    .flatMap { return@flatMap Single.just(true) })
+                    .map { true })
             .doOnSuccess { success ->
                 if (success) dataRepository.updateVoiceAnalysisOption(voiceAnalysisOption)
                     .subscribeBy(
-                        onError = { Timber.e(it) },
                         onComplete = { Timber.i("VoiceOption updated to $voiceAnalysisOption") })
             }
             .onErrorReturnItem(false)

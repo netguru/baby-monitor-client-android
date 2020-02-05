@@ -1,7 +1,7 @@
 package co.netguru.baby.monitor.client.feature.debug
 
 import io.reactivex.Observable
-import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.subjects.PublishSubject
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -30,15 +30,16 @@ class DebugModule @Inject constructor() {
     }
 
     fun debugStateObservable(): Observable<DebugState> {
-        return Observable.combineLatest<String, Float, Int, DebugState>(
+        return Observables.combineLatest(
             notificationEvents.startWith(NOTIFICATION_INFORMATION_INITIAL_STATE),
             cryingProbabilityEvents.startWith(CRYING_PROBABILITY_INITIAL_STATE),
-            soundEvents.startWith(SOUND_INITIAL_STATE),
-            Function3<String, Float, Int, DebugState> { notificationInformation: String,
-                                                        cryingProbability: Float,
-                                                        decibels: Int ->
+            soundEvents.startWith(SOUND_INITIAL_STATE)
+        )
+            .map { (notificationInformation: String,
+                       cryingProbability: Float,
+                       decibels: Int) ->
                 DebugState(notificationInformation, cryingProbability, decibels)
-            })
+            }
             .doOnError { Timber.w(it) }
             .retry()
     }

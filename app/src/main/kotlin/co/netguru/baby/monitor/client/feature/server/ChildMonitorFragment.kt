@@ -95,7 +95,6 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
 
     override fun onDestroy() {
         requireContext().unbindService(this)
-        voiceAnalysisServiceBinder?.cleanup()
         requireContext().unregisterReceiver(lowBatteryReceiver)
         super.onDestroy()
     }

@@ -190,8 +190,6 @@ class ClientHomeViewModel @Inject constructor(
                 message?.let {
                     Observable.just(it)
                 } ?: Observable.error(Throwable("Failed Initialisation"))
-            }
-
-            ?: Observable.error(Throwable("Failed Initialisation"))
+            } ?: Observable.error(Throwable("Failed Initialisation"))
     }
 }

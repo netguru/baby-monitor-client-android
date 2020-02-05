@@ -41,7 +41,8 @@ class VoiceAnalysisUseCaseTest {
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
             VoiceAnalysisOption.NoiseDetection
-        ).subscribe()
+        ).test()
+            .assertComplete()
 
         verify(messageController)
             .sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection.name })
@@ -52,7 +53,8 @@ class VoiceAnalysisUseCaseTest {
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
             VoiceAnalysisOption.MachineLearning
-        ).subscribe()
+        ).test()
+            .assertComplete()
 
         verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
                 VoiceAnalysisOption.MachineLearning.name })
