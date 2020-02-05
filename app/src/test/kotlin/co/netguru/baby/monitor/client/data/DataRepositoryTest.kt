@@ -6,10 +6,10 @@ import co.netguru.baby.monitor.client.data.client.home.log.LogDataDao
 import co.netguru.baby.monitor.client.data.communication.ClientDataDao
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.data.splash.AppStateHandler
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.UserProperty
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
+import com.nhaarman.mockitokotlin2.*
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,7 +27,8 @@ class DataRepositoryTest {
         on { logDataDao() }.doReturn(logDataDao)
     }
     private val appStateHandler = mock<AppStateHandler>()
-    private val dataRepository = DataRepository(database, appStateHandler)
+    private val analyticsManager = mock<AnalyticsManager>()
+    private val dataRepository = DataRepository(database, appStateHandler, analyticsManager)
 
     @Test
     fun `should delete data from all databases on deleteAllData`() {
@@ -65,5 +66,35 @@ class DataRepositoryTest {
             isAdded = doesExist
         }
         assert(!isAdded)
+    }
+
+    @Test
+    fun `should update user property when saving AppState`() {
+        val configuration = AppState.SERVER
+        dataRepository.saveConfiguration(configuration).subscribe()
+
+        verify(analyticsManager).setUserProperty(argThat {
+            this is UserProperty.AppStateProperty && this.value == configuration.name.toLowerCase()
+        })
+    }
+
+    @Test
+    fun `should update user property when saving VoiceAnalysisOption in server state`() {
+        whenever(appStateHandler.appState).doReturn(AppState.SERVER)
+        val voiceAnalysis = VoiceAnalysisOption.NOISE_DETECTION
+        dataRepository.updateVoiceAnalysisOption(voiceAnalysis).subscribe()
+
+        verify(analyticsManager).setUserProperty(argThat {
+            this is UserProperty.VoiceAnalysis && this.value == voiceAnalysis.name.toLowerCase()
+        })
+    }
+
+    @Test
+    fun `shouldn't update user property when saving VoiceAnalysisOption in client state`() {
+        whenever(appStateHandler.appState).doReturn(AppState.CLIENT)
+        val voiceAnalysis = VoiceAnalysisOption.NOISE_DETECTION
+        dataRepository.updateVoiceAnalysisOption(voiceAnalysis).subscribe()
+
+        verifyZeroInteractions(analyticsManager)
     }
 }

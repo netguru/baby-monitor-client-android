@@ -10,7 +10,7 @@ data class ChildDataEntity(
     var image: String? = null,
     val name: String? = null,
     val snoozeTimeStamp: Long? = null,
-    val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MachineLearning,
+    val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING,
     // Right now we are supporting only one child
     @PrimaryKey val id: Int = 0
 )

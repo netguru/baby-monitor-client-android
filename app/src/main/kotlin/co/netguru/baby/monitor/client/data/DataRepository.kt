@@ -6,6 +6,8 @@ import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.data.splash.AppStateHandler
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.UserProperty
 import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -16,7 +18,8 @@ import javax.inject.Singleton
 @Singleton
 class DataRepository @Inject constructor(
     private val database: AppDatabase,
-    private val appStateHandler: AppStateHandler
+    private val appStateHandler: AppStateHandler,
+    private val analyticsManager: AnalyticsManager
 ) {
 
     fun getAllLogData() = database.logDataDao().getAllData()
@@ -37,6 +40,7 @@ class DataRepository @Inject constructor(
 
     fun saveConfiguration(state: AppState): Completable = Completable.fromAction {
         appStateHandler.appState = state
+        analyticsManager.setUserProperty(UserProperty.AppStateProperty(state))
     }
 
     fun getChildData(): Maybe<ChildDataEntity> = database.childDataDao().getChildData()
@@ -68,6 +72,7 @@ class DataRepository @Inject constructor(
                 database.childDataDao().updateVoiceAnalysisOption(voiceAnalysisOption)
             } else if (appStateHandler.appState == AppState.SERVER) {
                 database.clientDao().updateVoiceAnalysisOption(voiceAnalysisOption)
+                analyticsManager.setUserProperty(UserProperty.VoiceAnalysis(voiceAnalysisOption))
             }
         }
 

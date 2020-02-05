@@ -24,6 +24,10 @@ class AnalyticsManager(
         Timber.d("$EVENT ${event.eventType.eventName}")
     }
 
+    fun setUserProperty(userProperty: UserProperty) {
+        firebaseAnalytics.setUserProperty(userProperty.key, userProperty.value)
+    }
+
     companion object {
         private const val EVENT = "event"
         private const val SCREEN = "screen"

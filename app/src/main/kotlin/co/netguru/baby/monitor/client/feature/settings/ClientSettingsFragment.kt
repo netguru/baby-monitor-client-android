@@ -95,8 +95,8 @@ class ClientSettingsFragment : BaseFragment() {
     private fun voiceAnalysisCheckChangedListener(): RadioGroup.OnCheckedChangeListener {
         return RadioGroup.OnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.noiseDetectionOption -> VoiceAnalysisOption.NoiseDetection
-                R.id.machineLearningOption -> VoiceAnalysisOption.MachineLearning
+                R.id.noiseDetectionOption -> VoiceAnalysisOption.NOISE_DETECTION
+                R.id.machineLearningOption -> VoiceAnalysisOption.MACHINE_LEARNING
                 else -> null
             }?.let {
                 configurationViewModel.chooseVoiceAnalysisOption(
@@ -146,8 +146,8 @@ class ClientSettingsFragment : BaseFragment() {
         voiceAnalysisOption: VoiceAnalysisOption
     ): Int {
         return when (voiceAnalysisOption) {
-            VoiceAnalysisOption.MachineLearning -> R.id.machineLearningOption
-            VoiceAnalysisOption.NoiseDetection -> R.id.noiseDetectionOption
+            VoiceAnalysisOption.MACHINE_LEARNING -> R.id.machineLearningOption
+            VoiceAnalysisOption.NOISE_DETECTION -> R.id.noiseDetectionOption
         }
     }
 

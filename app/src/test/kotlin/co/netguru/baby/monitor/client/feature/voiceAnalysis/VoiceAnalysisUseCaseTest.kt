@@ -40,36 +40,36 @@ class VoiceAnalysisUseCaseTest {
     fun `should send noiseDetection message to baby device`() {
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
-            VoiceAnalysisOption.NoiseDetection
+            VoiceAnalysisOption.NOISE_DETECTION
         ).test()
             .assertComplete()
 
         verify(messageController)
-            .sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection.name })
+            .sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION.name })
     }
 
     @Test
     fun `should send machineLearning message to baby device`() {
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
-            VoiceAnalysisOption.MachineLearning
+            VoiceAnalysisOption.MACHINE_LEARNING
         ).test()
             .assertComplete()
 
         verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
-                VoiceAnalysisOption.MachineLearning.name })
+                VoiceAnalysisOption.MACHINE_LEARNING.name })
     }
 
     @Test
     fun `should get successful response with the same confirmationId`() {
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
-            VoiceAnalysisOption.MachineLearning
+            VoiceAnalysisOption.MACHINE_LEARNING
         ).test()
             .assertValue(true)
 
         verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
-                VoiceAnalysisOption.MachineLearning.name })
+                VoiceAnalysisOption.MACHINE_LEARNING.name })
     }
 
     @Test
@@ -84,24 +84,24 @@ class VoiceAnalysisUseCaseTest {
 
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
-            VoiceAnalysisOption.MachineLearning
+            VoiceAnalysisOption.MACHINE_LEARNING
         ).test()
             .assertValue(false)
 
         timerTestScheduler.advanceTimeBy(5, TimeUnit.SECONDS)
         verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
-                VoiceAnalysisOption.MachineLearning.name })
+                VoiceAnalysisOption.MACHINE_LEARNING.name })
     }
 
     @Test
     fun `should save successful option change to database`() {
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
-            VoiceAnalysisOption.MachineLearning
+            VoiceAnalysisOption.MACHINE_LEARNING
         ).test()
             .assertValue(true)
 
-        verify(dataRepository).updateVoiceAnalysisOption(VoiceAnalysisOption.MachineLearning)
+        verify(dataRepository).updateVoiceAnalysisOption(VoiceAnalysisOption.MACHINE_LEARNING)
     }
 
     @Test
@@ -115,7 +115,7 @@ class VoiceAnalysisUseCaseTest {
         )
         voiceAnalysisUseCase.chooseVoiceAnalysisOption(
             messageController,
-            VoiceAnalysisOption.MachineLearning
+            VoiceAnalysisOption.MACHINE_LEARNING
         ).test()
             .assertValue(false)
 

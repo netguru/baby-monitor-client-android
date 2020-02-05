@@ -64,8 +64,10 @@ class ConfigurationViewModel @Inject constructor(
                         } else {
                             val previousOption =
                                 when (voiceAnalysisOption) {
-                                    VoiceAnalysisOption.MachineLearning -> VoiceAnalysisOption.NoiseDetection
-                                    VoiceAnalysisOption.NoiseDetection -> VoiceAnalysisOption.MachineLearning
+                                    VoiceAnalysisOption.MACHINE_LEARNING
+                                    -> VoiceAnalysisOption.NOISE_DETECTION
+                                    VoiceAnalysisOption.NOISE_DETECTION
+                                    -> VoiceAnalysisOption.MACHINE_LEARNING
                                 }
                             ChangeState.Failed to previousOption
                         }
