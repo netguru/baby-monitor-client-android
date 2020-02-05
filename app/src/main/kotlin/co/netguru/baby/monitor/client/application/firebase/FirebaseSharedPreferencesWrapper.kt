@@ -2,7 +2,7 @@ package co.netguru.baby.monitor.client.application.firebase
 
 import android.content.SharedPreferences
 import android.net.Uri
-import co.netguru.baby.monitor.client.application.ConfigurationPreferencesQualifier
+import co.netguru.baby.monitor.client.application.di.ConfigurationPreferencesQualifier
 import co.netguru.baby.monitor.client.common.extensions.edit
 import com.google.firebase.storage.UploadTask
 import org.threeten.bp.LocalDateTime

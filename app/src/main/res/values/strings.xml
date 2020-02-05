@@ -129,4 +129,8 @@
     <string name="unknown_device">Unknown device</string>
     <string name="parent_microphone_permission">You won\'t be able to talk to your child without this permission</string>
     <string name="check_again">Check again</string>
+
+    <string name="notification_noise_detected_title">Noise detected!</string>
+    <string name="noise_detection">Noise Detection</string>
+    <string name="cry_detection">Cry Detection</string>
 </resources>

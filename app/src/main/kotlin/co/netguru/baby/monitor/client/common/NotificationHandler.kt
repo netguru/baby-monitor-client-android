@@ -14,7 +14,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.extensions.addActions
 import co.netguru.baby.monitor.client.common.extensions.getColorCompat
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
-import co.netguru.baby.monitor.client.feature.babycrynotification.CryingActionIntentService
+import co.netguru.baby.monitor.client.feature.babynotification.BabyEventActionIntentService
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
 import org.jetbrains.anko.singleTop
 
@@ -137,7 +137,7 @@ class NotificationHandler(private val context: Context) {
             return PendingIntent.getService(
                 context,
                 requestCode,
-                Intent(context, CryingActionIntentService::class.java).apply {
+                Intent(context, BabyEventActionIntentService::class.java).apply {
                     this.action = action
                 },
                 0

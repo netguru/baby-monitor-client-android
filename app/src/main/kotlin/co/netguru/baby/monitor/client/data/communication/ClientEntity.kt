@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 
 @Entity(
     tableName = "CLIENT_DATA",
@@ -11,8 +12,8 @@ import androidx.room.PrimaryKey
 )
 data class ClientEntity(
     @ColumnInfo(name = "address") val address: String,
-    @ColumnInfo(name = "firebase_key") var firebaseKey: String
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Int? = null
-}
+    @ColumnInfo(name = "firebase_key") var firebaseKey: String,
+    val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MachineLearning,
+    // There is only one parent handled right now
+    @PrimaryKey val id: Int? = 0
+)

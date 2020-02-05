@@ -12,12 +12,13 @@ import co.netguru.baby.monitor.client.data.client.home.ToolbarState
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
-import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase
+import co.netguru.baby.monitor.client.feature.babynotification.SnoozeNotificationUseCase
 import co.netguru.baby.monitor.client.feature.communication.internet.CheckInternetConnectionUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
+import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
-import co.netguru.baby.monitor.client.feature.communication.websocket.MessageSender
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -35,12 +36,12 @@ class ClientHomeViewModel @Inject constructor(
     private val restartAppUseCase: RestartAppUseCase,
     internal val rxWebSocketClient: RxWebSocketClient,
     private val messageParser: MessageParser
-) : ViewModel(), MessageSender {
+) : ViewModel(), MessageController {
 
     private val openSocketDisposables = CompositeDisposable()
     internal val logData = MutableLiveData<List<LogData>>()
 
-    internal val selectedChild = dataRepository.getChildLiveData()
+    internal val selectedChildLiveData = dataRepository.getChildLiveData()
 
     internal val toolbarState = MutableLiveData<ToolbarState>()
     internal val shouldDrawerBeOpen = MutableLiveData<Boolean>()
@@ -97,7 +98,7 @@ class ClientHomeViewModel @Inject constructor(
     @RunsInBackground
     private fun handleNextLogDataList(list: List<LogDataEntity>) {
         logData.postValue(list.map { data ->
-            data.toLogData(selectedChild.value?.image)
+            data.toLogData(selectedChildLiveData.value?.image)
         })
     }
 
@@ -105,8 +106,9 @@ class ClientHomeViewModel @Inject constructor(
         this.backButtonState.postValue(backButtonState)
     }
 
-    fun openSocketConnection(address: URI) {
-        rxWebSocketClient.events(address)
+    fun openSocketConnection(urifier: (address: String) -> URI) {
+        dataRepository.getChildData()
+            .flatMapObservable { rxWebSocketClient.events(urifier.invoke(it.address)) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -178,5 +180,16 @@ class ClientHomeViewModel @Inject constructor(
         rxWebSocketClient.send(message)
             .subscribeBy(onError = { Timber.e(it) })
             .addTo(compositeDisposable)
+    }
+
+    override fun receivedMessages(): Observable<Message> {
+        return rxWebSocketClient.events()
+            ?.ofType(RxWebSocketClient.Event.Message::class.java)
+            ?.flatMap { webSocketMessage ->
+                val message = messageParser.parseWebSocketMessage(webSocketMessage)
+                message?.let {
+                    Observable.just(it)
+                } ?: Observable.error(Throwable("Failed Initialisation"))
+            } ?: Observable.error(Throwable("Failed Initialisation"))
     }
 }

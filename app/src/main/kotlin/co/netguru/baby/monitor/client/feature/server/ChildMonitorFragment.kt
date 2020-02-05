@@ -29,8 +29,8 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
-import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService
-import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearningService.MachineLearningBinder
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisService
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisService.VoiceAnalysisBinder
 import kotlinx.android.synthetic.main.fragment_child_monitor.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
     internal lateinit var debugModule: DebugModule
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
-    private var machineLearningServiceBinder: MachineLearningBinder? = null
+    private var voiceAnalysisServiceBinder: VoiceAnalysisBinder? = null
     private var webRtcServiceBinder: WebRtcService.Binder? = null
 
     @Inject
@@ -95,7 +95,6 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
 
     override fun onDestroy() {
         requireContext().unbindService(this)
-        machineLearningServiceBinder?.cleanup()
         requireContext().unregisterReceiver(lowBatteryReceiver)
         super.onDestroy()
     }
@@ -119,9 +118,9 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
         when (service) {
             is WebRtcService.Binder ->
                 handleWebRtcBinder(service)
-            is MachineLearningBinder -> {
-                Timber.i("MachineLearningService service connected")
-                machineLearningServiceBinder = service
+            is VoiceAnalysisBinder -> {
+                Timber.i("VoiceAnalysisService service connected")
+                voiceAnalysisServiceBinder = service
             }
         }
     }
@@ -153,9 +152,11 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
     }
 
     private fun childMonitorObservables() {
-        childMonitorViewModel.nightModeStatus.observe(viewLifecycleOwner, Observer { isNightModeEnabled ->
-            nightModeGroup.isVisible = isNightModeEnabled
-        })
+        childMonitorViewModel.nightModeStatus.observe(
+            viewLifecycleOwner,
+            Observer { isNightModeEnabled ->
+                nightModeGroup.isVisible = isNightModeEnabled
+            })
     }
 
     private fun dismissPairingDialog() {
@@ -206,9 +207,9 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
 
         serverViewModel.rtcConnectionStatus.observeNonNull(viewLifecycleOwner) { connectionState ->
             when (connectionState) {
-                RtcConnectionState.ConnectionOffer -> machineLearningServiceBinder?.stopRecording()
+                RtcConnectionState.ConnectionOffer -> voiceAnalysisServiceBinder?.stopRecording()
                 RtcConnectionState.Disconnected,
-                RtcConnectionState.Error -> machineLearningServiceBinder?.startRecording()
+                RtcConnectionState.Error -> voiceAnalysisServiceBinder?.startRecording()
                 else -> Unit
             }
         }
@@ -236,6 +237,11 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
             }
         })
 
+        serverViewModel.voiceAnalysisOptionLiveData.observe(
+            viewLifecycleOwner,
+            Observer { voiceAnalysisOption ->
+                voiceAnalysisServiceBinder?.setVoiceAnalysisOption(voiceAnalysisOption)
+            })
     }
 
     private fun showVideoPreview() {
@@ -262,7 +268,7 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
 
     private fun bindServices() {
         bindService(
-            MachineLearningService::class.java,
+            VoiceAnalysisService::class.java,
             this,
             Service.BIND_AUTO_CREATE
         )

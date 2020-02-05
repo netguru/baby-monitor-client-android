@@ -1,18 +1,22 @@
-package co.netguru.baby.monitor.client.feature.machinelearning
+package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import co.netguru.baby.monitor.client.common.RunsInBackground
+import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
+import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class AacRecorder {
+class AacRecorder(var voiceAnalysisOption: VoiceAnalysisOption) {
 
-    internal val data: PublishSubject<Pair<ByteArray, ShortArray>> = PublishSubject.create()
+    internal val machineLearningData: PublishSubject<Pair<ByteArray, ShortArray>> =
+        PublishSubject.create()
+    internal val soundDetectionData: PublishSubject<ShortArray> = PublishSubject.create()
     private var bufferSize = 0
     private var audioRecord: AudioRecord? = null
     private var shouldStopRecording = false
@@ -58,11 +62,21 @@ class AacRecorder {
         newData = newData.plus(bytesToShorts(array).toTypedArray())
         rawData = rawData.plus(array.toTypedArray())
 
-        if (newData.size >= MachineLearning.DATA_SIZE) {
-            data.onNext(rawData.toByteArray() to newData.toShortArray())
-            newData = emptyArray()
-            rawData = emptyArray()
+        if (newData.size >= NoiseDetector.DATA_SIZE &&
+            voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection
+        ) {
+            soundDetectionData.onNext(newData.takeLast(NoiseDetector.DATA_SIZE).toShortArray())
         }
+
+        if (newData.size >= MachineLearning.DATA_SIZE) {
+            machineLearningData.onNext(rawData.toByteArray() to newData.toShortArray())
+            clearRecordingData()
+        }
+    }
+
+    private fun clearRecordingData() {
+        newData = emptyArray()
+        rawData = emptyArray()
     }
 
     @RunsInBackground

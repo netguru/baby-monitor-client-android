@@ -6,6 +6,7 @@ import co.netguru.baby.monitor.client.data.client.home.log.LogDataEntity
 import co.netguru.baby.monitor.client.data.communication.ClientEntity
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.data.splash.AppStateHandler
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -47,8 +48,7 @@ class DataRepository @Inject constructor(
     }
 
     fun doesChildDataExists(address: String): Single<Boolean> {
-        return Single.create {
-            emitter ->
+        return Single.create { emitter ->
             val count = database.childDataDao().getCount(address)
             emitter.onSuccess(count > 0)
         }
@@ -61,6 +61,15 @@ class DataRepository @Inject constructor(
     fun updateChildSnoozeTimestamp(timestamp: Long): Completable = Completable.fromAction {
         database.childDataDao().updateNotificationSnoozeTimeStamp(timestamp)
     }
+
+    fun updateVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption) =
+        Completable.fromAction {
+            if (appStateHandler.appState == AppState.CLIENT) {
+                database.childDataDao().updateVoiceAnalysisOption(voiceAnalysisOption)
+            } else if (appStateHandler.appState == AppState.SERVER) {
+                database.clientDao().updateVoiceAnalysisOption(voiceAnalysisOption)
+            }
+        }
 
     fun deleteAllData(): Completable = Completable.fromAction {
         database.childDataDao().deleteAll()

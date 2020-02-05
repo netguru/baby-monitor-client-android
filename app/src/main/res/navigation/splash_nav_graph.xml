@@ -73,7 +73,7 @@
 
     <fragment
             android:id="@+id/specifyDevice"
-            android:name="co.netguru.baby.monitor.client.feature.welcome.SpecifyDeviceFragment"
+            android:name="co.netguru.baby.monitor.client.feature.onboarding.SpecifyDeviceFragment"
             android:label="Specify Device"
             tools:layout="@layout/fragment_specify_device"
             >

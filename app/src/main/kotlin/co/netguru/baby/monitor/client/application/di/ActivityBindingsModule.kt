@@ -1,4 +1,4 @@
-package co.netguru.baby.monitor.client.application
+package co.netguru.baby.monitor.client.application.di
 
 import co.netguru.baby.monitor.client.application.scope.ActivityScope
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity

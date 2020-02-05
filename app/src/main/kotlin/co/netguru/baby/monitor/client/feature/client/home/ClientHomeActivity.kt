@@ -8,18 +8,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.GlideApp
+import co.netguru.baby.monitor.client.application.di.GlideApp
 import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.extensions.controlVideoStreamVolume
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.data.client.home.ToolbarState
-import co.netguru.baby.monitor.client.feature.babycrynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
+import co.netguru.baby.monitor.client.feature.babynotification.SnoozeNotificationUseCase.Companion.SNOOZE_DIALOG_TAG
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
-import co.netguru.baby.monitor.client.feature.settings.ResetState
+import co.netguru.baby.monitor.client.feature.settings.ChangeState
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -53,19 +53,15 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
 
         homeViewModel.fetchLogData()
         homeViewModel.checkInternetConnection()
+        homeViewModel.openSocketConnection { address -> URI.create(address) }
     }
 
     private fun setupObservers() {
-        homeViewModel.selectedChild.observeNonNull(this) { child ->
-            Timber.i("Opening socket to ${child.address}.")
-            homeViewModel.openSocketConnection(URI.create(child.address))
-        }
-
         homeViewModel.internetConnectionAvailability.observe(this, Observer { isConnected ->
             if (!isConnected) showNoInternetSnackbar()
         })
 
-        homeViewModel.selectedChild.observeNonNull(this) { child ->
+        homeViewModel.selectedChildLiveData.observeNonNull(this) { child ->
             handleSelectedChild(child)
         }
         homeViewModel.toolbarState.observe(this, Observer(this::handleToolbarStateChange))
@@ -91,7 +87,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
 
         configurationViewModel.resetState.observe(this, Observer { resetState ->
             when (resetState) {
-                is ResetState.Completed -> handleAppReset()
+                is ChangeState.Completed -> handleAppReset()
             }
         })
     }

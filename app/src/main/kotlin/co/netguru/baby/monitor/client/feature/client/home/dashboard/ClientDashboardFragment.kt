@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.GlideApp
+import co.netguru.baby.monitor.client.application.di.GlideApp
 import co.netguru.baby.monitor.client.common.PermissionResult
 import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
@@ -46,7 +46,7 @@ class ClientDashboardFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.selectedChild.observeNonNull(viewLifecycleOwner) { child ->
+        viewModel.selectedChildLiveData.observeNonNull(viewLifecycleOwner) { child ->
             clientHomeBabyNameTv.apply {
                 if (child.name.isNullOrBlank()) {
                     text = getString(R.string.your_baby_name)
