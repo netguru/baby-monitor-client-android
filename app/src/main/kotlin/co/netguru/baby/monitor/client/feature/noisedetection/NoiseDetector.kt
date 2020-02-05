@@ -18,7 +18,7 @@ class NoiseDetector @Inject constructor() {
             }
 
             val quadraticMeanPressure = sqrt(totalSquared / size)
-            decibels = 20 * log10(quadraticMeanPressure)
+            decibels = FORMULA_CONSTANT * log10(quadraticMeanPressure)
         }
         Timber.d("Sound Db: $decibels")
         return@fromCallable decibels
@@ -27,5 +27,6 @@ class NoiseDetector @Inject constructor() {
     companion object {
         internal const val DATA_SIZE = SAMPLING_RATE / 10
         const val DEFAULT_NOISE_THRESHOLD = 65
+        private const val FORMULA_CONSTANT = 20
     }
 }

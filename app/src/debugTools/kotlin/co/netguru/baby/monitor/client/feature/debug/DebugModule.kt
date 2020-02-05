@@ -34,7 +34,9 @@ class DebugModule @Inject constructor() {
             notificationEvents.startWith(NOTIFICATION_INFORMATION_INITIAL_STATE),
             cryingProbabilityEvents.startWith(CRYING_PROBABILITY_INITIAL_STATE),
             soundEvents.startWith(SOUND_INITIAL_STATE),
-            Function3<String, Float, Int, DebugState> { notificationInformation: String, cryingProbability: Float, decibels: Int ->
+            Function3<String, Float, Int, DebugState> { notificationInformation: String,
+                                                        cryingProbability: Float,
+                                                        decibels: Int ->
                 DebugState(notificationInformation, cryingProbability, decibels)
             })
             .doOnError { Timber.w(it) }

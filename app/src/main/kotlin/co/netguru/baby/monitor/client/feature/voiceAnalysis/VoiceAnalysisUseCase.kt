@@ -23,7 +23,7 @@ class VoiceAnalysisUseCase @Inject constructor(
     ): Single<Boolean> {
         val sentMessage = Message(
             voiceAnalysisOption = voiceAnalysisOption.name,
-            confirmationId = randomiser.getRandomDigits(4).joinToString("")
+            confirmationId = randomiser.getRandomDigits(NUMBERS_OF_DIGITS_IN_ID).joinToString("")
         )
         return Completable.fromAction {
             messageController.sendMessage(sentMessage)
@@ -45,5 +45,6 @@ class VoiceAnalysisUseCase @Inject constructor(
 
     companion object {
         private const val RESPONSE_TIMEOUT = 5L
+        private const val NUMBERS_OF_DIGITS_IN_ID = 4
     }
 }
