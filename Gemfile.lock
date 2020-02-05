@@ -31,7 +31,7 @@ GEM
       oga
     danger-apkanalyzer (0.0.1)
       danger-plugin-api (~> 1.0)
-    danger-jacoco (0.1.4)
+    danger-jacoco (0.1.6)
       danger-plugin-api (~> 1.0)
       nokogiri-happymapper (~> 0.6)
     danger-jira (0.6.0)
