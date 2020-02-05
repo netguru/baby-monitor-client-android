@@ -6,5 +6,6 @@ import javax.inject.Inject
 class DebugModule @Inject constructor() {
     fun sendCryingProbabilityEvent(cryingProbability: Float) {}
     fun sendNotificationEvent(notificationInformation: String) {}
+    fun sendSoundEvent(decibels: Int) {}
     fun debugStateObservable(): Observable<DebugState> = Observable.empty()
 }
