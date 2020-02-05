@@ -131,4 +131,6 @@
     <string name="check_again">Check again</string>
 
     <string name="notification_noise_detected_title">Noise detected!</string>
+    <string name="noise_detection">Noise Detection</string>
+    <string name="cry_detection">Cry Detection</string>
 </resources>

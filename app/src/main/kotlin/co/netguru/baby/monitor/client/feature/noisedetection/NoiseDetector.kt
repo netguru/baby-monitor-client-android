@@ -8,7 +8,7 @@ import kotlin.math.log10
 import kotlin.math.sqrt
 
 class NoiseDetector @Inject constructor() {
-    fun processData(data: ShortArray, size: Int)= Single.fromCallable<Double> {
+    fun processData(data: ShortArray, size: Int) = Single.fromCallable<Double> {
         var decibels = 0.0
         if (size > 0) {
             var totalSquared = 0.0

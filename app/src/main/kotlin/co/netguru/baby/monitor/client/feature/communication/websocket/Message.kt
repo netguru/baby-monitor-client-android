@@ -1,8 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import com.google.gson.annotations.SerializedName
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 data class Message(
     // Action

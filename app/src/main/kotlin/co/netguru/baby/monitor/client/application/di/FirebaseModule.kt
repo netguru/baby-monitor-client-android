@@ -12,7 +12,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-object FirebaseModule  {
+object FirebaseModule {
     @Singleton
     @Provides
     fun firebaseRepository(preferencesWrapper: FirebaseSharedPreferencesWrapper, context: Context) =

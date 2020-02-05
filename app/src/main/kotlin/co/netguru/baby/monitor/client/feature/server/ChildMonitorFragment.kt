@@ -243,7 +243,6 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
             Observer { voiceAnalysisOption ->
                 voiceAnalysisServiceBinder?.setVoiceAnalysisOption(voiceAnalysisOption)
             })
-
     }
 
     private fun showVideoPreview() {

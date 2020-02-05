@@ -59,8 +59,9 @@ class ConfigurationViewModel @Inject constructor(
             .subscribeBy(
                 onSuccess = { success ->
                     mutableVoiceAnalysisOptionState.postValue(
-                        if (success) ChangeState.Completed to voiceAnalysisOption
-                        else {
+                        if (success) {
+                            ChangeState.Completed to voiceAnalysisOption
+                        } else {
                             val previousOption =
                                 when (voiceAnalysisOption) {
                                     VoiceAnalysisOption.MachineLearning -> VoiceAnalysisOption.NoiseDetection

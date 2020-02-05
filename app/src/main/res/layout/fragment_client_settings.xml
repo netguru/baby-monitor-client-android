@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Noise Detection"
+                android:text="@string/noise_detection"
                 />
 
         <androidx.appcompat.widget.AppCompatRadioButton
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Cry Detection"
+                android:text="@string/cry_detection"
                 />
     </RadioGroup>
 

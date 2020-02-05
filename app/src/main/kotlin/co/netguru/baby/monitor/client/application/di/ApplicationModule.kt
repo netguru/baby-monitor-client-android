@@ -18,6 +18,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
+@Suppress("MagicNumber")
 object ApplicationModule {
 
     @Singleton
@@ -61,7 +62,6 @@ object ApplicationModule {
                 .build()
         }
 
-    @Suppress("MagicNumber")
     private val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL("DELETE FROM CLIENT_DATA")

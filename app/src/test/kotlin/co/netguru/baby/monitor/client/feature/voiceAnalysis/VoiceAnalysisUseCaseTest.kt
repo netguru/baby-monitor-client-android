@@ -43,7 +43,8 @@ class VoiceAnalysisUseCaseTest {
             VoiceAnalysisOption.NoiseDetection
         ).subscribe()
 
-        verify(messageController).sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection.name })
+        verify(messageController)
+            .sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection.name })
     }
 
     @Test
@@ -53,7 +54,8 @@ class VoiceAnalysisUseCaseTest {
             VoiceAnalysisOption.MachineLearning
         ).subscribe()
 
-        verify(messageController).sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.MachineLearning.name })
+        verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
+                VoiceAnalysisOption.MachineLearning.name })
     }
 
     @Test
@@ -64,7 +66,8 @@ class VoiceAnalysisUseCaseTest {
         ).test()
             .assertValue(true)
 
-        verify(messageController).sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.MachineLearning.name })
+        verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
+                VoiceAnalysisOption.MachineLearning.name })
     }
 
     @Test
@@ -84,7 +87,8 @@ class VoiceAnalysisUseCaseTest {
             .assertValue(false)
 
         timerTestScheduler.advanceTimeBy(5, TimeUnit.SECONDS)
-        verify(messageController).sendMessage(argThat { voiceAnalysisOption == VoiceAnalysisOption.MachineLearning.name })
+        verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
+                VoiceAnalysisOption.MachineLearning.name })
     }
 
     @Test

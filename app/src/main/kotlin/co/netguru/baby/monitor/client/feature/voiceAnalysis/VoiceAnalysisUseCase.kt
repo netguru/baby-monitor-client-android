@@ -31,7 +31,7 @@ class VoiceAnalysisUseCase @Inject constructor(
             .andThen(
                 messageController.receivedMessages()
                     .filter { it.confirmationId == sentMessage.confirmationId }
-                    .timeout(5, TimeUnit.SECONDS, schedulersProvider.io())
+                    .timeout(RESPONSE_TIMEOUT, TimeUnit.SECONDS, schedulersProvider.io())
                     .firstOrError()
                     .flatMap { return@flatMap Single.just(true) })
             .doOnSuccess { success ->
@@ -41,5 +41,9 @@ class VoiceAnalysisUseCase @Inject constructor(
                         onComplete = { Timber.i("VoiceOption updated to $voiceAnalysisOption") })
             }
             .onErrorReturnItem(false)
+    }
+
+    companion object {
+        private const val RESPONSE_TIMEOUT = 5L
     }
 }
