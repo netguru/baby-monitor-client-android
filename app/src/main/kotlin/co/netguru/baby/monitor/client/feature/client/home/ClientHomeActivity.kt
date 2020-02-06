@@ -58,7 +58,7 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
 
     private fun setupObservers() {
         homeViewModel.internetConnectionAvailability.observe(this, Observer { isConnected ->
-            if (!isConnected) showNoInternetSnackbar()
+            if (!isConnected) showErrorSnackbar(R.string.no_internet_message)
         })
 
         homeViewModel.selectedChildLiveData.observeNonNull(this) { child ->
@@ -83,6 +83,9 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
             } else {
                 Timber.d("Action not handled: $it")
             }
+        })
+        homeViewModel.errorAction.observe(this, Observer {
+            showErrorSnackbar(R.string.default_error_message)
         })
 
         configurationViewModel.resetState.observe(this, Observer { resetState ->
@@ -129,8 +132,8 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
         }
     }
 
-    private fun showNoInternetSnackbar() {
-        Snackbar.make(coordinator, R.string.no_internet_message, Snackbar.LENGTH_INDEFINITE)
+    private fun showErrorSnackbar(messageResource: Int) {
+        Snackbar.make(coordinator, messageResource, Snackbar.LENGTH_INDEFINITE)
             .setAction(getString(R.string.restart)) {
                 homeViewModel.restartApp(this)
             }

@@ -14,6 +14,7 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message.Companion.RESET_ACTION
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisUseCase
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -47,6 +48,7 @@ class ClientHomeViewModelTest {
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase = mock()
     private val restartAppUseCase: RestartAppUseCase = mock()
     private val messageParser: MessageParser = mock()
+    private val voiceAnalysisUseCase = mock<VoiceAnalysisUseCase>()
     private val urifier: (address: String) -> URI = mock {
         val uri = mock<URI>()
         on { invoke(any()) }.doReturn(uri)
@@ -59,6 +61,7 @@ class ClientHomeViewModelTest {
         checkInternetConnectionUseCase,
         restartAppUseCase,
         rxWebSocketClient,
+        voiceAnalysisUseCase,
         messageParser
     )
 
@@ -78,6 +81,7 @@ class ClientHomeViewModelTest {
 
         verify(selectedChildAvailabilityObserver).onChanged(true)
         verify(sendBabyNameUseCase).streamBabyName(rxWebSocketClient)
+        verify(voiceAnalysisUseCase).sendInitialVoiceAnalysisOption(rxWebSocketClient)
     }
 
     @Test
@@ -150,5 +154,49 @@ class ClientHomeViewModelTest {
         clientHomeViewModel.restartApp(activity)
 
         verify(restartAppUseCase).restartApp(activity)
+    }
+
+    @Test
+    fun `should handle error while sending baby name on webSocket open`() {
+        val errorObserver: Observer<Throwable> = mock()
+        whenever(sendBabyNameUseCase.streamBabyName(rxWebSocketClient)).thenReturn(
+            Completable.error(
+                RuntimeException()
+            )
+        )
+        whenever(rxWebSocketClient.events(any())).doReturn(
+            Observable.just<RxWebSocketClient.Event>(
+                RxWebSocketClient.Event.Open
+            )
+        )
+        clientHomeViewModel.errorAction.observeForever(
+            errorObserver
+        )
+
+        clientHomeViewModel.openSocketConnection(urifier)
+
+        verify(errorObserver).onChanged(any())
+    }
+
+    @Test
+    fun `should handle error while sending voice analysis option on webSocket open`() {
+        val errorObserver: Observer<Throwable> = mock()
+        whenever(voiceAnalysisUseCase.sendInitialVoiceAnalysisOption(rxWebSocketClient)).thenReturn(
+            Completable.error(
+                RuntimeException()
+            )
+        )
+        whenever(rxWebSocketClient.events(any())).doReturn(
+            Observable.just<RxWebSocketClient.Event>(
+                RxWebSocketClient.Event.Open
+            )
+        )
+        clientHomeViewModel.errorAction.observeForever(
+            errorObserver
+        )
+
+        clientHomeViewModel.openSocketConnection(urifier)
+
+        verify(errorObserver).onChanged(any())
     }
 }

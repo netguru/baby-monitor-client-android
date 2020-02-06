@@ -18,10 +18,11 @@ import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageParser
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisUseCase
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -35,6 +36,7 @@ class ClientHomeViewModel @Inject constructor(
     private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase,
     private val restartAppUseCase: RestartAppUseCase,
     internal val rxWebSocketClient: RxWebSocketClient,
+    private val voiceAnalysisUseCase: VoiceAnalysisUseCase,
     private val messageParser: MessageParser
 ) : ViewModel(), MessageController {
 
@@ -56,11 +58,12 @@ class ClientHomeViewModel @Inject constructor(
         mutableInternetConnectionAvailability
 
     internal val webSocketAction = SingleLiveEvent<String>()
+    internal val errorAction = SingleLiveEvent<Throwable>()
 
-    private val compositeDisposable = CompositeDisposable()
+    private val disposables = CompositeDisposable()
 
     fun checkInternetConnection() {
-        checkInternetConnectionUseCase.hasInternetConnection()
+        disposables += checkInternetConnectionUseCase.hasInternetConnection()
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onSuccess = { isConnected ->
@@ -68,31 +71,30 @@ class ClientHomeViewModel @Inject constructor(
                 },
                 onError = { Timber.e(it) }
             )
-            .addTo(compositeDisposable)
     }
 
     fun fetchLogData() {
-        dataRepository.getAllLogData()
+        disposables += dataRepository.getAllLogData()
             .subscribeOn(Schedulers.newThread())
             .subscribeBy(
                 onNext = this::handleNextLogDataList,
                 onError = Timber::e
-            ).addTo(compositeDisposable)
+            )
     }
 
     fun saveConfiguration() {
-        dataRepository.saveConfiguration(AppState.CLIENT)
+        disposables += dataRepository.saveConfiguration(AppState.CLIENT)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = { Timber.i("state saved") },
                 onError = Timber::e
-            ).addTo(compositeDisposable)
+            )
     }
 
     override fun onCleared() {
         super.onCleared()
         rxWebSocketClient.dispose()
-        compositeDisposable.dispose()
+        disposables.dispose()
     }
 
     @RunsInBackground
@@ -107,7 +109,7 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     fun openSocketConnection(urifier: (address: String) -> URI) {
-        dataRepository.getChildData()
+        disposables += dataRepository.getChildData()
             .flatMapObservable { rxWebSocketClient.events(urifier.invoke(it.address)) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -131,7 +133,6 @@ class ClientHomeViewModel @Inject constructor(
                     Timber.i("Websocket error: $error.")
                 }
             )
-            .addTo(compositeDisposable)
     }
 
     private fun handleMessage(message: Message?) {
@@ -146,16 +147,24 @@ class ClientHomeViewModel @Inject constructor(
 
     private fun handleWebSocketOpen(client: RxWebSocketClient) {
         mutableSelectedChildAvailability.postValue(true)
-        sendBabyNameUseCase.streamBabyName(client)
+        openSocketDisposables += sendBabyNameUseCase.streamBabyName(client)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onComplete = {
                     Timber.d("Baby name sent successfully.")
                 }, onError = { error ->
-                    Timber.w(error, "Error sending baby name.")
+                    errorAction.postValue(error)
                 }
             )
-            .addTo(openSocketDisposables)
+        openSocketDisposables += voiceAnalysisUseCase.sendInitialVoiceAnalysisOption(client)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    Timber.d("Voice analysis sent successfully.")
+                }, onError = { error ->
+                    errorAction.postValue(error)
+                }
+            )
     }
 
     private fun handleWebSocketClose() {
@@ -164,22 +173,19 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     fun snoozeNotifications() {
-        snoozeNotificationUseCase.snoozeNotifications()
-            .addTo(compositeDisposable)
+        disposables += snoozeNotificationUseCase.snoozeNotifications()
     }
 
     fun restartApp(activity: AppCompatActivity) {
-        restartAppUseCase.restartApp(activity)
+        disposables += restartAppUseCase.restartApp(activity)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
-            .addTo(compositeDisposable)
     }
 
     override fun sendMessage(message: Message) {
-        rxWebSocketClient.send(message)
+        disposables += rxWebSocketClient.send(message)
             .subscribeBy(onError = { Timber.e(it) })
-            .addTo(compositeDisposable)
     }
 
     override fun receivedMessages(): Observable<Message> {
