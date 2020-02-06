@@ -5,6 +5,7 @@ import co.netguru.baby.monitor.client.common.Randomiser
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
+import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
@@ -41,6 +42,21 @@ class VoiceAnalysisUseCase @Inject constructor(
             }
             .onErrorReturnItem(false)
     }
+
+    fun sendInitialVoiceAnalysisOption(client: RxWebSocketClient): Completable =
+        dataRepository.getChildData()
+            .map { it.voiceAnalysisOption }
+            .flatMapCompletable { voiceAnalysisOption ->
+                sendVoiceAnalysisOption(client, voiceAnalysisOption)
+            }
+
+    private fun sendVoiceAnalysisOption(
+        client: RxWebSocketClient,
+        voiceAnalysisOption: VoiceAnalysisOption
+    ): Completable =
+        client.send(Message(voiceAnalysisOption = voiceAnalysisOption.name))
+            .doOnError { Timber.w("Couldn't send option: $voiceAnalysisOption.") }
+            .doOnComplete { Timber.d("Option sent: $voiceAnalysisOption.") }
 
     companion object {
         private const val RESPONSE_TIMEOUT = 5L
