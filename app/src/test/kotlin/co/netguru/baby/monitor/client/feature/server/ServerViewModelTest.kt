@@ -69,7 +69,7 @@ class ServerViewModelTest {
                 ClientConnectionStatus.CLIENT_CONNECTED
             )
         )
-        on { messages() }.doReturn(Observable.just(websocket to mock()))
+        on { messages() }.doReturn(Observable.just(websocket to Message()))
     }
 
     private val serverViewModel =
@@ -245,9 +245,7 @@ class ServerViewModelTest {
     fun `should update baby name status on binder messages`() {
         val name = "babyName"
         val babyNameObserver: Observer<String> = mock()
-        val message: Message = mock {
-            on { babyName }.doReturn(name)
-        }
+        val message = Message(babyName = name)
         whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
         serverViewModel.babyNameStatus.observeForever(babyNameObserver)
 
@@ -259,9 +257,7 @@ class ServerViewModelTest {
     @Test
     fun `should notify observers about web socket reset action`() {
         val resetActionObserver: Observer<String> = mock()
-        val message: Message = mock {
-            on { action }.doReturn(RESET_ACTION)
-        }
+        val message = Message(action = RESET_ACTION)
         whenever(webSocketServiceBinder.messages()).doReturn(Observable.just(websocket to message))
         serverViewModel.webSocketAction.observeForever(resetActionObserver)
 

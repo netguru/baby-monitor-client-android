@@ -1,9 +1,10 @@
 package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import co.netguru.baby.monitor.client.common.ISchedulersProvider
-import co.netguru.baby.monitor.client.common.Randomiser
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
+import co.netguru.baby.monitor.client.feature.communication.ConfirmationItem
+import co.netguru.baby.monitor.client.feature.communication.ConfirmationUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
@@ -16,11 +17,9 @@ import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
-class VoiceAnalysisUseCaseTest {
+class ConfirmationUseCaseTest {
 
-    private val dataRepository = mock<DataRepository> {
-        on { updateVoiceAnalysisOption(any()) }.doReturn(Completable.complete())
-    }
+    private val dataRepository = mock<DataRepository>()
     private val randomDigitsList = listOf(1, 2, 3, 4)
     private val confirmationId = randomDigitsList.joinToString("")
     private val timerTestScheduler = TestScheduler()
@@ -32,21 +31,26 @@ class VoiceAnalysisUseCaseTest {
         on { mainThread() } doReturn Schedulers.trampoline()
         on { computation() } doReturn Schedulers.trampoline()
     }
+    private val message = Message(confirmationId = confirmationId)
     private val messageController = mock<MessageController> {
-        on { receivedMessages() }.doReturn(Observable.just(Message(confirmationId = confirmationId)))
+        on { receivedMessages() }.doReturn(Observable.just(message))
     }
-    private val randomiser = mock<Randomiser> {
-        on { getRandomDigits(any()) }.doReturn(randomDigitsList)
+    private val confirmationItem = mock<ConfirmationItem<VoiceAnalysisOption>> {
+        on { onSuccessAction(dataRepository)}
+            .doReturn(Completable.complete())
     }
 
-    private val voiceAnalysisUseCase =
-        VoiceAnalysisUseCase(dataRepository, schedulersProvider, randomiser)
+    private val confirmationUseCase =
+        ConfirmationUseCase(dataRepository, schedulersProvider)
 
     @Test
     fun `should send noiseDetection message to baby device`() {
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+        whenever(confirmationItem.sentMessage).doReturn(
+            Message(confirmationId = confirmationId,
+            voiceAnalysisOption = VoiceAnalysisOption.NOISE_DETECTION.name))
+        confirmationUseCase.changeValue(
             messageController,
-            VoiceAnalysisOption.NOISE_DETECTION
+            confirmationItem
         ).test()
             .assertComplete()
 
@@ -56,9 +60,12 @@ class VoiceAnalysisUseCaseTest {
 
     @Test
     fun `should send machineLearning message to baby device`() {
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+        whenever(confirmationItem.sentMessage).doReturn(
+            Message(confirmationId = confirmationId,
+                voiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING.name))
+        confirmationUseCase.changeValue(
             messageController,
-            VoiceAnalysisOption.MACHINE_LEARNING
+            confirmationItem
         ).test()
             .assertComplete()
 
@@ -68,9 +75,12 @@ class VoiceAnalysisUseCaseTest {
 
     @Test
     fun `should get successful response with the same confirmationId`() {
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+        whenever(confirmationItem.sentMessage).doReturn(
+            Message(confirmationId = confirmationId,
+                voiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING.name))
+        confirmationUseCase.changeValue(
             messageController,
-            VoiceAnalysisOption.MACHINE_LEARNING
+            confirmationItem
         ).test()
             .assertValue(true)
       
@@ -80,17 +90,13 @@ class VoiceAnalysisUseCaseTest {
 
     @Test
     fun `should get failure response after timeout if correct confirmationId isn't returned`() {
-        whenever(messageController.receivedMessages()).doReturn(
-            Observable.just(
-                Message(
-                    confirmationId = "wrongId"
-                )
-            )
-        )
+        whenever(confirmationItem.sentMessage).doReturn(
+            Message(confirmationId = "wrongId",
+                voiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING.name))
 
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+        confirmationUseCase.changeValue(
             messageController,
-            VoiceAnalysisOption.MACHINE_LEARNING
+            confirmationItem
         ).test()
             .assertValue(false)
 
@@ -101,49 +107,32 @@ class VoiceAnalysisUseCaseTest {
     }
 
     @Test
-    fun `should save successful option change to database`() {
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+    fun `should invoke succes action with data repository`() {
+        whenever(confirmationItem.sentMessage).doReturn(
+            Message(confirmationId = confirmationId,
+                voiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING.name))
+
+        confirmationUseCase.changeValue(
             messageController,
-            VoiceAnalysisOption.MACHINE_LEARNING
+            confirmationItem
         ).test()
             .assertValue(true)
 
-        verify(dataRepository).updateVoiceAnalysisOption(VoiceAnalysisOption.MACHINE_LEARNING)
+        verify(confirmationItem).onSuccessAction(dataRepository)
     }
 
     @Test
     fun `shouldn't save option change to database when change failed`() {
-        whenever(messageController.receivedMessages()).doReturn(
-            Observable.just(
-                Message(
-                    confirmationId = "wrongId"
-                )
-            )
-        )
-        voiceAnalysisUseCase.chooseVoiceAnalysisOption(
+        whenever(confirmationItem.sentMessage).doReturn(
+            Message(confirmationId = "wrongId",
+                voiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING.name))
+
+        confirmationUseCase.changeValue(
             messageController,
-            VoiceAnalysisOption.MACHINE_LEARNING
+            confirmationItem
         ).test()
             .assertValue(false)
 
-        verifyZeroInteractions(dataRepository)
-    }
-
-    @Test
-    fun `should sent initial option`() {
-        val initialOption = VoiceAnalysisOption.MACHINE_LEARNING
-        val childData = mock<ChildDataEntity> {
-            on { voiceAnalysisOption }.doReturn(initialOption)
-        }
-        whenever(dataRepository.getChildData()).doReturn(Maybe.just(childData))
-        voiceAnalysisUseCase
-            .sendInitialVoiceAnalysisOption(rxWebSocketClient)
-            .test()
-            .assertComplete()
-
-        verify(dataRepository).getChildData()
-        verify(rxWebSocketClient).send(check {
-            assert(it.voiceAnalysisOption == initialOption.name)
-        })
+        verify(confirmationItem, times(0)).onSuccessAction(dataRepository)
     }
 }
