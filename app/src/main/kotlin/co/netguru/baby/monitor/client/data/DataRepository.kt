@@ -76,6 +76,15 @@ class DataRepository @Inject constructor(
             }
         }
 
+    fun updateNoiseSensitivity(sensitivity: Int) =
+        Completable.fromAction {
+            if (appStateHandler.appState == AppState.CLIENT) {
+                database.childDataDao().updateNoiseSensitivity(sensitivity)
+            } else if (appStateHandler.appState == AppState.SERVER) {
+                database.clientDao().updateNoiseSensitivity(sensitivity)
+            }
+        }
+
     fun deleteAllData(): Completable = Completable.fromAction {
         database.childDataDao().deleteAll()
         database.clientDao().deleteAll()

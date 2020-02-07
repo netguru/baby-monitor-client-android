@@ -16,7 +16,7 @@ import co.netguru.baby.monitor.client.data.communication.ClientEntity
         ClientEntity::class,
         ChildDataEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

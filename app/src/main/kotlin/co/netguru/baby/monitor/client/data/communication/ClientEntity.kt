@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 
 @Entity(
@@ -14,6 +15,7 @@ data class ClientEntity(
     @ColumnInfo(name = "address") val address: String,
     @ColumnInfo(name = "firebase_key") var firebaseKey: String,
     val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING,
+    val noiseSensitivity: Int = NoiseDetector.DEFAULT_NOISE_SENSITIVITY,
     // There is only one parent handled right now
     @PrimaryKey val id: Int? = 0
 )

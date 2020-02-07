@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.common.SchedulersProvider
 import co.netguru.baby.monitor.client.data.AppDatabase
 import co.netguru.baby.monitor.client.data.AppDatabase.Companion.DATABASE_NAME
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
+import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import dagger.Module
 import dagger.Provides
@@ -48,7 +49,8 @@ object ApplicationModule {
                 .addMigrations(
                     MIGRATION_1_2,
                     MIGRATION_2_3,
-                    MIGRATION_3_4
+                    MIGRATION_3_4,
+                    MIGRATION_4_5
                 )
                 .build()
         } catch (e: IllegalStateException) {
@@ -77,6 +79,13 @@ object ApplicationModule {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN voiceAnalysisOption  TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MACHINE_LEARNING.name}")
             database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN voiceAnalysisOption TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MACHINE_LEARNING.name}")
+        }
+    }
+
+    private val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN noiseSensitivity INTEGER NOT NULL DEFAULT ${NoiseDetector.DEFAULT_NOISE_SENSITIVITY}")
+            database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN noiseSensitivity INTEGER NOT NULL DEFAULT ${NoiseDetector.DEFAULT_NOISE_SENSITIVITY}")
         }
     }
 }
