@@ -29,8 +29,8 @@ class SeekBarProgress : RelativeLayout {
         val value = valueState.second
         resolveVisibility(changeState)
         when (changeState) {
-            ChangeState.Completed -> setDoneDrawable()
-            ChangeState.Failed -> setFailedDrawable()
+            ChangeState.Completed -> setAnimatedDrawable(true)
+            ChangeState.Failed -> setAnimatedDrawable(false)
             ChangeState.InProgress -> Unit
             null -> {
                 value?.let {
@@ -47,14 +47,10 @@ class SeekBarProgress : RelativeLayout {
             changeState == ChangeState.Completed || changeState == ChangeState.Failed
     }
 
-    private fun setFailedDrawable() {
-        //TODO implementation
-    }
-
-    private fun setDoneDrawable() {
+    private fun setAnimatedDrawable(success: Boolean) {
         val animatedVectorDrawable = AppCompatResources.getDrawable(
             context,
-            R.drawable.animated_done
+            if(success) R.drawable.animated_done else R.drawable.animated_fail
         ) as? AnimatedVectorDrawable
         animatedVectorDrawable?.let {
             progressIcon.setImageDrawable(it)

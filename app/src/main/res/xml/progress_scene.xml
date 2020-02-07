@@ -20,7 +20,7 @@
                 motion:layout_constraintEnd_toEndOf="@id/noiseDetectionSeekBar"
                 motion:layout_constraintStart_toStartOf="@id/noiseDetectionSeekBar"
                 motion:layout_constraintTop_toTopOf="@id/noiseDetectionSeekBar"
-                motion:visibilityMode="ignore"
+                android:visibility="gone"
                 />
 
         <Constraint
@@ -55,7 +55,7 @@
                 motion:layout_constraintBottom_toTopOf="@id/noiseDetectionSeekBar"
                 motion:layout_constraintEnd_toEndOf="parent"
                 motion:layout_constraintStart_toStartOf="parent"
-                motion:visibilityMode="ignore"
+                android:visibility="visible"
                 />
         <Constraint
                 android:id="@+id/noiseDetectionSeekBar"

@@ -26,4 +26,5 @@
     <color name="active_pulsating">#33FF99</color>
     <color name="inactive_pulsating">#9b9b9b</color>
     <color name="separator_color">#363253</color>
+    <color name="fail_color">#F44336</color>
 </resources>
