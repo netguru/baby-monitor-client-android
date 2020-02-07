@@ -73,7 +73,7 @@ class VoiceAnalysisUseCaseTest {
             VoiceAnalysisOption.MACHINE_LEARNING
         ).test()
             .assertValue(true)
-
+      
         verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
                 VoiceAnalysisOption.MACHINE_LEARNING.name })
     }
@@ -95,6 +95,7 @@ class VoiceAnalysisUseCaseTest {
             .assertValue(false)
 
         timerTestScheduler.advanceTimeBy(5, TimeUnit.SECONDS)
+        
         verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
                 VoiceAnalysisOption.MACHINE_LEARNING.name })
     }
