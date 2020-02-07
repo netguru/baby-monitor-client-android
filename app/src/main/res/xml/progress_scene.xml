@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:motion="http://schemas.android.com/apk/res-auto"
+        >
+
+    <Transition
+            motion:constraintSetEnd="@+id/end"
+            motion:constraintSetStart="@+id/start"
+            motion:duration="500"
+            />
+
+    <ConstraintSet android:id="@+id/start">
+
+        <Constraint
+                android:id="@+id/noiseSensitivityProgress"
+                android:layout_width="0.1dp"
+                android:layout_height="0.1dp"
+                motion:layout_constraintBottom_toBottomOf="@id/noiseDetectionSeekBar"
+                motion:layout_constraintEnd_toEndOf="@id/noiseDetectionSeekBar"
+                motion:layout_constraintStart_toStartOf="@id/noiseDetectionSeekBar"
+                motion:layout_constraintTop_toTopOf="@id/noiseDetectionSeekBar"
+                motion:visibilityMode="ignore"
+                />
+
+        <Constraint
+                android:id="@+id/noiseDetectionSeekBar"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="@dimen/spacing_small"
+                motion:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+                motion:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+                motion:layout_constraintTop_toBottomOf="@id/voiceAnalysisRadioButtons"
+                motion:visibilityMode="ignore"
+                />
+        <Constraint
+                android:id="@+id/resetProgressBar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:indeterminate="true"
+                android:padding="@dimen/spacing_tiny"
+                motion:layout_constraintBottom_toTopOf="@+id/resetBtnGLBottom"
+                motion:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+                motion:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+                motion:layout_constraintTop_toBottomOf="@+id/resetBtnGLTop"
+                motion:visibilityMode="ignore"
+                />
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+                android:id="@+id/noiseSensitivityProgress"
+                android:layout_width="@dimen/default_icon_size"
+                android:layout_height="@dimen/default_icon_size"
+                android:layout_marginBottom="@dimen/spacing_small"
+                motion:layout_constraintBottom_toTopOf="@id/noiseDetectionSeekBar"
+                motion:layout_constraintEnd_toEndOf="parent"
+                motion:layout_constraintStart_toStartOf="parent"
+                motion:visibilityMode="ignore"
+                />
+        <Constraint
+                android:id="@+id/noiseDetectionSeekBar"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="@dimen/spacing_small"
+                motion:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+                motion:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+                motion:layout_constraintTop_toBottomOf="@id/voiceAnalysisRadioButtons"
+                motion:visibilityMode="ignore"
+                />
+        <Constraint
+                android:id="@+id/resetProgressBar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:indeterminate="true"
+                android:padding="@dimen/spacing_tiny"
+                motion:layout_constraintBottom_toTopOf="@+id/resetBtnGLBottom"
+                motion:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+                motion:layout_constraintStart_toStartOf="@+id/clientSettingsGLBegin"
+                motion:layout_constraintTop_toBottomOf="@+id/resetBtnGLTop"
+                motion:visibilityMode="ignore"
+                />
+    </ConstraintSet>
+
+</MotionScene>
