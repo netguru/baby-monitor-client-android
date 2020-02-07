@@ -4,6 +4,8 @@ import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPrefere
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.base.ServiceController
 import co.netguru.baby.monitor.client.data.DataRepository
+import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
+import co.netguru.baby.monitor.client.feature.analytics.UserProperty
 import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUseCase
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
@@ -23,14 +25,15 @@ class VoiceAnalysisController @Inject constructor(
     private val debugModule: DebugModule,
     private val noiseDetector: NoiseDetector,
     private val dataRepository: DataRepository,
-    private val machineLearning: MachineLearning
+    private val machineLearning: MachineLearning,
+    private val analyticsManager: AnalyticsManager
 ) : ServiceController<VoiceAnalysisService> {
 
     private val compositeDisposable = CompositeDisposable()
     private var aacRecorder: AacRecorder? = null
     private var voiceAnalysisService: VoiceAnalysisService? = null
     var voiceAnalysisOption =
-        VoiceAnalysisOption.MachineLearning
+        VoiceAnalysisOption.MACHINE_LEARNING
         set(value) {
             field = value
             aacRecorder?.voiceAnalysisOption = value
@@ -43,6 +46,7 @@ class VoiceAnalysisController @Inject constructor(
             .subscribeOn(Schedulers.io())
             .subscribeBy(onSuccess = {
                 voiceAnalysisOption = it.voiceAnalysisOption
+                analyticsManager.setUserProperty(UserProperty.VoiceAnalysis(voiceAnalysisOption))
                 startRecording()
             }, onComplete = this::startRecording)
             .addTo(compositeDisposable)
@@ -61,7 +65,7 @@ class VoiceAnalysisController @Inject constructor(
                             onError = Timber::e
                         ).addTo(compositeDisposable)
                     machineLearningData
-                        .filter { voiceAnalysisOption == VoiceAnalysisOption.MachineLearning }
+                        .filter { voiceAnalysisOption == VoiceAnalysisOption.MACHINE_LEARNING }
                         .subscribeOn(Schedulers.newThread())
                         .subscribeBy(
                             onNext = this@VoiceAnalysisController::handleRecordingData,
@@ -69,7 +73,7 @@ class VoiceAnalysisController @Inject constructor(
                             onError = Timber::e
                         ).addTo(compositeDisposable)
                     soundDetectionData
-                        .filter { voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection }
+                        .filter { voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION }
                         .subscribeOn(Schedulers.newThread())
                         .subscribeBy(
                             onNext = this@VoiceAnalysisController::handleRecordingData,

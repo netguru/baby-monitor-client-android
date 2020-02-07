@@ -146,11 +146,11 @@ class ServerViewModel @Inject constructor(
         binder: WebSocketServerService.Binder
     ) {
         when (voiceAnalysisOption) {
-            VoiceAnalysisOption.NoiseDetection.name -> {
-                mutableVoiceAnalysisOptionLiveData.value = VoiceAnalysisOption.NoiseDetection
+            VoiceAnalysisOption.NOISE_DETECTION.name -> {
+                mutableVoiceAnalysisOptionLiveData.value = VoiceAnalysisOption.NOISE_DETECTION
             }
-            VoiceAnalysisOption.MachineLearning.name -> {
-                mutableVoiceAnalysisOptionLiveData.value = VoiceAnalysisOption.MachineLearning
+            VoiceAnalysisOption.MACHINE_LEARNING.name -> {
+                mutableVoiceAnalysisOptionLiveData.value = VoiceAnalysisOption.MACHINE_LEARNING
             }
         }
         compositeDisposable += dataRepository.updateVoiceAnalysisOption(

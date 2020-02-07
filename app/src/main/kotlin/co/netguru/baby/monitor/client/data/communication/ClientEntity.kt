@@ -13,7 +13,7 @@ import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 data class ClientEntity(
     @ColumnInfo(name = "address") val address: String,
     @ColumnInfo(name = "firebase_key") var firebaseKey: String,
-    val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MachineLearning,
+    val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING,
     // There is only one parent handled right now
     @PrimaryKey val id: Int? = 0
 )

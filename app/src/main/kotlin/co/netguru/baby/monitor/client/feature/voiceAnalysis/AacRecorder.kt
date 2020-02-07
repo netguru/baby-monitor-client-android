@@ -63,7 +63,7 @@ class AacRecorder(var voiceAnalysisOption: VoiceAnalysisOption) {
         rawData = rawData.plus(array.toTypedArray())
 
         if (newData.size >= NoiseDetector.DATA_SIZE &&
-            voiceAnalysisOption == VoiceAnalysisOption.NoiseDetection
+            voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION
         ) {
             soundDetectionData.onNext(newData.takeLast(NoiseDetector.DATA_SIZE).toShortArray())
         }

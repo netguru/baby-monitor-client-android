@@ -75,8 +75,8 @@ object ApplicationModule {
     }
     private val MIGRATION_3_4 = object : Migration(3, 4) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN voiceAnalysisOption  TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MachineLearning.name}")
-            database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN voiceAnalysisOption TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MachineLearning.name}")
+            database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN voiceAnalysisOption  TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MACHINE_LEARNING.name}")
+            database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN voiceAnalysisOption TEXT NOT NULL DEFAULT ${VoiceAnalysisOption.MACHINE_LEARNING.name}")
         }
     }
 }
