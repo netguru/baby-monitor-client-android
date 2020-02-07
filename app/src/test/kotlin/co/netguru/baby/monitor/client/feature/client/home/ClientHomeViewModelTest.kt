@@ -159,7 +159,7 @@ class ClientHomeViewModelTest {
     @Test
     fun `should handle error while sending baby name on webSocket open`() {
         val errorObserver: Observer<Throwable> = mock()
-        whenever(sendBabyNameUseCase.streamBabyName(rxWebSocketClient)).thenReturn(
+        whenever(sendBabyNameUseCase.streamBabyName(rxWebSocketClient)).doReturn(
             Completable.error(
                 RuntimeException()
             )
@@ -181,7 +181,7 @@ class ClientHomeViewModelTest {
     @Test
     fun `should handle error while sending voice analysis option on webSocket open`() {
         val errorObserver: Observer<Throwable> = mock()
-        whenever(voiceAnalysisUseCase.sendInitialVoiceAnalysisOption(rxWebSocketClient)).thenReturn(
+        whenever(voiceAnalysisUseCase.sendInitialVoiceAnalysisOption(rxWebSocketClient)).doReturn(
             Completable.error(
                 RuntimeException()
             )
