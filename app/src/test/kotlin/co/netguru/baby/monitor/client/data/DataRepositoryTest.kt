@@ -71,8 +71,9 @@ class DataRepositoryTest {
     @Test
     fun `should update user property when saving AppState`() {
         val configuration = AppState.SERVER
-        dataRepository.saveConfiguration(configuration).subscribe()
-
+        dataRepository.saveConfiguration(configuration)
+            .test()
+            .assertComplete()
         verify(analyticsManager).setUserProperty(argThat {
             this is UserProperty.AppStateProperty && this.value == configuration.name.toLowerCase()
         })
@@ -82,7 +83,9 @@ class DataRepositoryTest {
     fun `should update user property when saving VoiceAnalysisOption in server state`() {
         whenever(appStateHandler.appState).doReturn(AppState.SERVER)
         val voiceAnalysis = VoiceAnalysisOption.NOISE_DETECTION
-        dataRepository.updateVoiceAnalysisOption(voiceAnalysis).subscribe()
+        dataRepository.updateVoiceAnalysisOption(voiceAnalysis)
+            .test()
+            .assertComplete()
 
         verify(analyticsManager).setUserProperty(argThat {
             this is UserProperty.VoiceAnalysis && this.value == voiceAnalysis.name.toLowerCase()
@@ -93,7 +96,33 @@ class DataRepositoryTest {
     fun `shouldn't update user property when saving VoiceAnalysisOption in client state`() {
         whenever(appStateHandler.appState).doReturn(AppState.CLIENT)
         val voiceAnalysis = VoiceAnalysisOption.NOISE_DETECTION
-        dataRepository.updateVoiceAnalysisOption(voiceAnalysis).subscribe()
+        dataRepository.updateVoiceAnalysisOption(voiceAnalysis)
+            .test()
+            .assertComplete()
+
+        verifyZeroInteractions(analyticsManager)
+    }
+
+    @Test
+    fun `should update user property when saving noise sensitivity in server state`() {
+        whenever(appStateHandler.appState).doReturn(AppState.SERVER)
+        val noiseSensitivity = 30
+        dataRepository.updateNoiseSensitivity(noiseSensitivity)
+            .test()
+            .assertComplete()
+
+        verify(analyticsManager).setUserProperty(argThat {
+            this is UserProperty.NoiseSensitivity && this.value == noiseSensitivity.toString()
+        })
+    }
+
+    @Test
+    fun `shouldn't update user property when saving noise sensitivity in client state`() {
+        whenever(appStateHandler.appState).doReturn(AppState.CLIENT)
+        val noiseSensitivity = 30
+        dataRepository.updateNoiseSensitivity(noiseSensitivity)
+            .test()
+            .assertComplete()
 
         verifyZeroInteractions(analyticsManager)
     }
