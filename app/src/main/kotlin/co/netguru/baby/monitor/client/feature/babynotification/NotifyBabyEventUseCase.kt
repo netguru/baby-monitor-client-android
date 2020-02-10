@@ -28,7 +28,7 @@ class NotifyBabyEventUseCase(
 
     fun babyEvents(): Completable {
         return babyEvents
-            .throttleFirst(CRYING_EVENTS_THROTTLING_TIME, TimeUnit.MINUTES)
+            .throttleFirst(BABY_EVENTS_THROTTLING_TIME, TimeUnit.SECONDS)
             .flatMapCompletable {
                 fetchClientsAndPostNotification(it)
                     .subscribeOn(Schedulers.io())
@@ -49,7 +49,7 @@ class NotifyBabyEventUseCase(
     }
 
     companion object {
-        private const val CRYING_EVENTS_THROTTLING_TIME = 3L
+        private const val BABY_EVENTS_THROTTLING_TIME = 15L
         const val CRY_TITLE_KEY = "cry_title"
         const val NOISE_TITLE_KEY = "noise_title"
         const val NOTIFICATION_TEXT_KEY = "notification_text"
