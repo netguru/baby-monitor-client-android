@@ -127,7 +127,7 @@ class VoiceAnalysisController @Inject constructor(
     }
 
     private fun isNoiseDetected(decibels: Double) = noiseSensitivity > 0 &&
-            decibels > (-noiseSensitivity + MAX_NOISE_SENSITIVITY)
+            decibels > -noiseSensitivity + MAX_NOISE_SENSITIVITY
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)

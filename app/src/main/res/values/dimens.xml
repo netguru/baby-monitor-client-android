@@ -31,8 +31,7 @@
     <dimen name="spacing_xxxlarge">96dp</dimen>
 
     <dimen name="spacing_tiny">2dp</dimen>
-
-    <dimen name="toolbar_elevation">12dp</dimen>
+    
     <dimen name="elevation_big">20dp</dimen>
     <dimen name="drawer_width">320dp</dimen>
     <dimen name="default_icon_size">48dp</dimen>

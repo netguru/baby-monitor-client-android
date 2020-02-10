@@ -262,9 +262,9 @@ class ClientSettingsFragment : BaseFragment() {
     private fun blockDrawerMovement() {
         noiseDetectionSeekBar.setOnTouchListener { v, event ->
             when (event.action) {
-                MotionEvent.ACTION_DOWN ->  // Disallow Drawer to intercept touch events.
+                MotionEvent.ACTION_DOWN -> // Disallow Drawer to intercept touch events.
                     v.parent.requestDisallowInterceptTouchEvent(true)
-                MotionEvent.ACTION_UP ->  // Allow Drawer to intercept touch events.
+                MotionEvent.ACTION_UP -> // Allow Drawer to intercept touch events.
                     v.parent.requestDisallowInterceptTouchEvent(false)
             }
             // Handle seekbar touch events.

@@ -67,7 +67,8 @@ class ConfigurationViewModel @Inject constructor(
             messageController,
             getVoiceAnalysisConfirmationItem(voiceAnalysisOption)
         )
-            .doOnSubscribe { mutableVoiceAnalysisOptionState.postValue(ChangeState.InProgress to null) }
+            .doOnSubscribe { mutableVoiceAnalysisOptionState
+                .postValue(ChangeState.InProgress to null) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -91,14 +92,17 @@ class ConfigurationViewModel @Inject constructor(
             )
     }
 
-    private fun getVoiceAnalysisConfirmationItem(voiceAnalysisOption: VoiceAnalysisOption): ConfirmationItem<VoiceAnalysisOption> {
+    private fun getVoiceAnalysisConfirmationItem(voiceAnalysisOption: VoiceAnalysisOption)
+            : ConfirmationItem<VoiceAnalysisOption> {
         return object : ConfirmationItem<VoiceAnalysisOption> {
             override fun onSuccessAction(dataRepository: DataRepository): Completable =
                 dataRepository.updateVoiceAnalysisOption(voiceAnalysisOption)
+
             override val value: VoiceAnalysisOption = voiceAnalysisOption
             override val sentMessage = Message(
                 voiceAnalysisOption = voiceAnalysisOption.name,
-                confirmationId = randomiser.getRandomDigits(NUMBERS_OF_DIGITS_IN_ID).joinToString("")
+                confirmationId = randomiser.getRandomDigits(NUMBERS_OF_DIGITS_IN_ID)
+                    .joinToString("")
             )
         }
     }
@@ -114,14 +118,16 @@ class ConfigurationViewModel @Inject constructor(
             messageController,
             getNoiseSensitivityConfirmationItem(sensitivity)
         )
-            .doOnSubscribe { mutableNoiseSensitivityState.postValue(ChangeState.InProgress to null) }
+            .doOnSubscribe { mutableNoiseSensitivityState
+                .postValue(ChangeState.InProgress to null) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { success ->
                     if (success) {
                         noiseSensitivityInitialValue = sensitivity
-                        mutableNoiseSensitivityState.postValue(ChangeState.Completed to sensitivity)
+                        mutableNoiseSensitivityState
+                            .postValue(ChangeState.Completed to sensitivity)
                     } else {
                         mutableNoiseSensitivityState
                             .postValue(ChangeState.Failed to noiseSensitivityInitialValue)
@@ -135,10 +141,12 @@ class ConfigurationViewModel @Inject constructor(
         return object : ConfirmationItem<Int> {
             override fun onSuccessAction(dataRepository: DataRepository): Completable =
                 dataRepository.updateNoiseSensitivity(sensitivity)
+
             override val value: Int = sensitivity
             override val sentMessage = Message(
                 noiseSensitivity = sensitivity,
-                confirmationId = randomiser.getRandomDigits(NUMBERS_OF_DIGITS_IN_ID).joinToString("")
+                confirmationId = randomiser.getRandomDigits(NUMBERS_OF_DIGITS_IN_ID)
+                    .joinToString("")
             )
         }
     }

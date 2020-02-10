@@ -2,15 +2,12 @@ package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import co.netguru.baby.monitor.client.common.ISchedulersProvider
 import co.netguru.baby.monitor.client.data.DataRepository
-import co.netguru.baby.monitor.client.data.client.ChildDataEntity
 import co.netguru.baby.monitor.client.feature.communication.ConfirmationItem
 import co.netguru.baby.monitor.client.feature.communication.ConfirmationUseCase
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
-import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
@@ -23,9 +20,6 @@ class ConfirmationUseCaseTest {
     private val randomDigitsList = listOf(1, 2, 3, 4)
     private val confirmationId = randomDigitsList.joinToString("")
     private val timerTestScheduler = TestScheduler()
-    private val rxWebSocketClient: RxWebSocketClient = mock {
-        on { send(any()) }.doReturn(Completable.complete())
-    }
     private val schedulersProvider = mock<ISchedulersProvider> {
         on { io() } doReturn timerTestScheduler
         on { mainThread() } doReturn Schedulers.trampoline()
@@ -36,7 +30,7 @@ class ConfirmationUseCaseTest {
         on { receivedMessages() }.doReturn(Observable.just(message))
     }
     private val confirmationItem = mock<ConfirmationItem<VoiceAnalysisOption>> {
-        on { onSuccessAction(dataRepository)}
+        on { onSuccessAction(dataRepository) }
             .doReturn(Completable.complete())
     }
 
@@ -83,9 +77,11 @@ class ConfirmationUseCaseTest {
             confirmationItem
         ).test()
             .assertValue(true)
-      
-        verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
-                VoiceAnalysisOption.MACHINE_LEARNING.name })
+
+        verify(messageController).sendMessage(argThat {
+            voiceAnalysisOption ==
+                    VoiceAnalysisOption.MACHINE_LEARNING.name
+        })
     }
 
     @Test
@@ -101,9 +97,11 @@ class ConfirmationUseCaseTest {
             .assertValue(false)
 
         timerTestScheduler.advanceTimeBy(5, TimeUnit.SECONDS)
-        
-        verify(messageController).sendMessage(argThat { voiceAnalysisOption ==
-                VoiceAnalysisOption.MACHINE_LEARNING.name })
+
+        verify(messageController).sendMessage(argThat {
+            voiceAnalysisOption ==
+                    VoiceAnalysisOption.MACHINE_LEARNING.name
+        })
     }
 
     @Test

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class VoiceAnalysisUseCase @Inject constructor(
     private val dataRepository: DataRepository
-    ) {
+) {
     fun sendInitialVoiceAnalysisOption(client: RxWebSocketClient): Completable =
         dataRepository.getChildData()
             .map { it.voiceAnalysisOption }
