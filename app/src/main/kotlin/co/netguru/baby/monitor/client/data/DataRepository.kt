@@ -82,6 +82,7 @@ class DataRepository @Inject constructor(
                 database.childDataDao().updateNoiseSensitivity(sensitivity)
             } else if (appStateHandler.appState == AppState.SERVER) {
                 database.clientDao().updateNoiseSensitivity(sensitivity)
+                analyticsManager.setUserProperty(UserProperty.NoiseSensitivity(sensitivity))
             }
         }
 
