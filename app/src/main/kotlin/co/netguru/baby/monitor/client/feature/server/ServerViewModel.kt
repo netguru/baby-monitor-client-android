@@ -60,6 +60,10 @@ class ServerViewModel @Inject constructor(
     internal val voiceAnalysisOptionLiveData: LiveData<VoiceAnalysisOption> =
         mutableVoiceAnalysisOptionLiveData
 
+    private val mutableNoiseSensitivity = MutableLiveData<Int>()
+    internal val noiseSensitivityLiveData: LiveData<Int> =
+        mutableNoiseSensitivity
+
     internal val webSocketAction = SingleLiveEvent<String>()
 
     internal val previewingVideo = Transformations.map(cameraState) { it.previewEnabled }
@@ -137,7 +141,22 @@ class ServerViewModel @Inject constructor(
                 message.voiceAnalysisOption?.let {
                     handleVoiceAnalysisOptionChange(it, message.confirmationId, binder)
                 }
+                message.noiseSensitivity?.let {
+                    handleNoiseSensitivityChange(it, message.confirmationId, binder)
+                }
             }
+    }
+
+    private fun handleNoiseSensitivityChange(
+        sensitivity: Int,
+        confirmationId: String?,
+        binder: WebSocketServerService.Binder
+    ) {
+        mutableNoiseSensitivity.value = sensitivity
+        compositeDisposable += dataRepository.updateNoiseSensitivity(
+            sensitivity
+        ).subscribeOn(schedulersProvider.io())
+            .subscribe { binder.sendMessage(Message(confirmationId = confirmationId)) }
     }
 
     private fun handleVoiceAnalysisOptionChange(

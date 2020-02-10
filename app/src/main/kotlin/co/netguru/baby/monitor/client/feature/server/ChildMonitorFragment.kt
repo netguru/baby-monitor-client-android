@@ -242,6 +242,12 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
             Observer { voiceAnalysisOption ->
                 voiceAnalysisServiceBinder?.setVoiceAnalysisOption(voiceAnalysisOption)
             })
+        serverViewModel.noiseSensitivityLiveData.observe(
+            viewLifecycleOwner,
+            Observer { noiseSensitivity ->
+                voiceAnalysisServiceBinder?.setNoiseDetectionSensitivty(noiseSensitivity)
+            }
+        )
     }
 
     private fun showVideoPreview() {

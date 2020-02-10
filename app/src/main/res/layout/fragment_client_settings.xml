@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.motion.widget.MotionLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/settingsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/primary_dark"
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        app:layoutDescription="@xml/progress_scene"
         >
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -60,9 +62,9 @@
 
     <RadioGroup
             android:id="@+id/voiceAnalysisRadioButtons"
-            android:layout_marginTop="@dimen/spacing_small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@id/clientSettingsGLEnd"
             app:layout_constraintStart_toStartOf="@id/clientSettingsGLBegin"
@@ -85,6 +87,28 @@
                 android:text="@string/cry_detection"
                 />
     </RadioGroup>
+
+    <SeekBar
+            android:id="@+id/noiseDetectionSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/spacing_small"
+            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
+            app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
+            app:layout_constraintTop_toBottomOf="@id/voiceAnalysisRadioButtons"
+            />
+
+    <co.netguru.baby.monitor.client.common.view.SeekBarProgress
+            android:id="@+id/noiseSensitivityProgress"
+            android:layout_width="@dimen/default_icon_size"
+            android:layout_height="@dimen/default_icon_size"
+            android:background="@drawable/all_circle_white_bg"
+            android:padding="@dimen/spacing_tiny"
+            app:layout_constraintBottom_toBottomOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintEnd_toEndOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintStart_toStartOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintTop_toTopOf="@id/noiseDetectionSeekBar"
+            />
 
     <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/closeIbtn"
@@ -319,4 +343,4 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.922"
             />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

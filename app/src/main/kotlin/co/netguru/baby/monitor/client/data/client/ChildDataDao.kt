@@ -32,6 +32,9 @@ interface ChildDataDao {
     @Query("UPDATE CHILD_DATA SET voiceAnalysisOption = :voiceAnalysisOption WHERE id = 0")
     fun updateVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption)
 
+    @Query("UPDATE CHILD_DATA SET noiseSensitivity = :sensitivity WHERE id = 0")
+    fun updateNoiseSensitivity(sensitivity: Int)
+
     @Query("DELETE FROM CHILD_DATA")
     fun deleteAll()
 }

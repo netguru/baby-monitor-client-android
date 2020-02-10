@@ -4,8 +4,11 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.RadioGroup
+import android.widget.SeekBar
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,9 +19,16 @@ import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.*
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeViewModel
 import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_client_settings.*
 import pl.aprilapps.easyphotopicker.EasyImage
 import java.io.File
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ClientSettingsFragment : BaseFragment() {
@@ -36,6 +46,7 @@ class ClientSettingsFragment : BaseFragment() {
     private val clientViewModel by lazy {
         ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
+    private val viewDisposables = CompositeDisposable()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,6 +54,7 @@ class ClientSettingsFragment : BaseFragment() {
         setupButtons()
         setupObservers()
         setupBabyDetails()
+        setupNoiseDetectionSeekbar()
 
         version.text =
             getString(R.string.version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
@@ -119,6 +131,9 @@ class ClientSettingsFragment : BaseFragment() {
                 )
             }
             checkVoiceAnalysisOption(resolveOption(child.voiceAnalysisOption))
+            noiseDetectionSeekBar.isVisible =
+                child.voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION
+            noiseDetectionSeekBar.progress = child.noiseSensitivity
         }
         configurationViewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
             when (resetState) {
@@ -132,6 +147,43 @@ class ClientSettingsFragment : BaseFragment() {
             Observer { voiceAnalysisChangeState ->
                 setupVoiceAnalysisRadioButtons(voiceAnalysisChangeState)
             })
+
+        configurationViewModel.noiseSensitivityState.observe(viewLifecycleOwner,
+            Observer { noiseSensitivityState ->
+                setupNoiseSensitivitySeekbar(noiseSensitivityState)
+            })
+    }
+
+    private fun setupNoiseSensitivitySeekbar(noiseSensitivityState: Pair<ChangeState, Int?>) {
+        noiseDetectionSeekBar.isEnabled = noiseSensitivityState.first != ChangeState.InProgress
+        if (noiseSensitivityState.first == ChangeState.Failed) setPreviousValue(
+            noiseSensitivityState
+        )
+        hideNoiseChangeProgressAnimation(noiseSensitivityState)
+        noiseSensitivityProgress.setState(noiseSensitivityState)
+    }
+
+    private fun setPreviousValue(noiseSensitivityState: Pair<ChangeState, Int?>) {
+        noiseSensitivityState.second?.let {
+            noiseDetectionSeekBar.progress = it
+        }
+    }
+
+    private fun hideNoiseChangeProgressAnimation(noiseSensitivityState: Pair<ChangeState, Int?>) {
+        if (noiseSensitivityState.first == ChangeState.Completed || noiseSensitivityState.first == ChangeState.Failed) {
+            viewDisposables += Single.just(Unit)
+                .delay(
+                    resources.getInteger(R.integer.done_fail_animation_duration).toLong(),
+                    TimeUnit.MILLISECONDS,
+                    Schedulers.io()
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { _ ->
+                    view?.run {
+                        (this as? MotionLayout)?.transitionToStart()
+                    }
+                }
+        }
     }
 
     private fun setupVoiceAnalysisRadioButtons(voiceAnalysisChangeState: Pair<ChangeState, VoiceAnalysisOption?>) {
@@ -173,6 +225,69 @@ class ClientSettingsFragment : BaseFragment() {
             getString(R.string.dialog_title_choose_source),
             EasyImage.REQ_SOURCE_CHOOSER
         )
+    }
+
+    private fun setupNoiseDetectionSeekbar() {
+        blockDrawerMovement()
+        viewDisposables += Observable.create<SeekBarState> { emitter ->
+            noiseDetectionSeekBar.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    if (fromUser) emitter.onNext(SeekBarState.ProgressChange(progress))
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    emitter.onNext(SeekBarState.StartTracking(seekBar?.progress ?: 0))
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    emitter.onNext(
+                        SeekBarState.EndTracking(
+                            seekBar?.progress ?: configurationViewModel.noiseSensitivityInitialValue
+                        )
+                    )
+                }
+            })
+            emitter.setCancellable { noiseDetectionSeekBar.setOnSeekBarChangeListener(null) }
+        }
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { handleSeekbarState(it) }
+    }
+
+    private fun blockDrawerMovement() {
+        noiseDetectionSeekBar.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> // Disallow Drawer to intercept touch events.
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                MotionEvent.ACTION_UP -> // Allow Drawer to intercept touch events.
+                    v.parent.requestDisallowInterceptTouchEvent(false)
+            }
+            // Handle seekbar touch events.
+            v.onTouchEvent(event)
+            true
+        }
+    }
+
+    private fun handleSeekbarState(seekBarState: SeekBarState) {
+        when (seekBarState) {
+            is SeekBarState.StartTracking -> {
+                configurationViewModel.noiseSensitivityInitialValue = seekBarState.initialValue
+                (requireView() as? MotionLayout)?.transitionToEnd()
+            }
+            is SeekBarState.EndTracking -> {
+                configurationViewModel.changeNoiseSensitivity(
+                    clientViewModel,
+                    seekBarState.endValue
+                )
+            }
+            is SeekBarState.ProgressChange
+            -> noiseSensitivityProgress.setState(null to seekBarState.progress)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -226,6 +341,11 @@ class ClientSettingsFragment : BaseFragment() {
         } else {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewDisposables.dispose()
     }
 
     companion object {

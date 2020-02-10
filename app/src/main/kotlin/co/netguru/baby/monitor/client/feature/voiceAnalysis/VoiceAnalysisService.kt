@@ -45,5 +45,9 @@ class VoiceAnalysisService : ServiceFacade,
         fun setVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption) {
             serviceController.voiceAnalysisOption = voiceAnalysisOption
         }
+
+        fun setNoiseDetectionSensitivty(sensitivity: Int) {
+            serviceController.noiseSensitivity = sensitivity
+        }
     }
 }

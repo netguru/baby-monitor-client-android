@@ -10,6 +10,7 @@ import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUs
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
+import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector.Companion.MAX_NOISE_SENSITIVITY
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -38,6 +39,7 @@ class VoiceAnalysisController @Inject constructor(
             field = value
             aacRecorder?.voiceAnalysisOption = value
         }
+    var noiseSensitivity = NoiseDetector.DEFAULT_NOISE_SENSITIVITY
 
     override fun attachService(service: VoiceAnalysisService) {
         this.voiceAnalysisService = service
@@ -46,6 +48,7 @@ class VoiceAnalysisController @Inject constructor(
             .subscribeOn(Schedulers.io())
             .subscribeBy(onSuccess = {
                 voiceAnalysisOption = it.voiceAnalysisOption
+                noiseSensitivity = it.noiseSensitivity
                 analyticsManager.setUserProperty(UserProperty.VoiceAnalysis(voiceAnalysisOption))
                 startRecording()
             }, onComplete = this::startRecording)
@@ -119,9 +122,12 @@ class VoiceAnalysisController @Inject constructor(
 
     private fun handleNoiseDetectorData(decibels: Double) {
         debugModule.sendSoundEvent(decibels.toInt())
-        if (decibels > NoiseDetector.DEFAULT_NOISE_THRESHOLD) notifyBabyEventUseCase.notifyNoiseDetected()
+        if (isNoiseDetected(decibels)) notifyBabyEventUseCase.notifyNoiseDetected()
         Timber.i("Decibels: $decibels")
     }
+
+    private fun isNoiseDetected(decibels: Double) = noiseSensitivity > 0 &&
+            decibels > -noiseSensitivity + MAX_NOISE_SENSITIVITY
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
