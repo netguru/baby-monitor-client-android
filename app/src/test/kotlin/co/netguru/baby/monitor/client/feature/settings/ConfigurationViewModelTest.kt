@@ -103,13 +103,14 @@ class ConfigurationViewModelTest {
             messageController,
             chosenOption
         )
-
-        verify(voiceAnalysisOptionObserver).onChanged(argThat {
-            first == ChangeState.InProgress && second == null
-        })
-        verify(voiceAnalysisOptionObserver).onChanged(argThat {
-            first == ChangeState.Completed && second == chosenOption
-        })
+        voiceAnalysisOptionObserver.inOrder {
+            verify().onChanged(argThat {
+                first == ChangeState.InProgress && second == null
+            })
+            verify().onChanged(argThat {
+                first == ChangeState.Completed && second == chosenOption
+            })
+        }
     }
 
     @Test
@@ -127,12 +128,14 @@ class ConfigurationViewModelTest {
             chosenOption
         )
 
-        verify(voiceAnalysisOptionObserver).onChanged(argThat {
-            first == ChangeState.InProgress && second == null
-        })
-        verify(voiceAnalysisOptionObserver).onChanged(argThat {
-            first == ChangeState.Failed && second == previousOption
-        })
+        voiceAnalysisOptionObserver.inOrder {
+            verify().onChanged(argThat {
+                first == ChangeState.InProgress && second == null
+            })
+            verify().onChanged(argThat {
+                first == ChangeState.Failed && second == previousOption
+            })
+        }
     }
 
     @Test
@@ -149,12 +152,14 @@ class ConfigurationViewModelTest {
             chosenSensitivity
         )
 
-        verify(noiseSensitivityObserver).onChanged(argThat {
-            first == ChangeState.InProgress && second == null
-        })
-        verify(noiseSensitivityObserver).onChanged(argThat {
-            first == ChangeState.Completed && second == chosenSensitivity
-        })
+        noiseSensitivityObserver.inOrder {
+            verify().onChanged(argThat {
+                first == ChangeState.InProgress && second == null
+            })
+            verify().onChanged(argThat {
+                first == ChangeState.Completed && second == chosenSensitivity
+            })
+        }
     }
 
     @Test
@@ -171,11 +176,13 @@ class ConfigurationViewModelTest {
             chosenSensitivity
         )
 
-        verify(noiseSensitivityObserver).onChanged(argThat {
-            first == ChangeState.InProgress && second == null
-        })
-        verify(noiseSensitivityObserver).onChanged(argThat {
-            first == ChangeState.Failed && second == configurationViewModel.noiseSensitivityInitialValue
-        })
+        noiseSensitivityObserver.inOrder {
+            verify().onChanged(argThat {
+                first == ChangeState.InProgress && second == null
+            })
+            verify().onChanged(argThat {
+                first == ChangeState.Failed && second == configurationViewModel.noiseSensitivityInitialValue
+            })
+        }
     }
 }

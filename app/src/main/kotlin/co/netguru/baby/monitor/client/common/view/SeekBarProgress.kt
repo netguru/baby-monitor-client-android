@@ -25,8 +25,7 @@ class SeekBarProgress : RelativeLayout {
     }
 
     fun setState(valueState: Pair<ChangeState?, Int?>) {
-        val changeState = valueState.first
-        val value = valueState.second
+        val (changeState, value) = valueState
         resolveVisibility(changeState)
         when (changeState) {
             ChangeState.Completed -> setAnimatedDrawable(true)

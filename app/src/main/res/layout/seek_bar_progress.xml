@@ -3,11 +3,16 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="@dimen/default_icon_size"
-        android:layout_height="@dimen/default_icon_size"
-        android:orientation="vertical"
         tools:parentTag="android.widget.RelativeLayout"
         >
+
+    <ImageView
+            android:id="@+id/progressIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            tools:src="@tools:sample/backgrounds/scenic"
+            />
 
     <ProgressBar
             android:id="@+id/progress"
@@ -15,17 +20,10 @@
             android:layout_height="match_parent"
             />
 
-    <ImageView
-            android:id="@+id/progressIcon"
-            android:layout_width="match_parent"
-            android:scaleType="fitCenter"
-            android:layout_height="match_parent"
-            />
-
     <TextView
             android:id="@+id/progressText"
-            android:layout_width="@dimen/default_icon_size"
-            android:layout_height="@dimen/default_icon_size"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignStart="@id/progress"
             android:layout_alignTop="@id/progress"
             android:layout_alignEnd="@id/progress"
