@@ -70,7 +70,7 @@
     <string name="nsd_service_registration_failed">Device discovery registration failed</string>
 
     <string name="devices_disconnected">Devices disconnected</string>
-    <string name="monitoring_enabled">Monitoring enabled</string>
+    <string name="devices_connected">Devices connected</string>
     <string name="parent">Parent</string>
     <string name="parent_button_description">This device will stay \nwith me</string>
     <string name="baby">Baby</string>

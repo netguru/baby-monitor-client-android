@@ -22,6 +22,7 @@ import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisUseCase
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -40,6 +41,7 @@ class ClientHomeViewModel @Inject constructor(
     private val messageParser: MessageParser
 ) : ViewModel(), MessageController {
 
+    private var connectionDisposable: Disposable? = null
     private val openSocketDisposables = CompositeDisposable()
     internal val logData = MutableLiveData<List<LogData>>()
 
@@ -109,7 +111,7 @@ class ClientHomeViewModel @Inject constructor(
     }
 
     fun openSocketConnection(urifier: (address: String) -> URI) {
-        disposables += dataRepository.getChildData()
+        connectionDisposable = dataRepository.getChildData()
             .flatMapObservable { rxWebSocketClient.events(urifier.invoke(it.address)) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -133,6 +135,12 @@ class ClientHomeViewModel @Inject constructor(
                     Timber.i("Websocket error: $error.")
                 }
             )
+    }
+
+    fun closeSocketConnection() {
+        connectionDisposable?.dispose()
+        rxWebSocketClient.dispose()
+        openSocketDisposables.clear()
     }
 
     private fun handleMessage(message: Message?) {
