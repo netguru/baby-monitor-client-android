@@ -53,7 +53,16 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
 
         homeViewModel.fetchLogData()
         homeViewModel.checkInternetConnection()
+    }
+
+    override fun onResume() {
+        super.onResume()
         homeViewModel.openSocketConnection { address -> URI.create(address) }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        homeViewModel.closeSocketConnection()
     }
 
     private fun setupObservers() {

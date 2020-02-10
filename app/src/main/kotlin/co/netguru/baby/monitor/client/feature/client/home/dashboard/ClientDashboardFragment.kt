@@ -75,7 +75,7 @@ class ClientDashboardFragment : BaseFragment() {
     }
 
     private fun showClientConnected() {
-        clientConnectionStatusTv.text = getString(R.string.monitoring_enabled)
+        clientConnectionStatusTv.text = getString(R.string.devices_connected)
         clientConnectionStatusPv.start()
         clientHomeLiveCameraIbtn.setOnClickListener {
             requestMicrophonePermission()
