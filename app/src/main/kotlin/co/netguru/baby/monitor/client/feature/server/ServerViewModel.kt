@@ -60,9 +60,9 @@ class ServerViewModel @Inject constructor(
     internal val voiceAnalysisOptionLiveData: LiveData<VoiceAnalysisOption> =
         mutableVoiceAnalysisOptionLiveData
 
-    private val mutableNoiseSensitivity = MutableLiveData<Int>()
-    internal val noiseSensitivityLiveData: LiveData<Int> =
-        mutableNoiseSensitivity
+    private val mutableNoiseLevel = MutableLiveData<Int>()
+    internal val noiseLevelLiveData: LiveData<Int> =
+        mutableNoiseLevel
 
     internal val webSocketAction = SingleLiveEvent<String>()
 
@@ -141,20 +141,20 @@ class ServerViewModel @Inject constructor(
                 message.voiceAnalysisOption?.let {
                     handleVoiceAnalysisOptionChange(it, message.confirmationId, binder)
                 }
-                message.noiseSensitivity?.let {
-                    handleNoiseSensitivityChange(it, message.confirmationId, binder)
+                message.noiseLevel?.let {
+                    handleNoiseLevelChange(it, message.confirmationId, binder)
                 }
             }
     }
 
-    private fun handleNoiseSensitivityChange(
-        sensitivity: Int,
+    private fun handleNoiseLevelChange(
+        level: Int,
         confirmationId: String?,
         binder: WebSocketServerService.Binder
     ) {
-        mutableNoiseSensitivity.value = sensitivity
-        compositeDisposable += dataRepository.updateNoiseSensitivity(
-            sensitivity
+        mutableNoiseLevel.value = level
+        compositeDisposable += dataRepository.updateNoiseLevel(
+            level
         ).subscribeOn(schedulersProvider.io())
             .subscribe { binder.sendMessage(Message(confirmationId = confirmationId)) }
     }

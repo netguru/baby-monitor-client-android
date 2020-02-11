@@ -135,4 +135,5 @@
     <string name="cry_detection">Cry Detection</string>
 
     <string name="default_error_message">Something wrong happened.</string>
+    <string name="noise_level">Noise level</string>
 </resources>

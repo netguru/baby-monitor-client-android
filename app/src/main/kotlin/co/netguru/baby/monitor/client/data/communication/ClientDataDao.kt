@@ -19,6 +19,6 @@ interface ClientDataDao {
     @Query("UPDATE CLIENT_DATA SET voiceAnalysisOption = :voiceAnalysisOption WHERE id = 0")
     fun updateVoiceAnalysisOption(voiceAnalysisOption: VoiceAnalysisOption)
 
-    @Query("UPDATE CLIENT_DATA SET noiseSensitivity = :sensitivity WHERE id = 0")
-    fun updateNoiseSensitivity(sensitivity: Int)
+    @Query("UPDATE CLIENT_DATA SET noiseLevel = :noiseLevel WHERE id = 0")
+    fun updateNoiseLevel(noiseLevel: Int)
 }

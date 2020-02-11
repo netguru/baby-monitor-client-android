@@ -15,7 +15,7 @@ data class ClientEntity(
     @ColumnInfo(name = "address") val address: String,
     @ColumnInfo(name = "firebase_key") var firebaseKey: String,
     val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING,
-    val noiseSensitivity: Int = NoiseDetector.DEFAULT_NOISE_SENSITIVITY,
+    val noiseLevel: Int = NoiseDetector.DEFAULT_NOISE_LEVEL,
     // There is only one parent handled right now
     @PrimaryKey val id: Int? = 0
 )

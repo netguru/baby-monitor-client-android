@@ -14,7 +14,7 @@ data class Message(
     @SerializedName("baby_name") val babyName: String? = null,
     @SerializedName("pushNotificationsToken") val pushNotificationsToken: String? = null,
     @SerializedName("voiceAnalysisOption") val voiceAnalysisOption: String? = null,
-    @SerializedName("noiseSensitivity") val noiseSensitivity: Int? = null,
+    @SerializedName("noiseLevel") val noiseLevel: Int? = null,
     // Pairing
     @SerializedName("pairingCode") val pairingCode: String? = null,
     @SerializedName("pairingResponse") val pairingApproved: Boolean? = null,

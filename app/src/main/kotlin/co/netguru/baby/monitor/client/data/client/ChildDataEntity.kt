@@ -12,7 +12,7 @@ data class ChildDataEntity(
     val name: String? = null,
     val snoozeTimeStamp: Long? = null,
     val voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING,
-    val noiseSensitivity: Int = NoiseDetector.DEFAULT_NOISE_SENSITIVITY,
+    val noiseLevel: Int = NoiseDetector.DEFAULT_NOISE_LEVEL,
     // Right now we are supporting only one child
     @PrimaryKey val id: Int = 0
 )

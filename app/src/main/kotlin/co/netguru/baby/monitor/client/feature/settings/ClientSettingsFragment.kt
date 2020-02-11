@@ -131,9 +131,9 @@ class ClientSettingsFragment : BaseFragment() {
                 )
             }
             checkVoiceAnalysisOption(resolveOption(child.voiceAnalysisOption))
-            noiseDetectionSeekBar.isVisible =
+            noiseDetectionGroup.isVisible =
                 child.voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION
-            noiseDetectionSeekBar.progress = child.noiseSensitivity
+            noiseDetectionSeekBar.progress = child.noiseLevel
         }
         configurationViewModel.resetState.observe(viewLifecycleOwner, Observer { resetState ->
             when (resetState) {
@@ -148,29 +148,29 @@ class ClientSettingsFragment : BaseFragment() {
                 setupVoiceAnalysisRadioButtons(voiceAnalysisChangeState)
             })
 
-        configurationViewModel.noiseSensitivityState.observe(viewLifecycleOwner,
-            Observer { noiseSensitivityState ->
-                setupNoiseSensitivitySeekbar(noiseSensitivityState)
+        configurationViewModel.noiseLevelState.observe(viewLifecycleOwner,
+            Observer { noiseLevelState ->
+                setupNoiseLevelSeekbar(noiseLevelState)
             })
     }
 
-    private fun setupNoiseSensitivitySeekbar(noiseSensitivityState: Pair<ChangeState, Int?>) {
-        noiseDetectionSeekBar.isEnabled = noiseSensitivityState.first != ChangeState.InProgress
-        if (noiseSensitivityState.first == ChangeState.Failed) setPreviousValue(
-            noiseSensitivityState
+    private fun setupNoiseLevelSeekbar(noiseLevelState: Pair<ChangeState, Int?>) {
+        noiseDetectionSeekBar.isEnabled = noiseLevelState.first != ChangeState.InProgress
+        if (noiseLevelState.first == ChangeState.Failed) setPreviousValue(
+            noiseLevelState
         )
-        hideNoiseChangeProgressAnimation(noiseSensitivityState)
-        noiseSensitivityProgress.setState(noiseSensitivityState)
+        hideNoiseChangeProgressAnimation(noiseLevelState)
+        noiseLevelProgress.setState(noiseLevelState)
     }
 
-    private fun setPreviousValue(noiseSensitivityState: Pair<ChangeState, Int?>) {
-        noiseSensitivityState.second?.let {
+    private fun setPreviousValue(noiseLevelState: Pair<ChangeState, Int?>) {
+        noiseLevelState.second?.let {
             noiseDetectionSeekBar.progress = it
         }
     }
 
-    private fun hideNoiseChangeProgressAnimation(noiseSensitivityState: Pair<ChangeState, Int?>) {
-        if (noiseSensitivityState.first == ChangeState.Completed || noiseSensitivityState.first == ChangeState.Failed) {
+    private fun hideNoiseChangeProgressAnimation(noiseLevelState: Pair<ChangeState, Int?>) {
+        if (noiseLevelState.first == ChangeState.Completed || noiseLevelState.first == ChangeState.Failed) {
             viewDisposables += Single.just(Unit)
                 .delay(
                     resources.getInteger(R.integer.done_fail_animation_duration).toLong(),
@@ -247,7 +247,7 @@ class ClientSettingsFragment : BaseFragment() {
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     emitter.onNext(
                         SeekBarState.EndTracking(
-                            seekBar?.progress ?: configurationViewModel.noiseSensitivityInitialValue
+                            seekBar?.progress ?: configurationViewModel.noiseLevelInitialValue
                         )
                     )
                 }
@@ -276,17 +276,17 @@ class ClientSettingsFragment : BaseFragment() {
     private fun handleSeekbarState(seekBarState: SeekBarState) {
         when (seekBarState) {
             is SeekBarState.StartTracking -> {
-                configurationViewModel.noiseSensitivityInitialValue = seekBarState.initialValue
+                configurationViewModel.noiseLevelInitialValue = seekBarState.initialValue
                 (requireView() as? MotionLayout)?.transitionToEnd()
             }
             is SeekBarState.EndTracking -> {
-                configurationViewModel.changeNoiseSensitivity(
+                configurationViewModel.changeNoiseLevel(
                     clientViewModel,
                     seekBarState.endValue
                 )
             }
             is SeekBarState.ProgressChange
-            -> noiseSensitivityProgress.setState(null to seekBarState.progress)
+            -> noiseLevelProgress.setState(null to seekBarState.progress)
         }
     }
 

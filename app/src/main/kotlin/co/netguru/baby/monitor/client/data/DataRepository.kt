@@ -76,13 +76,13 @@ class DataRepository @Inject constructor(
             }
         }
 
-    fun updateNoiseSensitivity(sensitivity: Int) =
+    fun updateNoiseLevel(level: Int) =
         Completable.fromAction {
             if (appStateHandler.appState == AppState.CLIENT) {
-                database.childDataDao().updateNoiseSensitivity(sensitivity)
+                database.childDataDao().updateNoiseLevel(level)
             } else if (appStateHandler.appState == AppState.SERVER) {
-                database.clientDao().updateNoiseSensitivity(sensitivity)
-                analyticsManager.setUserProperty(UserProperty.NoiseSensitivity(sensitivity))
+                database.clientDao().updateNoiseLevel(level)
+                analyticsManager.setUserProperty(UserProperty.NoiseLevel(level))
             }
         }
 
