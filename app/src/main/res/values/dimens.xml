@@ -54,4 +54,6 @@
 
     <item name="nsd_service_item_height" type="dimen">56dp</item>
     <item name="divider_height" type="dimen">1dp</item>
+
+    <item name="noise_detection_seekbar_height" type="dimen">40dp</item>
 </resources>

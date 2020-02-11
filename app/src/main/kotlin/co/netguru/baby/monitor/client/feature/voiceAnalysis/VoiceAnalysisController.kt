@@ -10,7 +10,6 @@ import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUs
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
-import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector.Companion.MAX_NOISE_SENSITIVITY
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -126,8 +125,7 @@ class VoiceAnalysisController @Inject constructor(
         Timber.i("Decibels: $decibels")
     }
 
-    private fun isNoiseDetected(decibels: Double) = noiseSensitivity > 0 &&
-            decibels > -noiseSensitivity + MAX_NOISE_SENSITIVITY
+    private fun isNoiseDetected(decibels: Double) = decibels > noiseSensitivity
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)

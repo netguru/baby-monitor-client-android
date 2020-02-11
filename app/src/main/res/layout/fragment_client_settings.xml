@@ -7,9 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/primary_dark"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         app:layoutDescription="@xml/progress_scene"
         >
 
@@ -76,6 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/rubik_regular"
                 android:text="@string/noise_detection"
                 />
 
@@ -84,18 +82,62 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="@font/rubik_regular"
                 android:text="@string/cry_detection"
                 />
     </RadioGroup>
 
+    <TextView
+            android:id="@+id/noiseLevelLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:fontFamily="@font/rubik_regular"
+            android:gravity="center"
+            android:text="@string/noise_level"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintStart_toStartOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintTop_toBottomOf="@id/voiceAnalysisRadioButtons"
+            />
+
     <SeekBar
             android:id="@+id/noiseDetectionSeekBar"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="@dimen/spacing_small"
-            app:layout_constraintEnd_toStartOf="@+id/clientSettingsGLEnd"
-            app:layout_constraintStart_toEndOf="@+id/clientSettingsGLBegin"
-            app:layout_constraintTop_toBottomOf="@id/voiceAnalysisRadioButtons"
+            android:layout_height="@dimen/noise_detection_seekbar_height"
+            app:layout_constraintEnd_toStartOf="@id/maxSound"
+            app:layout_constraintStart_toEndOf="@id/minSound"
+            app:layout_constraintTop_toBottomOf="@id/noiseLevelLabel"
+            />
+
+    <ImageView
+            android:id="@+id/minSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_xmedium"
+            android:src="@drawable/ic_sound_min"
+            app:layout_constraintBottom_toBottomOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/noiseDetectionSeekBar"
+            />
+
+    <ImageView
+            android:id="@+id/maxSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_xmedium"
+            android:src="@drawable/ic_sound_max"
+            app:layout_constraintBottom_toBottomOf="@id/noiseDetectionSeekBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/noiseDetectionSeekBar"
+            />
+
+    <androidx.constraintlayout.widget.Group
+            android:id="@+id/noiseDetectionGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="noiseDetectionSeekBar,minSound,maxSound,noiseLevelLabel"
             />
 
     <co.netguru.baby.monitor.client.common.view.SeekBarProgress

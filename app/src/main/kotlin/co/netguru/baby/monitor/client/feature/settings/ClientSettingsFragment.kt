@@ -131,7 +131,7 @@ class ClientSettingsFragment : BaseFragment() {
                 )
             }
             checkVoiceAnalysisOption(resolveOption(child.voiceAnalysisOption))
-            noiseDetectionSeekBar.isVisible =
+            noiseDetectionGroup.isVisible =
                 child.voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION
             noiseDetectionSeekBar.progress = child.noiseSensitivity
         }
