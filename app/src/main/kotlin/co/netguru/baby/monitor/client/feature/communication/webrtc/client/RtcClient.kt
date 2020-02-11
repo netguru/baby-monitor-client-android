@@ -27,6 +27,7 @@ class RtcClient(
 ) : RtcMessageHandler {
 
     private var audioTrack: AudioTrack? = null
+    private var remoteAudioTrack: AudioTrack? = null
     private var audioSource: AudioSource? = null
     private val compositeDisposable = CompositeDisposable()
     private val eglBase by lazy { EglBase.create() }
@@ -43,6 +44,7 @@ class RtcClient(
         set(isEnabled) {
             field = isEnabled
             audioTrack?.setEnabled(isEnabled)
+            remoteAudioTrack?.setEnabled(!isEnabled)
         }
 
     init {
@@ -78,6 +80,9 @@ class RtcClient(
                     }
                     if (mediaStream.videoTracks.size > 0) {
                         mediaStream.videoTracks[0].addSink(view)
+                    }
+                    if (mediaStream.audioTracks.size > 0) {
+                        remoteAudioTrack = mediaStream.audioTracks[0]
                     }
                 } catch (e: Exception) {
                     Crashlytics.logException(e)
