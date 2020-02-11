@@ -84,8 +84,8 @@ object ApplicationModule {
 
     private val MIGRATION_4_5 = object : Migration(4, 5) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN noiseSensitivity INTEGER NOT NULL DEFAULT ${NoiseDetector.DEFAULT_NOISE_SENSITIVITY}")
-            database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN noiseSensitivity INTEGER NOT NULL DEFAULT ${NoiseDetector.DEFAULT_NOISE_SENSITIVITY}")
+            database.execSQL("ALTER TABLE CHILD_DATA ADD COLUMN noiseLevel INTEGER NOT NULL DEFAULT ${NoiseDetector.DEFAULT_NOISE_LEVEL}")
+            database.execSQL("ALTER TABLE CLIENT_DATA ADD COLUMN noiseLevel INTEGER NOT NULL DEFAULT ${NoiseDetector.DEFAULT_NOISE_LEVEL}")
         }
     }
 }

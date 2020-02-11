@@ -10,12 +10,12 @@ sealed class UserProperty(val value: String, val key: String) {
     class AppStateProperty(appState: AppState) :
         UserProperty(appState.name.toLowerCase(), APP_STATE_KEY)
 
-    class NoiseSensitivity(sensitivity: Int) :
-        UserProperty(sensitivity.toString(), NOISE_SENSITIVITY_KEY)
+    class NoiseLevel(noiseLevel: Int) :
+        UserProperty(noiseLevel.toString(), NOISE_LEVEL_KEY)
 
     companion object {
         private const val VOICE_ANALYSIS_KEY = "voice_analysis"
         private const val APP_STATE_KEY = "app_state"
-        private const val NOISE_SENSITIVITY_KEY = "noise_sensitivity"
+        private const val NOISE_LEVEL_KEY = "noise_level"
     }
 }

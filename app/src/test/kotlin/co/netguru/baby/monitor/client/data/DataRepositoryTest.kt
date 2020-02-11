@@ -104,23 +104,23 @@ class DataRepositoryTest {
     }
 
     @Test
-    fun `should update user property when saving noise sensitivity in server state`() {
+    fun `should update user property when saving noise noiseLevel in server state`() {
         whenever(appStateHandler.appState).doReturn(AppState.SERVER)
-        val noiseSensitivity = 30
-        dataRepository.updateNoiseSensitivity(noiseSensitivity)
+        val noiseLevel = 30
+        dataRepository.updateNoiseLevel(noiseLevel)
             .test()
             .assertComplete()
 
         verify(analyticsManager).setUserProperty(argThat {
-            this is UserProperty.NoiseSensitivity && this.value == noiseSensitivity.toString()
+            this is UserProperty.NoiseLevel && this.value == noiseLevel.toString()
         })
     }
 
     @Test
-    fun `shouldn't update user property when saving noise sensitivity in client state`() {
+    fun `shouldn't update user property when saving noise noiseLevel in client state`() {
         whenever(appStateHandler.appState).doReturn(AppState.CLIENT)
-        val noiseSensitivity = 30
-        dataRepository.updateNoiseSensitivity(noiseSensitivity)
+        val noiseLevel = 30
+        dataRepository.updateNoiseLevel(noiseLevel)
             .test()
             .assertComplete()
 

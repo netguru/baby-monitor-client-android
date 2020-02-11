@@ -38,7 +38,7 @@ class VoiceAnalysisController @Inject constructor(
             field = value
             aacRecorder?.voiceAnalysisOption = value
         }
-    var noiseSensitivity = NoiseDetector.DEFAULT_NOISE_SENSITIVITY
+    var noiseLevel = NoiseDetector.DEFAULT_NOISE_LEVEL
 
     override fun attachService(service: VoiceAnalysisService) {
         this.voiceAnalysisService = service
@@ -47,7 +47,7 @@ class VoiceAnalysisController @Inject constructor(
             .subscribeOn(Schedulers.io())
             .subscribeBy(onSuccess = {
                 voiceAnalysisOption = it.voiceAnalysisOption
-                noiseSensitivity = it.noiseSensitivity
+                noiseLevel = it.noiseLevel
                 analyticsManager.setUserProperty(UserProperty.VoiceAnalysis(voiceAnalysisOption))
                 startRecording()
             }, onComplete = this::startRecording)
@@ -125,7 +125,7 @@ class VoiceAnalysisController @Inject constructor(
         Timber.i("Decibels: $decibels")
     }
 
-    private fun isNoiseDetected(decibels: Double) = decibels > noiseSensitivity
+    private fun isNoiseDetected(decibels: Double) = decibels > noiseLevel
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)

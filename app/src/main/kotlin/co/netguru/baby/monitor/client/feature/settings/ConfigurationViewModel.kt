@@ -29,7 +29,7 @@ class ConfigurationViewModel @Inject constructor(
     private val randomiser: Randomiser
 ) : ViewModel() {
 
-    var noiseSensitivityInitialValue: Int = NoiseDetector.DEFAULT_NOISE_SENSITIVITY
+    var noiseLevelInitialValue: Int = NoiseDetector.DEFAULT_NOISE_LEVEL
     private val disposables = CompositeDisposable()
     private val mutableResetState = MutableLiveData<ChangeState>()
     val resetState: LiveData<ChangeState> = mutableResetState
@@ -39,10 +39,10 @@ class ConfigurationViewModel @Inject constructor(
     val voiceAnalysisOptionState: LiveData<Pair<ChangeState, VoiceAnalysisOption?>> =
         mutableVoiceAnalysisOptionState
 
-    private val mutableNoiseSensitivityState =
+    private val mutableNoiseLevelState =
         MutableLiveData<Pair<ChangeState, Int?>>()
-    val noiseSensitivityState: LiveData<Pair<ChangeState, Int?>> =
-        mutableNoiseSensitivityState
+    val noiseLevelState: LiveData<Pair<ChangeState, Int?>> =
+        mutableNoiseLevelState
 
     fun resetApp(messageController: MessageController? = null) {
         disposables += resetAppUseCase.resetApp(messageController)
@@ -113,38 +113,38 @@ class ConfigurationViewModel @Inject constructor(
         firebaseRepository.setUploadEnabled(enabled)
     }
 
-    fun changeNoiseSensitivity(messageController: MessageController, sensitivity: Int) {
+    fun changeNoiseLevel(messageController: MessageController, level: Int) {
         disposables += confirmationUseCase.changeValue(
             messageController,
-            getNoiseSensitivityConfirmationItem(sensitivity)
+            getNoiseLevelConfirmationItem(level)
         )
-            .doOnSubscribe { mutableNoiseSensitivityState
+            .doOnSubscribe { mutableNoiseLevelState
                 .postValue(ChangeState.InProgress to null) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { success ->
                     if (success) {
-                        noiseSensitivityInitialValue = sensitivity
-                        mutableNoiseSensitivityState
-                            .postValue(ChangeState.Completed to sensitivity)
+                        noiseLevelInitialValue = level
+                        mutableNoiseLevelState
+                            .postValue(ChangeState.Completed to level)
                     } else {
-                        mutableNoiseSensitivityState
-                            .postValue(ChangeState.Failed to noiseSensitivityInitialValue)
+                        mutableNoiseLevelState
+                            .postValue(ChangeState.Failed to noiseLevelInitialValue)
                     }
                 },
                 onError = { Timber.e(it) }
             )
     }
 
-    private fun getNoiseSensitivityConfirmationItem(sensitivity: Int): ConfirmationItem<Int> {
+    private fun getNoiseLevelConfirmationItem(level: Int): ConfirmationItem<Int> {
         return object : ConfirmationItem<Int> {
             override fun onSuccessAction(dataRepository: DataRepository): Completable =
-                dataRepository.updateNoiseSensitivity(sensitivity)
+                dataRepository.updateNoiseLevel(level)
 
-            override val value: Int = sensitivity
+            override val value: Int = level
             override val sentMessage = Message(
-                noiseSensitivity = sensitivity,
+                noiseLevel = level,
                 confirmationId = randomiser.getRandomDigits(NUMBERS_OF_DIGITS_IN_ID)
                     .joinToString("")
             )

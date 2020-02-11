@@ -141,7 +141,7 @@
             />
 
     <co.netguru.baby.monitor.client.common.view.SeekBarProgress
-            android:id="@+id/noiseSensitivityProgress"
+            android:id="@+id/noiseLevelProgress"
             android:layout_width="@dimen/default_icon_size"
             android:layout_height="@dimen/default_icon_size"
             android:background="@drawable/all_circle_white_bg"

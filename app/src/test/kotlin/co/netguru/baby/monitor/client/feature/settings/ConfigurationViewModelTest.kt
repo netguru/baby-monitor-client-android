@@ -28,7 +28,7 @@ class ConfigurationViewModelTest {
     private val resetStateObserver = mock<Observer<ChangeState>>()
     private val voiceAnalysisOptionObserver =
         mock<Observer<Pair<ChangeState, VoiceAnalysisOption?>>>()
-    private val noiseSensitivityObserver =
+    private val noiseLevelObserver =
         mock<Observer<Pair<ChangeState, Int?>>>()
     private val messageController = mock<MessageController>()
     private val confirmationUseCase = mock<ConfirmationUseCase>()
@@ -139,49 +139,49 @@ class ConfigurationViewModelTest {
     }
 
     @Test
-    fun `should post completed state after successful noise sensitivity change`() {
-        val chosenSensitivity = 50
+    fun `should post completed state after successful noise noiseLevel change`() {
+        val chosennoiseLevel = 50
         whenever(
             confirmationUseCase.changeValue(eq(messageController), any())
         )
             .doReturn(Single.just(true))
-        configurationViewModel.noiseSensitivityState.observeForever(noiseSensitivityObserver)
+        configurationViewModel.noiseLevelState.observeForever(noiseLevelObserver)
 
-        configurationViewModel.changeNoiseSensitivity(
+        configurationViewModel.changeNoiseLevel(
             messageController,
-            chosenSensitivity
+            chosennoiseLevel
         )
 
-        noiseSensitivityObserver.inOrder {
+        noiseLevelObserver.inOrder {
             verify().onChanged(argThat {
                 first == ChangeState.InProgress && second == null
             })
             verify().onChanged(argThat {
-                first == ChangeState.Completed && second == chosenSensitivity
+                first == ChangeState.Completed && second == chosennoiseLevel
             })
         }
     }
 
     @Test
-    fun `should post failed state with previous noise sensitivity`() {
-        val chosenSensitivity = 50
+    fun `should post failed state with previous noise noiseLevel`() {
+        val chosennoiseLevel = 50
         whenever(
             confirmationUseCase.changeValue(eq(messageController), any())
         )
             .doReturn(Single.just(false))
-        configurationViewModel.noiseSensitivityState.observeForever(noiseSensitivityObserver)
+        configurationViewModel.noiseLevelState.observeForever(noiseLevelObserver)
 
-        configurationViewModel.changeNoiseSensitivity(
+        configurationViewModel.changeNoiseLevel(
             messageController,
-            chosenSensitivity
+            chosennoiseLevel
         )
 
-        noiseSensitivityObserver.inOrder {
+        noiseLevelObserver.inOrder {
             verify().onChanged(argThat {
                 first == ChangeState.InProgress && second == null
             })
             verify().onChanged(argThat {
-                first == ChangeState.Failed && second == configurationViewModel.noiseSensitivityInitialValue
+                first == ChangeState.Failed && second == configurationViewModel.noiseLevelInitialValue
             })
         }
     }
