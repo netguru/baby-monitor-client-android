@@ -3,37 +3,17 @@ package co.netguru.baby.monitor.client.feature.voiceAnalysis
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import co.netguru.baby.monitor.client.common.RunsInBackground
-import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
-import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
-import io.reactivex.Completable
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.Observable
 import timber.log.Timber
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import javax.inject.Inject
 
-class AacRecorder(var voiceAnalysisOption: VoiceAnalysisOption) {
+class AacRecorder @Inject constructor() {
 
-    internal val machineLearningData: PublishSubject<Pair<ByteArray, ShortArray>> =
-        PublishSubject.create()
-    internal val soundDetectionData: PublishSubject<ShortArray> = PublishSubject.create()
-    private var bufferSize = 0
-    private var audioRecord: AudioRecord? = null
-    private var shouldStopRecording = false
-    private var rawData = emptyArray<Byte>()
-    private var newData = emptyArray<Short>()
-
-    fun startRecording(): Completable = Completable.fromAction {
+    fun startRecording(): Observable<ByteArray> = Observable.create { emitter ->
         Timber.i("starting recording")
-        bufferSize = AudioRecord.getMinBufferSize(
-            SAMPLING_RATE,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT
-        ) * 2
-        if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
-            bufferSize = SAMPLING_RATE * 2
-        }
-        audioRecord = AudioRecord(
+        var shouldStopRecording = false
+        val bufferSize = findBestBufferSize()
+        val audioRecord = AudioRecord(
             MediaRecorder.AudioSource.MIC,
             SAMPLING_RATE,
             AudioFormat.CHANNEL_IN_MONO,
@@ -42,48 +22,31 @@ class AacRecorder(var voiceAnalysisOption: VoiceAnalysisOption) {
         )
         Timber.i("recording started")
         val buffer = ByteArray(bufferSize)
+
+        emitter.setCancellable {
+            shouldStopRecording = true
+            audioRecord.stop()
+            audioRecord.release()
+            Timber.i("release")
+        }
+
         while (!shouldStopRecording) {
-            if (audioRecord?.recordingState == AudioRecord.RECORDSTATE_STOPPED) audioRecord?.startRecording()
-            audioRecord?.read(buffer, 0, buffer.size)
-            addData(buffer)
+            if (audioRecord.recordingState == AudioRecord.RECORDSTATE_STOPPED) audioRecord.startRecording()
+            audioRecord.read(buffer, 0, buffer.size)
+            emitter.onNext(buffer)
         }
     }
 
-    fun release() {
-        Timber.i("release recording")
-        shouldStopRecording = true
-        audioRecord?.stop()
-        audioRecord?.release()
-        audioRecord = null
-    }
-
-    @RunsInBackground
-    fun addData(array: ByteArray) {
-        newData = newData.plus(bytesToShorts(array).toTypedArray())
-        rawData = rawData.plus(array.toTypedArray())
-
-        if (newData.size >= NoiseDetector.DATA_SIZE &&
-            voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION
-        ) {
-            soundDetectionData.onNext(newData.takeLast(NoiseDetector.DATA_SIZE).toShortArray())
+    private fun findBestBufferSize(): Int {
+        var bufferSize = AudioRecord.getMinBufferSize(
+            SAMPLING_RATE,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT
+        ) * 2
+        if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
+            bufferSize = SAMPLING_RATE * 2
         }
-
-        if (newData.size >= MachineLearning.DATA_SIZE) {
-            machineLearningData.onNext(rawData.toByteArray() to newData.toShortArray())
-            clearRecordingData()
-        }
-    }
-
-    private fun clearRecordingData() {
-        newData = emptyArray()
-        rawData = emptyArray()
-    }
-
-    @RunsInBackground
-    private fun bytesToShorts(bytes: ByteArray): ShortArray {
-        val shorts = ShortArray(bytes.size / 2)
-        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts)
-        return shorts
+        return bufferSize
     }
 
     companion object {
