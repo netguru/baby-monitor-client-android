@@ -1,5 +1,6 @@
 package co.netguru.baby.monitor.client.feature.communication.websocket
 
+import co.netguru.baby.monitor.client.feature.communication.websocket.CustomWebSocketServer.Companion.CONNECTION_LOST_TIMEOUT
 import com.google.gson.Gson
 import dagger.Reusable
 import io.reactivex.Completable
@@ -67,6 +68,10 @@ class RxWebSocketClient @Inject constructor(
     }
 
     private class RxWebSocketClient(serverUri: URI) : WebSocketClient(serverUri) {
+
+        init {
+            connectionLostTimeout = CONNECTION_LOST_TIMEOUT
+        }
 
         private val events: Subject<Event> = PublishSubject.create()
 

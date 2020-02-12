@@ -21,7 +21,7 @@ class CustomWebSocketServer(
 
     init {
         isReuseAddr = true
-        connectionLostTimeout = 10
+        connectionLostTimeout = CONNECTION_LOST_TIMEOUT
     }
 
     private fun updateConnectedClients() {
@@ -72,5 +72,6 @@ class CustomWebSocketServer(
 
     companion object {
         internal const val PORT = 63124
+        const val CONNECTION_LOST_TIMEOUT = 10
     }
 }
