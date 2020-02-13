@@ -12,6 +12,7 @@ import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -26,17 +27,18 @@ class VoiceAnalysisController @Inject constructor(
     private val noiseDetector: NoiseDetector,
     private val dataRepository: DataRepository,
     private val machineLearning: MachineLearning,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val recordingController: RecordingController
 ) : ServiceController<VoiceAnalysisService> {
 
-    private val compositeDisposable = CompositeDisposable()
-    private var aacRecorder: AacRecorder? = null
+    private val disposables = CompositeDisposable()
+    private var recordingDisposable: Disposable? = null
     private var voiceAnalysisService: VoiceAnalysisService? = null
     var voiceAnalysisOption =
         VoiceAnalysisOption.MACHINE_LEARNING
         set(value) {
             field = value
-            aacRecorder?.voiceAnalysisOption = value
+            recordingController.voiceAnalysisOption = value
         }
     var noiseLevel = NoiseDetector.DEFAULT_NOISE_LEVEL
 
@@ -51,81 +53,70 @@ class VoiceAnalysisController @Inject constructor(
                 analyticsManager.setUserProperty(UserProperty.VoiceAnalysis(voiceAnalysisOption))
                 startRecording()
             }, onComplete = this::startRecording)
-            .addTo(compositeDisposable)
+            .addTo(disposables)
     }
 
     fun startRecording() {
-        if (aacRecorder != null) return
+        if (recordingDisposable != null && recordingDisposable?.isDisposed == false) return
         initBabyEventsSubscription()
-        aacRecorder =
-            AacRecorder(voiceAnalysisOption)
-                .apply {
-                    startRecording()
-                        .subscribeOn(Schedulers.io())
-                        .subscribeBy(
-                            onComplete = { Timber.i("Recording completed") },
-                            onError = Timber::e
-                        ).addTo(compositeDisposable)
-                    machineLearningData
-                        .filter { voiceAnalysisOption == VoiceAnalysisOption.MACHINE_LEARNING }
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribeBy(
-                            onNext = this@VoiceAnalysisController::handleRecordingData,
-                            onComplete = { Timber.i("Complete") },
-                            onError = Timber::e
-                        ).addTo(compositeDisposable)
-                    soundDetectionData
-                        .filter { voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION }
-                        .subscribeOn(Schedulers.newThread())
-                        .subscribeBy(
-                            onNext = this@VoiceAnalysisController::handleRecordingData,
-                            onComplete = { Timber.i("Complete") },
-                            onError = Timber::e
-                        ).addTo(compositeDisposable)
-                }
+        recordingDisposable = recordingController.startRecording()
+            .filter { it is RecordingData.MachineLearning || it is RecordingData.NoiseDetection }
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    when (it) {
+                        is RecordingData.NoiseDetection -> handleRecordingData(it)
+                        is RecordingData.MachineLearning -> handleRecordingData(it)
+                    }
+                },
+                onError = Timber::e
+            )
     }
 
     private fun initBabyEventsSubscription() {
         notifyBabyEventUseCase
             .babyEvents()
             .subscribe()
-            .addTo(compositeDisposable)
+            .addTo(disposables)
     }
 
     fun stopRecording() {
         Timber.i("Stop recording")
-        aacRecorder?.release()
-        aacRecorder = null
-        compositeDisposable.clear()
+        recordingDisposable?.dispose()
+        disposables.clear()
     }
 
-    private fun handleRecordingData(dataPair: Pair<ByteArray, ShortArray>) {
-        machineLearning.processData(dataPair.second)
+    private fun handleRecordingData(recordingData: RecordingData.MachineLearning) {
+        machineLearning.processData(recordingData.shortArray)
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onSuccess = { map -> handleMachineLearningData(map, dataPair.first) },
+                onSuccess = { map ->
+                    handleMachineLearningData(
+                        map,
+                        recordingData.byteArray
+                    )
+                },
                 onError = { error -> voiceAnalysisService?.complain("ML model error", error) }
-            ).addTo(compositeDisposable)
+            ).addTo(disposables)
     }
 
-    private fun handleRecordingData(noiseRecordingData: ShortArray) {
-        noiseDetector.processData(noiseRecordingData, noiseRecordingData.size)
+    private fun handleRecordingData(recordingData: RecordingData.NoiseDetection) {
+        noiseDetector.processData(recordingData.shortArray)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { decibels -> handleNoiseDetectorData(decibels) },
                 onError = { error -> voiceAnalysisService?.complain("Noise detector error", error) }
-            ).addTo(compositeDisposable)
+            ).addTo(disposables)
     }
 
-    private fun handleNoiseDetectorData(decibels: Double) {
-        debugModule.sendSoundEvent(decibels.toInt())
+    private fun handleNoiseDetectorData(decibels: Int) {
+        debugModule.sendSoundEvent(decibels)
         if (isNoiseDetected(decibels)) notifyBabyEventUseCase.notifyNoiseDetected()
-        Timber.i("Decibels: $decibels")
     }
 
-    private fun isNoiseDetected(decibels: Double) = decibels > noiseLevel
+    private fun isNoiseDetected(decibels: Int) = decibels > noiseLevel
 
     private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
@@ -142,16 +133,15 @@ class VoiceAnalysisController @Inject constructor(
                         .subscribeBy(
                             onSuccess = { succeed -> Timber.i("File saved $succeed") },
                             onError = Timber::e
-                        ).addTo(compositeDisposable)
+                        ).addTo(disposables)
                 }
             }
         }
     }
 
     private fun cleanup() {
-        compositeDisposable.dispose()
-        aacRecorder?.release()
-        aacRecorder = null
+        disposables.dispose()
+        recordingDisposable?.dispose()
     }
 
     override fun detachService() {
