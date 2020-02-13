@@ -1,6 +1,5 @@
 package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
-import co.netguru.baby.monitor.client.common.RunsInBackground
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import io.reactivex.Observable
@@ -12,47 +11,53 @@ class RecordingController @Inject constructor(
     private val aacRecorder: AacRecorder
 ) {
     var voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING
-    private var rawData = emptyArray<Byte>()
-    private var newData = emptyArray<Short>()
 
     fun startRecording(): Observable<RecordingData> {
         return aacRecorder.startRecording()
-            .doOnNext {
-                addData(it)
-            }
+            .scan(emptyArray<Byte>() to emptyArray<Short>(), { acc, new ->
+                if (acc.second.size >= MachineLearning.DATA_SIZE) {
+                    clearData()
+                } else {
+                    addData(acc, new)
+                }
+            })
+            .filter { it.first.isNotEmpty() && it.second.isNotEmpty() }
             .map {
                 val data = when {
-                    voiceAnalysisOption == VoiceAnalysisOption.MACHINE_LEARNING &&
-                            newData.size >= MachineLearning.DATA_SIZE -> RecordingData.MachineLearning(
-                        rawData.toByteArray(),
-                        newData.toShortArray()
+                    isMachineLearningWithEnoughData(it) -> RecordingData.MachineLearning(
+                        it.first.toByteArray(),
+                        it.second.toShortArray()
                     )
-                    voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION &&
-                            newData.size >= NoiseDetector.DATA_SIZE -> RecordingData.NoiseDetection(
-                        newData.takeLast(NoiseDetector.DATA_SIZE).toShortArray()
+                    isNoiseDetectionWithEnoughData(it) -> RecordingData.NoiseDetection(
+                        it.second.takeLast(NoiseDetector.DATA_SIZE).toShortArray()
                     )
-                    else -> RecordingData.Raw(it)
+                    else -> RecordingData.Raw(it.first.toByteArray())
                 }
-                if (newData.size >= MachineLearning.DATA_SIZE) clearRecordingData()
                 data
             }
     }
 
-    @RunsInBackground
-    fun addData(array: ByteArray) {
-        newData = newData.plus(bytesToShorts(array).toTypedArray())
-        rawData = rawData.plus(array.toTypedArray())
+    private fun isNoiseDetectionWithEnoughData(it: Pair<Array<Byte>, Array<Short>>) =
+        voiceAnalysisOption == VoiceAnalysisOption.NOISE_DETECTION &&
+                it.second.size >= NoiseDetector.DATA_SIZE
+
+    private fun isMachineLearningWithEnoughData(it: Pair<Array<Byte>, Array<Short>>) =
+        voiceAnalysisOption == VoiceAnalysisOption.MACHINE_LEARNING &&
+                it.second.size == MachineLearning.DATA_SIZE
+
+    private fun addData(
+        accumulator: Pair<Array<Byte>, Array<Short>>,
+        newData: ByteArray
+    ): Pair<Array<Byte>, Array<Short>> {
+        return accumulator.first.plus(newData.toTypedArray()) to accumulator.second
+            .plus(bytesToShorts(newData).toTypedArray())
     }
 
-    @RunsInBackground
+    private fun clearData() = Pair(emptyArray<Byte>(), emptyArray<Short>())
+
     private fun bytesToShorts(bytes: ByteArray): ShortArray {
         val shorts = ShortArray(bytes.size / 2)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts)
         return shorts
-    }
-
-    private fun clearRecordingData() {
-        newData = emptyArray()
-        rawData = emptyArray()
     }
 }
