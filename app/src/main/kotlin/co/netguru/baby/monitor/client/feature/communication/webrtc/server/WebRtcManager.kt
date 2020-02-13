@@ -24,6 +24,7 @@ class WebRtcManager constructor(
     private lateinit var videoTrack: VideoTrack
     private var audioSource: AudioSource? = null
     private var audioTrack: AudioTrack? = null
+    private var surfaceViewSink: VideoSink? = null
 
     private var peerConnection: PeerConnection? = null
     private var stream: MediaStream? = null
@@ -150,6 +151,8 @@ class WebRtcManager constructor(
         compositeDisposable.dispose()
         audioSource?.dispose()
         videoSource.dispose()
+        videoTrack.removeSink(surfaceViewSink)
+        surfaceViewSink = null
         cameraVideoCapturer?.dispose()
         peerConnection?.dispose()
         peerConnectionFactory.dispose()
@@ -227,8 +230,9 @@ class WebRtcManager constructor(
     }
 
     fun addSurfaceView(surfaceViewRenderer: SurfaceViewRenderer) {
-        surfaceViewRenderer.init(sharedContext, null)
-        videoTrack.addSink(surfaceViewRenderer)
+        this.surfaceViewSink = surfaceViewRenderer
+            .apply { init(sharedContext, null) }
+        videoTrack.addSink(surfaceViewSink)
     }
 
     fun getConnectionObservable(): Observable<RtcConnectionState> =
