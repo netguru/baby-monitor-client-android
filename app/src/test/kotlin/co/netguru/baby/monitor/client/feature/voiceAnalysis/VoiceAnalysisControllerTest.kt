@@ -15,8 +15,8 @@ import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import org.junit.Rule
 import org.junit.Test
 
@@ -38,15 +38,9 @@ class VoiceAnalysisControllerTest {
     private val dataRepository = mock<DataRepository>()
     private val machineLearning = mock<MachineLearning>()
     private val analyticsManager = mock<AnalyticsManager>()
-    private val recordingController = mock<RecordingController> {
-        on { startRecording() } doReturn Observable.just<RecordingData>(
-            RecordingData.Raw(
-                ByteArray(
-                    1
-                )
-            )
-        )
-    }
+    private val recordingDataSubjectMock = PublishSubject.create<RecordingData>()
+    private val recordingController = mock<RecordingController>
+    { on { startRecording() } doReturn recordingDataSubjectMock }
     private val noiseRecordingData = RecordingData.NoiseDetection(ShortArray(1))
     private val machineLearningRecordingData =
         RecordingData.MachineLearning(ByteArray(1), ShortArray(1))
@@ -67,6 +61,7 @@ class VoiceAnalysisControllerTest {
     @Test
     fun `should subscribe to baby events after recording start`() {
         voiceAnalysisController.startRecording()
+        recordingDataSubjectMock.onNext(RecordingData.Raw(ByteArray(1)))
 
         verify(notifyBabyEventUseCase).babyEvents()
         verify(babyEvents).subscribe()
@@ -74,24 +69,16 @@ class VoiceAnalysisControllerTest {
 
     @Test
     fun `should process noise detector data`() {
-        whenever(recordingController.startRecording()) doReturn Observable.just<RecordingData>(
-            noiseRecordingData
-        )
-
         voiceAnalysisController.startRecording()
-
+        recordingDataSubjectMock.onNext(noiseRecordingData)
 
         verify(noiseDetector).processData(noiseRecordingData.shortArray)
     }
 
     @Test
     fun `should process machine learning data`() {
-        whenever(recordingController.startRecording()) doReturn Observable.just<RecordingData>(
-            machineLearningRecordingData
-        )
-
         voiceAnalysisController.startRecording()
-
+        recordingDataSubjectMock.onNext(machineLearningRecordingData)
 
         verify(machineLearning).processData(machineLearningRecordingData.shortArray)
     }
@@ -99,14 +86,12 @@ class VoiceAnalysisControllerTest {
     @Test
     fun `should handle processed noise detector data above the default threshold`() {
         val decibelsAboveThreshold = NoiseDetector.DEFAULT_NOISE_LEVEL + 10
-        whenever(recordingController.startRecording()) doReturn Observable.just<RecordingData>(
-            noiseRecordingData
-        )
         whenever(noiseDetector.processData(noiseRecordingData.shortArray)) doReturn Single.just<Int>(
             decibelsAboveThreshold
         )
 
         voiceAnalysisController.startRecording()
+        recordingDataSubjectMock.onNext(noiseRecordingData)
 
         verify(debugModule).sendSoundEvent(decibelsAboveThreshold)
         verify(notifyBabyEventUseCase).notifyNoiseDetected()
@@ -115,14 +100,12 @@ class VoiceAnalysisControllerTest {
     @Test
     fun `should handle processed noise detector data below the default threshold`() {
         val decibelsBelowThreshold = NoiseDetector.DEFAULT_NOISE_LEVEL - 10
-        whenever(recordingController.startRecording()) doReturn Observable.just<RecordingData>(
-            noiseRecordingData
-        )
         whenever(noiseDetector.processData(noiseRecordingData.shortArray)) doReturn Single.just<Int>(
             decibelsBelowThreshold
         )
 
         voiceAnalysisController.startRecording()
+        recordingDataSubjectMock.onNext(noiseRecordingData)
 
         verify(debugModule).sendSoundEvent(decibelsBelowThreshold)
         verify(notifyBabyEventUseCase, times(0)).notifyNoiseDetected()
@@ -133,15 +116,13 @@ class VoiceAnalysisControllerTest {
         val cryingProbabilityAboveThreshold = (MachineLearning.CRYING_THRESHOLD + 10).toFloat()
         val machineLearningData =
             mutableMapOf(MachineLearning.OUTPUT_2_CRYING_BABY to cryingProbabilityAboveThreshold)
-        whenever(recordingController.startRecording()) doReturn Observable.just<RecordingData>(
-            machineLearningRecordingData
-        )
         whenever(machineLearning.processData(machineLearningRecordingData.shortArray)) doReturn
                 Single.just<MutableMap<String, Float>>(
                     machineLearningData
                 )
 
         voiceAnalysisController.startRecording()
+        recordingDataSubjectMock.onNext(machineLearningRecordingData)
 
         verify(debugModule).sendCryingProbabilityEvent(cryingProbabilityAboveThreshold)
         verify(notifyBabyEventUseCase).notifyBabyCrying()
@@ -152,15 +133,13 @@ class VoiceAnalysisControllerTest {
         val cryingProbabilityBelowThreshold = (MachineLearning.CRYING_THRESHOLD - 10).toFloat()
         val machineLearningData =
             mutableMapOf(MachineLearning.OUTPUT_2_CRYING_BABY to cryingProbabilityBelowThreshold)
-        whenever(recordingController.startRecording()) doReturn Observable.just<RecordingData>(
-            machineLearningRecordingData
-        )
         whenever(machineLearning.processData(machineLearningRecordingData.shortArray)) doReturn
                 Single.just<MutableMap<String, Float>>(
                     machineLearningData
                 )
 
         voiceAnalysisController.startRecording()
+        recordingDataSubjectMock.onNext(machineLearningRecordingData)
 
         verify(debugModule).sendCryingProbabilityEvent(cryingProbabilityBelowThreshold)
         verify(notifyBabyEventUseCase, times(0)).notifyBabyCrying()

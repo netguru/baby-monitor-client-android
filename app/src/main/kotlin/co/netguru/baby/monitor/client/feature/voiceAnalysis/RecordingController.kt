@@ -15,9 +15,9 @@ class RecordingController @Inject constructor(
 
     fun startRecording(): Observable<RecordingData> {
         return aacRecorder.startRecording()
-            .scan(emptyArray<Byte>() to emptyArray<Short>(), { acc, new ->
+            .scan(newAccumulator(), { acc, new ->
                 if (acc.second.size >= MachineLearning.DATA_SIZE) {
-                    clearData()
+                    addData(newAccumulator(), new)
                 } else {
                     addData(acc, new)
                 }
@@ -54,7 +54,7 @@ class RecordingController @Inject constructor(
             .plus(bytesToShorts(newData).toTypedArray())
     }
 
-    private fun clearData() = Pair(emptyArray<Byte>(), emptyArray<Short>())
+    private fun newAccumulator() = Pair(emptyArray<Byte>(), emptyArray<Short>())
 
     private fun bytesToShorts(bytes: ByteArray): ShortArray {
         val shorts = ShortArray(bytes.size / 2)
