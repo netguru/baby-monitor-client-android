@@ -10,6 +10,7 @@ import javax.inject.Inject
 class RecordingController @Inject constructor(
     private val aacRecorder: AacRecorder
 ) {
+    @Volatile
     var voiceAnalysisOption: VoiceAnalysisOption = VoiceAnalysisOption.MACHINE_LEARNING
 
     fun startRecording(): Observable<RecordingData> {
