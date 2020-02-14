@@ -26,8 +26,8 @@ class RecordingController @Inject constructor(
             .map {
                 val data = when {
                     isMachineLearningWithEnoughData(it) -> RecordingData.MachineLearning(
-                        it.first.toByteArray(),
-                        it.second.toShortArray()
+                        it.first.takeLast(MachineLearning.DATA_SIZE * 2).toByteArray(),
+                        it.second.takeLast(MachineLearning.DATA_SIZE).toShortArray()
                     )
                     isNoiseDetectionWithEnoughData(it) -> RecordingData.NoiseDetection(
                         it.second.takeLast(NoiseDetector.DATA_SIZE).toShortArray()
@@ -44,7 +44,7 @@ class RecordingController @Inject constructor(
 
     private fun isMachineLearningWithEnoughData(it: Pair<Array<Byte>, Array<Short>>) =
         voiceAnalysisOption == VoiceAnalysisOption.MACHINE_LEARNING &&
-                it.second.size == MachineLearning.DATA_SIZE
+                it.second.size >= MachineLearning.DATA_SIZE
 
     private fun addData(
         accumulator: Pair<Array<Byte>, Array<Short>>,
