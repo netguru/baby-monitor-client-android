@@ -24,10 +24,9 @@ class VoiceAnalysisService : ServiceFacade,
         return WavFileGenerator.saveAudio(
             applicationContext,
             rawData,
-            AacRecorder.BIT_RATE.toByte(),
+            AacRecorder.BITS_PER_SAMPLE,
             AacRecorder.CHANNELS,
-            AacRecorder.SAMPLING_RATE,
-            AacRecorder.BIT_RATE
+            AacRecorder.SAMPLING_RATE
         )
     }
 

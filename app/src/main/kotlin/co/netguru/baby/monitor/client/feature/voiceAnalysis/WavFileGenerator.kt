@@ -5,27 +5,36 @@ import io.reactivex.Single
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.io.DataOutputStream
 import java.io.File
-import java.io.FileOutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 @Suppress("MagicNumber")
 object WavFileGenerator {
 
     internal const val DIRECTORY_NAME = "recordings"
-    internal const val DATE_PATTERN = "yyyy_MM_dd_HH_mm_ss"
+    private const val DATE_PATTERN = "yyyy_MM_dd_HH_mm_ss"
 
     private const val BYTES_IN_MEGABYTE = 1_048_576L
-    private const val AVAILABLE_MEGABYTES_FOR_APPLICATION = 200
-    private const val AVAILABLE_SPACE = AVAILABLE_MEGABYTES_FOR_APPLICATION * BYTES_IN_MEGABYTE
+    private const val AVAILABLE_MEGABYTES_FOR_RECORDINGS = 50
+    private const val AVAILABLE_SPACE = AVAILABLE_MEGABYTES_FOR_RECORDINGS * BYTES_IN_MEGABYTE
+    private const val SUBCHUNK_1_SIZE_PCM = 16
+    private const val RIFF_HEADER = "RIFF"
+    private const val SUBCHUNK_1_ID = "fmt "
+    private const val SUBCHUNK_2_ID = "data"
+    private const val SUBCHUNK_2_ID_AND_DESC_SIZE = 8
+    private const val CHUNK_AND_SUBCHUNK_1_DESC_SIZE = 4 + 8
+    private const val FORMAT = "WAVE"
+    private const val AUDIO_FORMAT_PCM: Short = 1
+    private const val BITS_PER_BYTE = 8
+    private const val HEADER_SIZE = 44
 
     fun saveAudio(
         context: Context,
         rawData: ByteArray,
-        bitsPerSample: Byte,
+        bitsPerSample: Int,
         channels: Int,
-        sampleRate: Int,
-        byteRate: Int
+        sampleRate: Int
     ) = Single.fromCallable {
         checkAvailableSpace(
             context
@@ -36,109 +45,64 @@ object WavFileGenerator {
             "crying_${LocalDateTime.now().format(formatter)}.wav"
         )
 
-        DataOutputStream(FileOutputStream(file)).use { output ->
-            writeString(output, "RIFF") // chunk id
-            writeInt(output, 36 + rawData.size) // chunk size
-            writeString(output, "WAVE") // format
-            writeString(output, "fmt ") // subchunk 1 id
-            writeInt(output, 16) // subchunk 1 size
-            writeShort(output, 1.toShort()) // audio format (1 = PCM)
-            writeShort(output, 1.toShort()) // number of channels
-            writeInt(output, sampleRate) // sample rate
-            writeInt(output, byteRate) // byte rate
-            writeShort(output, 2.toShort()) // block align
-            writeShort(output, 16.toShort()) // bits per sample
-            writeString(output, "data") // subchunk 2 id
-        }
-
-        FileOutputStream(file).use { steam ->
-            steam.write(
+        file.outputStream().use { stream ->
+            stream.write(
                 getHeader(
                     rawData, bitsPerSample,
-                    channels, sampleRate, byteRate
-                ).toByteArray()
+                    channels, sampleRate
+                )
             )
-            steam.write(rawData)
+            stream.write(rawData)
         }
         Timber.i("File saved ${file.absolutePath}")
         true
     }
 
-    private fun writeInt(output: DataOutputStream, value: Int) {
-        output.write(value)
-        output.write(value shr 8)
-        output.write(value shr 16)
-        output.write(value shr 24)
-    }
+    private fun getByteRate(
+        bitsPerSample: Int,
+        channels: Int,
+        sampleRate: Int
+    ) = bitsPerSample * sampleRate * channels / BITS_PER_BYTE
 
-    private fun writeShort(output: DataOutputStream, value: Short) {
-        output.write(value.toInt())
-        output.write(value.toInt() shr 8)
-    }
-
-    private fun writeString(output: DataOutputStream, value: String) {
-        for (i in 0 until value.length) {
-            output.write(value[i].toInt())
-        }
-    }
+    private fun getBlockAlign(
+        channels: Int,
+        bitsPerSample: Int
+    ): Short = (channels * bitsPerSample / BITS_PER_BYTE).toShort()
 
     /**
      *
      * WAVE header
-     * see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
+     * see http://soundfile.sapp.org/doc/WaveFormat/
      */
     private fun getHeader(
         rawData: ByteArray,
-        bitsPerSample: Byte,
+        bitsPerSample: Int,
         channels: Int,
-        sampleRate: Int,
-        byteRate: Int
-    ) = arrayOf(
-        'R'.toByte(),
-        'I'.toByte(),
-        'F'.toByte(),
-        'F'.toByte(),
-        (rawData.size + 36 and 0xff).toByte(),
-        (rawData.size + 36 shr 8 and 0xff).toByte(),
-        (rawData.size + 36 shr 16 and 0xff).toByte(),
-        (rawData.size + 36 shr 24 and 0xff).toByte(),
-        'W'.toByte(),
-        'A'.toByte(),
-        'V'.toByte(),
-        'E'.toByte(),
-        'f'.toByte(),
-        'm'.toByte(),
-        't'.toByte(),
-        ' '.toByte(),
-        16,
-        0,
-        0,
-        0,
-        1,
-        0,
-        channels.toByte(),
-        0,
-        (sampleRate and 0xff).toByte(),
-        (sampleRate shr 8 and 0xff).toByte(),
-        (sampleRate shr 16 and 0xff).toByte(),
-        (sampleRate shr 24 and 0xff).toByte(),
-        (byteRate and 0xff).toByte(),
-        (byteRate shr 8 and 0xff).toByte(),
-        (byteRate shr 16 and 0xff).toByte(),
-        (byteRate shr 24 and 0xff).toByte(),
-        (2 * 16 / 8).toByte(),
-        0,
-        bitsPerSample,
-        0,
-        'd'.toByte(),
-        'a'.toByte(),
-        't'.toByte(),
-        'a'.toByte(),
-        (rawData.size and 0xff).toByte(),
-        (rawData.size shr 8 and 0xff).toByte(),
-        (rawData.size shr 16 and 0xff).toByte(),
-        (rawData.size shr 24 and 0xff).toByte()
-    )
+        sampleRate: Int
+    ): ByteArray {
+        return ByteBuffer
+            .allocate(HEADER_SIZE)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .put(RIFF_HEADER.toASCIIByteArray())
+            .putInt(getChunkSize(rawData))
+            .put(FORMAT.toASCIIByteArray())
+            .put(SUBCHUNK_1_ID.toASCIIByteArray())
+            .putInt(SUBCHUNK_1_SIZE_PCM)
+            .putShort(AUDIO_FORMAT_PCM)
+            .putShort(channels.toShort())
+            .putInt(sampleRate)
+            .putInt(getByteRate(bitsPerSample, channels, sampleRate))
+            .putShort(getBlockAlign(channels, bitsPerSample))
+            .putShort(bitsPerSample.toShort())
+            .put(SUBCHUNK_2_ID.toASCIIByteArray())
+            .putInt(rawData.size)
+            .array()
+    }
+
+    private fun String.toASCIIByteArray() = toByteArray(Charsets.US_ASCII)
+
+    private fun getChunkSize(rawData: ByteArray) =
+        CHUNK_AND_SUBCHUNK_1_DESC_SIZE + SUBCHUNK_1_SIZE_PCM + SUBCHUNK_2_ID_AND_DESC_SIZE + rawData.size
 
     private fun checkAvailableSpace(context: Context) {
         val directory = context.getDir(DIRECTORY_NAME, Context.MODE_PRIVATE)

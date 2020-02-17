@@ -52,6 +52,6 @@ class AacRecorder @Inject constructor() {
     companion object {
         internal const val SAMPLING_RATE = 44_100
         internal const val CHANNELS = 1
-        internal const val BIT_RATE = 16
+        internal const val BITS_PER_SAMPLE = 16
     }
 }
