@@ -107,7 +107,7 @@ class ConfigurationViewModel @Inject constructor(
         }
     }
 
-    internal fun isUploadEnabled() = firebaseRepository.isUploadEnablad()
+    internal fun isUploadEnabled() = firebaseRepository.isUploadEnabled()
 
     internal fun setUploadEnabled(enabled: Boolean) {
         firebaseRepository.setUploadEnabled(enabled)

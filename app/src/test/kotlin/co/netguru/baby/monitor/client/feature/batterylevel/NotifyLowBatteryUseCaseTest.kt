@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.batterylevel
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotificationSender
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
+import com.nhaarman.mockitokotlin2.argThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Rule
@@ -23,9 +24,9 @@ class NotifyLowBatteryUseCaseTest {
         notifyLowBatteryUseCase.notifyLowBattery(title, text)
 
         verify(notificationSender).broadcastNotificationToFcm(
-            title,
-            text,
-            NotificationType.LOW_BATTERY_NOTIFICATION
+           argThat {
+               type == NotificationType.LOW_BATTERY_NOTIFICATION
+           }
         )
     }
 }

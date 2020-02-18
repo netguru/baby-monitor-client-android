@@ -37,7 +37,7 @@ class FirebaseSharedPreferencesWrapper @Inject constructor(
                 getFileUriString() == null
     }
 
-    fun isUploadEnablad() = preferences.getBoolean(
+    fun isUploadEnabled() = preferences.getBoolean(
             FIREBASE_UPLOAD_ENABLED,
             false
     )

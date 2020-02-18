@@ -5,6 +5,7 @@ import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.Event
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
+import co.netguru.baby.monitor.client.feature.feedback.FeedbackFrequencyUseCase
 import com.google.gson.Gson
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -23,42 +24,44 @@ class FirebaseNotificationSender @Inject constructor(
     private val httpClient: OkHttpClient,
     private val debugModule: DebugModule,
     private val analyticsManager: AnalyticsManager,
-    private val gson: Gson
+    private val gson: Gson,
+    private val feedbackFrequencyUseCase: FeedbackFrequencyUseCase
 ) {
     fun broadcastNotificationToFcm(
-        title: String,
-        text: String,
-        notificationType: NotificationType
+        notificationData: NotificationData
     ): Completable =
         dataRepository.getClientData()
             .doOnSuccess { Timber.i("Client data: $it.") }
             .map { client -> client.firebaseKey }
             .flatMapCompletable { firebaseToken ->
-                analyticsManager.logEvent(Event.ParamEvent.NotificationSent(notificationType))
-                postNotificationToFcm(firebaseToken, title, text, notificationType)
+                analyticsManager.logEvent(Event.ParamEvent.NotificationSent(notificationData.type))
+                postNotificationToFcm(firebaseToken, notificationData)
                     .doOnSuccess { response ->
                         debugModule.sendNotificationEvent(
-                            "Notification posted: Title: $title" +
-                                    " text: $text. Response: ${response.body?.string()}."
+                            "Notification posted: Title: ${notificationData.title}" +
+                                    " text: ${notificationData.text}. Response: ${response.body?.string()}."
                         )
+                        updateFeedbackData(notificationData)
                         Timber.d("Notification posted: $response.")
                     }
                     .ignoreElement()
             }
 
+    private fun updateFeedbackData(notificationData: NotificationData) {
+        feedbackFrequencyUseCase.notificationSent()
+        if (notificationData.feedbackRecordingFile.isNotEmpty())
+            feedbackFrequencyUseCase.feedbackRequestSent()
+    }
+
     private fun postNotificationToFcm(
         firebaseToken: String,
-        title: String,
-        text: String,
-        notificationType: NotificationType
+        notificationData: NotificationData
     ): Single<Response> {
         return checkIdCall(firebaseToken)
             .flatMap { isAndroid ->
                 return@flatMap notificationCall(
                     firebaseToken,
-                    title,
-                    text,
-                    notificationType,
+                    notificationData,
                     isAndroid
                 )
             }
@@ -84,9 +87,7 @@ class FirebaseNotificationSender @Inject constructor(
 
     private fun notificationCall(
         firebaseToken: String,
-        title: String,
-        text: String,
-        notificationType: NotificationType,
+        notificationData: NotificationData,
         isAndroid: Boolean
     ): Single<Response> {
         return Single.fromCallable {
@@ -100,9 +101,15 @@ class FirebaseNotificationSender @Inject constructor(
                     .post(
                         gson.toJson(
                             if (isAndroid) {
-                                Message(firebaseToken, data = Data(title, text, notificationType.name))
+                                Message(firebaseToken, notificationData = notificationData)
                             } else {
-                                Message(firebaseToken, notification = Notification(title, text))
+                                Message(
+                                    firebaseToken,
+                                    notification = Notification(
+                                        notificationData.title,
+                                        notificationData.text
+                                    )
+                                )
                             }
                         )
                             .toString()
@@ -122,5 +129,6 @@ class FirebaseNotificationSender @Inject constructor(
         const val NOTIFICATION_TEXT = "text"
         const val NOTIFICATION_TITLE = "title"
         const val NOTIFICATION_TYPE = "notification_type"
+        const val FEEDBACK_RECORDING_FILE = "feedback_recording_file"
     }
 }

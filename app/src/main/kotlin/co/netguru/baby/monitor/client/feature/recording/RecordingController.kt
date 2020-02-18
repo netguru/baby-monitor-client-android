@@ -1,7 +1,10 @@
-package co.netguru.baby.monitor.client.feature.voiceAnalysis
+package co.netguru.baby.monitor.client.feature.recording
 
+import co.netguru.baby.monitor.client.feature.feedback.FeedbackController
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.AacRecorder
+import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisOption
 import io.reactivex.Observable
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -26,10 +29,11 @@ class RecordingController @Inject constructor(
             .map {
                 val data = when {
                     isMachineLearningWithEnoughData(it) -> RecordingData.MachineLearning(
-                        it.first.takeLast(MachineLearning.DATA_SIZE * 2).toByteArray(),
+                        it.first.takeLast(FeedbackController.DATA_SIZE * 2).toByteArray(),
                         it.second.takeLast(MachineLearning.DATA_SIZE).toShortArray()
                     )
                     isNoiseDetectionWithEnoughData(it) -> RecordingData.NoiseDetection(
+                        it.first.takeLast(FeedbackController.DATA_SIZE * 2).toByteArray(),
                         it.second.takeLast(NoiseDetector.DATA_SIZE).toShortArray()
                     )
                     else -> RecordingData.Raw(it.first.toByteArray())
