@@ -5,7 +5,7 @@ import android.net.Uri
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.App
 import co.netguru.baby.monitor.client.common.RunsInBackground
-import co.netguru.baby.monitor.client.feature.voiceAnalysis.WavFileGenerator
+import co.netguru.baby.monitor.client.feature.recording.RecordingFileController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
@@ -24,7 +24,8 @@ class FirebaseRepository(
     private val context: Context
 ) {
     private var storageRef: StorageReference? = null
-    private val directory = context.getDir(WavFileGenerator.DIRECTORY_NAME, Context.MODE_PRIVATE)
+    private val directory = context.getDir(RecordingFileController.UPLOAD_RECORDINGS_DIRECTORY,
+        Context.MODE_PRIVATE)
     internal val compositeDisposable = CompositeDisposable()
 
     fun initializeApp(app: App) {
@@ -54,7 +55,7 @@ class FirebaseRepository(
         }
     }
 
-    internal fun isUploadEnablad() = preferencesWrapper.isUploadEnablad()
+    internal fun isUploadEnabled() = preferencesWrapper.isUploadEnabled()
 
     internal fun setUploadEnabled(enable: Boolean) {
         preferencesWrapper.setUploadEnabled(enable)
@@ -63,7 +64,7 @@ class FirebaseRepository(
 
     @RunsInBackground
     internal fun continueUploadingAfterProcessRestartIfNeeded() {
-        if (!preferencesWrapper.isUploadEnablad()) {
+        if (!preferencesWrapper.isUploadEnabled()) {
             return
         }
         if (!preferencesWrapper.isFirebaseSessionResumable()) {

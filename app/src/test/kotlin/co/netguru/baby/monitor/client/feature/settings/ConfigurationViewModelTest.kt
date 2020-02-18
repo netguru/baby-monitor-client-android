@@ -87,7 +87,7 @@ class ConfigurationViewModelTest {
 
         configurationViewModel.isUploadEnabled()
 
-        verify(firebaseRepository).isUploadEnablad()
+        verify(firebaseRepository).isUploadEnabled()
     }
 
     @Test

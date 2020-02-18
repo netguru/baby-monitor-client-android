@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.annotation.UiThread
 import co.netguru.baby.monitor.client.common.base.BaseServiceWithFacade
 import co.netguru.baby.monitor.client.common.base.ServiceFacade
-import io.reactivex.Single
 import timber.log.Timber
 
 class VoiceAnalysisService : ServiceFacade,
@@ -18,16 +17,6 @@ class VoiceAnalysisService : ServiceFacade,
     fun complain(message: String, error: Throwable) {
         Timber.w(error, message)
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    fun saveDataToFile(rawData: ByteArray): Single<Boolean> {
-        return WavFileGenerator.saveAudio(
-            applicationContext,
-            rawData,
-            AacRecorder.BITS_PER_SAMPLE,
-            AacRecorder.CHANNELS,
-            AacRecorder.SAMPLING_RATE
-        )
     }
 
     inner class VoiceAnalysisBinder : Binder() {

@@ -1,6 +1,5 @@
 package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
-import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.base.ServiceController
 import co.netguru.baby.monitor.client.data.DataRepository
@@ -8,8 +7,11 @@ import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.UserProperty
 import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUseCase
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
+import co.netguru.baby.monitor.client.feature.feedback.FeedbackController
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
+import co.netguru.baby.monitor.client.feature.recording.RecordingController
+import co.netguru.baby.monitor.client.feature.recording.RecordingData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -21,7 +23,7 @@ import javax.inject.Inject
 
 class VoiceAnalysisController @Inject constructor(
     private val notifyBabyEventUseCase: NotifyBabyEventUseCase,
-    private val sharedPrefsWrapper: FirebaseSharedPreferencesWrapper,
+    private val feedbackController: FeedbackController,
     private val notificationHandler: NotificationHandler,
     private val debugModule: DebugModule,
     private val noiseDetector: NoiseDetector,
@@ -94,7 +96,7 @@ class VoiceAnalysisController @Inject constructor(
                 onSuccess = { map ->
                     handleMachineLearningData(
                         map,
-                        recordingData.byteArray
+                        recordingData.rawRecordingData
                     )
                 },
                 onError = { error -> voiceAnalysisService?.complain("ML model error", error) }
@@ -106,36 +108,55 @@ class VoiceAnalysisController @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onSuccess = { decibels -> handleNoiseDetectorData(decibels) },
+                onSuccess = { decibels ->
+                    handleNoiseDetectorData(
+                        decibels,
+                        recordingData.rawRecordingData
+                    )
+                },
                 onError = { error -> voiceAnalysisService?.complain("Noise detector error", error) }
             ).addTo(disposables)
     }
 
-    private fun handleNoiseDetectorData(decibels: Int) {
+    private fun handleNoiseDetectorData(decibels: Int, rawRecordingData: ByteArray) {
         debugModule.sendSoundEvent(decibels)
-        if (isNoiseDetected(decibels)) notifyBabyEventUseCase.notifyNoiseDetected()
+        if (isNoiseDetected(decibels)) {
+            feedbackController.handleRecording(rawRecordingData, false)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                    onSuccess = { savedRecordingData ->
+                        Timber.i("Recording saved: ${savedRecordingData.fileName}" +
+                                " should ask for feedback: ${savedRecordingData.shouldAskForFeedback}")
+                        notifyBabyEventUseCase.notifyNoiseDetected(savedRecordingData)
+                    },
+                    onError = {
+                        notifyBabyEventUseCase.notifyNoiseDetected()
+                        Timber.e(it)
+                    }
+                ).addTo(disposables)
+        }
     }
 
     private fun isNoiseDetected(decibels: Int) = decibels > noiseLevel
 
-    private fun handleMachineLearningData(map: Map<String, Float>, rawData: ByteArray) {
+    private fun handleMachineLearningData(map: Map<String, Float>, rawRecordingData: ByteArray) {
         val cryingProbability = map.getValue(MachineLearning.OUTPUT_2_CRYING_BABY)
         debugModule.sendCryingProbabilityEvent(cryingProbability)
         if (cryingProbability >= MachineLearning.CRYING_THRESHOLD) {
             Timber.i("Cry detected with probability of $cryingProbability.")
-            notifyBabyEventUseCase.notifyBabyCrying()
-
-            // Save baby recordings for later upload only when we have a strict user's permission
-            if (sharedPrefsWrapper.isUploadEnablad()) {
-                voiceAnalysisService?.run {
-                    saveDataToFile(rawData)
-                        .subscribeOn(Schedulers.io())
-                        .subscribeBy(
-                            onSuccess = { succeed -> Timber.i("File saved $succeed") },
-                            onError = Timber::e
-                        ).addTo(disposables)
-                }
-            }
+            feedbackController.handleRecording(rawRecordingData, true)
+                .subscribeOn(Schedulers.io())
+                .subscribeBy(
+                    onSuccess = { savedRecordingData ->
+                        Timber.i("Recording saved: ${savedRecordingData.fileName}" +
+                                " should ask for feedback: ${savedRecordingData.shouldAskForFeedback}")
+                        notifyBabyEventUseCase.notifyBabyCrying(savedRecordingData)
+                    },
+                    onError = {
+                        notifyBabyEventUseCase.notifyBabyCrying()
+                        Timber.e(it)
+                    }
+                ).addTo(disposables)
         }
     }
 

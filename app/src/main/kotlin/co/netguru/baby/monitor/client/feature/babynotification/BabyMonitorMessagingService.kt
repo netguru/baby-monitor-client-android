@@ -47,6 +47,11 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
                 message.data
             )
             NotificationType.LOW_BATTERY_NOTIFICATION -> handleLowBatteryNotification(message.data)
+            NotificationType.CRY_NOTIFICATION_WITH_FEEDBACK_REQUEST,
+            NotificationType.NOISE_NOTIFICATION_WITH_FEEDBACK_REQUEST -> {
+                // TODO handle notification with feedback request
+                handleBabyEvent(message.data)
+            }
             else -> {
                 message.notification?.let {
                     handleRemoteNotification(

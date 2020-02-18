@@ -8,7 +8,7 @@ data class Message(
     @SerializedName("notification")
     val notification: Notification? = null,
     @SerializedName("data")
-    val data: Data? = null
+    val notificationData: NotificationData? = null
 )
 
 data class Notification(
@@ -18,11 +18,13 @@ data class Notification(
     val text: String
 )
 
-data class Data(
-    @SerializedName("title")
+data class NotificationData(
+    @SerializedName(FirebaseNotificationSender.NOTIFICATION_TITLE)
     val title: String,
-    @SerializedName("text")
+    @SerializedName(FirebaseNotificationSender.NOTIFICATION_TEXT)
     val text: String,
-    @SerializedName("notification_type")
-    val type: String
+    @SerializedName(FirebaseNotificationSender.NOTIFICATION_TYPE)
+    val type: NotificationType,
+    @SerializedName(FirebaseNotificationSender.FEEDBACK_RECORDING_FILE)
+    val feedbackRecordingFile: String = ""
 )

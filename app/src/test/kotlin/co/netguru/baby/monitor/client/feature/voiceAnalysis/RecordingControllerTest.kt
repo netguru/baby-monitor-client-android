@@ -3,6 +3,8 @@ package co.netguru.baby.monitor.client.feature.voiceAnalysis
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
+import co.netguru.baby.monitor.client.feature.recording.RecordingController
+import co.netguru.baby.monitor.client.feature.recording.RecordingData
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import io.reactivex.subjects.PublishSubject

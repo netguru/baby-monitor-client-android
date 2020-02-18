@@ -1,7 +1,6 @@
 package co.netguru.baby.monitor.client.feature.voiceAnalysis
 
 import co.netguru.baby.monitor.RxSchedulersOverrideRule
-import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.common.base.ServiceController
 import co.netguru.baby.monitor.client.data.DataRepository
@@ -10,8 +9,12 @@ import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.UserProperty
 import co.netguru.baby.monitor.client.feature.babynotification.NotifyBabyEventUseCase
 import co.netguru.baby.monitor.client.feature.debug.DebugModule
+import co.netguru.baby.monitor.client.feature.feedback.FeedbackController
+import co.netguru.baby.monitor.client.feature.feedback.SavedRecordingDetails
 import co.netguru.baby.monitor.client.feature.machinelearning.MachineLearning
 import co.netguru.baby.monitor.client.feature.noisedetection.NoiseDetector
+import co.netguru.baby.monitor.client.feature.recording.RecordingController
+import co.netguru.baby.monitor.client.feature.recording.RecordingData
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -31,7 +34,6 @@ class VoiceAnalysisControllerTest {
     private val notifyBabyEventUseCase = mock<NotifyBabyEventUseCase> {
         on { babyEvents() } doReturn babyEvents
     }
-    private val sharedPrefsWrapper = mock<FirebaseSharedPreferencesWrapper>()
     private val notificationHandler = mock<NotificationHandler>()
     private val debugModule = mock<DebugModule>()
     private val noiseDetector = mock<NoiseDetector>()
@@ -41,14 +43,18 @@ class VoiceAnalysisControllerTest {
     private val recordingDataSubjectMock = PublishSubject.create<RecordingData>()
     private val recordingController = mock<RecordingController>
     { on { startRecording() } doReturn recordingDataSubjectMock }
-    private val noiseRecordingData = RecordingData.NoiseDetection(ShortArray(1))
+    private val recordingRawData = ByteArray(1)
+    private val noiseRecordingData = RecordingData.NoiseDetection(recordingRawData, ShortArray(1))
     private val machineLearningRecordingData =
-        RecordingData.MachineLearning(ByteArray(1), ShortArray(1))
+        RecordingData.MachineLearning(recordingRawData, ShortArray(1))
     private val voiceAnalysisService = mock<VoiceAnalysisService>()
+    private val feedbackController = mock<FeedbackController> {
+        on { handleRecording(any(), any()) } doReturn Single.just(SavedRecordingDetails("", false))
+    }
 
     private val voiceAnalysisController = VoiceAnalysisController(
         notifyBabyEventUseCase,
-        sharedPrefsWrapper,
+        feedbackController,
         notificationHandler,
         debugModule,
         noiseDetector,
@@ -94,7 +100,8 @@ class VoiceAnalysisControllerTest {
         recordingDataSubjectMock.onNext(noiseRecordingData)
 
         verify(debugModule).sendSoundEvent(decibelsAboveThreshold)
-        verify(notifyBabyEventUseCase).notifyNoiseDetected()
+        verify(feedbackController).handleRecording(recordingRawData, false)
+        verify(notifyBabyEventUseCase).notifyNoiseDetected(any())
     }
 
     @Test
@@ -109,6 +116,7 @@ class VoiceAnalysisControllerTest {
 
         verify(debugModule).sendSoundEvent(decibelsBelowThreshold)
         verify(notifyBabyEventUseCase, times(0)).notifyNoiseDetected()
+        verify(feedbackController, times(0)).handleRecording(any(), any())
     }
 
     @Test
@@ -125,7 +133,8 @@ class VoiceAnalysisControllerTest {
         recordingDataSubjectMock.onNext(machineLearningRecordingData)
 
         verify(debugModule).sendCryingProbabilityEvent(cryingProbabilityAboveThreshold)
-        verify(notifyBabyEventUseCase).notifyBabyCrying()
+        verify(feedbackController).handleRecording(recordingRawData, true)
+        verify(notifyBabyEventUseCase).notifyBabyCrying(any())
     }
 
     @Test
@@ -142,6 +151,7 @@ class VoiceAnalysisControllerTest {
         recordingDataSubjectMock.onNext(machineLearningRecordingData)
 
         verify(debugModule).sendCryingProbabilityEvent(cryingProbabilityBelowThreshold)
+        verify(feedbackController, times(0)).handleRecording(any(), any())
         verify(notifyBabyEventUseCase, times(0)).notifyBabyCrying()
     }
 
