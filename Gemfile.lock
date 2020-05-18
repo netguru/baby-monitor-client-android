@@ -57,7 +57,7 @@ GEM
     multipart-post (2.1.1)
     nap (1.1.0)
     no_proxy_fix (0.1.2)
-    nokogiri (1.10.4)
+    nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
     nokogiri-happymapper (0.8.1)
       nokogiri (~> 1.5)
