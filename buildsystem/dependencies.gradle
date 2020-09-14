@@ -38,7 +38,7 @@ ext {
             room                : "androidx.room:room-runtime:$roomVersion",
             roomRx              : "androidx.room:room-rxjava2:$roomVersion",
             firebaseStorage     : 'com.google.firebase:firebase-storage:19.1.0',
-            firebaseAuth        : 'com.google.firebase:firebase-auth:19.1.0',
+            firebaseAuth        : 'com.google.firebase:firebase-auth:19.4.0',
             firebaseDatabase    : 'com.google.firebase:firebase-database:19.2.0',
             firebaseMessaging   : 'com.google.firebase:firebase-messaging:20.0.1',
             firebaseAnalytics   : 'com.google.firebase:firebase-analytics:17.2.1',
