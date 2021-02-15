@@ -17,7 +17,7 @@ ext {
             appCompat           : 'androidx.appcompat:appcompat:1.1.0',
             constraintLayout    : 'androidx.constraintlayout:constraintlayout:2.0.0-beta3',
             design              : 'com.google.android.material:material:1.0.0',
-            rxJava2             : "io.reactivex.rxjava2:rxjava:2.2.14",
+            rxJava2             : "io.reactivex.rxjava2:rxjava:2.2.21",
             rxKotlin2           : "io.reactivex.rxjava2:rxkotlin:2.4.0",
             rxAndroid2          : "io.reactivex.rxjava2:rxandroid:2.1.1",
             dagger              : "com.google.dagger:dagger:$daggerVersion",
