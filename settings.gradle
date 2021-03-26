@@ -1,1 +1,12 @@
 include ':app'
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+  settingsDir,
+  '../../StudioProjects/baby-monitor-client-android/flutter_onboarding/.android/include_flutter.groovy'
+))
+
+include ':flutter_onboarding'
+project(':flutter_onboarding').projectDir = new File('../../StudioProjects/baby-monitor-client-android/flutter_onboarding')
+
+include ':flutter_onboarding'
+project(':flutter_onboarding').projectDir = new File('../../StudioProjects/baby-monitor-client-android/flutter_onboarding')

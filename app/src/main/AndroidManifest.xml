@@ -52,6 +52,15 @@
             android:name=".feature.server.ServerActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+                android:name="io.flutter.embedding.android.FlutterActivity"
+                android:theme="@style/AppTheme"
+                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+                android:hardwareAccelerated="true"
+                android:windowSoftInputMode="adjustResize"
+                />
+
+
         <service android:name=".feature.voiceAnalysis.VoiceAnalysisService" />
         <service android:name=".feature.communication.webrtc.server.WebRtcService" />
         <service android:name=".feature.communication.websocket.WebSocketServerService" />

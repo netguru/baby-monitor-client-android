@@ -1,0 +1,41 @@
+name: flutter_onboarding
+description: Flutter Onboarding Module
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  intl: ^0.17.0-nullsafety.2
+  page_view_indicators: ^2.0.0
+  google_fonts: ^2.0.0
+  flutter_bloc: ^7.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  build_runner: ^1.11.0
+  auto_route_generator: ^0.6.9
+  freezed: ^0.14.0
+  freezed_annotation: ^0.14.0
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/images/.
+
+
+  module:
+    androidX: true
+    androidPackage: co.netguru.flutter_onboarding
+    iosBundleIdentifier: co.netguru.flutterOnboarding
+flutter_intl:
+  enabled: true

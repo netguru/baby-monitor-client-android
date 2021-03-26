@@ -1,0 +1,10 @@
+{
+  "feature_a_text_1":"Do your daily errands and \n keep an eye on your baby",
+  "feature_a_text_2": "Easily check on the baby anywhere \n and anytime you want",
+  "feature_b_text_1": "Crying baby or noise detected alert",
+  "feature_b_text_2": "You'll get a notification when your baby starts crying (beta) or some noise will be detected.\nYou can set the exact sound detection setting on parent’s device.",
+  "feature_c_text_1": "Your privacy is safe when\nusing BabyGuard",
+  "feature_c_text_2": "Video and audio will not be recorded, unless\nyou want to help us develop the app and\ngive your permission to do it.",
+  "feature_d_text_1": "Send anonymized baby\nvoice recordings",
+  "feature_d_text_2": "Voice recordings are only used for\ndevelopment purposes and never without\nyour permission."
+}

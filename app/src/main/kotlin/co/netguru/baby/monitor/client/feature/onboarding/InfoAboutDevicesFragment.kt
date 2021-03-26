@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.feature.analytics.Screen
+import io.flutter.embedding.android.FlutterActivity
 import kotlinx.android.synthetic.main.fragment_info_about_devices.*
 
 class InfoAboutDevicesFragment : BaseFragment() {

@@ -10,6 +10,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.analytics.Screen
+import io.flutter.embedding.android.FlutterActivity
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class SplashFragment : BaseFragment() {
     override val layoutResource = R.layout.fragment_splash
     override val screen: Screen = Screen.SPLASH
+    private var engineId:String = "flutterOnboardingEngine"
 
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
@@ -63,7 +65,15 @@ class SplashFragment : BaseFragment() {
                 findNavController().navigate(R.id.splashToInfoAboutDevices)
             }
             AppState.FIRST_OPEN -> {
-                findNavController().navigate(R.id.splashToOnboarding)
+                //findNavController().navigate(R.id.splashToOnboarding)
+                startActivity(
+                    this.context?.let {
+                        FlutterActivity
+                            .withCachedEngine(engineId)
+                            .build(it)
+                    }
+                )
+                findNavController().navigate(R.id.splashToInfoAboutDevices)
             }
         }
     }
