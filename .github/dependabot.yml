@@ -1,0 +1,33 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: com.google.firebase:firebase-auth
+    versions:
+    - 20.0.2
+    - 20.0.3
+  - dependency-name: org.mockito:mockito-core
+    versions:
+    - 3.7.7
+    - 3.8.0
+  - dependency-name: com.google.firebase:firebase-analytics
+    versions:
+    - 18.0.2
+  - dependency-name: io.gitlab.arturbosch.detekt:detekt-formatting
+    versions:
+    - 1.15.0
+  - dependency-name: androidx.constraintlayout:constraintlayout
+    versions:
+    - 2.1.0-alpha2
+  - dependency-name: io.reactivex.rxjava2:rxjava
+    versions:
+    - 2.2.20
+  - dependency-name: com.squareup.okhttp3:okhttp
+    versions:
+    - 4.9.0
+  rebase-strategy: disabled
