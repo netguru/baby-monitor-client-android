@@ -40,7 +40,7 @@
     <string name="permission_denied_info">BabyGuard is\nunable to work\nwithout permissions</string>
     <string name="permission_denied_are_you_sure">Are you sure you want to deny\npermissions?</string>
     <string name="permission_denied_retry_button">Re-try</string>
-    <string name="permission_denied_sure_button">I\'m sure</string>
+    <string name="permission_denied_sure_button">I\'m sure test</string>
     <string name="no_external_storage_permission">The permission to access the external storage is not set. Please contact the developer.</string>
 
     <string name="setup_information">Setup information</string>
