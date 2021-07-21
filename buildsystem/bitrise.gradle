@@ -31,5 +31,5 @@ ext {
             ]
     ]
 
-    isBitrise = bitrise.cli.isCi || bitrise.cli.isPr
+    isBitrise = (bitrise.cli.isCi || bitrise.cli.isPr) && bitrise.cli.workflowId != null
 }
