@@ -1,4 +1,4 @@
-name: CI
+name: Pull request workflow
 
 on:
   pull_request:
@@ -10,9 +10,6 @@ jobs:
   validation:
     name: "Gradle wrapper Validation"
     runs-on: ubuntu-latest
-    env:
-      CI: false
-      PR: false
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/wrapper-validation-action@v1
@@ -34,9 +31,6 @@ jobs:
         
       - name: get file with google services
         run: echo "${{ secrets.GOOGLE_SERVICES }}" | base64 -d > app/google-services.json
- 
-      - name: display content of external props
-        run: cat secret.properties
  
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -67,9 +61,6 @@ jobs:
 
       - name: get file with external properties
         run: echo "${{ secrets.EXTERNAL_PROPS_FILE }}" | base64 -d > secret.properties
- 
-      - name: display content of external props
-        run: cat secret.properties
  
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -103,9 +94,6 @@ jobs:
 
       - name: get file with external properties
         run: echo "${{ secrets.EXTERNAL_PROPS_FILE }}" | base64 -d > secret.properties
- 
-      - name: display content of external props
-        run: cat secret.properties
 
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
