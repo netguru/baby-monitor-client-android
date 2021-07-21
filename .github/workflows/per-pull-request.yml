@@ -62,6 +62,9 @@ jobs:
       - name: get file with external properties
         run: echo "${{ secrets.EXTERNAL_PROPS_FILE }}" | base64 -d > secret.properties
 
+      - name: display props
+        run: cat secret.properties
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
