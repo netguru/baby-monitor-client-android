@@ -15,7 +15,7 @@ ext {
             ankoCommonsSupportV7: "org.jetbrains.anko:anko-appcompat-v7-commons:$ankoVersion",
             ankoCommonsSupportV4: "org.jetbrains.anko:anko-support-v4-commons:$ankoVersion",
             appCompat           : 'androidx.appcompat:appcompat:1.1.0',
-            constraintLayout    : 'androidx.constraintlayout:constraintlayout:2.0.0-beta3',
+            constraintLayout    : 'androidx.constraintlayout:constraintlayout:2.1.0',
             design              : 'com.google.android.material:material:1.0.0',
             rxJava2             : "io.reactivex.rxjava2:rxjava:2.2.14",
             rxKotlin2           : "io.reactivex.rxjava2:rxkotlin:2.4.0",
