@@ -16,8 +16,10 @@ class WifiReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val action = intent?.action ?: return
         if (action == WifiManager.NETWORK_STATE_CHANGED_ACTION) {
-            val info: NetworkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO)
-            isWifiConnected.postValue(SingleEvent(event = info.isConnected))
+            val info: NetworkInfo? = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO)
+            info?.let {
+                isWifiConnected.postValue(SingleEvent(event = info.isConnected))
+            }
         }
     }
 
