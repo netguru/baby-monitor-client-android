@@ -17,12 +17,12 @@ ext {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.netguru.babyguard"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.5.0'
         vectorDrawables.useSupportLibrary = true
