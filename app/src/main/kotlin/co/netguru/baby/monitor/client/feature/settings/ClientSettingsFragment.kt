@@ -12,7 +12,6 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
@@ -38,13 +37,13 @@ class ClientSettingsFragment : BaseFragment() {
     lateinit var factory: ViewModelProvider.Factory
 
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ConfigurationViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ConfigurationViewModel::class.java]
     }
     private val settingsViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[SettingsViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[SettingsViewModel::class.java]
     }
     private val clientViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
     private val viewDisposables = CompositeDisposable()
 

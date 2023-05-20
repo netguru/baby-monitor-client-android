@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.setPadding
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.di.GlideApp
@@ -29,7 +28,7 @@ class ClientDashboardFragment : BaseFragment() {
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
     private val viewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -13,7 +13,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.YesNoDialog
@@ -42,10 +41,10 @@ class ChildMonitorFragment : BaseFragment(), ServiceConnection {
     override val screen: Screen = Screen.CHILD_MONITOR
 
     private val serverViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ServerViewModel::class.java]
     }
     private val childMonitorViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory).get(ChildMonitorViewModel::class.java)
+        ViewModelProvider(requireActivity(), factory).get(ChildMonitorViewModel::class.java)
     }
 
     @Inject

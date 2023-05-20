@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.di.GlideApp
@@ -36,11 +35,11 @@ class ClientHomeActivity : DaggerAppCompatActivity(),
     @Inject
     internal lateinit var factory: ViewModelProvider.Factory
     private val homeViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ClientHomeViewModel::class.java]
+        ViewModelProvider(this, factory)[ClientHomeViewModel::class.java]
     }
 
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
+        ViewModelProvider(this, factory)[ConfigurationViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

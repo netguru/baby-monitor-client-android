@@ -3,7 +3,6 @@ package co.netguru.baby.monitor.client.feature.client.home.log
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
@@ -24,7 +23,7 @@ class ClientActivityLogFragment : BaseFragment() {
 
     private val logAdapter by lazy { ActivityLogAdapter() }
     private val viewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

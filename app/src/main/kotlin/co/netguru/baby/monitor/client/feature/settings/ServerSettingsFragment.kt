@@ -7,7 +7,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
@@ -23,13 +22,13 @@ class ServerSettingsFragment : BaseFragment() {
     lateinit var factory: ViewModelProvider.Factory
 
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ConfigurationViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ConfigurationViewModel::class.java]
     }
     private val serverViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ServerViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ServerViewModel::class.java]
     }
     private val settingsViewModel by lazy {
-        ViewModelProviders.of(this, factory)[SettingsViewModel::class.java]
+        ViewModelProvider(this, factory)[SettingsViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

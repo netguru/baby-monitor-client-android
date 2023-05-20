@@ -9,7 +9,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +37,7 @@ class ServiceDiscoveryFragment : BaseFragment() {
     private var timeOutDisposable: Disposable? = null
     private var nsdServicesAdapter: NsdServicesAdapter? = null
     private val viewModel by lazy {
-        ViewModelProviders.of(this, factory)[ServiceDiscoveryViewModel::class.java]
+        ViewModelProvider(this, factory)[ServiceDiscoveryViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

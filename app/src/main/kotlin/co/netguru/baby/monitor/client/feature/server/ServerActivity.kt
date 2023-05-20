@@ -9,7 +9,6 @@ import android.os.IBinder
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.YesNoDialog
@@ -33,10 +32,10 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
     private var webSocketServerServiceBinder: WebSocketServerService.Binder? = null
 
     private val serverViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
+        ViewModelProvider(this, factory)[ServerViewModel::class.java]
     }
     private val configurationViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
+        ViewModelProvider(this, factory)[ConfigurationViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

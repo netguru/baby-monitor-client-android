@@ -11,7 +11,7 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.base.RtcMessa
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.ConnectionObserver
 import co.netguru.baby.monitor.client.feature.communication.webrtc.observers.DefaultSdpObserver
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -85,7 +85,7 @@ class RtcClient(
                         remoteAudioTrack = mediaStream.audioTracks[0]
                     }
                 } catch (e: Exception) {
-                    Crashlytics.logException(e)
+                    FirebaseCrashlytics.getInstance().recordException(e)
                 }
             }
         }

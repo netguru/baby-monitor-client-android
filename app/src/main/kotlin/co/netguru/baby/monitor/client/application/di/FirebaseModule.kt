@@ -5,6 +5,7 @@ import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPreferencesWrapper
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 import dagger.Module

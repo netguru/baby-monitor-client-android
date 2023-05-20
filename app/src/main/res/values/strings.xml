@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">BabyGuard</string>
     <string name="company_url">https://www.netguru.com/</string>
+    <string name="google_storage_bucket">stub</string>
 
     <string name="discovering_services_error">Error while discovering services</string>
     <string name="no_name">Your baby name</string>

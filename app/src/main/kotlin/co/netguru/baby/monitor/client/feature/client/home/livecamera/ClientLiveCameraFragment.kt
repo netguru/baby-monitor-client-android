@@ -6,7 +6,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
@@ -33,11 +32,11 @@ class ClientLiveCameraFragment : BaseFragment() {
     internal lateinit var factory: ViewModelProvider.Factory
 
     private val viewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
+        ViewModelProvider(requireActivity(), factory)[ClientHomeViewModel::class.java]
     }
 
     private val fragmentViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ClientLiveCameraFragmentViewModel::class.java]
+        ViewModelProvider(this, factory)[ClientLiveCameraFragmentViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

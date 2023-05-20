@@ -3,7 +3,6 @@ package co.netguru.baby.monitor.client.feature.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
@@ -19,7 +18,7 @@ class VoiceRecordingsSettingsFragment : BaseFragment() {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
 
-    private val viewModel by lazy { ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java] }
+    private val viewModel by lazy { ViewModelProvider(this, factory)[ConfigurationViewModel::class.java] }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
