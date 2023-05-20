@@ -1,6 +1,7 @@
 package co.netguru.baby.monitor.client.feature.debug
 
 import android.app.*
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -21,16 +22,18 @@ import javax.inject.Inject
 
 class DebugNotificationManager @Inject constructor(
     val notifyBabyEventUseCase: NotifyBabyEventUseCase,
-    val notifyLowBatteryUseCase: NotifyLowBatteryUseCase
+    val notifyLowBatteryUseCase: NotifyLowBatteryUseCase,
 ) {
 
     private val receiver = DebugNotificationReceiver()
     private val compositeDisposable = CompositeDisposable()
 
     fun show(service: Service) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createNotificationChannel(
-            service
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(
+                service,
+            )
+        }
         receiver.register(service)
         initBabyEventsSubscription()
         service.startForeground(DEBUG_NOTIFICATION_ID, createDebugNotification(service))
@@ -48,7 +51,7 @@ class DebugNotificationManager @Inject constructor(
         val channel = NotificationChannel(
             DEBUG_CHANNEL_ID,
             "Debug Channel",
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_DEFAULT,
         )
         val notificationManager =
             service.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -73,8 +76,8 @@ class DebugNotificationManager @Inject constructor(
                     service,
                     CRY_ACTION_REQUEST_CODE,
                     receiver.cryingBabyIntent(),
-                    NO_FLAGS
-                )
+                    FLAG_IMMUTABLE,
+                ),
             )
             .addAction(
                 NO_ICON,
@@ -83,8 +86,8 @@ class DebugNotificationManager @Inject constructor(
                     service,
                     LOW_BATTERY_ACTION_REQUEST_CODE,
                     receiver.lowBatteryIntent(),
-                    NO_FLAGS
-                )
+                    FLAG_IMMUTABLE,
+                ),
             )
             .addAction(
                 NO_ICON,
@@ -93,8 +96,8 @@ class DebugNotificationManager @Inject constructor(
                     service,
                     NOISE_ACTION_REQUEST_CODE,
                     receiver.noiseDetectedIntent(),
-                    NO_FLAGS
-                )
+                    FLAG_IMMUTABLE,
+                ),
             )
             .build()
 
@@ -108,7 +111,7 @@ class DebugNotificationManager @Inject constructor(
                 DebugNotificationAction.LOW_BATTERY -> {
                     notifyLowBatteryUseCase.notifyLowBattery(
                         context.getString(R.string.notification_low_battery_title),
-                        context.getString(R.string.notification_low_battery_text)
+                        context.getString(R.string.notification_low_battery_text),
                     )
                         .subscribeOn(Schedulers.io())
                         .subscribeBy(
@@ -117,7 +120,7 @@ class DebugNotificationManager @Inject constructor(
                             },
                             onError = { error ->
                                 Timber.i(error, "Couldn't notify about low battery.")
-                            }
+                            },
                         )
                 }
             }
@@ -145,7 +148,7 @@ class DebugNotificationManager @Inject constructor(
     private enum class DebugNotificationAction {
         BABY_CRYING,
         LOW_BATTERY,
-        NOISE_DETECTED
+        NOISE_DETECTED,
     }
 
     companion object {
@@ -154,7 +157,6 @@ class DebugNotificationManager @Inject constructor(
             "co.netguru.baby.KEY_DEBUG_NOTIFICATION_EXTRA"
         private const val DEBUG_NOTIFICATION_ID = 987
         private const val NO_ICON = 0
-        private const val NO_FLAGS = 0
         private const val CRY_ACTION_REQUEST_CODE = 1
         private const val LOW_BATTERY_ACTION_REQUEST_CODE = 2
         private const val NOISE_ACTION_REQUEST_CODE = 3
