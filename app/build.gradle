@@ -1,22 +1,20 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'com.vanniktech.android.junit.jacoco'
-apply plugin: 'io.fabric'
+//apply plugin: 'com.vanniktech.android.junit.jacoco'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 ext {
-
     secrets = [
             firebaseCloudMessagingServerKey: keyProperty("FIREBASE_CLOUD_MESSAGING_SERVER_KEY")
     ]
 }
 
 android {
+    namespace 'co.netguru.baby.monitor.client'
     compileSdkVersion 33
     buildToolsVersion "29.0.2"
     defaultConfig {
@@ -30,6 +28,10 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -87,28 +89,28 @@ android {
     sourceSets.all {
         it.java.srcDir "src/$it.name/kotlin"
     }
-    junitJacoco {
-        jacocoVersion = '0.8.2'
-        excludes = ['android/databinding/**/*.class',
-                    '**/android/databinding/*Binding.class',
-                    '**/BR.*',
-                    '**/R.class',
-                    '**/R$*.class',
-                    '**/BuildConfig.*',
-                    '**/Manifest*.*',
-                    '**/*$ViewInjector*.*',
-                    '**/*$ViewBinder*.*',
-                    '**/*_MembersInjector.class',
-                    '**/Dagger*Component.class',
-                    '**/Dagger*Component$Builder.class',
-                    '**/*Module_*Factory.class',
-                    '**/AutoValue_*.*',
-                    '**/*JavascriptBridge.class',
-                    '**/Lambda$*.class',
-                    '**/Lambda.class',
-                    '**/*Lambda.class',
-                    '**/*Lambda*.class']
-    }
+//    junitJacoco {
+//        jacocoVersion = '0.8.10'
+//        excludes = ['android/databinding/**/*.class',
+//                    '**/android/databinding/*Binding.class',
+//                    '**/BR.*',
+//                    '**/R.class',
+//                    '**/R$*.class',
+//                    '**/BuildConfig.*',
+//                    '**/Manifest*.*',
+//                    '**/*$ViewInjector*.*',
+//                    '**/*$ViewBinder*.*',
+//                    '**/*_MembersInjector.class',
+//                    '**/Dagger*Component.class',
+//                    '**/Dagger*Component$Builder.class',
+//                    '**/*Module_*Factory.class',
+//                    '**/AutoValue_*.*',
+//                    '**/*JavascriptBridge.class',
+//                    '**/Lambda$*.class',
+//                    '**/Lambda.class',
+//                    '**/*Lambda.class',
+//                    '**/*Lambda*.class']
+//    }
     lintOptions {
         abortOnError false
     }
@@ -116,6 +118,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    viewBinding {
+        enabled = true
+    }
+
+   /* androidExtensions {
+        experimental = true
+    }*/
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -128,9 +137,6 @@ kapt {
     correctErrorTypes = true
 }
 
-androidExtensions {
-    experimental = true
-}
 
 configurations {
     dependencyUpdates.resolutionStrategy = {
