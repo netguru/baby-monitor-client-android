@@ -1,106 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@color/background">
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@color/background"
+        >
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalTopImageAGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.18" />
+            android:id="@+id/horizontalTopImageAGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.18"
+            />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/featureAIv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/horizontalBottomImageAGl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/horizontalTopImageAGl"
-        app:srcCompat="@drawable/feature_a" />
+            android:id="@+id/featureAIv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/horizontalBottomImageAGl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/horizontalTopImageAGl"
+            app:srcCompat="@drawable/feature_a"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalBottomImageAGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.53" />
+            android:id="@+id/horizontalBottomImageAGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.53"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalTop1TextAGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
+            android:id="@+id/horizontalTop1TextAGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.6"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/featureATv1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_bold"
-        android:gravity="center"
-        android:text="@string/feature_a_text_1"
-        android:textColor="@color/white"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/horizontalBottom1TextAGl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/horizontalTop1TextAGl" />
+            android:id="@+id/featureATv1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_bold"
+            android:gravity="center"
+            android:text="@string/feature_a_text_1"
+            android:textColor="@color/white"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/horizontalBottom1TextAGl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/horizontalTop1TextAGl"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalBottom1TextAGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.684" />
+            android:id="@+id/horizontalBottom1TextAGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.684"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalTop2TextAGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.693" />
+            android:id="@+id/horizontalTop2TextAGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.693"
+            />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/presentationATv2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fontFamily="@font/rubik_regular"
-        android:gravity="center_horizontal"
-        android:text="@string/feature_a_text_2"
-        android:textColor="@color/accent"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="@+id/horizontalBottom2TextAGl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/horizontalTop2TextAGl" />
+            android:id="@+id/presentationATv2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/rubik_regular"
+            android:gravity="center_horizontal"
+            android:text="@string/feature_a_text_2"
+            android:textColor="@color/accent"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="@+id/horizontalBottom2TextAGl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/horizontalTop2TextAGl"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalBottom2TextAGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.742" />
+            android:id="@+id/horizontalBottom2TextAGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.742"
+            />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/presentationAIndicatorTopGl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.846" />
+            android:id="@+id/presentationAIndicatorTopGl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.846"
+            />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/presentationAIndicatorTopGl"
-        app:srcCompat="@drawable/feature_a_indicator" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/presentationAIndicatorTopGl"
+            app:srcCompat="@drawable/feature_a_indicator"
+            />
 
-    <include layout="@layout/onboarding_buttons" />
+    <include
+            android:id="@+id/onboarding_layout"
+            layout="@layout/onboarding_buttons"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
