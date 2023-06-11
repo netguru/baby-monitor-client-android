@@ -8,6 +8,7 @@ import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.base.ViewModelModule
 import co.netguru.baby.monitor.client.feature.babynotification.BabyEventActionIntentService
 import co.netguru.baby.monitor.client.feature.babynotification.BabyMonitorMessagingService
+import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.feature.communication.pairing.ServiceDiscoveryFragment
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
@@ -44,6 +45,7 @@ internal interface AppComponent {
     fun inject(app: App)
 
     fun inject(serverActivity: ServerActivity)
+    fun inject(clientHomeActivity: ClientHomeActivity)
 
     fun inject(webSocketServerService: WebSocketServerService)
     fun inject(service: VoiceAnalysisService)

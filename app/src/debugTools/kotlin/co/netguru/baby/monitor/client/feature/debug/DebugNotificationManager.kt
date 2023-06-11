@@ -73,7 +73,7 @@ class DebugNotificationManager @Inject constructor(
                     service,
                     CRY_ACTION_REQUEST_CODE,
                     receiver.cryingBabyIntent(),
-                    NO_FLAGS
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
             .addAction(
@@ -83,7 +83,7 @@ class DebugNotificationManager @Inject constructor(
                     service,
                     LOW_BATTERY_ACTION_REQUEST_CODE,
                     receiver.lowBatteryIntent(),
-                    NO_FLAGS
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
             .addAction(
@@ -93,7 +93,7 @@ class DebugNotificationManager @Inject constructor(
                     service,
                     NOISE_ACTION_REQUEST_CODE,
                     receiver.noiseDetectedIntent(),
-                    NO_FLAGS
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
             .build()
@@ -123,7 +123,7 @@ class DebugNotificationManager @Inject constructor(
             }
         }
 
-        internal fun register(context: Context) {
+        fun register(context: Context) {
             context.registerReceiver(this, IntentFilter(ACTION_DEBUG_NOTIFICATION))
         }
 
@@ -132,13 +132,13 @@ class DebugNotificationManager @Inject constructor(
                 putExtra(KEY_DEBUG_NOTIFICATION_EXTRA, action)
             }
 
-        internal fun cryingBabyIntent() =
+        fun cryingBabyIntent() =
             intent(DebugNotificationAction.BABY_CRYING)
 
-        internal fun lowBatteryIntent() =
+        fun lowBatteryIntent() =
             intent(DebugNotificationAction.LOW_BATTERY)
 
-        internal fun noiseDetectedIntent() =
+        fun noiseDetectedIntent() =
             intent(DebugNotificationAction.NOISE_DETECTED)
     }
 
@@ -154,7 +154,6 @@ class DebugNotificationManager @Inject constructor(
             "co.netguru.baby.KEY_DEBUG_NOTIFICATION_EXTRA"
         private const val DEBUG_NOTIFICATION_ID = 987
         private const val NO_ICON = 0
-        private const val NO_FLAGS = 0
         private const val CRY_ACTION_REQUEST_CODE = 1
         private const val LOW_BATTERY_ACTION_REQUEST_CODE = 2
         private const val NOISE_ACTION_REQUEST_CODE = 3

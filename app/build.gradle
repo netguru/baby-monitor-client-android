@@ -33,6 +33,9 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    viewBinding {
+        enabled = true
+    }
 
     buildTypes {
         debug {
@@ -241,7 +244,7 @@ dependencies {
 
     //Firebase Analytics
     implementation libs.firebaseAnalytics
-    implementation libs.crashlytics
+//    implementation libs.crashlytics
     implementation libs.firebasePerformance
 
     implementation libs.deviceNames

@@ -7,8 +7,7 @@ import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 
-class PermissionCameraFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_camera_permission
+class PermissionCameraFragment : BaseFragment(R.layout.fragment_camera_permission) {
     override val screen: Screen = Screen.PERMISSION_CAMERA
 
     override fun onResume() {

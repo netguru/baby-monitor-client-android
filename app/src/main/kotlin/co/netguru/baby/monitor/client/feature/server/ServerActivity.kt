@@ -6,42 +6,47 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.extensions.controlVideoStreamVolume
+import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.databinding.ActivityServerBinding
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
 import co.netguru.baby.monitor.client.feature.onboarding.OnboardingActivity
-import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import co.netguru.baby.monitor.client.feature.settings.ChangeState
-import dagger.android.support.DaggerAppCompatActivity
+import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.activity_server.*
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Provider
 
-class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
+class ServerActivity : AppCompatActivity(), ServiceConnection,
     YesNoDialog.YesNoDialogClickListener, MessageController {
-    @Inject
-    lateinit var factory: ViewModelProvider.Factory
+
     private var webSocketServerServiceBinder: WebSocketServerService.Binder? = null
 
-    private val serverViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ServerViewModel::class.java]
-    }
-    private val configurationViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ConfigurationViewModel::class.java]
-    }
+    private val serverViewModel by daggerViewModel { serverViewModelProvider }
+    private val configurationViewModel by daggerViewModel { configurationViewModelProvider }
 
+    @Inject
+    lateinit var serverViewModelProvider : Provider<ServerViewModel>
+
+    @Inject
+    lateinit var configurationViewModelProvider : Provider<ConfigurationViewModel>
+
+    private lateinit var binding : ActivityServerBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_server)
+
+        appComponent.inject(this)
+        binding = ActivityServerBinding.inflate(layoutInflater)
         controlVideoStreamVolume()
         setupObservers()
         bindService(
@@ -49,12 +54,14 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
             this,
             Service.BIND_AUTO_CREATE
         )
+        setContentView(binding.root)
     }
 
     private fun setupObservers() {
         configurationViewModel.resetState.observe(this, Observer { resetState ->
             when (resetState) {
                 is ChangeState.Completed -> handleAppReset()
+                else -> {}
             }
         })
 
@@ -67,10 +74,12 @@ class ServerActivity : DaggerAppCompatActivity(), ServiceConnection,
         })
 
         serverViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
-            if (shouldClose) {
-                server_drawer.openDrawer(GravityCompat.END)
-            } else {
-                server_drawer.closeDrawer(GravityCompat.END)
+            with(binding) {
+                if (shouldClose) {
+                    serverDrawer.openDrawer(GravityCompat.END)
+                } else {
+                    serverDrawer.closeDrawer(GravityCompat.END)
+                }
             }
         })
     }

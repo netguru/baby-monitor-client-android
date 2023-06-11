@@ -39,7 +39,7 @@ class NotificationHandler(private val context: Context) {
                         service,
                         0,
                         Intent(service, ServerActivity::class.java).singleTop(),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                 )
                 .build()
@@ -140,7 +140,7 @@ class NotificationHandler(private val context: Context) {
                 Intent(context, BabyEventActionIntentService::class.java).apply {
                     this.action = action
                 },
-                0
+                PendingIntent.FLAG_IMMUTABLE
             )
         }
     }

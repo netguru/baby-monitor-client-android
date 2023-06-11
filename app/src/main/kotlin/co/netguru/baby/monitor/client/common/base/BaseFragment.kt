@@ -1,25 +1,24 @@
 package co.netguru.baby.monitor.client.common.base
 
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.analytics.Screen
-import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-abstract class BaseFragment : DaggerFragment(), AnalyticScreen {
-    abstract val layoutResource: Int
+abstract class BaseFragment(layoutResource: Int) : Fragment(layoutResource), AnalyticScreen {
     override val screen: Screen? = null
 
     @Inject
     lateinit var analyticsManager: AnalyticsManager
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ) = inflater.inflate(layoutResource, container, false)
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        appComponent.inject(this)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         screen?.run {

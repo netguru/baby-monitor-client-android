@@ -1,24 +1,35 @@
 package co.netguru.baby.monitor.client.feature.onboarding
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.databinding.FragmentSpecifyDeviceBinding
 import co.netguru.baby.monitor.client.feature.analytics.Screen
-import kotlinx.android.synthetic.main.fragment_specify_device.*
 
-class SpecifyDeviceFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_specify_device
+class SpecifyDeviceFragment : BaseFragment(R.layout.fragment_specify_device) {
     override val screen: Screen = Screen.SPECIFY_DEVICE
-
+    private lateinit var binding : FragmentSpecifyDeviceBinding
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSpecifyDeviceBinding.inflate(layoutInflater)
+        return binding.root
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        babyCtl.setOnClickListener {
-            findNavController().navigate(R.id.specifyDeviceToFeatureD)
-        }
-        parentCtl.setOnClickListener {
-            findNavController().navigate(R.id.specifyDeviceToParentDeviceInfo)
+        with(binding) {
+            babyCtl.setOnClickListener {
+                findNavController().navigate(R.id.specifyDeviceToFeatureD)
+            }
+            parentCtl.setOnClickListener {
+                findNavController().navigate(R.id.specifyDeviceToParentDeviceInfo)
+            }
         }
     }
 }
