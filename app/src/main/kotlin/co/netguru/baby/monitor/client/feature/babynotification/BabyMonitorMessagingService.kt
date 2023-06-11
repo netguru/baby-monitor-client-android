@@ -1,9 +1,13 @@
 package co.netguru.baby.monitor.client.feature.babynotification
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.client.ChildDataEntity
@@ -14,7 +18,6 @@ import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseNotif
 import co.netguru.baby.monitor.client.feature.firebasenotification.NotificationType
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -30,7 +33,7 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
     private val disposables = CompositeDisposable()
 
     override fun onCreate() {
-        AndroidInjection.inject(this)
+        appComponent.inject(this)
         super.onCreate()
     }
 
@@ -107,6 +110,13 @@ class BabyMonitorMessagingService : FirebaseMessagingService() {
         }
         NotificationHandler.createNotificationChannel(this)
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         NotificationManagerCompat.from(this).notify(
             CRYING_NOTIFICATION_ID,
             notificationHandler.createNotification(

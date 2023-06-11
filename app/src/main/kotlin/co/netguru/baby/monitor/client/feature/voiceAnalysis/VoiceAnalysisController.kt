@@ -67,6 +67,7 @@ class VoiceAnalysisController @Inject constructor(
                     when (it) {
                         is RecordingData.NoiseDetection -> handleRecordingData(it)
                         is RecordingData.MachineLearning -> handleRecordingData(it)
+                        is RecordingData.Raw -> {}
                     }
                 },
                 onError = Timber::e

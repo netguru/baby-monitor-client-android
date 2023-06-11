@@ -1,14 +1,15 @@
 package co.netguru.baby.monitor.client.application
 
-import co.netguru.baby.monitor.client.application.di.DaggerApplicationComponent
+import android.app.Application
+import co.netguru.baby.monitor.client.application.di.AppComponent
 import co.netguru.baby.monitor.client.application.firebase.FirebaseRepository
 import com.jakewharton.threetenabp.AndroidThreeTen
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
 import io.reactivex.plugins.RxJavaPlugins
 import javax.inject.Inject
 
-class App : DaggerApplication() {
+class App : Application() {
+
+    internal lateinit var appComponent: AppComponent
 
     @Inject
     lateinit var debugMetricsHelper: DebugMetricsHelper
@@ -21,12 +22,11 @@ class App : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        appComponent = AppComponent.create(this)
+        appComponent.inject(this)
         debugMetricsHelper.init()
         RxJavaPlugins.setErrorHandler(rxJavaErrorHandler)
         AndroidThreeTen.init(this)
         firebaseRepository.initializeApp(this)
     }
-
-    override fun applicationInjector(): AndroidInjector<App> =
-            DaggerApplicationComponent.builder().create(this)
 }

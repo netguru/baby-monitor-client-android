@@ -5,9 +5,9 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.NotificationHandler
 import co.netguru.baby.monitor.client.feature.babynotification.BabyMonitorMessagingService.Companion.CRYING_NOTIFICATION_ID
-import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class BabyEventActionIntentService : IntentService(NAME) {
 
     override fun onCreate() {
         super.onCreate()
-        AndroidInjection.inject(this)
+        appComponent.inject(this)
     }
 
     override fun onHandleIntent(intent: Intent?) {
