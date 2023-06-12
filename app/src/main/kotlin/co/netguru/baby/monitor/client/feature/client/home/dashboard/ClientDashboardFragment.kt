@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.view.setPadding
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.application.di.GlideApp
 import co.netguru.baby.monitor.client.common.PermissionResult
 import co.netguru.baby.monitor.client.common.PermissionUtils
@@ -34,6 +35,7 @@ class ClientDashboardFragment : BaseFragment(R.layout.fragment_client_dashboard)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appComponent.inject(this)
         binding = FragmentClientDashboardBinding.inflate(layoutInflater)
         viewModel.saveConfiguration()
     }

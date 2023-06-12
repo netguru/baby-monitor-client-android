@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.client.R
-import co.netguru.baby.monitor.client.application.App
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
@@ -47,7 +47,7 @@ class ClientLiveCameraFragment : BaseFragment(R.layout.fragment_client_live_came
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        (activity?.application as App).appComponent.inject(this)
+        appComponent.inject(this)
         binding = FragmentClientLiveCameraBinding.inflate(layoutInflater)
         return binding.root
     }

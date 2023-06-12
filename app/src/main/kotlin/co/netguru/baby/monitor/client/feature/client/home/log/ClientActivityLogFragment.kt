@@ -3,6 +3,7 @@ package co.netguru.baby.monitor.client.feature.client.home.log
 import android.os.Bundle
 import android.view.View
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
@@ -26,6 +27,7 @@ class ClientActivityLogFragment : BaseFragment(R.layout.fragment_client_activity
     private val viewModel by daggerViewModel { viewModelProvider }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appComponent.inject(this)
         binding = FragmentClientActivityLogBinding.inflate(layoutInflater)
         viewModel.toolbarState.postValue(ToolbarState.HISTORY)
     }

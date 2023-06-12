@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.databinding.FragmentPairingBinding
@@ -31,7 +32,7 @@ class PairingFragment : BaseFragment(R.layout.fragment_pairing) {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPairingBinding.inflate(layoutInflater)
-
+        appComponent.inject(this)
         return binding.root
     }
 

@@ -9,9 +9,13 @@ import co.netguru.baby.monitor.client.common.base.ViewModelModule
 import co.netguru.baby.monitor.client.feature.babynotification.BabyEventActionIntentService
 import co.netguru.baby.monitor.client.feature.babynotification.BabyMonitorMessagingService
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
+import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
+import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
+import co.netguru.baby.monitor.client.feature.communication.pairing.PairingFragment
 import co.netguru.baby.monitor.client.feature.communication.pairing.ServiceDiscoveryFragment
 import co.netguru.baby.monitor.client.feature.communication.webrtc.server.WebRtcService
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
+import co.netguru.baby.monitor.client.feature.onboarding.VoiceRecordingsSettingsFragment
 import co.netguru.baby.monitor.client.feature.onboarding.featurepresentation.FeaturePresentationFragment
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
@@ -59,6 +63,11 @@ internal interface AppComponent {
     fun inject(childMonitorFragment: ChildMonitorFragment)
     fun inject(serverSettingsFragment: ServerSettingsFragment)
     fun inject(serviceDiscoveryFragment: ServiceDiscoveryFragment)
+    fun inject(pairingFragment: PairingFragment)
+    fun inject(voiceRecordingsSettingsFragment: VoiceRecordingsSettingsFragment)
+    fun inject(clientDashboardFragment: ClientDashboardFragment)
+    fun inject(clientActivityLogFragment: ClientActivityLogFragment)
+
 
 
     @Component.Factory

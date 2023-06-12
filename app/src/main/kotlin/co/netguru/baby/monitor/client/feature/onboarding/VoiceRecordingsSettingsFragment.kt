@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.databinding.FragmentVoiceRecordingsSettingBinding
@@ -29,6 +30,7 @@ class VoiceRecordingsSettingsFragment : BaseFragment(R.layout.fragment_voice_rec
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentVoiceRecordingsSettingBinding.inflate(layoutInflater)
+        appComponent.inject(this)
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
