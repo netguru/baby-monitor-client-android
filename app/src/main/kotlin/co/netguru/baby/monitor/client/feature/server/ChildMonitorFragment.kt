@@ -22,7 +22,7 @@ import co.netguru.baby.monitor.client.common.YesNoDialog
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.bindService
-import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
@@ -46,9 +46,9 @@ class ChildMonitorFragment : BaseFragment(R.layout.fragment_child_monitor), Serv
 
     private lateinit var binding: FragmentChildMonitorBinding
 
-    private val serverViewModel: ServerViewModel by daggerViewModel { serverViewModelProvider }
+    private val serverViewModel: ServerViewModel by daggerParentActivityViewModel { serverViewModelProvider }
 
-    private val childMonitorViewModel: ChildMonitorViewModel by daggerViewModel { childMonitorViewModelProvider }
+    private val childMonitorViewModel: ChildMonitorViewModel by daggerParentActivityViewModel { childMonitorViewModelProvider }
 
     @Inject
     lateinit var serverViewModelProvider: Provider<ServerViewModel>

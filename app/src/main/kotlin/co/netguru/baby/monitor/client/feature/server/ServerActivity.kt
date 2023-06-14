@@ -44,7 +44,6 @@ class ServerActivity : AppCompatActivity(), ServiceConnection,
     private lateinit var binding : ActivityServerBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         appComponent.inject(this)
         binding = ActivityServerBinding.inflate(layoutInflater)
         controlVideoStreamVolume()
@@ -54,6 +53,15 @@ class ServerActivity : AppCompatActivity(), ServiceConnection,
             this,
             Service.BIND_AUTO_CREATE
         )
+        serverViewModel.shouldDrawerBeOpen.observe(this, Observer { shouldClose ->
+            with(binding) {
+                if (shouldClose) {
+                    serverDrawer.openDrawer(GravityCompat.END)
+                } else {
+                    serverDrawer.closeDrawer(GravityCompat.END)
+                }
+            }
+        })
         setContentView(binding.root)
     }
 

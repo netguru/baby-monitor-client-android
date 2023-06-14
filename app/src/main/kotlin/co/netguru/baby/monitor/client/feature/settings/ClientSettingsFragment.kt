@@ -15,11 +15,12 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
 import co.netguru.baby.monitor.client.common.extensions.BITMAP_AUTO_SIZE
 import co.netguru.baby.monitor.client.common.extensions.allPermissionsGranted
 import co.netguru.baby.monitor.client.common.extensions.babyProfileImage
-import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
 import co.netguru.baby.monitor.client.common.extensions.startAppSettings
@@ -41,9 +42,9 @@ import javax.inject.Provider
 class ClientSettingsFragment : BaseFragment(R.layout.fragment_client_settings) {
     private lateinit var binding: FragmentClientSettingsBinding
 
-    private val configurationViewModel by daggerViewModel { configurationViewModelProvider }
-    private val settingsViewModel by daggerViewModel { settingsViewModelProvider }
-    private val clientViewModel by daggerViewModel { clientViewModelProvider }
+    private val configurationViewModel by daggerParentActivityViewModel { configurationViewModelProvider }
+    private val settingsViewModel by daggerParentActivityViewModel { settingsViewModelProvider }
+    private val clientViewModel by daggerParentActivityViewModel { clientViewModelProvider }
 
     @Inject
     lateinit var configurationViewModelProvider : Provider<ConfigurationViewModel>
@@ -62,6 +63,7 @@ class ClientSettingsFragment : BaseFragment(R.layout.fragment_client_settings) {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentClientSettingsBinding.inflate(layoutInflater)
+        appComponent.inject(this)
         return binding.root
     }
 

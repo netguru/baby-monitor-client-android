@@ -5,7 +5,7 @@ import android.view.View
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.common.extensions.setVisible
 import co.netguru.baby.monitor.client.common.view.StickyHeaderDecorator
@@ -24,7 +24,7 @@ class ClientActivityLogFragment : BaseFragment(R.layout.fragment_client_activity
     internal lateinit var viewModelProvider: Provider<ClientHomeViewModel>
 
     private val logAdapter by lazy { ActivityLogAdapter() }
-    private val viewModel by daggerViewModel { viewModelProvider }
+    private val viewModel by daggerParentActivityViewModel { viewModelProvider }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.inject(this)

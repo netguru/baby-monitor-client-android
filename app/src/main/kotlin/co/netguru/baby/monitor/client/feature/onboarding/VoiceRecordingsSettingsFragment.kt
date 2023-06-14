@@ -8,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.databinding.FragmentVoiceRecordingsSettingBinding
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.settings.ConfigurationViewModel
@@ -22,7 +22,7 @@ class VoiceRecordingsSettingsFragment : BaseFragment(R.layout.fragment_voice_rec
     @Inject
     lateinit var viewModelProvider : Provider<ConfigurationViewModel>
 
-    private val viewModel by daggerViewModel { viewModelProvider }
+    private val viewModel by daggerParentActivityViewModel { viewModelProvider }
 
     override fun onCreateView(
         inflater: LayoutInflater,

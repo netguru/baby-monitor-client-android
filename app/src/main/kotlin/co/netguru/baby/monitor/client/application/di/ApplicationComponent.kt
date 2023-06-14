@@ -10,6 +10,7 @@ import co.netguru.baby.monitor.client.feature.babynotification.BabyEventActionIn
 import co.netguru.baby.monitor.client.feature.babynotification.BabyMonitorMessagingService
 import co.netguru.baby.monitor.client.feature.client.home.ClientHomeActivity
 import co.netguru.baby.monitor.client.feature.client.home.dashboard.ClientDashboardFragment
+import co.netguru.baby.monitor.client.feature.client.home.livecamera.ClientLiveCameraFragment
 import co.netguru.baby.monitor.client.feature.client.home.log.ClientActivityLogFragment
 import co.netguru.baby.monitor.client.feature.communication.pairing.PairingFragment
 import co.netguru.baby.monitor.client.feature.communication.pairing.ServiceDiscoveryFragment
@@ -19,6 +20,7 @@ import co.netguru.baby.monitor.client.feature.onboarding.VoiceRecordingsSettings
 import co.netguru.baby.monitor.client.feature.onboarding.featurepresentation.FeaturePresentationFragment
 import co.netguru.baby.monitor.client.feature.server.ChildMonitorFragment
 import co.netguru.baby.monitor.client.feature.server.ServerActivity
+import co.netguru.baby.monitor.client.feature.settings.ClientSettingsFragment
 import co.netguru.baby.monitor.client.feature.settings.ServerSettingsFragment
 import co.netguru.baby.monitor.client.feature.splash.SplashFragment
 import co.netguru.baby.monitor.client.feature.voiceAnalysis.VoiceAnalysisService
@@ -67,6 +69,8 @@ internal interface AppComponent {
     fun inject(voiceRecordingsSettingsFragment: VoiceRecordingsSettingsFragment)
     fun inject(clientDashboardFragment: ClientDashboardFragment)
     fun inject(clientActivityLogFragment: ClientActivityLogFragment)
+    fun inject(clientSettingsFragment: ClientSettingsFragment)
+    fun inject(clientLiveCameraFragment: ClientLiveCameraFragment)
 
 
 

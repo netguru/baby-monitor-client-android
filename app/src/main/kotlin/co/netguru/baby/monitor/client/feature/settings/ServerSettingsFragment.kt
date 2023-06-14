@@ -13,7 +13,7 @@ import co.netguru.baby.monitor.client.BuildConfig
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.databinding.FragmentServerSettingsBinding
 import co.netguru.baby.monitor.client.feature.communication.websocket.MessageController
 import co.netguru.baby.monitor.client.feature.server.ServerViewModel
@@ -26,9 +26,9 @@ class ServerSettingsFragment : BaseFragment(R.layout.fragment_server_settings) {
 
     private lateinit var binding: FragmentServerSettingsBinding
 
-    private val configurationViewModel : ConfigurationViewModel by daggerViewModel { configurationViewModelProvider  }
-    private val serverViewModel : ServerViewModel by daggerViewModel { serverViewModelProvider }
-    private val settingsViewModel : SettingsViewModel by daggerViewModel { settingsViegModelProvider }
+    private val configurationViewModel : ConfigurationViewModel by daggerParentActivityViewModel { configurationViewModelProvider  }
+    private val serverViewModel : ServerViewModel by daggerParentActivityViewModel { serverViewModelProvider }
+    private val settingsViewModel : SettingsViewModel by daggerParentActivityViewModel { settingsViegModelProvider }
 
     @Inject
     lateinit var configurationViewModelProvider : Provider<ConfigurationViewModel>

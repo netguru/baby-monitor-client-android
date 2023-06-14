@@ -2,7 +2,9 @@ package co.netguru.baby.monitor.client.feature.client.home.dashboard
 
 import android.Manifest
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.setPadding
 import androidx.navigation.fragment.findNavController
@@ -12,7 +14,7 @@ import co.netguru.baby.monitor.client.application.di.GlideApp
 import co.netguru.baby.monitor.client.common.PermissionResult
 import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
-import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.common.extensions.getColor
 import co.netguru.baby.monitor.client.common.extensions.observeNonNull
 import co.netguru.baby.monitor.client.databinding.FragmentClientDashboardBinding
@@ -28,7 +30,7 @@ class ClientDashboardFragment : BaseFragment(R.layout.fragment_client_dashboard)
     override val screen: Screen = Screen.CLIENT_DASHBOARD
     private lateinit var binding: FragmentClientDashboardBinding
 
-    private val viewModel by daggerViewModel { viewModelProvider }
+    private val viewModel by daggerParentActivityViewModel { viewModelProvider }
 
     @Inject
     lateinit var viewModelProvider : Provider<ClientHomeViewModel>
@@ -36,8 +38,16 @@ class ClientDashboardFragment : BaseFragment(R.layout.fragment_client_dashboard)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.inject(this)
-        binding = FragmentClientDashboardBinding.inflate(layoutInflater)
         viewModel.saveConfiguration()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentClientDashboardBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

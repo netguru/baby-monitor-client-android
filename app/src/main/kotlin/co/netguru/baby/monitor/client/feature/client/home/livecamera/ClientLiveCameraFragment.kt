@@ -11,6 +11,7 @@ import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
 import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.common.extensions.scaleAnimation
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
@@ -32,7 +33,7 @@ class ClientLiveCameraFragment : BaseFragment(R.layout.fragment_client_live_came
     override val screen: Screen = Screen.CLIENT_LIVE_CAMERA
     private lateinit var binding : FragmentClientLiveCameraBinding
 
-    private val viewModel by daggerViewModel { viewModelProvider }
+    private val viewModel by daggerParentActivityViewModel { viewModelProvider }
 
     private val fragmentViewModel by daggerViewModel { fragmentViewModelProvider }
 
