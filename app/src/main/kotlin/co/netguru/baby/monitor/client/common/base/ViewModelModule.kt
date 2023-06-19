@@ -101,8 +101,12 @@ internal class ViewModelModule {
     ): ChildMonitorViewModel = ChildMonitorViewModel(notifyLowBatteryUseCase, analyticsManager)
 
     @Provides
-    fun providePairingViewModel(pairingUseCase: PairingUseCase,randomiser: Randomiser) : PairingViewModel = PairingViewModel(pairingUseCase, randomiser)
+    fun providePairingViewModel(
+        pairingUseCase: PairingUseCase,
+        randomiser: Randomiser
+    ): PairingViewModel = PairingViewModel(pairingUseCase, randomiser)
 
     @Provides
-    fun provideServiceDiscoveryViewModel(nsdServiceManager: NsdServiceManager) : ServiceDiscoveryViewModel = ServiceDiscoveryViewModel(nsdServiceManager)
+    fun provideServiceDiscoveryViewModel(nsdServiceManager: NsdServiceManager): ServiceDiscoveryViewModel =
+        ServiceDiscoveryViewModel(nsdServiceManager)
 }

@@ -37,8 +37,6 @@ import javax.inject.Singleton
         AndroidSupportInjectionModule::class,
         ApplicationModule::class,
         ViewModelModule::class,
-        ActivityBindingsModule::class,
-        ServiceBindingsModule::class,
         SharedPreferencesModule::class,
         NotificationsModule::class,
         FirebaseModule::class,
@@ -59,9 +57,9 @@ internal interface AppComponent {
     fun inject(babyMonitorMessagingService: BabyMonitorMessagingService)
     fun inject(babyEventActionIntentService: BabyEventActionIntentService)
 
+    fun inject(baseFragment: BaseFragment)
     fun inject(splashFragment: SplashFragment)
     fun inject(featurePresentationFragment: FeaturePresentationFragment)
-    fun inject(baseFragment: BaseFragment)
     fun inject(childMonitorFragment: ChildMonitorFragment)
     fun inject(serverSettingsFragment: ServerSettingsFragment)
     fun inject(serviceDiscoveryFragment: ServiceDiscoveryFragment)
@@ -71,8 +69,6 @@ internal interface AppComponent {
     fun inject(clientActivityLogFragment: ClientActivityLogFragment)
     fun inject(clientSettingsFragment: ClientSettingsFragment)
     fun inject(clientLiveCameraFragment: ClientLiveCameraFragment)
-
-
 
     @Component.Factory
     interface Factory {
