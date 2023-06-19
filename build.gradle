@@ -13,13 +13,13 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.1'
+        classpath 'com.android.tools.build:gradle:8.0.2'
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:3.1.0"
         classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.25.0'
         classpath 'com.google.gms:google-services:4.3.15'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
         classpath 'com.google.firebase:perf-plugin:1.4.2'
     }
 }

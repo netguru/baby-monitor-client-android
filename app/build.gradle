@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.google.firebase.crashlytics'
 //apply plugin: 'com.vanniktech.android.junit.jacoco'
 apply plugin: 'com.google.firebase.firebase-perf'
 
@@ -124,10 +125,6 @@ android {
     viewBinding {
         enabled = true
     }
-
-   /* androidExtensions {
-        experimental = true
-    }*/
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -243,9 +240,9 @@ dependencies {
     implementation libs.okHttp
 
     //Firebase Analytics
-    implementation libs.firebaseAnalytics
-//    implementation libs.crashlytics
-    implementation libs.firebasePerformance
+    implementation platform(libs.firebaseBom)
+    implementation libs.firebaseAnalythics
+    implementation libs.firebaseCrashlytics
 
     implementation libs.deviceNames
 

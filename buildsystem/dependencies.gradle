@@ -9,6 +9,7 @@ ext {
     roomVersion = '2.2.1'
     navigationVersion = '2.1.0'
 
+
     libs = [
             kotlin              : "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
             ankoCommons         : "org.jetbrains.anko:anko-commons:$ankoVersion",
@@ -37,21 +38,19 @@ ext {
             googleWebRtc        : 'org.webrtc:google-webrtc:1.0.30039',
             room                : "androidx.room:room-runtime:$roomVersion",
             roomRx              : "androidx.room:room-rxjava2:$roomVersion",
-            firebaseStorage     : 'com.google.firebase:firebase-storage:19.1.0',
-            firebaseAuth        : 'com.google.firebase:firebase-auth:19.1.0',
-            firebaseDatabase    : 'com.google.firebase:firebase-database:19.2.0',
-            firebaseMessaging   : 'com.google.firebase:firebase-messaging:20.0.1',
-            firebaseAnalytics   : 'com.google.firebase:firebase-analytics:17.2.1',
-            firebasePerformance : 'com.google.firebase:firebase-perf:19.0.4',
-       //     crashlytics         : 'com.crashlytics.sdk.android:crashlytics:2.10.1',
+            firebaseBom         : 'com.google.firebase:firebase-bom:32.1.1',
+            firebaseStorage     : 'com.google.firebase:firebase-storage-ktx',
+            firebaseDatabase    : 'com.google.firebase:firebase-database-ktx',
+            firebaseMessaging   : 'com.google.firebase:firebase-messaging-ktx',
+            firebaseCrashlytics : 'com.google.firebase:firebase-crashlytics-ktx',
+            firebaseAnalythics  : 'com.google.firebase:firebase-analytics-ktx',
             okHttp              : "com.squareup.okhttp3:okhttp:$okHttpVersion",
             deviceNames         : "com.jaredrummler:android-device-names:1.1.9"
     ]
-
     ktx = [
-            core                 : 'androidx.core:core-ktx:1.1.0',
-            fragment             : 'androidx.fragment:fragment-ktx:1.1.0',
-            liveData             : "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion",
+            core    : 'androidx.core:core-ktx:1.1.0',
+            fragment: 'androidx.fragment:fragment-ktx:1.1.0',
+            liveData: "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion",
     ]
 
     proc = [
