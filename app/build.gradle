@@ -5,7 +5,6 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.google.firebase.crashlytics'
-//apply plugin: 'com.vanniktech.android.junit.jacoco'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 ext {
@@ -93,28 +92,6 @@ android {
     sourceSets.all {
         it.java.srcDir "src/$it.name/kotlin"
     }
-//    junitJacoco {
-//        jacocoVersion = '0.8.10'
-//        excludes = ['android/databinding/**/*.class',
-//                    '**/android/databinding/*Binding.class',
-//                    '**/BR.*',
-//                    '**/R.class',
-//                    '**/R$*.class',
-//                    '**/BuildConfig.*',
-//                    '**/Manifest*.*',
-//                    '**/*$ViewInjector*.*',
-//                    '**/*$ViewBinder*.*',
-//                    '**/*_MembersInjector.class',
-//                    '**/Dagger*Component.class',
-//                    '**/Dagger*Component$Builder.class',
-//                    '**/*Module_*Factory.class',
-//                    '**/AutoValue_*.*',
-//                    '**/*JavascriptBridge.class',
-//                    '**/Lambda$*.class',
-//                    '**/Lambda.class',
-//                    '**/*Lambda.class',
-//                    '**/*Lambda*.class']
-//    }
     lintOptions {
         abortOnError false
     }
