@@ -6,7 +6,6 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
         mavenCentral()
         mavenLocal()
         maven { url "https://plugins.gradle.org/m2/" }
@@ -24,11 +23,11 @@ buildscript {
 }
 
 plugins {
-    id "io.gitlab.arturbosch.detekt" version "1.1.1"
+    id "io.gitlab.arturbosch.detekt" version "1.23.0"
 }
 
 dependencies {
-    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.23.0"
 }
 
 tasks.register('detektAll', io.gitlab.arturbosch.detekt.Detekt) {
@@ -50,7 +49,6 @@ tasks.register('detektAll', io.gitlab.arturbosch.detekt.Detekt) {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://clojars.org/repo/" }
