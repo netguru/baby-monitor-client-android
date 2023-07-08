@@ -131,6 +131,11 @@ configurations {
 }
 
 dependencies {
+
+    implementation 'com.google.firebase:firebase-perf:20.3.3'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
+
     //Kotlin
     implementation libs.kotlin
     implementation libs.constraintLayout
