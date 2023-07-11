@@ -30,22 +30,13 @@
     native <methods>;
 }
 
-# app compat-v7
--keep class android.support.v7.widget.SearchView { *; }
-
 # FragmentArgs
 -keep class com.hannesdorfmann.fragmentargs.** { *; }
-
-# Gson
--keep class sun.misc.Unsafe { *; }
 
 # retrofit
 -keepclasseswithmembers class * {
     @retrofit2.http.* <methods>;
 }
--dontnote retrofit2.Platform
--dontnote retrofit2.Platform$IOS$MainThreadExecutor
--dontwarn retrofit2.Platform$Java8
 -keepattributes Signature
 -keepattributes Exceptions
 
@@ -79,7 +70,6 @@
 
 # glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.AppGlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
@@ -103,3 +93,12 @@
 
 #Firebase Database
 -keep class co.netguru.baby.monitor.client.data.communication.firebase.** { *; }
+
+#Navigation component classes
+-keep class androidx.navigation.** { *; }
+
+#Navigation-related resources
+-keep class **.R$* {
+    <fields>;
+}
+

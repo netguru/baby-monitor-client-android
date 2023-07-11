@@ -8,7 +8,7 @@ import co.netguru.baby.monitor.client.databinding.ActivityOnboardingBinding
 
 class OnboardingActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityOnboardingBinding
+    private lateinit var binding: ActivityOnboardingBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
@@ -16,18 +16,26 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        val controller = findNavController(R.id.onboardingNavigationHostFragment).currentDestination?.id
+        val controller =
+            findNavController(R.id.onboardingNavigationHostFragment).currentDestination?.id
                 ?: 0
         if (controller == R.id.permissionMicrophone || controller == R.id.permissionMicrophone ||
-            controller == R.id.setupInformation) {
-            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.connectWiFi, false)
+            controller == R.id.setupInformation
+        ) {
+            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(
+                R.id.connectWiFi,
+                false
+            )
         } else if (controller == R.id.allDone) {
-            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.parentDeviceInfo, false)
+            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(
+                R.id.parentDeviceInfo,
+                false
+            )
         } else {
             super.onBackPressed()
         }
     }
 
     override fun onSupportNavigateUp() =
-            findNavController(R.id.onboardingNavigationHostFragment).navigateUp()
+        findNavController(R.id.onboardingNavigationHostFragment).navigateUp()
 }
