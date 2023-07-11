@@ -241,6 +241,7 @@ class ServerViewModel @Inject constructor(
         when (it) {
             RtcConnectionState.Connected -> handleCameraState(streamingEnabled = true)
             RtcConnectionState.Disconnected -> handleCameraState(streamingEnabled = false)
+            else -> {}
         }
     }
 

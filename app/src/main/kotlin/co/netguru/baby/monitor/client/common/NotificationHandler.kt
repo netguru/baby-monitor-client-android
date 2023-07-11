@@ -39,7 +39,7 @@ class NotificationHandler(private val context: Context) {
                         service,
                         0,
                         Intent(service, ServerActivity::class.java).singleTop(),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                 )
                 .build()
@@ -57,7 +57,7 @@ class NotificationHandler(private val context: Context) {
     ): Notification {
         val resultIntent = Intent(context, ClientHomeActivity::class.java).singleTop()
         val resultPendingIntent =
-            PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notificationBuilder =
             NotificationCompat.Builder(context, context.getString(R.string.notification_channel_id))
 
@@ -140,7 +140,7 @@ class NotificationHandler(private val context: Context) {
                 Intent(context, BabyEventActionIntentService::class.java).apply {
                     this.action = action
                 },
-                0
+                PendingIntent.FLAG_IMMUTABLE
             )
         }
     }

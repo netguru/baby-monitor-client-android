@@ -44,7 +44,7 @@
 
     <fragment
             android:id="@+id/onboarding"
-            android:name="co.netguru.baby.monitor.client.feature.onboarding.FeaturePresentationFragment"
+            android:name="co.netguru.baby.monitor.client.feature.onboarding.featurepresentation.FeaturePresentationFragment"
             android:label="Onboarding"
             tools:layout="@layout/fragment_feature_a"
             >

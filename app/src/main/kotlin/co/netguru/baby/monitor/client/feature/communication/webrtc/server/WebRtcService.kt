@@ -5,9 +5,9 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.feature.communication.websocket.Message
 import co.netguru.baby.monitor.client.feature.communication.websocket.WebSocketServerService
-import dagger.android.AndroidInjection
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -51,7 +51,7 @@ class WebRtcService : Service() {
 
     override fun onCreate() {
         Timber.i("onCreate()")
-        AndroidInjection.inject(this)
+        appComponent.inject(this)
         super.onCreate()
         bindService(
             Intent(applicationContext, WebSocketServerService::class.java),

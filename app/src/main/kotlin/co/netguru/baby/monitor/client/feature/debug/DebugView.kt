@@ -3,13 +3,14 @@ package co.netguru.baby.monitor.client.feature.debug
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.databinding.DebugViewBinding
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.debug_view.view.*
 
 class DebugView : LinearLayout {
     constructor(context: Context) : super(context)
@@ -20,12 +21,17 @@ class DebugView : LinearLayout {
         attributeSetId
     )
 
+    private var binding: DebugViewBinding
+
     private var disposable: Disposable? = null
 
     init {
         View.inflate(context, R.layout.debug_view, this).apply {
             orientation = VERTICAL
         }
+        val inflater = LayoutInflater.from(context)
+        binding = DebugViewBinding.inflate(inflater, this)
+
     }
 
     fun setDebugStateObservable(observable: Observable<DebugState>) {
@@ -42,10 +48,12 @@ class DebugView : LinearLayout {
 
     @SuppressLint("SetTextI18n")
     private fun setDebugState(debugState: DebugState) {
-        cryingProbability.text = "$CRYING_PROBABILITY_PREFIX ${debugState.cryingProbability}"
-        notificationInformation.text =
-            "$NOTIFICATION_INFORMATION_PREFIX ${debugState.notificationInformation}"
-        soundDecibels.text = "$SOUND_DECIBELS_PREFIX ${debugState.decibels}"
+        with(binding) {
+            cryingProbability.text = "$CRYING_PROBABILITY_PREFIX ${debugState.cryingProbability}"
+            notificationInformation.text =
+                "$NOTIFICATION_INFORMATION_PREFIX ${debugState.notificationInformation}"
+            soundDecibels.text = "$SOUND_DECIBELS_PREFIX ${debugState.decibels}"
+        }
     }
 
     companion object {

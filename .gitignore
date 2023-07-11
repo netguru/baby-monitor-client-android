@@ -81,7 +81,7 @@ crashlytics-build.properties
 fabric.properties
 
 # Firebase
-google-services.json
+app/google-services.json
 
 ### Temporary files
 

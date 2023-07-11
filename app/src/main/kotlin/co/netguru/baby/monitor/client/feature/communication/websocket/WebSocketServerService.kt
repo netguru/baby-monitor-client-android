@@ -2,12 +2,12 @@ package co.netguru.baby.monitor.client.feature.communication.websocket
 
 import android.app.Service
 import android.content.Intent
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.data.DataRepository
 import co.netguru.baby.monitor.client.data.communication.websocket.ClientConnectionStatus
 import co.netguru.baby.monitor.client.feature.debug.DebugNotificationManager
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
-import dagger.android.AndroidInjection
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import org.java_websocket.WebSocket
@@ -31,8 +31,9 @@ class WebSocketServerService : Service() {
         Binder()
 
     override fun onCreate() {
-        AndroidInjection.inject(this)
         super.onCreate()
+
+        appComponent.inject(this)
         serverHandler = WebSocketServerHandler { ws, msg ->
             val message = try {
                 gson.fromJson(msg, Message::class.java)

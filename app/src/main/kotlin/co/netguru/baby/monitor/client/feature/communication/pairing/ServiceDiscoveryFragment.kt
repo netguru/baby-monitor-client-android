@@ -4,19 +4,22 @@ import android.content.Context
 import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.common.extensions.setDivider
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.databinding.FragmentConnectingDevicesBinding
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdServicesAdapter
 import co.netguru.baby.monitor.client.feature.communication.nsd.NsdState
@@ -24,21 +27,33 @@ import co.netguru.baby.monitor.client.feature.communication.nsd.ResolveFailedExc
 import co.netguru.baby.monitor.client.feature.communication.nsd.StartDiscoveryFailedException
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_connecting_devices.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Provider
 
-class ServiceDiscoveryFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_connecting_devices
+class ServiceDiscoveryFragment : BaseFragment(R.layout.fragment_connecting_devices) {
     override val screen: Screen = Screen.SERVICE_DISCOVERY
+    private lateinit var binding: FragmentConnectingDevicesBinding
+
+    private val viewModel by daggerViewModel { viewModelProvider }
 
     @Inject
-    internal lateinit var factory: ViewModelProvider.Factory
+    internal lateinit var viewModelProvider: Provider<ServiceDiscoveryViewModel>
 
     private var timeOutDisposable: Disposable? = null
     private var nsdServicesAdapter: NsdServicesAdapter? = null
-    private val viewModel by lazy {
-        ViewModelProviders.of(this, factory)[ServiceDiscoveryViewModel::class.java]
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        appComponent.inject(this)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentConnectingDevicesBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,7 +66,7 @@ class ServiceDiscoveryFragment : BaseFragment() {
     private fun setupAdapter() {
         nsdServicesAdapter =
             NsdServicesAdapter { nsdServiceInfo -> navigateToPairingFragment(nsdServiceInfo) }
-        recyclerView.apply {
+        binding.recyclerView.apply {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = nsdServicesAdapter
@@ -77,9 +92,10 @@ class ServiceDiscoveryFragment : BaseFragment() {
         when (nsdState) {
             is NsdState.Error -> handleNsdServiceError(nsdState.throwable)
             is NsdState.InProgress -> {
-                if (motionContainer.currentState != R.id.end) motionContainer.transitionToEnd()
+                if (binding.motionContainer.currentState != R.id.end) binding.motionContainer.transitionToEnd()
                 handleServices(nsdState.serviceInfoList)
             }
+
             is NsdState.Completed -> {
                 if (nsdState.serviceInfoList.isNotEmpty()) {
                     handleServices(nsdState.serviceInfoList)
@@ -88,6 +104,8 @@ class ServiceDiscoveryFragment : BaseFragment() {
                     navigateToFailedConnection()
                 }
             }
+
+            else -> {}
         }
     }
 
@@ -103,30 +121,34 @@ class ServiceDiscoveryFragment : BaseFragment() {
     }
 
     private fun setupCompleteViews() {
-        cancelRefreshButton.apply {
-            setOnClickListener {
-                discoverNsdService()
+        with(binding) {
+            cancelRefreshButton.apply {
+                setOnClickListener {
+                    discoverNsdService()
+                }
+                text = resources.getString(R.string.refresh_list)
             }
-            text = resources.getString(R.string.refresh_list)
-        }
-        backButton.apply {
-            isVisible = true
-            setOnClickListener {
-                findNavController().navigateUp()
+            backButton.apply {
+                isVisible = true
+                setOnClickListener {
+                    findNavController().navigateUp()
+                }
             }
+            progressBar.isVisible = false
         }
-        progressBar.isVisible = false
     }
 
     private fun setupInProgressViews() {
-        cancelRefreshButton.apply {
-            setOnClickListener {
-                goBackToSpecifyDevice()
+        with(binding) {
+            cancelRefreshButton.apply {
+                setOnClickListener {
+                    goBackToSpecifyDevice()
+                }
+                text = resources.getString(R.string.cancel)
             }
-            text = resources.getString(R.string.cancel)
+            backButton.isVisible = false
+            progressBar.isVisible = true
         }
-        backButton.isVisible = false
-        progressBar.isVisible = true
     }
 
     private fun handleServices(serviceInfoList: List<NsdServiceInfo>) {

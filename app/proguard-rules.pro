@@ -35,22 +35,13 @@
 # TODO 07.09.2017 or all their members should be annotated with @SerializedName().
 -keepclassmembernames class co.netguru.android.template.data.**.model.** { *; }
 
-# app compat-v7
--keep class android.support.v7.widget.SearchView { *; }
-
 # FragmentArgs
 -keep class com.hannesdorfmann.fragmentargs.** { *; }
-
-# Gson
--keep class sun.misc.Unsafe { *; }
 
 # retrofit
 -keepclasseswithmembers class * {
     @retrofit2.http.* <methods>;
 }
--dontnote retrofit2.Platform
--dontnote retrofit2.Platform$IOS$MainThreadExecutor
--dontwarn retrofit2.Platform$Java8
 -keepattributes Signature
 -keepattributes Exceptions
 
@@ -84,7 +75,6 @@
 
 # glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.AppGlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
@@ -116,3 +106,11 @@ public static ** valueOf(java.lang.String);
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
+
+#Navigation component classes
+-keep class androidx.navigation.** { *; }
+
+#Navigation-related resources
+-keep class **.R$* {
+    <fields>;
+}

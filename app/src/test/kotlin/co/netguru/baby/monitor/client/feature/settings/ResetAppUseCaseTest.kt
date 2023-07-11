@@ -69,7 +69,7 @@ class ResetAppUseCaseTest {
 
         resetAppUseCase.resetApp().subscribe()
 
-        verifyZeroInteractions(firebaseInstanceManager)
+        verifyNoMoreInteractions(firebaseInstanceManager)
     }
 
     @Test

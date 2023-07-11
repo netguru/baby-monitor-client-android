@@ -37,6 +37,7 @@ class PairingUseCase @Inject constructor(
                     is RxWebSocketClient.Event.Open, RxWebSocketClient.Event.Connected
                     -> sendPairingCode(pairingCode)
                     is RxWebSocketClient.Event.Message -> handleMessage(it, address)
+                    else -> {}
                 }
             }, onError = { mutablePairingCompletedState.postValue(false) })
     }

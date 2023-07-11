@@ -1,35 +1,40 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'com.vanniktech.android.junit.jacoco'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 ext {
-
     secrets = [
             firebaseCloudMessagingServerKey: keyProperty("FIREBASE_CLOUD_MESSAGING_SERVER_KEY")
     ]
 }
 
 android {
-    compileSdkVersion 29
+    namespace 'co.netguru.baby.monitor.client'
+    compileSdkVersion 33
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.netguru.babyguard"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.5.0'
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a'
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+    viewBinding {
+        enabled = true
     }
 
     buildTypes {
@@ -87,34 +92,15 @@ android {
     sourceSets.all {
         it.java.srcDir "src/$it.name/kotlin"
     }
-    junitJacoco {
-        jacocoVersion = '0.8.2'
-        excludes = ['android/databinding/**/*.class',
-                    '**/android/databinding/*Binding.class',
-                    '**/BR.*',
-                    '**/R.class',
-                    '**/R$*.class',
-                    '**/BuildConfig.*',
-                    '**/Manifest*.*',
-                    '**/*$ViewInjector*.*',
-                    '**/*$ViewBinder*.*',
-                    '**/*_MembersInjector.class',
-                    '**/Dagger*Component.class',
-                    '**/Dagger*Component$Builder.class',
-                    '**/*Module_*Factory.class',
-                    '**/AutoValue_*.*',
-                    '**/*JavascriptBridge.class',
-                    '**/Lambda$*.class',
-                    '**/Lambda.class',
-                    '**/*Lambda.class',
-                    '**/*Lambda*.class']
-    }
     lintOptions {
         abortOnError false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    viewBinding {
+        enabled = true
     }
 }
 
@@ -128,9 +114,6 @@ kapt {
     correctErrorTypes = true
 }
 
-androidExtensions {
-    experimental = true
-}
 
 configurations {
     dependencyUpdates.resolutionStrategy = {
@@ -148,6 +131,11 @@ configurations {
 }
 
 dependencies {
+
+    implementation 'com.google.firebase:firebase-perf:20.3.3'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
+
     //Kotlin
     implementation libs.kotlin
     implementation libs.constraintLayout
@@ -234,9 +222,9 @@ dependencies {
     implementation libs.okHttp
 
     //Firebase Analytics
-    implementation libs.firebaseAnalytics
-    implementation libs.crashlytics
-    implementation libs.firebasePerformance
+    implementation platform(libs.firebaseBom)
+    implementation libs.firebaseAnalythics
+    implementation libs.firebaseCrashlytics
 
     implementation libs.deviceNames
 

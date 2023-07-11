@@ -1,16 +1,13 @@
 package co.netguru.baby.monitor.client.feature.firebasenotification
 
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.Single
-import javax.inject.Inject
 
-class FirebaseInstanceManager @Inject constructor(
-    private val firebaseInstanceId: FirebaseInstanceId
-) {
+class FirebaseInstanceManager {
     fun getFirebaseToken(): Single<String> = Single.create { emitter ->
-        firebaseInstanceId.instanceId.addOnCompleteListener { task ->
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                task.result?.let { emitter.onSuccess(it.token) }
+                task.result?.let { emitter.onSuccess(it) }
             } else {
                 emitter.onError(task.exception ?: Throwable())
             }
@@ -18,10 +15,6 @@ class FirebaseInstanceManager @Inject constructor(
     }
 
     fun invalidateFirebaseToken() {
-        firebaseInstanceId.deleteInstanceId()
-    }
-
-    companion object {
-        internal const val PUSH_NOTIFICATIONS_KEY = "PUSH_NOTIFICATIONS_KEY"
+        FirebaseMessaging.getInstance().deleteToken()
     }
 }

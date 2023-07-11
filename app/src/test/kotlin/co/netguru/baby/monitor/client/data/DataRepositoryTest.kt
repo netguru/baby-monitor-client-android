@@ -100,7 +100,7 @@ class DataRepositoryTest {
             .test()
             .assertComplete()
 
-        verifyZeroInteractions(analyticsManager)
+        verifyNoMoreInteractions(analyticsManager)
     }
 
     @Test
@@ -124,6 +124,6 @@ class DataRepositoryTest {
             .test()
             .assertComplete()
 
-        verifyZeroInteractions(analyticsManager)
+        verifyNoMoreInteractions(analyticsManager)
     }
 }

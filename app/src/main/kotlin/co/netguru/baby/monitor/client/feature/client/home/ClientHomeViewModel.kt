@@ -129,6 +129,8 @@ class ClientHomeViewModel @Inject constructor(
                                 event
                             )
                         )
+
+                        else -> {}
                     }
                 },
                 onError = { error ->

@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 @Module
 @Suppress("MagicNumber")
-object ApplicationModule {
+class ApplicationModule {
 
     @Singleton
     @Provides

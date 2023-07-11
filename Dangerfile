@@ -57,17 +57,6 @@ if pluginEnabled?(ENV["JUNIT_ENABLED"])
         junit.report
     end
 end
-
-# Jacoco reporting:
-unless envBlank?(ENV["JACOCO_REPORT_PATH"])
-    # Uncomment to enforce minimum coverage of your choice, causing build fail when this is not met:
-    #jacoco.minimum_project_coverage_percentage = 50
-    #jacoco.minimum_class_coverage_percentage = 75
-
-    # Specify your exact report location
-    jacoco.report(ENV["JACOCO_REPORT_PATH"])
-end
-
 # Jira link commenting (based on PR title or commits messages):
 unless envBlank?(ENV["JIRA_IDENTIFIERS"]) || envBlank?(ENV["JIRA_SUBDOMAIN"])
     jira.check(

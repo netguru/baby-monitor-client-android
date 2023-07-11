@@ -6,7 +6,6 @@ import co.netguru.baby.monitor.client.application.firebase.FirebaseSharedPrefere
 import co.netguru.baby.monitor.client.feature.analytics.AnalyticsManager
 import co.netguru.baby.monitor.client.feature.firebasenotification.FirebaseInstanceManager
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.iid.FirebaseInstanceId
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -20,7 +19,7 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun firebaseInstanceManager() = FirebaseInstanceManager(FirebaseInstanceId.getInstance())
+    fun firebaseInstanceManager() = FirebaseInstanceManager()
 
     @Provides
     @Singleton

@@ -1,13 +1,16 @@
 package co.netguru.baby.monitor.client.feature.splash
 
+import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.data.splash.AppState
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import io.reactivex.Completable
@@ -17,22 +20,33 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Provider
 
-class SplashFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_splash
+class SplashFragment : BaseFragment(R.layout.fragment_splash) {
     override val screen: Screen = Screen.SPLASH
 
+   private val viewModel by daggerViewModel { viewModelProvider }
+
     @Inject
-    internal lateinit var factory: ViewModelProvider.Factory
-    private val viewModel by lazy {
-        ViewModelProviders.of(this, factory)[SplashViewModel::class.java]
-    }
+    lateinit var viewModelProvider : Provider<SplashViewModel>
     private val compositeDisposable = CompositeDisposable()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        appComponent.inject(this)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.fragment_splash, container,false)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getSavedState()
-        viewModel.appState.observe(this, Observer(this::handleSplash))
+        viewModel.appState.observe(viewLifecycleOwner, Observer(this::handleSplash))
     }
 
     override fun onDestroy() {
@@ -65,6 +79,7 @@ class SplashFragment : BaseFragment() {
             AppState.FIRST_OPEN -> {
                 findNavController().navigate(R.id.splashToOnboarding)
             }
+            null -> {}
         }
     }
 

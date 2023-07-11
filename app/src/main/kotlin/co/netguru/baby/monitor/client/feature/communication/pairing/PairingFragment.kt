@@ -1,28 +1,39 @@
 package co.netguru.baby.monitor.client.feature.communication.pairing
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
+import co.netguru.baby.monitor.client.databinding.FragmentPairingBinding
 import co.netguru.baby.monitor.client.feature.analytics.Screen
-import kotlinx.android.synthetic.main.fragment_pairing.*
 import java.net.URI
 import javax.inject.Inject
+import javax.inject.Provider
 
-class PairingFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_pairing
+class PairingFragment : BaseFragment(R.layout.fragment_pairing) {
     override val screen: Screen = Screen.PAIRING
+    private lateinit var binding: FragmentPairingBinding
 
     @Inject
-    internal lateinit var factory: ViewModelProvider.Factory
+    lateinit var viewModelProvider: Provider<PairingViewModel>
 
-    private val viewModel by lazy {
-        ViewModelProviders.of(this, factory)[PairingViewModel::class.java]
+    private val viewModel by daggerViewModel { viewModelProvider }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPairingBinding.inflate(layoutInflater)
+        appComponent.inject(this)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,7 +50,7 @@ class PairingFragment : BaseFragment() {
     }
 
     private fun setupViews() {
-        pairingCode.text = viewModel.randomPairingCode
+        binding.pairingCode.text = viewModel.randomPairingCode
         setupOnBackPressedHandling()
     }
 
@@ -51,7 +62,7 @@ class PairingFragment : BaseFragment() {
                 findNavController().popBackStack()
             }
         })
-        backButton.setOnClickListener {
+        binding.backButton.setOnClickListener {
             requireActivity().onBackPressed()
         }
     }

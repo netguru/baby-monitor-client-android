@@ -6,17 +6,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import co.netguru.baby.monitor.client.R
 import co.netguru.baby.monitor.client.common.DateProvider
+import co.netguru.baby.monitor.client.common.extensions.viewBinding
 import co.netguru.baby.monitor.client.common.view.StickyHeaderInterface
 import co.netguru.baby.monitor.client.data.client.home.log.LogData
 import co.netguru.baby.monitor.client.data.client.home.log.LogData.Data
 import co.netguru.baby.monitor.client.data.client.home.log.LogData.EndText
 import co.netguru.baby.monitor.client.data.client.home.log.LogData.LogHeader
-import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.DataLogsViewHolder
-import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.EndTextHolder
-import co.netguru.baby.monitor.client.feature.client.home.log.LogsViewHolder.HeaderViewHolder
+import co.netguru.baby.monitor.client.databinding.ItemLogActivityHeaderBinding
+import co.netguru.baby.monitor.client.databinding.ItemLogActivityRecordBinding
+
 import org.threeten.bp.LocalDateTime
 
-class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderInterface {
+class ActivityLogAdapter : RecyclerView.Adapter<BaseViewHolder<LogData>>(), StickyHeaderInterface {
 
     private var map = hashMapOf<String, Int>()
     private var activityList = mutableListOf<LogData>()
@@ -26,18 +27,18 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
         activityList = mutableListOf()
 
         list.asSequence()
-                .sortedByDescending { it.timeStamp }
-                .forEach { data ->
-                    with(data.timeStamp) {
-                        if (!map.containsKey(toLocalDate().toString())) {
-                            activityList.add(LogHeader(this))
-                            map[toLocalDate().toString()] = activityList.lastIndex
-                        }
-                    }
-                    if (!activityList.contains(data)) {
-                        activityList.add(data)
+            .sortedByDescending { it.timeStamp }
+            .forEach { data ->
+                with(data.timeStamp) {
+                    if (!map.containsKey(toLocalDate().toString())) {
+                        activityList.add(LogHeader(this))
+                        map[toLocalDate().toString()] = activityList.lastIndex
                     }
                 }
+                if (!activityList.contains(data)) {
+                    activityList.add(data)
+                }
+            }
         activityList.add(EndText(activityList.lastOrNull()?.timeStamp ?: LocalDateTime.now()))
         notifyDataSetChanged()
     }
@@ -49,15 +50,25 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            when (viewType) {
-                R.layout.item_log_activity_header -> HeaderViewHolder(parent, viewType)
-                R.layout.item_log_activity_record -> DataLogsViewHolder(parent, viewType)
-                else -> EndTextHolder(parent, viewType)
-            }
+        when (viewType) {
+            R.layout.item_log_activity_header -> HeaderViewHolder(
+                parent.viewBinding(
+                    ItemLogActivityHeaderBinding::inflate
+                )
+            )
+
+            R.layout.item_log_activity_record -> DataLogsViewHolder(
+                parent.viewBinding(
+                    ItemLogActivityRecordBinding::inflate
+                )
+            )
+
+            else -> EndTextHolder(parent, viewType)
+        }
 
     override fun getItemCount() = activityList.size
 
-    override fun onBindViewHolder(viewHolder: LogsViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: BaseViewHolder<LogData>, position: Int) {
         viewHolder.bindView(activityList[position])
     }
 
@@ -66,11 +77,11 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
     override fun getHeaderLayout(headerPosition: Int) = R.layout.item_log_activity_header
 
     override fun getHeaderPositionForItem(itemPosition: Int) =
-            if (activityList[itemPosition] is LogHeader) {
-                itemPosition
-            } else {
-                map[activityList[itemPosition].timeStamp.toLocalDate().toString()] ?: 0
-            }
+        if (activityList[itemPosition] is LogHeader) {
+            itemPosition
+        } else {
+            map[activityList[itemPosition].timeStamp.toLocalDate().toString()] ?: 0
+        }
 
     override fun bindHeaderData(header: View, headerPosition: Int) {
         val textView = header.findViewById(R.id.itemActivityLogHeaderTv) as TextView
@@ -81,8 +92,16 @@ class ActivityLogAdapter : RecyclerView.Adapter<LogsViewHolder>(), StickyHeaderI
             val baseText = data.timeStamp.format(DateProvider.headerFormatter)
 
             textView.text = when {
-                data.timeStamp.isAfter(today) -> header.context.getString(R.string.date_today, baseText)
-                data.timeStamp.isAfter(yesterday) -> header.context.getString(R.string.date_yesterday, baseText)
+                data.timeStamp.isAfter(today) -> header.context.getString(
+                    R.string.date_today,
+                    baseText
+                )
+
+                data.timeStamp.isAfter(yesterday) -> header.context.getString(
+                    R.string.date_yesterday,
+                    baseText
+                )
+
                 else -> baseText
             }
         }

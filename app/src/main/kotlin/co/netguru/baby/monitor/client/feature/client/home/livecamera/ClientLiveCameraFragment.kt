@@ -1,17 +1,21 @@
 package co.netguru.baby.monitor.client.feature.client.home.livecamera
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.application.di.AppComponent.Companion.appComponent
 import co.netguru.baby.monitor.client.common.PermissionUtils
 import co.netguru.baby.monitor.client.common.base.BaseFragment
+import co.netguru.baby.monitor.client.common.extensions.daggerParentActivityViewModel
+import co.netguru.baby.monitor.client.common.extensions.daggerViewModel
 import co.netguru.baby.monitor.client.common.extensions.scaleAnimation
 import co.netguru.baby.monitor.client.common.extensions.showSnackbarMessage
+import co.netguru.baby.monitor.client.databinding.FragmentClientLiveCameraBinding
 import co.netguru.baby.monitor.client.feature.analytics.Screen
 import co.netguru.baby.monitor.client.feature.babynotification.BabyEventActionIntentService
 import co.netguru.baby.monitor.client.feature.client.home.BackButtonState
@@ -20,24 +24,33 @@ import co.netguru.baby.monitor.client.feature.communication.webrtc.ConnectionSta
 import co.netguru.baby.monitor.client.feature.communication.webrtc.RtcConnectionState
 import co.netguru.baby.monitor.client.feature.communication.webrtc.StreamState
 import co.netguru.baby.monitor.client.feature.communication.websocket.RxWebSocketClient
-import kotlinx.android.synthetic.main.fragment_client_live_camera.*
 import timber.log.Timber
 import java.net.URI
 import javax.inject.Inject
+import javax.inject.Provider
 
-class ClientLiveCameraFragment : BaseFragment() {
-    override val layoutResource = R.layout.fragment_client_live_camera
+class ClientLiveCameraFragment : BaseFragment(R.layout.fragment_client_live_camera) {
     override val screen: Screen = Screen.CLIENT_LIVE_CAMERA
+    private lateinit var binding : FragmentClientLiveCameraBinding
+
+    private val viewModel by daggerParentActivityViewModel { viewModelProvider }
+
+    private val fragmentViewModel by daggerViewModel { fragmentViewModelProvider }
 
     @Inject
-    internal lateinit var factory: ViewModelProvider.Factory
+    lateinit var viewModelProvider: Provider<ClientHomeViewModel>
 
-    private val viewModel by lazy {
-        ViewModelProviders.of(requireActivity(), factory)[ClientHomeViewModel::class.java]
-    }
+    @Inject
+    lateinit var fragmentViewModelProvider: Provider<ClientLiveCameraFragmentViewModel>
 
-    private val fragmentViewModel by lazy {
-        ViewModelProviders.of(this, factory)[ClientLiveCameraFragmentViewModel::class.java]
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        appComponent.inject(this)
+        binding = FragmentClientLiveCameraBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,25 +73,27 @@ class ClientLiveCameraFragment : BaseFragment() {
         ) {
             enablePushToSpeakButton()
         } else {
-            pushToSpeakButton.isVisible = false
+            binding.pushToSpeakButton.isVisible = false
         }
     }
 
     private fun enablePushToSpeakButton() {
-        pushToSpeakButton.isVisible = true
-        pushToSpeakButton.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                onPushToSpeakButtonPressed()
-            } else if (event.action == MotionEvent.ACTION_UP) {
-                onPushToSpeakButtonRelease()
+        with(binding) {
+            pushToSpeakButton.isVisible = true
+            pushToSpeakButton.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    onPushToSpeakButtonPressed()
+                } else if (event.action == MotionEvent.ACTION_UP) {
+                    onPushToSpeakButtonRelease()
+                }
+                true
             }
-            true
         }
     }
 
     private fun onPushToSpeakButtonRelease() {
         fragmentViewModel.pushToSpeak(false)
-        pushToSpeakButton.scaleAnimation(
+        binding.pushToSpeakButton.scaleAnimation(
             false,
             PRESSED_SCALE,
             NORMAL_SCALE,
@@ -88,7 +103,7 @@ class ClientLiveCameraFragment : BaseFragment() {
 
     private fun onPushToSpeakButtonPressed() {
         fragmentViewModel.pushToSpeak(true)
-        pushToSpeakButton.scaleAnimation(
+        binding.pushToSpeakButton.scaleAnimation(
             true,
             PRESSED_SCALE,
             NORMAL_SCALE,
@@ -151,7 +166,7 @@ class ClientLiveCameraFragment : BaseFragment() {
         val serverUri = URI.create(viewModel.selectedChildLiveData.value?.address ?: return)
         fragmentViewModel.startCall(
             requireActivity().applicationContext,
-            liveCameraRemoteRenderer,
+            binding.liveCameraRemoteRenderer,
             serverUri,
             rxWebSocketClient,
             hasRecordAudioPermission
@@ -161,8 +176,8 @@ class ClientLiveCameraFragment : BaseFragment() {
     private fun handleStreamStateChange(streamState: StreamState) {
         when ((streamState as? ConnectionState)?.connectionState) {
             RtcConnectionState.Connected,
-            RtcConnectionState.Completed -> streamProgressBar.isVisible = false
-            RtcConnectionState.Checking -> streamProgressBar.isVisible = true
+            RtcConnectionState.Completed -> binding.streamProgressBar.isVisible = false
+            RtcConnectionState.Checking -> binding.streamProgressBar.isVisible = true
             RtcConnectionState.Error -> handleBabyDeviceSdpError()
             else -> Unit
         }

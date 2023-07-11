@@ -4,27 +4,38 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import co.netguru.baby.monitor.client.R
+import co.netguru.baby.monitor.client.databinding.ActivityOnboardingBinding
 
 class OnboardingActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityOnboardingBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_onboarding)
+        binding = ActivityOnboardingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 
     override fun onBackPressed() {
-        val controller = findNavController(R.id.onboardingNavigationHostFragment).currentDestination?.id
+        val controller =
+            findNavController(R.id.onboardingNavigationHostFragment).currentDestination?.id
                 ?: 0
         if (controller == R.id.permissionMicrophone || controller == R.id.permissionMicrophone ||
-            controller == R.id.setupInformation) {
-            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.connectWiFi, false)
+            controller == R.id.setupInformation
+        ) {
+            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(
+                R.id.connectWiFi,
+                false
+            )
         } else if (controller == R.id.allDone) {
-            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(R.id.parentDeviceInfo, false)
+            findNavController(R.id.onboardingNavigationHostFragment).popBackStack(
+                R.id.parentDeviceInfo,
+                false
+            )
         } else {
             super.onBackPressed()
         }
     }
 
     override fun onSupportNavigateUp() =
-            findNavController(R.id.onboardingNavigationHostFragment).navigateUp()
+        findNavController(R.id.onboardingNavigationHostFragment).navigateUp()
 }
