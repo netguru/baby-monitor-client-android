@@ -120,7 +120,7 @@ class PairingUseCaseTest {
 
         pairingUseCase.pair(address, pairingCode)
 
-        verifyZeroInteractions(dataRepository, dataRepository)
+        verifyNoMoreInteractions(dataRepository, dataRepository)
         verify(pairingCompletedObserver).onChanged(false)
         verify(rxWebSocketClient).dispose()
     }
